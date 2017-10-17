@@ -9,7 +9,7 @@
 		die('Database connection failed: '.$e->getMessage()); //Failed to connect to database
 	}
 
-	function return_single_pet($q,$selector) { //make sure there is exactly one row in the results
+	function return_single_pet($q,$selector='') { //make sure there is exactly one row in the results
 		if($q->rowCount() !== 1) {
 			echo '<pre>'.$q->rowCount()." pets match $selector:\r\n";
 			print_r($q->fetchAll(PDO::FETCH_ASSOC));
@@ -36,6 +36,18 @@
 			$q = $pdo->prepare('SELECT * from pets WHERE petkey = :petkey');
 			$q->execute([':petkey'=>$key]);
 			return return_single_pet($q,$key);
+		}
+		catch (PDOException $e) {
+			die("Retrieving pet $key failed: ".$e->getMessage());
+		}
+	}
+
+	function new_pet() {
+		global $pdo;
+		try {
+			$q = $pdo->prepare('INSERT INTO pets () VALUES ()');
+			$q->execute();
+			return return_single_pet($q);
 		}
 		catch (PDOException $e) {
 			die("Retrieving pet $key failed: ".$e->getMessage());

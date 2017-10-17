@@ -5,12 +5,12 @@
 
 	if($_GET["petkey"]) $pet = retrieve_pet_from_key($_GET["petkey"]);
 	elseif($_GET["pet"]) $pet = retrieve_pet_from_concat($_GET["pet"]);
-	else die('No pet specified.');
+	else $pet = new_pet();
 	var_dump($pet);
 ?>
 <html>
 	<head>
-		<title>Listing editor for <?=($pet['name']||'new pet').' - '.$shelter_name?></title>
+		<title>Listing editor for <?=$pet['name']?:'new pet'.' - '.$shelter_name?></title>
 		<meta charset="UTF-8">
 
 		<!-- Jquery -->
