@@ -1,0 +1,19 @@
+RewriteEngine on
+
+#Keep non-redundant directories from old site that would otherwise match below rules
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule .* - [L]
+
+# Adoptable pages
+RewriteRule ^([A-Z][A-Za-z]+s)/?(\?(.*))?$ pages/view_adoptable.php?species=$1&$3
+RewriteRule ^([A-Z][A-Za-z]+s)/[Ee]dit/?(\?(.*))?$ admin/edit_adoptable.php?species=$1&$3 [L]
+#Must be last as listing pages also match
+
+# Listing pages
+RewriteRule ^[A-Z][A-Za-z]+s/([^?/.]+)(/(index\.[A-Za-z0-9]+)?)?(\?(.*))?$ pages/view_listing.php?pet=$1&$5 [L]
+#Must be last as image files also match
+RewriteRule ^[A-Z][A-Za-z]+s/([^?/.]+)/[Ee]dit/?(\?(.*))?$ admin/edit_listing.php?pet=$1&$3
+
+# Image files
+RewriteRule ^[A-Z][A-Za-z]+s/([^?/.]+)/([^?/.]+\.[A-Za-z0-9]+)(\?(.*))?$ pages/get_image.php?pet=$1&filename=$2&$4
