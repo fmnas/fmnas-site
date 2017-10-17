@@ -25,8 +25,3 @@
 			die('Retrieving pet failed: '.$e->getMessage());
 		}
 	}
-
-	//BEGIN PREPARED STATEMENTS
-	//Get pet from parameter in format IDName
-	if(!($retrieve_pet_from_concat = $mysqli->prepare("SELECT * FROM pets WHERE CONCAT(id, name) = (?)")))
-		die('retrieve_pet_from_concat: Prepare failed: ('.$mysqli->errno.')'.$mysqli->error);
