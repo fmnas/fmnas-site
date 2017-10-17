@@ -47,7 +47,7 @@
 		try {
 			$q = $pdo->prepare('INSERT INTO pets () VALUES ()');
 			$q->execute();
-			return return_single_pet($q);
+			return retrieve_pet_from_key($pdo->lastInsertId()); //get key from inserted row and use that
 		}
 		catch (PDOException $e) {
 			die("Retrieving pet $key failed: ".$e->getMessage());
