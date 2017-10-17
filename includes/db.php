@@ -9,17 +9,33 @@
 		die('Database connection failed: '.$e->getMessage()); //Failed to connect to database
 	}
 
+	function return_single_pet($q) { //make sure there is exactly one row in the results
+		if($q->rowCount() !== 1) {
+			echo '<pre>'.$q->rowCount()." pets match $idname:\r\n";
+			print_r($q->fetchAll(PDO::FETCH_ASSOC));
+			die();
+		}
+		return $q->fetch(PDO::FETCH_ASSOC);
+	}
+
 	function retrieve_pet_from_concat($idname) {
 		global $pdo;
 		try {
 			$q = $pdo->prepare('SELECT * from pets WHERE CONCAT(id, name) = :idname');
 			$q->execute([':idname'=>$idname]);
-			if($q->rowCount() !== 1) {
-				echo '<pre>'.$q->rowCount()." pets match $idname:\r\n";
-				print_r($q->fetchAll(PDO::FETCH_ASSOC));
-				die();
-			}
-			return $q->fetch(PDO::FETCH_ASSOC);
+			return return_single_pet($q);
+		}
+		catch (PDOException $e) {
+			die('Retrieving pet failed: '.$e->getMessage());
+		}
+	}
+
+	function retrieve_pet_from_key($key) {
+		global $pdo;
+		try {
+			$q = $pdo->prepare('SELECT * from pets WHERE petkey = :petkey');
+			$q->execute([':petkey'=>$key]);
+			return return_single_pet($q);
 		}
 		catch (PDOException $e) {
 			die('Retrieving pet failed: '.$e->getMessage());

@@ -3,8 +3,9 @@
 	require_once($_SERVER['DOCUMENT_ROOT'].'/includes/paths.php');
 	require_once("$BASE/includes/db.php");
 
-	if(!$_GET["pet"]) die('No pet specified.');
-	$pet = retrieve_pet_from_concat($_GET["pet"]);
+	if($_GET["petkey"]) $pet = retrieve_pet_from_key($_GET["petkey"]);
+	elseif($_GET["pet"]) $pet = retrieve_pet_from_concat($_GET["pet"]);
+	else die('No pet specified.');
 	var_dump($pet);
 ?>
 <html>
