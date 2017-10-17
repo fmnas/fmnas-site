@@ -10,7 +10,7 @@
 ?>
 <html>
 	<head>
-		<title>Listing editor - <?=$shelter_name?></title>
+		<title>Listing editor for <?=($pet['name']||'new pet').' - '.$shelter_name?></title>
 		<meta charset="UTF-8">
 
 		<!-- Jquery -->
