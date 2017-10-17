@@ -1,7 +1,15 @@
 <!DOCTYPE html>
+<?php
+	require_once($_SERVER['DOCUMENT_ROOT'].'/includes/paths.php');
+	require_once("$BASE/includes/db.php");
+
+	if(!$_GET["pet"]) die('No pet specified.');
+	$pet = retrieve_pet_from_concat($_GET["pet"]);
+	var_dump($pet);
+?>
 <html>
 	<head>
-		<title>Listing editor</title>
+		<title>Listing editor - <?=$shelter_name?></title>
 		<meta charset="UTF-8">
 
 		<!-- Jquery -->
@@ -33,7 +41,7 @@
 			}
 		</style>
 
-		
+
 	</head>
 	<body>
 		<form action="update.php" method="POST">
