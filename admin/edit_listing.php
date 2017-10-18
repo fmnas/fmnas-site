@@ -43,7 +43,10 @@
 			}
 		</style>
 
-
+		<!-- Style -->
+		<link rel="stylesheet" type="text/css" href="/<?=$document_root?>includes/text.css">
+		<link rel="stylesheet" type="text/css" href="/<?=$document_root?>includes/header.css">
+		<link rel="stylesheet" type="text/css" href="/<?=$document_root?>includes/footer.css">
 	</head>
 	<body>
 		<form action="update.php" method="POST">
