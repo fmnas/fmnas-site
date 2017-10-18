@@ -230,12 +230,12 @@
 			<?php
 				foreach($pets as $pet):
 					$status = $statuses[$pet['status']];
-					$listed = false;
+					$listed = file_exists("$BASE/content/descriptions/".$pet['id'].'.html');
 			?>
 			<tr class="<?=$status['class'].($status['statustext']!=='Coming Soon'?'':' soon')?>">
 				<th class="name"><a <?php
 					if($listed):
-				 ?>href="<?=$pet['id'].$pet['name']?>"
+				 ?>href="./<?=$pet['id'].$pet['name']?>"
 			 <?php endif; ?> id="<?=$pet['id']?>"><?=htmlspecialchars($pet['name'])?></a></th>
 				<td class="sex"><?=htmlspecialchars($sexes[$pet['sex']].' '.$pet['text1'])?></td>
 				<td class="age"><time datetime="<?=$pet['dob']?>"><?php
@@ -262,7 +262,7 @@
 				<td class="fee"><span><?=htmlspecialchars($status['statustext'].' '.($status['hidefee']?'':'$'.$pet['fee']).' '.$pet['text3'])?></span></td>
 				<td class="img"><a <?php
 					if($listed):
-				 ?>href="<?=$pet['id'].$pet['name']?>"
+				 ?>href="./<?=$pet['id'].$pet['name']?>"
 			 	<?php endif; ?>>
 					<img src="/<?=$document_root?>pages/get_image.php?id=<?=$pet['image']?>&amp;width=200">
 				</a></td>
