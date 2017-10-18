@@ -32,6 +32,10 @@
 			margin-bottom: 1em;
 		}
 
+		abbr {
+			text-decoration: none;
+		}
+
 
 		/*Print links*/
 		@media print {
