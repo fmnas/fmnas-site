@@ -6,7 +6,7 @@ RewriteCond %{REQUEST_FILENAME} -f
 RewriteRule .* - [L]
 
 # Adoptable pages
-RewriteRule ^([A-Z][A-Za-z]+)s/?(\?(.*))?$ pages/view_adoptable.php?species=$1&$3
+RewriteRule ^([A-Z][A-Za-z]+)s/?(\?(.*))?$ pages/adoptable.php?species=$1&$3
 RewriteRule ^([A-Z][A-Za-z]+)s/[Ee]dit/?(\?(.*))?$ admin/edit_adoptable.php?species=$1&$3 [L]
 #Must be last as listing pages also match
 
@@ -15,7 +15,7 @@ RewriteRule ^([A-Z][A-Za-z]+)s/[Nn]ew/?(\?(.*))?$ admin/edit_listing.php?species
 RewriteRule ^[Nn]ew/?(\?(.*))?$ admin/edit_listing.php?$2
 
 # Listing pages
-RewriteRule ^[A-Z][A-Za-z]+s/([^?/.]+)(/(index\.[A-Za-z0-9]+)?)?(\?(.*))?$ pages/view_listing.php?pet=$1&$5 [L]
+RewriteRule ^[A-Z][A-Za-z]+s/([^?/.]+)(/(index\.[A-Za-z0-9]+)?)?(\?(.*))?$ pages/listing.php?pet=$1&$5 [L]
 #Must be last as image files also match
 RewriteRule ^([A-Z][A-Za-z]+)s/([^?/.]+)/[Ee]dit/?(\?(.*))?$ admin/edit_listing.php?pet=$2&species=$1&$4
 

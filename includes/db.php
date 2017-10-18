@@ -53,3 +53,26 @@
 			die("Retrieving pet $key failed: ".$e->getMessage());
 		}
 	}
+
+	try {
+		$statuses = $pdo->query('SELECT * FROM status')->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_UNIQUE|PDO::FETCH_ASSOC);
+		$species  = $pdo->query('SELECT * FROM species')->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_UNIQUE|PDO::FETCH_ASSOC);
+		$sexes = $pdo->query('SELECT id, displaytext FROM sexes')->fetchAll(PDO::FETCH_KEY_PAIR);
+	}
+	catch (PDOException $e) {
+		die("Retrieving tables failed: ".$e->getMessage());
+	}
+
+	function retrieve_adoptable_pets($species = NULL) {
+		global $pdo;
+		try {
+			$sql='SELECT pets.* FROM pets INNER JOIN status ON pets.status = status.id WHERE status.hidelisting = 0';
+			if($species) $sql.=' AND pets.species = :species';
+			$q = $pdo->prepare($sql);
+			$q->execute([':species'=>$species]);
+			return $q->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_UNIQUE|PDO::FETCH_ASSOC);
+		}
+		catch (PDOException $e) {
+			die("Retrieving adoptable pets failed: ".$e->getMessage());
+		}
+	}
