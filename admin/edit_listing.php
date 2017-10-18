@@ -14,13 +14,14 @@
 		<meta charset="UTF-8">
 
 		<!-- Jquery -->
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<script src="<?=$jquery_path?>"></script>
 
 		<!-- TinyMCE -->
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/4.7.1/tinymce.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/4.7.1/jquery.tinymce.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/4.7.1/plugins/lists/plugin.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/4.7.1/plugins/link/plugin.min.js"></script>
+		<script src="<?=$tinymce_path?>"></script>
+		<script src="<?=$tinymce_jquery_path?>"></script>
+		<?php foreach($tinymce_plugins as $plugin): ?>
+			<script src="<?=$plugin?>"></script>
+		<?php endforeach; ?>
   		<script type="text/javascript">
 			$(function() {
 				//TinyMCE initialization
