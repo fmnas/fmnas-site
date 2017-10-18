@@ -5,7 +5,7 @@
 	require_once("$BASE/includes/css.php");
 
 	if ($_GET["species"]) {
-		$page_species = array_search(trim($_GET["species"]), array_column($species, 'speciestext'));
+		$page_species = array_search(trim($_GET["species"]), array_filter(array_combine(array_keys($species),array_column($species, 'speciestext'))));
 	}
 	else $page_species = NULL;
 	$pets = retrieve_adoptable_pets($page_species);
