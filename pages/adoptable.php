@@ -4,12 +4,15 @@
 	require_once("$BASE/includes/db.php");
 	require_once("$BASE/includes/css.php");
 
-	if ($_GET["species"]) $pets = retrieve_adoptable_pets($_GET["species"]);
-	else $pets = retrieve_adoptable_pets();
+	if ($_GET["species"]) {
+		$page_species = $species[array_search($_GET["species"], array_column($species, 'speciestext'))]['id'];
+	}
+	else $page_species = NULL;
+	$pets = retrieve_adoptable_pets($page_species);
 ?>
 <html lang="en-US">
 <head>
-	<title><?=$_GET["species"]?:'Pet'?>s for adoption at Forget Me Not Animal Shelter of Ferry County</title>
+	<title><?=$species[$page_species]['pagetitle']?:'Pets'?> for adoption at Forget Me Not Animal Shelter of Ferry County</title>
 	<meta charset="UTF-8">
 
 	<!-- Jquery -->
