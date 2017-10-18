@@ -1,0 +1,41 @@
+		/*Text*/
+		body {
+			color: #000;
+			font-family: sans-serif;
+			font-size: 12pt;
+			text-align: justify;
+		}
+		a { text-decoration: none; }
+		a:link { color: #066; }
+		a:visited { color: #39f; }
+		a:hover { text-decoration: underline; }
+		p>strong:first-child{
+			font-weight: bold;
+			color: red;
+			display: inline;
+		}
+		section, footer {
+			display: block;
+			width: 100%;
+			padding-left: 6%;
+			padding-right: 6%;
+			box-sizing: border-box;
+		}
+		section>h2 {
+			text-align: center;
+			color: #069;
+			font-size: 14pt;
+			margin-bottom: 0;
+		}
+		p {
+			margin-top: 0;
+			margin-bottom: 1em;
+		}
+
+
+		/*Print links*/
+		@media print {
+			header aside, header a.return { display: none; }
+			a[href]::after { content: ' <' attr('href') '>'; }
+			form[action]::after { content: ' <' attr('action') '>'; }
+		}
