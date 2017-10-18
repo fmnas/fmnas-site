@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <?php
 	require_once($_SERVER['DOCUMENT_ROOT'].'/includes/paths.php');
 	require_once("$BASE/includes/db.php");
@@ -8,8 +7,12 @@
 		$page_species = array_search(trim($_GET["species"]), array_filter(array_combine(array_keys($species),array_column($species, 'speciestext'))));
 	}
 	else $page_species = NULL;
+	if($page_species === false) {
+		header("HTTP/1.0 404 Not Found");
+		die("there are no ".$_GET["species"]."s");
+	}
 	$pets = retrieve_adoptable_pets($page_species);
-?>
+?><!DOCTYPE html>
 <html lang="en-US">
 <head>
 	<title><?=$species[$page_species]['pagetitle']?:'Pets'?> for adoption at Forget Me Not Animal Shelter of Ferry County</title>
