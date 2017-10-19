@@ -2,3 +2,4 @@ config/*
 content/*
 !README
 !.htaccess
+pages/jqfu
