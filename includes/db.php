@@ -76,3 +76,7 @@
 			die("Retrieving adoptable pets failed: ".$e->getMessage());
 		}
 	}
+
+	function retrieve_adopted_pets() { return null; }
+
+	function build_option_list($table, $allow_table_update = false) { return '<option></option>'; }
