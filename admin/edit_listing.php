@@ -74,14 +74,14 @@
 				<label for="petid">ID</label>
 				<input type="text" id="petid" name="id" minlength="3" maxlength="6" value="<?=$pet['id']?>">
 				<label for="name">Name</label>
-				<input type="text" id="name" name="name" value="<?=$pet['id']?>">
+				<input type="text" id="name" name="name" value="<?=$pet['name']?>">
 				<label for="species">Species</label>
 				<select id="species" name="species">
-					<?=build_option_list('species', true)?>
+					<?=build_option_list('species', $pet['species'], true)?>
 				</select>
 				<label for="sex">Sex</label>
 				<select id="sex" name="sex">
-					<?=build_option_list('sexes')?>
+					<?=build_option_list('sexes', $pet['sexes'], true)?>
 				</select>
 			</section>
 			<section class="photos">
