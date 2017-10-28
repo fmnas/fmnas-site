@@ -33,7 +33,7 @@
 			color: #f00;
 			background-color: #ff6;
 			font-size: 28pt;
-			font-family: "Arial Black", Gadget, sans-serif;
+			font-family: "Arial Black", "Gadget", sans-serif;
 			text-align: center;
 			padding: 0.25in;
 		}
