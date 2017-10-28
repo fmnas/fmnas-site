@@ -55,7 +55,7 @@
 				<h2>Link preview</h2>
 				<?php
 					$pets = array($pet); //display single pet in listing table
-					include "$document_root/includes/listing_table.php";
+					require("$BASE/includes/listing_table.php");
 				?>
 			</section>
 			<section class="pet_data">
