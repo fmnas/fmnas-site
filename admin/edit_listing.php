@@ -43,6 +43,10 @@
 			}
 		</style>
 
+		<!-- Listing table -->
+		<script src="/<?=$document_root?>includes/email_links.js"></script>
+		<script src="/<?=$document_root?>includes/listing_table.js"></script>
+
 		<!-- Style -->
 		<link rel="stylesheet" type="text/css" href="/<?=$document_root?>includes/text.css">
 		<link rel="stylesheet" type="text/css" href="/<?=$document_root?>includes/header.css">
