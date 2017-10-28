@@ -78,7 +78,7 @@
 			</a>
 		</aside>
 	</header>
-	<?php require("$document_root/includes/listing_table.php"); ?>
+	<?php require("$BASE/includes/listing_table.php"); ?>
 	<section>
 		<p><strong>Adoption Fees</strong> include Vaccinations and Spay/Neuter!
 		<?php foreach ($statuses as $status):
