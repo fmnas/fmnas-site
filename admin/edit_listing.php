@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <?php
 	require_once($_SERVER['DOCUMENT_ROOT'].'/includes/paths.php');
+	require_once("$BASE/includes/auth.php");
 	require_once("$BASE/includes/db.php");
 
 	if($_GET["petkey"]) $pet = retrieve_pet_from_key($_GET["petkey"]);
