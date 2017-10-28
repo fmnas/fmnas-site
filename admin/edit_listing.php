@@ -47,12 +47,43 @@
 		<link rel="stylesheet" type="text/css" href="/<?=$document_root?>includes/text.css">
 		<link rel="stylesheet" type="text/css" href="/<?=$document_root?>includes/header.css">
 		<link rel="stylesheet" type="text/css" href="/<?=$document_root?>includes/footer.css">
+		<link rel="stylesheet" type="text/css" href="/<?=$document_root?>includes/listing_table.css.php">
 	</head>
 	<body>
 		<form action="update.php" method="POST">
-			<input type="hidden" name="original_id" value="TEST">
-			<textarea name="description" id="description">edit me</textarea>
-			<input type="submit" value="Save changes">
+			<section class="preview">
+				<h2>Link preview</h2>
+				<?php
+					$pets = array($pet); //display single pet in listing table
+					include "$document_root/includes/listing_table.php";
+				?>
+			</section>
+			<section class="pet_data">
+				<h2>Pet data</h2>
+				<input type="hidden" name="petkey" value="<?=$pet['petkey']?>">
+				<label for="petid">ID</label>
+				<input type="text" id="petid" name="id" minlength="3" maxlength="6" value="<?=$pet['id']?>">
+				<label for="name">Name</label>
+				<input type="text" id="name" name="name" value="<?=$pet['id']?>">
+				<label for="species">Species</label>
+				<select id="species" name="species">
+					<?=build_option_list('species', true)?>
+				</select>
+				<label for="sex">Sex</label>
+				<select id="sex" name="sex">
+					<?=build_option_list('sexes')?>
+				</select>
+			</section>
+			<section class="photos">
+				<h2>Photos</h2>
+			</section>
+			<section class="description">
+				<h2>Description</h2>
+				<textarea name="description" id="description">edit me</textarea>
+			</section>
+			<nav>
+				<input type="submit" value="Save changes">
+			</nav>
 		</form>
 	</body>
 </html>
