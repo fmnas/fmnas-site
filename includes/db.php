@@ -84,10 +84,24 @@
 		$list .= '<option value="" '.(!$selected?' selected':'').'></option>';
 		try {
 			$options = $pdo->query("SELECT * FROM $table")->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_UNIQUE|PDO::FETCH_ASSOC);
-			$list .= '<option value="1">'.print_r($options, true).'</option>';
+			foreach($options as $value=>$option){
+				$list.= "<option value=\"$value\"";
+				$list.= ($selected==$value?' selected':''); //add "selected" attribute to option matching $selected
+				foreach($option as $column=>$value){ //data- attributes for each column
+					$list.= " data-$column=\"";
+					$list.= htmlspecialchars($value);
+					$list.= "\"";
+				}
+				$list.= '>'; //end opening tag
+				$list.= htmlspecialchars(array_values($option)[0]); //Display option as first non-key column
+				$list.= "</option>";
+			}
 		}
 		catch (PDOException $e) {
 			$list .= '<option value="">'.$e->getMessage().'</option>';
+		}
+		if ($allow_table_update) {
+			$list .= '<option value="-1" data-table="'.$table.'">Add/edit '.$table.'</option>';
 		}
 		return $list;
 	}

@@ -62,7 +62,8 @@
 	<body>
 		<form action="update.php" method="POST">
 			<section class="preview">
-				<h2>Link preview</h2>
+				<h2>Preview</h2>
+				<p>(As shown on <span class="speciespagetitle"><?=$pet['species']?$species[$pet['species']]['pagetitle']:'listings'?></span> page)</p>
 				<?php
 					$pets = array($pet); //display single pet in listing table
 					require("$BASE/includes/listing_table.php");
@@ -81,7 +82,7 @@
 				</select>
 				<label for="sex">Sex</label>
 				<select id="sex" name="sex">
-					<?=build_option_list('sexes', $pet['sexes'], true)?>
+					<?=build_option_list('sexes', $pet['sex'])?>
 				</select>
 			</section>
 			<section class="photos">
