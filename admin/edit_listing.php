@@ -43,6 +43,12 @@
 			}
 		</style>
 
+		<!-- BlueImp uploader -->
+		<script src="<?=$blueimp_path?>"></script>
+		<script src="<?=$blueimp_process_path?>"></script>
+		<script src="<?=$blueimp_ui_path?>"></script>
+		<script src="<?=$blueimp_jquery_ui_path?>"></script>
+
 		<!-- Listing table -->
 		<script src="/<?=$document_root?>includes/email_links.js"></script>
 		<script src="/<?=$document_root?>includes/listing_table.js"></script>
