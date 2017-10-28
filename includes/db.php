@@ -80,8 +80,14 @@
 	function retrieve_adopted_pets() { return null; }
 
 	function build_option_list($table, $selected = null, $allow_table_update = false) {
-		$list .= '<option value="" '.(!$selected?' selected').'></option>';
-		$options = $pdo->query("SELECT * FROM $table")->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_UNIQUE|PDO::FETCH_ASSOC);
-		$list .= '<option value="1">'.print_r($options, true).'</option>';
+		global $pdo;
+		$list .= '<option value="" '.(!$selected?' selected':'').'></option>';
+		try {
+			$options = $pdo->query("SELECT * FROM $table")->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_UNIQUE|PDO::FETCH_ASSOC);
+			$list .= '<option value="1">'.print_r($options, true).'</option>';
+		}
+		catch (PDOException $e) {
+			$list .= '<option value="">'.$e->getMessage().'</option>';
+		}
 		return $list;
 	}
