@@ -105,3 +105,19 @@
 		}
 		return $list;
 	}
+
+	function get_description($petkey) {
+		if(file_exists("$BASE/content/$petkey.html")) {
+			return file_get_contents("$BASE/content/$petkey.html");
+		}
+		else {
+			return file_get_contents("$BASE/templates/description.html");
+		}
+	}
+
+	function save_description($petkey, $description) {
+		$sanitized_description = str_replace('<?','&lt;?',$description); //sanitize PHP open tags
+		$sanitized_description = str_replace('?>','&gt;?',$description);
+		//TODO: sanitize script, etc with htmlpurifier
+		return file_put_contents("$BASE/content/$petkey.html", $description);
+	}
