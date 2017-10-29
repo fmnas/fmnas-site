@@ -73,7 +73,7 @@
 					<figcaption>
 						Want to see updates on our already adopted pets? Check our Facebook Adopters and Supporters Group - click here!
 					</figcaption>
-					<img alt="Adopted Pets" src="adopted.jpg">
+					<img alt="Adopted Pets" src="/<?=$document_root?>static/adopted.jpg">
 				</figure>
 			</a>
 		</aside>
