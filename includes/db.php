@@ -121,3 +121,49 @@
 		//TODO: sanitize script, etc with htmlpurifier
 		return file_put_contents("$BASE/content/$petkey.html", $description);
 	}
+
+	function get_images($petkey) {
+		//Returns a multidimensional array of all images associated with $petkey
+		//Columns: id, pet, ordering, datetaken, filename, editedfrom, hidden
+		global $pdo;
+		try {
+			$q = $pdo->prepare('SELECT * from images WHERE pet = :petkey');
+			$q->execute([':petkey'=>petkey]);
+			return $q->fetchAll(PDO::FETCH_ASSOC);
+		}
+		catch (PDOException $e) {
+			die("Retrieving pet $key failed: ".$e->getMessage());
+		}
+	}
+
+	function add_image($petkey, $image, $filename = NULL, $datetaken = NULL, $ordering = 1) {
+		//Adds the image in $image (a gd resource) to the database as an image of pet $petkey
+		//Optional parameters: filename $filename (default petkey_imagekey.jpg), DateTime $datetaken, ordering $ordering (default 1)
+		//Returns the image key
+		//TODO
+		return;
+	}
+
+	function hide_image($imagekey, $hidden = TRUE) {
+		//TODO
+		return;
+	}
+
+	function reorder_image($imagekey, $ordering = 1) {
+		//TODO
+		return;
+	}
+
+	function add_edited_image($originalimagekey, $image) {
+		//"Updates" the image in the database by creating a new image from $image with the properties of image $originalimagekey then hiding image $originalimagekey
+		//Returns the new image key
+		//TODO
+		return;
+	}
+
+	function get_image($petid, $filename) {
+		//Get a non-hidden image with filename $filename associated with pet with ID $petid (for use with "friendly" URLs)
+		//Returns the image key
+		//TODO
+		return;
+	}
