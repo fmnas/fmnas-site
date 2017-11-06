@@ -7,6 +7,23 @@
 
 /*<style type="text/css"> for code highlighting */
 
+/*Listings table*/
+table.listings {
+	 width: 100%;
+	 display: block;
+	 /*background-color: #ddd;*/
+}
+table.listings tbody {
+	display: flex;
+	justify-content: space-around;
+	flex-wrap: wrap;
+}
+@media print {
+	table.listings tbody {
+		display: block;
+	}
+}
+
 /*Listings table - individual listings*/
 table.listings tbody tr {
 	display: inline-block;
