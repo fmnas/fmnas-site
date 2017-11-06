@@ -167,3 +167,7 @@
 		//TODO
 		return;
 	}
+
+	function urldoubleencode($path) {
+		return urlencode(urlencode($path));
+	}
