@@ -12,20 +12,3 @@ address { font-style: normal; }
 	color: #f00;
 }
 .big, footer>address { font-size: 28pt; }
-
-/*Listings table*/
-table.listings {
-	 width: 100%;
-	 display: block;
-	 /*background-color: #ddd;*/
-}
-table.listings tbody {
-	display: flex;
-	justify-content: space-around;
-	flex-wrap: wrap;
-}
-@media print {
-	table.listings tbody {
-		display: block;
-	}
-}
