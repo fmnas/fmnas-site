@@ -23,4 +23,4 @@ RewriteRule ^[A-Z][A-Za-z]+s/([^?.]+)(/(index\.[A-Za-z0-9]+)?)$ pages/listing.ph
 RewriteRule ^([A-Z][A-Za-z]+)s/([^?.]+)/[Ee]dit/?$ admin/edit_listing.php?pet=$2&species=$1&%{QUERY_STRING}
 
 # Image files
-RewriteRule ^[A-Z][A-Za-z]+s/([^?.]+)/([^?/.]+\.[A-Za-z0-9]+)$ pages/get_image.php?pet=$1&filename=$2&%{QUERY_STRING}
+RewriteRule ^[A-Z][A-Za-z]+s/([^?.]+)/([^?/.]+)\.(gif|jpe?g|png|GIF|JPE?G|PNG)$ pages/get_image.php?pet=$1&filename=$2&%{QUERY_STRING}.jpg
