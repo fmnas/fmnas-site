@@ -26,9 +26,10 @@
 				$age = '';
 				if($pet['estimate']){
 					//Estimated DOB?
+					//This algorithm is duplicated in edit_listing.js
 					$now = new DateTime();
 					if($dob > new DateTime('2 years ago')) { //if <= 2 yo
-						$age = ($now->diff($dob)->m) + 12*($now->diff($dob)->y);
+						$age = floor($now->diff($dob)->days / 30.4375); //->m + 12*->y is incorrect sometimes because PHP
 						$age .= ' month'.($age===1?'':'s').' old';
 					}
 					else {
