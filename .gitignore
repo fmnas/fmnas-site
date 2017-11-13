@@ -3,4 +3,5 @@ content/*
 static/*
 !README
 !.htaccess
-pages/jqfu
+pages/*/*
+includes/*/*

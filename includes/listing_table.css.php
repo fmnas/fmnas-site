@@ -2,7 +2,7 @@
 	require_once($_SERVER['DOCUMENT_ROOT'].'/includes/paths.php');
 	require_once("$BASE/includes/db.php");
 	require_once("$BASE/includes/css.php");
-	header('Content-Type: text/css');
+	header('Content-Type: text/css;charset=utf-8');
 ?>
 
 /*<style type="text/css"> for code highlighting */
