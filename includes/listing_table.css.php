@@ -58,9 +58,8 @@ table.listings tbody td.img {
 }
 
 /*Listings table - individual data*/
-th.name {
+table.listings th.name {
 	font-size: 18pt;
-	display: inline;
 }
 table.listings img {
 	display: block;
@@ -69,14 +68,14 @@ table.listings img {
 	margin-left: auto;
 	margin-right: auto;
 }
-table.listings td, th {
+table.listings td, table.listings th {
 	width: 100%;
 	text-align: center;
 	vertical-align: middle;
 }
 table.listings thead {display: none;}
-td.fee { color: red; }
-td.inquiry>a {
+table.listings td.fee { color: red; }
+table.listings td.inquiry>a {
 	 font-size: 10pt;
 	 text-decoration: none;
   }
@@ -92,12 +91,12 @@ table.listings tr a:hover { text-decoration: none; }
 table.listings tr:not(.soon) th.name a { border-bottom: 1pt solid #066; }
 table.listings tr:not(.soon) th.name a:visited { border-bottom: 1pt solid #39f; }
 table.listings tr:not(.soon) th.name a:hover { border-bottom-width: 1.5pt; }
-tr * { background-color: #fff; }
-tr.closed *, tr.pending * {	background-color: #ddd;	}
+table.listings tr * { background-color: #fff; }
+table.listings tr.closed *, table.listings tr.pending * {	background-color: #ddd;	}
 
-td.fee::before { white-space: pre-line;	}
+table.listings td.fee::before { white-space: pre-line;	}
 
-th.name>*::after {
+table.listings th.name>*::after {
 	content: ' (id#' attr(id) ')';
 	font-size: 11pt;
 	vertical-align: 10%;
@@ -110,12 +109,12 @@ th.name>*::after {
 	foreach($statuses as $status):
 		if($status['explanation']):
 			$classes[] = $status['class']; ?>
-tr.<?=$status['class']?>>td.fee::before {
+table.listings tr.<?=$status['class']?>>td.fee::before {
 	content: "<?=str_replace('"',"\\\"",$status['statustext'].':\A'.str_replace(array("\r\n","\n","\r"),"\\A\\A",$status['explanation']))?>";
 }
 <?php endif; endforeach;?>
 
-<?=build_selector('tr.',$classes,'>td.fee>*::after')?> {
+<?=build_selector('table.listings tr.',$classes,'>td.fee>*::after')?> {
 	content: "?";
 	margin-left: 0.5ex;
 	color: #00f;
@@ -130,18 +129,18 @@ tr.<?=$status['class']?>>td.fee::before {
 	display: inline-block;
 	cursor: default;
 }
-<?=build_selector('tr.',$classes,'>td.fee>*:hover::after')?> {
+<?=build_selector('table.listings tr.',$classes,'>td.fee>*:hover::after')?> {
 	background-color: #00f;
 	color: #fff;
 }
 @media print {
-	<?=build_selector('tr.',$classes,'>td.fee>*::after')?> { display: none; }
+	<?=build_selector('table.listings tr.',$classes,'>td.fee>*::after')?> { display: none; }
 }
-<?=build_selector('tr.',$classes,'>td.fee')?> {
+<?=build_selector('table.listings tr.',$classes,'>td.fee')?> {
 	overflow: visible;
 	position: relative;
 }
-<?=build_selector('tr.',$classes,'>td.fee::before')?> {
+<?=build_selector('table.listings tr.',$classes,'>td.fee::before')?> {
 	width: 100%;
 	border-radius: 0.5em;
 	border: 1px solid black;
@@ -159,7 +158,7 @@ tr.<?=$status['class']?>>td.fee::before {
 	text-justify: inter-character;
 	z-index: -1;
 }
-<?=build_selector('tr.',$classes,'>td.fee:hover::before')?> {
+<?=build_selector('table.listings tr.',$classes,'>td.fee:hover::before')?> {
 	opacity: 0.9;
 	transition: all 0.18s ease-out 0.18s;
 	z-index: 2;
