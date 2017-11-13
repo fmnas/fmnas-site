@@ -23,7 +23,7 @@ $(function(){
 		updateEmailLinks();
 	});
 
-	$("#species").on("change",function(){
+	$("#species").on("input",function(){
 		if($(this).val()==="-1") {
 			//TODO: update table
 			alert("Not yet implemented");
@@ -33,15 +33,25 @@ $(function(){
 		}
 	});
 
-	$("#sex").on("change",function(){
+	$("#sex").on("input",function(){
 		$("section.preview table.listings td.sex").text($("option:selected",this).attr("data-displaytext")); /* Update sex in preview */
 	});
 
-	$("#dob, #approx").on("change",function(){ /* When date of birth OR approximate flag is changed */
-		$("section.preview table.listings td.age time").attr('datetime',$("#dob-iso").val()); /* set datetime attribute of time element in preview to ISO date */
+	$("#dob, #approx").on("input",function(){ /* When date of birth OR approximate flag is changed */
+		var timeElement = $("section.preview table.listings td.age time"); /* Displayed date in preview */
+		timeElement.attr('datetime',$("#dob-iso").val()); /* set datetime attribute of time element in preview to ISO date */
 		if($("#approx").is(":checked")){ /* Age is approximate */
-			$("section.preview table.listings td.age time").html("not yet implemented"); /* change displayed date in preview */
-			//TODO
+			//This algorithm is duplicated in listing_table.php
+			var dob = $("#dob").datepicker("getDate"); //Date object
+			var now = new Date();
+			var _MS_PER_MONTH = 30.4375 * 24 * 60 * 60 * 1000;
+			var age = (now.getTime() - dob.getTime())/_MS_PER_MONTH; //in months
+			if(age <= 24) { //measure in months
+				timeElement.html(Math.floor(age)+" months old");
+			}
+			else { //measure in years
+				timeElement.html(Math.floor(age/12)+" years old");
+			}
 		}
 		else { /* Age is not approximate */
 			$("section.preview table.listings td.age time").html("<abbr title=\"Date of birth\">DOB</abbr> "+$("#dob").val()); /* change displayed date in preview */
@@ -53,6 +63,5 @@ $(function(){
 
 	/* Update preview on load in case the browser has loaded in cached values */
 	$("section.pet_data *").each(function(){$(this).trigger("input");}); /* Trigger an input event on everything in .pet_data section */
-	$("section.pet_data *").each(function(){$(this).trigger("change");}); /* Trigger a change event on everything in .pet_data section */
 
 });
