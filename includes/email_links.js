@@ -1,5 +1,5 @@
 
-$(function() {
+function updateEmailLinks() {
 	$("a[data-email]").each(function() { //for every email link (with data-email attribute)
 		user = 'info'; //default value
 		domain = '@forgetmenotshelter.org';
@@ -16,4 +16,8 @@ $(function() {
 		if(!$.trim($(this).text())) $(this).html(user+domain); //make text email address if still blank
 		$(this).attr('href','mailto:'+user+domain+'?subject='+subject); //set href
 	});
-});
+}
+
+$(function() {
+	updateEmailLinks();
+})

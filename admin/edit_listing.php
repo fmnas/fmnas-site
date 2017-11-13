@@ -11,7 +11,16 @@
 ?>
 <html>
 	<head>
-		<title>Listing editor for <?=($pet['name']?:'new pet').' - '.$shelter_name?></title>
+		<title>Please enable JavaScript</title>
+		<script type="text/javascript">
+			titlePart1 = "Listing editor for ";
+			titlePart2 = "<?=($pet['name']?:'new pet')?>";
+			titlePart3 = "<?=' - '.$shelter_name?>";
+			function updateTitle(){
+				$('title').text(titlePart1+titlePart2+titlePart3);
+			}
+			/* Will automatically run later once page loads due to firing of input event on Name field */
+		</script>
 		<meta charset="UTF-8">
 
 		<!-- Jquery -->
@@ -65,24 +74,7 @@
 		<link rel="stylesheet" type="text/css" href="/<?=$document_root?>includes/listing_table.css.php">
 		<link rel="stylesheet" type="text/css" href="/<?=$document_root?>includes/listing_editor.css">
 
-		<script type="text/javascript">
-			$(function(){
-				$('#dob').datepicker({
-					maxDate: 0, /* do not allow pets born in the future */
-					minDate: "-99Y", /* otherwise it can break with years between 00 and current */
-					defaultDate: -1, /* default to yesterday */
-					dateFormat: "m/d/y", /* 1/3/17 */
-					shortYearCutoff: "+0", /* 1/1/99 is 1999 not 2099 */
-					showButtonPanel: true, /* add Today and Done buttons */
-					changeYear: true /* add drop down menu for year */
-				});
-
-				$('#petid').on("input",function(){ /* When Pet ID is changed */
-					$('section.preview table.listings th.name>a').attr('id',$(this).val()); /* Update pet ID in attribute */
-				});
-
-			});
-		</script>
+		<script src="/<?=$document_root?>includes/edit_listing.js"></script>
 	</head>
 	<body>
 		<form action="/<?=$document_root?>admin/update_listing.php" method="POST">
@@ -110,7 +102,10 @@
 					<?=build_option_list('sexes', $pet['sex'])?>
 				</select>
 				<label for="dob"><abbr title="Date of birth">DOB</abbr></label>
-				<input type="date" id="dob" name="dob">
+				<input type="text" id="dob" name="dob" value="<?=date('n/j/y',strtotime($pet['dob']))?>">
+				<input type="hidden" id="dob-iso" name="dob-iso" value="<?=$pet['dob']?>">
+				<label for="approx">Approximate <abbr title="Date of birth">DOB</abbr></label>
+				<input type="checkbox" id="approx" name="approx" <?=$pet["estimate"]?'checked':''?>>
 			</section>
 			<section class="photos">
 				<h2>Photos</h2>
