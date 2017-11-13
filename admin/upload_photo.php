@@ -66,9 +66,7 @@
 		exit;
 	}
 
-	$filename = explode('.',$_FILES['files']['name'][0])[0]; //remove extension from file
-	$filename = preg_replace('/[^A-Za-z0-9_\-]/', '_', $filename); //replace special characters
-	$filename .= '.jpg'; //add new extension
+	$filename = preg_replace('/[^A-Za-z0-9_.\-]/', '_', $filename); //replace special characters
 
 	imagejpeg($im, "$BASE/content/$filename", 100); //temporary shim
 
