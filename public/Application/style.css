@@ -1,0 +1,55 @@
+textarea {
+	font: 10pt Tahoma, Verdana, Arial, Helvetica, sans-serif
+}
+
+td {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 8pt
+}
+
+.send-button {
+	font-family: Verdana, Arial, Helvetica, sans-serif; 
+	font-size: 8pt; 
+	font-weight: bold; 
+	color: #FFFFFF; 
+	background-color: #336666
+}
+
+a:visited {
+	color: #000099
+}
+
+.arial {
+	font-family: Arial, Helvetica, sans-serif; 
+	font-size: 8pt
+}
+
+a:link {  
+	color: #000099
+}
+
+a:active {  
+	color: #000099
+}
+
+input { 
+	font: 8pt Verdana, Arial, Helvetica, sans-serif
+}
+
+.buttons {
+	font-family: Tahoma, Verdana, Helvetica, sans-serif;
+	font-size: 8pt;
+	font-weight: bold;
+	background-color: #666699;
+    color: #FFFFFF;
+	border: 0 outset rgb(50,50,50); 
+}
+
+.maintext {
+	font-family: Tahoma, Verdana, Arial, Helvetica, sans-serif; 
+	font-size: 10pt; 
+}
+
+.Textarea-Style {
+	border: 1 outset rgb(50,50,50);
+}

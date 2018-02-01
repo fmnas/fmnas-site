@@ -1,0 +1,1487 @@
+<!DOCTYPE html>
+<html>
+<!-- last updated 2014-10-12 -->
+	<head>
+		<title>Adoption Application</title>
+		<meta charset="UTF-8"><script type="text/javascript">
+		  var _gaq = _gaq || [];
+		  _gaq.push(['_setAccount', 'UA-10030491-3']);
+		  _gaq.push(['_setDomainName', 'forgetmenotshelter.org']);
+		  _gaq.push(['_setAllowLinker', true]);
+		  _gaq.push(['_trackPageview']);
+
+		  (function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		  })();
+		  </script><![if !IE]><script type="text/javascript">
+			var boxen;
+			function prepareBoxen() {
+				boxen = document.getElementsByTagName("*");
+				//document.getElementById("submitButton").innerHTML='<input type="button" value="Submit Application" onclick="submitForm();" style="cursor:pointer;">';
+				for (var i=0;i<boxen.length;i++) {
+					if (boxen[i].nodeName=='INPUT'||boxen[i].nodeName=='SELECT') {
+						if(boxen[i].getAttribute("onkeydown")==null)
+							boxen[i].setAttribute("onkeydown","if(event.keyCode==13){event.preventDefault();nextBox(this);}");
+					}
+				}
+				document.getElementsByName("NumPeople")[0].value=1;
+				document.getElementsByName("NumPets")[0].value=1;
+				document.getElementsByName("NumPast")[0].value=1;
+				document.getElementById('Specific').disabled=true;
+				document.getElementById('Particular').style.display='none';
+				document.getElementById('Rent').style.display='none';
+				document.getElementById('Rent').style.color='black';
+				document.getElementById('OutQuestions').style.display='none';
+			}
+			function nextBox(firstBox) {
+				var fromBox = parseInt(firstBox.getAttribute("tabindex"));
+				for (var i = 0; i < boxen.length; i++) {
+					var box = boxen[i];
+					if (boxen[i].nodeName=='INPUT'||boxen[i].nodeName=='TEXTAREA'||boxen[i].nodeName=='SELECT') {
+						if (parseInt(box.getAttribute("tabindex"))==fromBox+1) {
+							box.focus();
+							break;
+						}
+					}
+				}
+			}
+			function person(keypress,personbox) {
+				if(keypress.keyCode==13||keypress.keyCode==9) {
+					keypress.preventDefault();
+					if(personbox.value.length>0||(personbox.getAttribute("name").indexOf("PersonAge")!=-1&&document.getElementsByName("PersonName"+(personbox.getAttribute("name").substr(9)))[0].value.length>0)||(personbox.getAttribute("name").indexOf("PetAge")!=-1&&document.getElementsByName("PetName"+(personbox.getAttribute("name").substr(6)))[0].value.length>0)||(personbox.getAttribute("name").indexOf("PetBreed")!=-1&&document.getElementsByName("PetName"+(personbox.getAttribute("name").substr(8)))[0].value.length>0)||(personbox.getAttribute("name").indexOf("PastBreed")!=-1&&document.getElementsByName("PastName"+(personbox.getAttribute("name").substr(9)))[0].value.length>0)||(personbox.getAttribute("name").indexOf("PastReason")!=-1&&document.getElementsByName("PastName"+(personbox.getAttribute("name").substr(10)))[0].value.length>0)) { //if should go to next person
+						if (personbox.getAttribute("name").indexOf("PersonName")!=-1) { //if name
+							var personNumber = personbox.getAttribute("name").substr(10);
+							document.getElementsByName("PersonAge"+personNumber)[0].focus();
+						} else if(personbox.getAttribute("name").indexOf("PersonAge")!=-1){ //if age
+							var personNumber = personbox.getAttribute("name").substr(9);
+							document.getElementsByName("PersonName"+(parseInt(personNumber)+1))[0].focus();
+						} else if (personbox.getAttribute("name").indexOf("PetName")!=-1){
+							var personNumber = personbox.getAttribute("name").substr(7);
+							document.getElementsByName("PetSpecies"+(parseInt(personNumber)))[0].focus();
+						} else if (personbox.getAttribute("name").indexOf("PetSpecies")!=-1){
+							var personNumber = personbox.getAttribute("name").substr(10);
+							document.getElementsByName("PetBreed"+(parseInt(personNumber)))[0].focus();
+						} else if (personbox.getAttribute("name").indexOf("PetOther")!=-1){
+							var personNumber = personbox.getAttribute("name").substr(8);
+							document.getElementsByName("PetBreed"+(parseInt(personNumber)))[0].focus();
+						} else if (personbox.getAttribute("name").indexOf("PetBreed")!=-1){
+							var personNumber = personbox.getAttribute("name").substr(8);
+							document.getElementsByName("PetAge"+(parseInt(personNumber)))[0].focus();
+						} else if (personbox.getAttribute("name").indexOf("PetAge")!=-1){
+							var personNumber = personbox.getAttribute("name").substr(6);
+							document.getElementById("PetGender"+(parseInt(personNumber))+"L").focus();
+						} else if (personbox.id.indexOf("PetGender")!=-1&&personbox.id.indexOf("L")!=-1){
+							var personNumber = personbox.getAttribute("name").substr(9);
+							document.getElementById("PetGender"+(parseInt(personNumber))+"R").focus();
+						} else if (personbox.id.indexOf("PetGender")!=-1){
+							var personNumber = personbox.getAttribute("name").substr(9);
+							document.getElementById("PetAltered"+(parseInt(personNumber))+"L").focus();
+						} else if (personbox.id.indexOf("PetAltered")!=-1&&personbox.id.indexOf("L")!=-1){
+							var personNumber = personbox.getAttribute("name").substr(10);
+							document.getElementById("PetAltered"+(parseInt(personNumber))+"R").focus();
+						} else if (personbox.id.indexOf("PetAltered")!=-1){
+							var personNumber = personbox.getAttribute("name").substr(10);
+							document.getElementsByName("PetName"+(parseInt(personNumber)+1))[0].focus();
+						} else if (personbox.getAttribute("name").indexOf("PastName")!=-1){
+							var personNumber = personbox.getAttribute("name").substr(8);
+							document.getElementsByName("PastSpecies"+(parseInt(personNumber)))[0].focus();
+						} else if (personbox.getAttribute("name").indexOf("PastSpecies")!=-1){
+							var personNumber = personbox.getAttribute("name").substr(11);
+							document.getElementsByName("PastBreed"+(parseInt(personNumber)))[0].focus();
+						} else if (personbox.getAttribute("name").indexOf("PastOther")!=-1){
+							var personNumber = personbox.getAttribute("name").substr(9);
+							document.getElementsByName("PastBreed"+(parseInt(personNumber)))[0].focus();
+						} else if (personbox.getAttribute("name").indexOf("PastBreed")!=-1){
+							var personNumber = personbox.getAttribute("name").substr(9);
+							document.getElementsByName("PastReason"+(parseInt(personNumber)))[0].focus();
+						} else if (personbox.getAttribute("name").indexOf("PastReason")!=-1){
+							var personNumber = personbox.getAttribute("name").substr(10);
+							document.getElementsByName("PastName"+(parseInt(personNumber)+1))[0].focus();
+						}
+					}
+					else if(personbox.getAttribute("name").indexOf("Person")!=-1) { //if should go to after people
+						var nextbox = document.getElementsByName("PetName1")[0];
+						nextbox.focus();
+					}
+					else if(personbox.getAttribute("name").indexOf("Pet")!=-1) {
+						var nextbox = document.getElementsByName("PastName1")[0];
+						nextbox.focus();
+					}
+					else if(personbox.getAttribute("name").indexOf("Past")!=-1) {
+						var nextbox = document.getElementsByName("AdultDog")[0];
+						nextbox.focus();
+					}
+				}
+				else if (keypress.keyCode!=16){
+					if (personbox.getAttribute("name").indexOf("Person")!=-1) { //if person
+						if (personbox.getAttribute("name").indexOf("PersonName")!=-1) //if name
+							var personNumber = personbox.getAttribute("name").substr(10);
+						else //if age
+							var personNumber = personbox.getAttribute("name").substr(9);
+						personNumber=parseInt(personNumber)+1;
+						if (document.getElementsByName("PersonName"+personNumber).length==0) { //Create person:
+							var new_row = document.createElement('tr');
+							new_row.innerHTML='<td><input type="text" onkeydown="person(event,this)" name="PersonName'+personNumber+'" style="text-align:center;"></td><td><input type="text" onkeydown="person(event,this)" name="PersonAge'+personNumber+'" style="width:2em;text-align:center;"></td>';
+							document.getElementById("people").appendChild(new_row);
+							document.getElementsByName("NumPeople")[0].value++;
+						}
+					}
+					else if(personbox.getAttribute("name").indexOf("Pet")!=-1) { //if pet
+						if (personbox.getAttribute("name").indexOf("PetOther")!=-1||personbox.getAttribute("name").indexOf("PetBreed")!=-1)
+							var personNumber = personbox.getAttribute("name").substr(8);
+						else if (personbox.getAttribute("name").indexOf("PetName")!=-1)
+							var personNumber = personbox.getAttribute("name").substr(7);
+						else if (personbox.getAttribute("name").indexOf("PetSpecies")!=-1||personbox.getAttribute("name").indexOf("PetAltered")!=-1)
+							var personNumber = personbox.getAttribute("name").substr(10);
+						else if (personbox.getAttribute("name").indexOf("PetAge")!=-1)
+							var personNumber = personbox.getAttribute("name").substr(6);
+						else  //if gender
+							var personNumber = personbox.getAttribute("name").substr(9);
+						personNumber=parseInt(personNumber)+1;
+						if (document.getElementsByName("PetName"+personNumber).length==0) { //Create pet:
+							var new_row = document.createElement('tr');
+							new_row.innerHTML='<td><input type="text" name="PetName'+personNumber+'" tabindex="350" onkeydown="person(event,this)" style="text-align:center;width:10em;"></td><td><select name="PetSpecies'+personNumber+'" tabindex="360" style="width:auto;" onkeydown="person(event,this)" onchange="if(this.selectedIndex==4){var chump=\'inline\';}else{var chump=\'none\';}document.getElementById(\'PetOther'+personNumber+'\').style.display=chump;"><option value="Not specified"></option><option value="Cat">Cat</option><option value="Dog">Dog</option><option value="Horse">Horse</option><option value="Other">Other</option></select><div style="width:100%;text-align:center;display:none;" id="PetOther'+personNumber+'"><br><span style="font-style:italic;">Please specify:</span><br><input type="text" name="PetOther'+personNumber+'" style="width:10em;text-align:center;" onkeydown="person(event,this)"></div></td><td><input type="text" name="PetBreed'+personNumber+'" tabindex="370" onkeydown="person(event,this)" style="text-align:center;width:10em;"></td><td><input type="text" name="PetAge'+personNumber+'" tabindex="380" onkeydown="person(event,this)" style="text-align:center;width:2em;"></td><td><table style="text-align:center;display:inline;"><tr><td><input type="radio" tabindex="390" value="1" name="PetGender'+personNumber+'" style="width:2em;" id="PetGender'+personNumber+'L" onkeydown="person(event,this)"></td><td><input type="radio" tabindex="400" value="0" name="PetGender'+personNumber+'" style="width:2em;" id="PetGender'+personNumber+'R" onkeydown="person(event,this)"></td></tr><tr><td><label for="PetGender'+personNumber+'L">Male</label></td><td><label for="PetGender'+personNumber+'R">Female</label></td></tr></table></td><td><table style="text-align:center;display:inline;"><tr><td><input type="radio" tabindex="410" value="1" name="PetAltered'+personNumber+'" style="width:2em;" id="PetAltered'+personNumber+'L" onkeydown="person(event,this)"></td><td><input type="radio" tabindex="420" value="0" name="PetAltered'+personNumber+'" style="width:2em;" id="PetAltered'+personNumber+'R" onkeydown="person(event,this)"></td></tr><tr><td><label for="PetAltered'+personNumber+'L">Yes</label></td><td><label for="PetAltered'+personNumber+'R">No</label></td></tr></table></td>';
+							document.getElementById("pets").appendChild(new_row);
+							document.getElementsByName("NumPets")[0].value++;
+						}
+					}
+					else if(personbox.getAttribute("name").indexOf("Past")!=-1) { //if past
+						if (personbox.getAttribute("name").indexOf("PastOther")!=-1||personbox.getAttribute("name").indexOf("PastBreed")!=-1)
+							var personNumber = personbox.getAttribute("name").substr(9);
+						else if (personbox.getAttribute("name").indexOf("PastName")!=-1)
+							var personNumber = personbox.getAttribute("name").substr(8);
+						else if (personbox.getAttribute("name").indexOf("PastSpecies")!=-1)
+							var personNumber = personbox.getAttribute("name").substr(11);
+						else //if  reason
+							var personNumber = personbox.getAttribute("name").substr(10);
+						personNumber=parseInt(personNumber)+1;
+						if (document.getElementsByName("PastName"+personNumber).length==0) { //Create pet:
+							var new_row = document.createElement('tr');
+							new_row.innerHTML='<td><input type="text" name="PastName'+personNumber+'" tabindex="350" onkeydown="person(event,this)" style="text-align:center;width:10em;"></td><td><select name="PastSpecies'+personNumber+'" tabindex="360" style="width:auto;" onkeydown="person(event,this)" onchange="if(this.selectedIndex==4){var chump=\'inline\';}else{var chump=\'none\';}document.getElementById(\'PastOther'+personNumber+'\').style.display=chump;"><option value="Not specified"></option><option value="Cat">Cat</option><option value="Dog">Dog</option><option value="Horse">Horse</option><option value="Other">Other</option></select><div style="width:100%;text-align:center;display:none;" id="PastOther'+personNumber+'"><br><span style="font-style:italic;">Please specify:</span><br><input type="text" name="PastOther'+personNumber+'" style="width:10em;text-align:center;" onkeydown="person(event,this)"></div></td><td><input type="text" name="PastBreed'+personNumber+'" tabindex="370" onkeydown="person(event,this)" style="text-align:center;width:10em;"></td><td><input type="text" name="PastReason'+personNumber+'" tabindex="380" onkeydown="person(event,this)" style="text-align:center;"></td>';
+							document.getElementById("past").appendChild(new_row);
+							document.getElementsByName("NumPast")[0].value++;
+						}
+					}
+				}
+			}
+			var oldvalue;
+			function activateUpload(textBox) {
+				var textBoxID = textBox.getAttribute("name").substr(7,textBox.getAttribute("name").substr(7).indexOf("-"));
+				if(document.getElementsByName("Files"+textBoxID).length==0) {
+					var fileBox = document.createElement('input');
+					fileBox.setAttribute('type','file');
+					fileBox.setAttribute('multiple','multiple');
+					fileBox.setAttribute('name','Files'+textBoxID);
+					document.getElementById("application").appendChild(fileBox);
+					fileBox.click();
+				}
+				else {
+					deactivateUpload(textBox);
+					activateUpload(textBox);
+				}
+			}
+			function deactivateUpload(textBox) {
+				var textBoxID = textBox.getAttribute("name").substr(7,textBox.getAttribute("name").substr(7).indexOf("-"));
+				document.getElementsByName("Files"+textBoxID)[0].parentNode.removeChild(document.getElementsByName("Files"+textBoxID)[0]); //ugh, JavaScript...
+			}
+			function updateUpload(textBox) {
+
+			}
+			function deleteUpload(textBox) {
+
+			}
+		</script><![endif]>
+		<style type="text/css">
+			a:hover {color:blue !important;}
+			h2 {
+				font-variant:small-caps;
+			}
+			input,select,textarea,button {
+				border-radius: 5px;
+				border: 1px solid #ccc;
+				padding: 5px;
+				margin: 5px;
+				font: inherit;
+				box-shadow:-1px 1px 2px #ccc inset;
+			}
+			input[type="text"],input[type="button"],input[type="file"],input[type="submit"],input[type="tel"],select,textarea,button[type="submit"] {width:20em;}
+			#pets tr {vertical-align:bottom;}
+			button[type="submit"]{
+				font-size:large;
+				cursor:pointer;
+				background-color:white;
+				box-shadow:-2px 2px 3px #ccc;
+				color: black;
+			}
+		</style>
+	</head>
+	<body onload="prepareBoxen();" id="body" style="text-align: center; width: 100%;font-family:sans-serif;">
+		<a href="http://forgetmenotshelter.org" style="color: black; text-decoration: none;">
+			<div style="font-size: x-large; font-variant:small-caps;">
+					Forget Me Not Animal Shelter
+			</div>
+			49 W Curlew Lake Rd
+			<div style="display:inline-block;width:2em;">
+				&nbsp;
+			</div>
+			Republic WA 99166
+			<div style="display:inline-block;width:2em;">
+				&nbsp;
+			</div>
+			(509) 775-2308
+		</a>
+		<br><br>
+		Please read the <a href="http://forgetmenotshelter.org/Application/faq.htm">application FAQ</a> before filling this out.
+		<br><br>
+		<div style="display:inline-block;border-radius:10px;background-color:whitesmoke;border:1px solid #ccc;padding:10px;box-shadow: -2px 2px 3px #ccc;">
+			<form id="application" action="submit.php" method="POST" style="width: auto;">
+				<h1>Adoption Application</h1>
+				<h2>Basic information</h2>
+				<table border="0" style="display:inline;">
+					<tr>
+						<td></td>
+						<td>
+							Applicant
+							<br>
+							<span style="font-size: x-small;font-style:italic;">
+								&nbsp;
+							</span>
+						</td>
+						<td>
+							Co-applicant
+							<br>
+							<span style="font-size: x-small;font-style:italic;">
+								(if different)
+							</span>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: right;">Name</td>
+						<td>
+							<input type="text" tabindex="10" name="AName" required>
+						</td>
+						<td>
+							<input type="text" tabindex="120" name="CName">
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: right;">Mailing address</td>
+						<td>
+							<input type="text" name="AMAddress" tabindex="20" required></textarea>
+						</td>
+						<td>
+							<input type="text" name="CMAddress" tabindex="130"></textarea>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: right;">
+							Physical address
+							<br>
+							<span style="font-size: x-small;font-style:italic;">
+								(if different)
+							</span>
+						</td>
+						<td>
+							<input type="text" name="APAddress" tabindex="30"></textarea>
+						</td>
+						<td>
+							<input type="text" name="CPAddress" tabindex="140"></textarea>
+						</td>
+					</tr>
+						<td style="text-align: right;">City, State, ZIP</td>
+						<td>
+							<input type="text" name="ACity" tabindex="34" style="width:9.1em" required></textarea>
+							<select name="AState" tabindex="35" style="width:5em" required>
+									<option value="WA" selected>WA</option>
+									<option value="AB">AB</option>
+									<option value="AK">AK</option>
+									<option value="BC">BC</option>
+									<option value="CA">CA</option>
+									<option value="ID">ID</option>
+									<option value="MT">MT</option>
+									<option value="OR">OR</option>
+									<option value="WY">WY</option>
+
+									<option disabled="disabled"></option>
+
+									<option value="AK ">AK</option>
+									<option value="AL">AL</option>
+									<option value="AR">AR</option>
+									<option value="AZ">AZ</option>
+									<option value="CA ">CA</option>
+									<option value="CO">CO</option>
+									<option value="CT">CT</option>
+									<option value="DC">DC</option>
+									<option value="DE">DE</option>
+									<option value="FL">FL</option>
+									<option value="GA">GA</option>
+									<option value="HI">HI</option>
+									<option value="IA">IA</option>
+									<option value="ID ">ID</option>
+									<option value="IL">IL</option>
+									<option value="IN">IN</option>
+									<option value="KS">KS</option>
+									<option value="KY">KY</option>
+									<option value="LA">LA</option>
+									<option value="MA">MA</option>
+									<option value="MD">MD</option>
+									<option value="ME">ME</option>
+									<option value="MI">MI</option>
+									<option value="MN">MN</option>
+									<option value="MO">MO</option>
+									<option value="MS">MS</option>
+									<option value="MT ">MT</option>
+									<option value="NC">NC</option>
+									<option value="ND">ND</option>
+									<option value="NE">NE</option>
+									<option value="NH">NH</option>
+									<option value="NJ">NJ</option>
+									<option value="NM">NM</option>
+									<option value="NV">NV</option>
+									<option value="NY">NY</option>
+									<option value="OH">OH</option>
+									<option value="OK">OK</option>
+									<option value="OR ">OR</option>
+									<option value="PA">PA</option>
+									<option value="PR">PR</option>
+									<option value="RI">RI</option>
+									<option value="SC">SC</option>
+									<option value="SD">SD</option>
+									<option value="TN">TN</option>
+									<option value="TX">TX</option>
+									<option value="UT">UT</option>
+									<option value="VA">VA</option>
+									<option value="VI">VI</option>
+									<option value="VT">VT</option>
+									<option value="WA ">WA</option>
+									<option value="WI">WI</option>
+									<option value="WV">WV</option>
+									<option value="WY ">WY</option>
+
+									<option disabled="disabled"></option>
+
+									<option value="AB ">AB</option>
+									<option value="BC ">BC</option>
+									<option value="MB">MB</option>
+									<option value="NB">NB</option>
+									<option value="NL">NL</option>
+									<option value="NS">NS</option>
+									<option value="NT">NT</option>
+									<option value="NU">NU</option>
+									<option value="ON">ON</option>
+									<option value="PE">PE</option>
+									<option value="QC">QC</option>
+									<option value="SK">SK</option>
+									<option value="YT">YT</option>
+
+									<option disabled="disabled"></option>
+
+									<option value="">Other</option>
+							</select>
+							<input type="text" name="AZIP" tabindex="36" style="width:3em" required>
+						</td>
+						<td>
+							<input type="text" name="CCity" tabindex="144" style="width:9.1em"></textarea>
+							<select name="CState" tabindex="145" style="width:5em">
+									<option value="WA" selected>WA</option>
+									<option value="AB">AB</option>
+									<option value="AK">AK</option>
+									<option value="BC">BC</option>
+									<option value="CA">CA</option>
+									<option value="ID">ID</option>
+									<option value="MT">MT</option>
+									<option value="OR">OR</option>
+									<option value="WY">WY</option>
+
+									<option disabled="disabled"></option>
+
+									<option value="AK ">AK</option>
+									<option value="AL">AL</option>
+									<option value="AR">AR</option>
+									<option value="AZ">AZ</option>
+									<option value="CA ">CA</option>
+									<option value="CO">CO</option>
+									<option value="CT">CT</option>
+									<option value="DC">DC</option>
+									<option value="DE">DE</option>
+									<option value="FL">FL</option>
+									<option value="GA">GA</option>
+									<option value="HI">HI</option>
+									<option value="IA">IA</option>
+									<option value="ID ">ID</option>
+									<option value="IL">IL</option>
+									<option value="IN">IN</option>
+									<option value="KS">KS</option>
+									<option value="KY">KY</option>
+									<option value="LA">LA</option>
+									<option value="MA">MA</option>
+									<option value="MD">MD</option>
+									<option value="ME">ME</option>
+									<option value="MI">MI</option>
+									<option value="MN">MN</option>
+									<option value="MO">MO</option>
+									<option value="MS">MS</option>
+									<option value="MT ">MT</option>
+									<option value="NC">NC</option>
+									<option value="ND">ND</option>
+									<option value="NE">NE</option>
+									<option value="NH">NH</option>
+									<option value="NJ">NJ</option>
+									<option value="NM">NM</option>
+									<option value="NV">NV</option>
+									<option value="NY">NY</option>
+									<option value="OH">OH</option>
+									<option value="OK">OK</option>
+									<option value="OR ">OR</option>
+									<option value="PA">PA</option>
+									<option value="PR">PR</option>
+									<option value="RI">RI</option>
+									<option value="SC">SC</option>
+									<option value="SD">SD</option>
+									<option value="TN">TN</option>
+									<option value="TX">TX</option>
+									<option value="UT">UT</option>
+									<option value="VA">VA</option>
+									<option value="VI">VI</option>
+									<option value="VT">VT</option>
+									<option value="WA ">WA</option>
+									<option value="WI">WI</option>
+									<option value="WV">WV</option>
+									<option value="WY ">WY</option>
+
+									<option disabled="disabled"></option>
+
+									<option value="AB ">AB</option>
+									<option value="BC ">BC</option>
+									<option value="MB">MB</option>
+									<option value="NB">NB</option>
+									<option value="NL">NL</option>
+									<option value="NS">NS</option>
+									<option value="NT">NT</option>
+									<option value="NU">NU</option>
+									<option value="ON">ON</option>
+									<option value="PE">PE</option>
+									<option value="QC">QC</option>
+									<option value="SK">SK</option>
+									<option value="YT">YT</option>
+
+									<option disabled="disabled"></option>
+
+									<option value="">Other</option>
+							</select>
+							<input type="text" name="CZIP" tabindex="146" style="width:3em">
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: right;">Home phone</td>
+						<td>
+							<input type="tel" tabindex="40" name="AHome" id="AHome" pattern="(\+?1)?[\- ]?\(?[0-9]{3}\)?[ \-]?[0-9]{3}[ \-]?[0-9]{4}.*" title="Phone number (must include area code)">
+						</td>
+						<td>
+							<input type="tel" tabindex="150" name="CHome" pattern="(\+?1)?[\- ]?\(?[0-9]{3}\)?[ \-]?[0-9]{3}[ \-]?[0-9]{4}.*" title="Phone number (must include area code)">
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: right;">Cell phone</td>
+						<td>
+							<input type="tel" tabindex="50" name="ACell" pattern="(\+?1)?[\- ]?\(?[0-9]{3}\)?[ \-]?[0-9]{3}[ \-]?[0-9]{4}.*" title="Phone number (must include area code)">
+						</td>
+						<td>
+							<input type="tel" tabindex="160" name="CCell" pattern="(\+?1)?[\- ]?\(?[0-9]{3}\)?[ \-]?[0-9]{3}[ \-]?[0-9]{4}.*" title="Phone number (must include area code)">
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: right;">Email</td>
+						<td>
+							<input type="text" tabindex="60" name="AEmail" title="Email address" pattern=".+@(.+[.:])?.{2,12}">
+						</td>
+						<td>
+							<input type="text" tabindex="170" name="CEmail" title="Email address" pattern=".+@(.+[.:])?.{2,12}">
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: right;">Age</td>
+						<td>
+							<input type="text" tabindex="70" name="AAge" required>
+						</td>
+						<td>
+							<input type="text" tabindex="180" name="CAge">
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: right;">Employer</td>
+						<td>
+							<input type="text" tabindex="80" name="AEmployer">
+						</td>
+						<td>
+							<input type="text" tabindex="190" name="CEmployer">
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: right;">Work phone</td>
+						<td>
+							<input type="tel" tabindex="90" name="AWork" pattern="(\+?1)?[\- ]?\(?[0-9]{3}\)?[ \-]?[0-9]{3}[ \-]?[0-9]{4}.*" title="Phone number (must include area code)">
+						</td>
+						<td>
+							<input type="tel" tabindex="200" name="CWork" pattern="(\+?1)?[\- ]?\(?[0-9]{3}\)?[ \-]?[0-9]{3}[ \-]?[0-9]{4}.*" title="Phone number (must include area code)">
+						</td>
+					</tr>
+					<tr>
+						<td>&nbsp;</td>
+						<td colspan="2" style="text-align: center; font-style:italic;">
+							May we contact your employer to verify employment?
+						</td>
+					</tr>
+					<tr>
+						<td>&nbsp;</td>
+						<td>
+							<table style="text-align:center;display:inline;">
+								<tr>
+									<td>
+										<input type="radio" tabindex="100" value="0" name="AContact" id="AContactL" style="width:2em;">
+									</td>
+									<td>
+										<input type="radio" tabindex="110" value="1" name="AContact" id="AContactR" style="width:2em;">
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<label for="AContactL">
+											No
+										</label>
+									</td>
+									<td>
+										<label for="AContactR">
+											Yes
+										</label>
+									</td>
+								</tr>
+							</table>
+						</td>
+						<td>
+							<table style="text-align:center;display:inline;">
+								<tr>
+									<td>
+										<input type="radio" tabindex="210" value="0" name="CContact" id="CContactL" style="width:2em;">
+									</td>
+									<td>
+										<input type="radio" tabindex="220" value="1" name="CContact" id="CContactR" style="width:2em;">
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<label for="CContactL">
+											No
+										</label>
+									</td>
+									<td>
+										<label for="CContactR">
+											Yes
+										</label>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</table>
+				<h2>Household information</h2>
+				<h3>Other people in the household</h3>
+				<table style="display:inline;">
+					<thead>
+						<tr>
+							<td>
+								Name
+							</td>
+							<td>
+								Age
+							</td>
+						</tr>
+					</thead>
+					<tbody id="people">
+						<tr>
+							<td>
+								<input type="hidden" name="NumPeople" value="6">
+								<input type="text" tabindex="230" onkeydown="person(event,this)" name="PersonName1" style="text-align:center;">
+							</td>
+							<td>
+								<input type="text" tabindex="240" onkeydown="person(event,this)" name="PersonAge1" style="width:2em;text-align:center;">
+							</td>
+						</tr>
+						<![if !IE]><noscript><![endif]>
+							<tr>
+								<td>
+									<input type="text" tabindex="250" name="PersonName2" style="text-align:center;">
+								</td>
+								<td>
+									<input type="text" tabindex="260" name="PersonAge2" style="width:2em;text-align:center;">
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<input type="text" tabindex="270" name="PersonName3" style="text-align:center;">
+								</td>
+								<td>
+									<input type="text" tabindex="280" name="PersonAge3" style="width:2em;text-align:center;">
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<input type="text" tabindex="290" name="PersonName4" style="text-align:center;">
+								</td>
+								<td>
+									<input type="text" tabindex="300" name="PersonAge4" style="width:2em;text-align:center;">
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<input type="text" tabindex="310" name="PersonName5" style="text-align:center;">
+								</td>
+								<td>
+									<input type="text" tabindex="320" name="PersonAge5" style="width:2em;text-align:center;">
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<input type="text" tabindex="330" name="PersonName6" style="text-align:center;">
+								</td>
+								<td>
+									<input type="text" tabindex="340" name="PersonAge6" style="width:2em;text-align:center;">
+								</td>
+							</tr>
+							<tr>
+								<td colspan="2" style="font-style:italic;">
+									Continue in the comments box at the end if needed.
+								</td>
+							</tr>
+						</noscript>
+					</tbody>
+				</table>
+				<h3>Animals you currently own</h3>
+				<table style="display:inline;">
+					<thead>
+						<tr>
+							<td>
+								Pet's Name
+							</td>
+							<td>
+								Species
+							</td>
+							<td>
+								Breed
+							</td>
+							<td>
+								Age
+							</td>
+							<td>
+								Gender
+							</td>
+							<td>
+								Spayed/Neutered?
+							</td>
+						</tr>
+					</thead>
+					<tbody id="pets">
+						<tr style="vertical-align:bottom;">
+							<td>
+								<input type="hidden" name="NumPets" value="6">
+								<input type="text" name="PetName1" tabindex="350" onkeydown="person(event,this)" style="text-align:center;width:10em;">
+							</td>
+							<td>
+								<![if !IE]><script type="text/javascript">
+									document.write('<select name="PetSpecies1" tabindex="360" style="width:auto;" onkeydown="person(event,this)" onchange="if(this.selectedIndex==4){var chump=\'inline\';}else{var chump=\'none\';}document.getElementById(\'PetOther1\').style.display=chump;"><option value="Not specified"></option><option value="Cat">Cat</option><option value="Dog">Dog</option><option value="Horse">Horse</option><option value="Other">Other</option></select><div style="width:100%;text-align:center;display:none;" id="PetOther1"><br><span style="font-style:italic;">Please specify:</span><br><input type="text" name="PetOther1" style="width:10em;text-align:center;" onkeydown="person(event,this)"></div>');
+								</script>
+								<noscript><![endif]>
+									<input type="hidden" name="PetSpecies1" value="Other">
+									<input type="text" name="PetOther1" style="width:10em;text-align:center;" tabindex="360">
+								</noscript>
+							</td>
+							<td>
+								<input type="text" name="PetBreed1" tabindex="370" onkeydown="person(event,this)" style="text-align:center;width:10em;">
+							</td>
+							<td>
+								<input type="text" name="PetAge1" tabindex="380" onkeydown="person(event,this)" style="text-align:center;width:2em;">
+							</td>
+							<td>
+								<table style="text-align:center;display:inline;">
+									<tr>
+										<td>
+											<input type="radio" tabindex="390" value="1" name="PetGender1" style="width:2em;" id="PetGender1L" onkeydown="person(event,this)">
+										</td>
+										<td>
+											<input type="radio" tabindex="400" value="0" name="PetGender1" style="width:2em;" id="PetGender1R" onkeydown="person(event,this)">
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<label for="PetGender1L">
+												Male
+											</label>
+										</td>
+										<td>
+											<label for="PetGender1R">
+												Female
+											</label>
+										</td>
+									</tr>
+								</table>
+							</td>
+							<td>
+								<table style="text-align:center;display:inline;">
+									<tr>
+										<td>
+											<input type="radio" tabindex="410" value="1" name="PetAltered1" style="width:2em;" id="PetAltered1L" onkeydown="person(event,this)">
+										</td>
+										<td>
+											<input type="radio" tabindex="420" value="0" name="PetAltered1" style="width:2em;" id="PetAltered1R" onkeydown="person(event,this)">
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<label for="PetAltered1L">
+												Yes
+											</label>
+										</td>
+										<td>
+											<label for="PetAltered1R">
+												No
+											</label>
+										</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+						<![if !IE]><noscript><![endif]>
+							<tr style="vertical-align:bottom;">
+								<td>
+									<input type="text" name="PetName2" tabindex="430" style="text-align:center;width:10em;">
+								</td>
+								<td>
+									<input type="hidden" name="PetSpecies2" style="width:auto;" value="Other">
+									<input type="text" name="PetOther2" tabindex="440" style="width:10em;text-align:center;">
+								</td>
+								<td>
+									<input type="text" name="PetBreed2" tabindex="450" style="text-align:center;width:10em;">
+								</td>
+								<td>
+									<input type="text" name="PetAge2" tabindex="460" style="text-align:center;width:2em;">
+								</td>
+								<td>
+									<table style="text-align:center;display:inline;">
+										<tr>
+											<td>
+												<input type="radio" tabindex="470" value="1" name="PetGender2" style="width:2em;" id="PetGender2L">
+											</td>
+											<td>
+												<input type="radio" tabindex="480" value="0" name="PetGender2" style="width:2em;" id="PetGender2R">
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<label for="PetGender2L">
+													Male
+												</label>
+											</td>
+											<td>
+												<label for="PetGender2R">
+													Female
+												</label>
+											</td>
+										</tr>
+									</table>
+								</td>
+								<td>
+									<table style="text-align:center;display:inline;">
+										<tr>
+											<td>
+												<input type="radio" tabindex="490" value="1" name="PetAltered2" style="width:2em;" id="PetAltered2L">
+											</td>
+											<td>
+												<input type="radio" tabindex="500" value="0" name="PetAltered2" style="width:2em;" id="PetAltered2R">
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<label for="PetAltered2L">
+													Yes
+												</label>
+											</td>
+											<td>
+												<label for="PetAltered2R">
+													No
+												</label>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							<tr style="vertical-align:bottom;">
+								<td>
+									<input type="text" name="PetName3" tabindex="510" style="text-align:center;width:10em;">
+								</td>
+								<td>
+									<input type="hidden" name="PetSpecies3" style="width:auto;" value="Other">
+									<input type="text" name="PetOther3" tabindex="520" style="width:10em;text-align:center;">
+								</td>
+								<td>
+									<input type="text" name="PetBreed3" tabindex="530" style="text-align:center;width:10em;">
+								</td>
+								<td>
+									<input type="text" name="PetAge3" tabindex="540" style="text-align:center;width:2em;">
+								</td>
+								<td>
+									<table style="text-align:center;display:inline;">
+										<tr>
+											<td>
+												<input type="radio" tabindex="550" value="1" name="PetGender3" style="width:2em;" id="PetGender3L">
+											</td>
+											<td>
+												<input type="radio" tabindex="560" value="0" name="PetGender3" style="width:2em;" id="PetGender3R">
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<label for="PetGender3L">
+													Male
+												</label>
+											</td>
+											<td>
+												<label for="PetGender3R">
+													Female
+												</label>
+											</td>
+										</tr>
+									</table>
+								</td>
+								<td>
+									<table style="text-align:center;display:inline;">
+										<tr>
+											<td>
+												<input type="radio" tabindex="570" value="1" name="PetAltered3" style="width:2em;" id="PetAltered3L">
+											</td>
+											<td>
+												<input type="radio" tabindex="580" value="0" name="PetAltered3" style="width:2em;" id="PetAltered3R">
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<label for="PetAltered3L">
+													Yes
+												</label>
+											</td>
+											<td>
+												<label for="PetAltered3R">
+													No
+												</label>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							<tr style="vertical-align:bottom;">
+								<td>
+									<input type="text" name="PetName4" tabindex="590" style="text-align:center;width:10em;">
+								</td>
+								<td>
+									<input type="hidden" name="PetSpecies4" style="width:auto;" value="Other">
+									<input type="text" name="PetOther4" tabindex="600" style="width:10em;text-align:center;">
+								</td>
+								<td>
+									<input type="text" name="PetBreed4" tabindex="610" style="text-align:center;width:10em;">
+								</td>
+								<td>
+									<input type="text" name="PetAge4" tabindex="620" style="text-align:center;width:2em;">
+								</td>
+								<td>
+									<table style="text-align:center;display:inline;">
+										<tr>
+											<td>
+												<input type="radio" tabindex="630" value="1" name="PetGender4" style="width:2em;" id="PetGender4L">
+											</td>
+											<td>
+												<input type="radio" tabindex="640" value="0" name="PetGender4" style="width:2em;" id="PetGender4R">
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<label for="PetGender4L">
+													Male
+												</label>
+											</td>
+											<td>
+												<label for="PetGender4R">
+													Female
+												</label>
+											</td>
+										</tr>
+									</table>
+								</td>
+								<td>
+									<table style="text-align:center;display:inline;">
+										<tr>
+											<td>
+												<input type="radio" tabindex="650" value="1" name="PetAltered4" style="width:2em;" id="PetAltered4L">
+											</td>
+											<td>
+												<input type="radio" tabindex="660" value="0" name="PetAltered4" style="width:2em;" id="PetAltered4R">
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<label for="PetAltered4L">
+													Yes
+												</label>
+											</td>
+											<td>
+												<label for="PetAltered4R">
+													No
+												</label>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							<tr style="vertical-align:bottom;">
+								<td>
+									<input type="text" name="PetName5" tabindex="670" style="text-align:center;width:10em;">
+								</td>
+								<td>
+									<input type="hidden" name="PetSpecies5" style="width:auto;" value="Other">
+									<input type="text" name="PetOther5" tabindex="680" style="width:10em;text-align:center;">
+								</td>
+								<td>
+									<input type="text" name="PetBreed5" tabindex="690" style="text-align:center;width:10em;">
+								</td>
+								<td>
+									<input type="text" name="PetAge5" tabindex="700" style="text-align:center;width:2em;">
+								</td>
+								<td>
+									<table style="text-align:center;display:inline;">
+										<tr>
+											<td>
+												<input type="radio" tabindex="710" value="1" name="PetGender5" style="width:2em;" id="PetGender5L">
+											</td>
+											<td>
+												<input type="radio" tabindex="720" value="0" name="PetGender5" style="width:2em;" id="PetGender5R">
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<label for="PetGender5L">
+													Male
+												</label>
+											</td>
+											<td>
+												<label for="PetGender5R">
+													Female
+												</label>
+											</td>
+										</tr>
+									</table>
+								</td>
+								<td>
+									<table style="text-align:center;display:inline;">
+										<tr>
+											<td>
+												<input type="radio" tabindex="730" value="1" name="PetAltered5" style="width:2em;" id="PetAltered5L">
+											</td>
+											<td>
+												<input type="radio" tabindex="740" value="0" name="PetAltered5" style="width:2em;" id="PetAltered5R">
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<label for="PetAltered5L">
+													Yes
+												</label>
+											</td>
+											<td>
+												<label for="PetAltered5R">
+													No
+												</label>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							<tr style="vertical-align:bottom;">
+								<td>
+									<input type="text" name="PetName6" tabindex="750" style="text-align:center;width:10em;">
+								</td>
+								<td>
+									<input type="hidden" name="PetSpecies6" style="width:auto;" value="Other">
+									<input type="text" name="PetOther6" tabindex="760" style="width:10em;text-align:center;">
+								</td>
+								<td>
+									<input type="text" name="PetBreed6" tabindex="770" style="text-align:center;width:10em;">
+								</td>
+								<td>
+									<input type="text" name="PetAge6" tabindex="780" style="text-align:center;width:2em;">
+								</td>
+								<td>
+									<table style="text-align:center;display:inline;">
+										<tr>
+											<td>
+												<input type="radio" tabindex="790" value="1" name="PetGender6" style="width:2em;" id="PetGender6L">
+											</td>
+											<td>
+												<input type="radio" tabindex="800" value="0" name="PetGender6" style="width:2em;" id="PetGender6R">
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<label for="PetGender6L">
+													Male
+												</label>
+											</td>
+											<td>
+												<label for="PetGender6R">
+													Female
+												</label>
+											</td>
+										</tr>
+									</table>
+								</td>
+								<td>
+									<table style="text-align:center;display:inline;">
+										<tr>
+											<td>
+												<input type="radio" tabindex="810" value="1" name="PetAltered6" style="width:2em;" id="PetAltered6L">
+											</td>
+											<td>
+												<input type="radio" tabindex="820" value="0" name="PetAltered6" style="width:2em;" id="PetAltered6R">
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<label for="PetAltered6L">
+													Yes
+												</label>
+											</td>
+											<td>
+												<label for="PetAltered6R">
+													No
+												</label>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td colspan="6" style="font-style:italic;">
+									Continue in the comments box at the end if needed.
+								</td>
+							</tr>
+						</noscript>
+					</tbody>
+				</table>
+				<h3>Animals you have owned in the past</h3>
+				<table style="display:inline;">
+
+					<thead>
+						<tr>
+							<td>
+								Pet's Name
+							</td>
+							<td>
+								Species
+							</td>
+							<td>
+								Breed
+							</td>
+							<td>
+								Reason for loss
+							</td>
+						</tr>
+					</thead>
+					<tbody id="past">
+						<tr style="vertical-align:bottom;">
+							<td>
+								<input type="hidden" name="NumPast" value="6">
+								<input type="text" name="PastName1" tabindex="830" onkeydown="person(event,this)" style="text-align:center;width:10em;">
+							</td>
+							<td>
+								<![if !IE]><script type="text/javascript">
+									document.write('<select name="PastSpecies1" tabindex="360" style="width:auto;" onkeydown="person(event,this)" onchange="if(this.selectedIndex==4){var chump=\'inline\';}else{var chump=\'none\';}document.getElementById(\'PastOther1\').style.display=chump;"><option value="Not specified"></option><option value="Cat">Cat</option><option value="Dog">Dog</option><option value="Horse">Horse</option><option value="Other">Other</option></select><div style="width:100%;text-align:center;display:none;" id="PastOther1"><br><span style="font-style:italic;">Please specify:</span><br><input type="text" name="PastOther1" style="width:10em;text-align:center;" onkeydown="person(event,this)"></div>');
+								</script>
+								<noscript><![endif]>
+									<input type="hidden" name="PastSpecies1" value="Other">
+									<input type="text" name="PastOther1" style="width:10em;text-align:center;" tabindex="840">
+								</noscript>
+							</td>
+							<td>
+								<input type="text" name="PastBreed1" tabindex="850" onkeydown="person(event,this)" style="text-align:center;width:10em;">
+							</td>
+							<td>
+								<input type="text" name="PastReason1" tabindex="860" onkeydown="person(event,this)" style="text-align:center;">
+							</td>
+						</tr>
+						<![if !IE]><noscript><![endif]>
+							<tr style="vertical-align:bottom;">
+								<td>
+									<input type="text" name="PastName2" tabindex="870" style="text-align:center;width:10em;">
+								</td>
+								<td>
+									<input type="hidden" name="PastSpecies2" value="Other">
+									<input type="text" name="PastOther2" style="width:10em;text-align:center;" tabindex="880">
+								</td>
+								<td>
+									<input type="text" name="PastBreed2" tabindex="890" style="text-align:center;width:10em;">
+								</td>
+								<td>
+									<input type="text" name="PastReason2" tabindex="900" style="text-align:center;">
+								</td>
+							</tr>
+							<tr style="vertical-align:bottom;">
+								<td>
+									<input type="text" name="PastName3" tabindex="910" style="text-align:center;width:10em;">
+								</td>
+								<td>
+									<input type="hidden" name="PastSpecies3" value="Other">
+									<input type="text" name="PastOther3" style="width:10em;text-align:center;" tabindex="920">
+								</td>
+								<td>
+									<input type="text" name="PastBreed3" tabindex="930" style="text-align:center;width:10em;">
+								</td>
+								<td>
+									<input type="text" name="PastReason3" tabindex="940" style="text-align:center;">
+								</td>
+							</tr>
+							<tr style="vertical-align:bottom;">
+								<td>
+									<input type="text" name="PastName4" tabindex="950" style="text-align:center;width:10em;">
+								</td>
+								<td>
+									<input type="hidden" name="PastSpecies4" value="Other">
+									<input type="text" name="PastOther4" style="width:10em;text-align:center;" tabindex="960">
+								</td>
+								<td>
+									<input type="text" name="PastBreed4" tabindex="970" style="text-align:center;width:10em;">
+								</td>
+								<td>
+									<input type="text" name="PastReason4" tabindex="980" style="text-align:center;">
+								</td>
+							</tr>
+							<tr style="vertical-align:bottom;">
+								<td>
+									<input type="text" name="PastName5" tabindex="990" style="text-align:center;width:10em;">
+								</td>
+								<td>
+									<input type="hidden" name="PastSpecies5" value="Other">
+									<input type="text" name="PastOther5" style="width:10em;text-align:center;" tabindex="1000">
+								</td>
+								<td>
+									<input type="text" name="PastBreed5" tabindex="1010" style="text-align:center;width:10em;">
+								</td>
+								<td>
+									<input type="text" name="PastReason5" tabindex="1020" style="text-align:center;">
+								</td>
+							</tr>
+							<tr style="vertical-align:bottom;">
+								<td>
+									<input type="text" name="PastName6" tabindex="1030" style="text-align:center;width:10em;">
+								</td>
+								<td>
+									<input type="hidden" name="PastSpecies6" value="Other">
+									<input type="text" name="PastOther6" style="width:10em;text-align:center;" tabindex="1040">
+								</td>
+								<td>
+									<input type="text" name="PastBreed6" tabindex="1050" style="text-align:center;width:10em;">
+								</td>
+								<td>
+									<input type="text" name="PastReason6" tabindex="1060" style="text-align:center;">
+								</td>
+							</tr>
+							<tr>
+								<td colspan="4" style="font-style:italic;">
+									Continue in the comments box at the end if needed.
+								</td>
+							</tr>
+						</noscript>
+					</tbody>
+				</table>
+				<h2>Adoption information</h2>
+				Which types of animals are you interested in?<br>
+				<div style="text-align:left;display:inline-block;position:relative;">
+					<div style="position:absolute;left:0;top:0;text-align:left;">
+						<input type="checkbox" name="AdultDog" id="AdultDog" tabindex="1070">
+						<label for="AdultDog" style="height:1.5em;">
+							Adult&nbsp;dog
+						</label><br>
+						<input type="checkbox" name="AdultCat" id="AdultCat" tabindex="1090">
+						<label for="AdultCat" style="height:1.5em;">
+							Adult&nbsp;cat
+						</label>
+					</div>
+					<div style="position:absolute;right:0;top:0;text-align:left;height:1.5em;">
+						<input type="checkbox" name="Puppy" id="Puppy" tabindex="1080">
+						<label for="Puppy">
+							Puppy
+						</label><br>
+						<input type="checkbox" name="Kitten" id="Kitten" tabindex="1100">
+						<label for="Kitten">
+							Kitten
+						</label>
+					</div><br><br><br>
+					<![if !IE]><input type="checkbox" name="Other" id="Other" tabindex="1110" onchange="document.getElementById('Specific').disabled=!this.checked;"><![endif]>
+					<!--[if lt IE 10]><input type="checkbox" name="Other" id="Other" tabindex="1110"><![endif]-->
+					<label for="Other">
+						Other:
+					</label>
+					<input type="text" name="Specific" tabindex="1120" id="Specific" style="height:1.5em;"><br>
+						Preference:
+					<fieldset id="Prefs" style="border:none;padding:0;margin:0;display:inline;">
+						<input type="radio" name="Prefs" id="PrefM" value="Male" tabindex="1140">
+						<label for="PrefM">
+							Male
+						</label>
+						<input type="radio" name="Prefs" id="PrefF" value="Female" tabindex="1150">
+						<label for="PrefF">
+							Female
+						</label>
+						<input type="radio" name="Prefs" id="PrefE" value="Male/Female" tabindex="1150">
+						<label for="PrefE">
+							Either
+						</label>
+					</fieldset>
+				</div><br><br>
+				Are you applying for a particular animal listed on our website?
+				<![if !IE]><input type="radio" name="Listing" id="ListingYes" value="1" tabindex="1160" onchange="document.getElementById('Particular').style.display=this.value==1?'inline-block':'none';"><![endif]>
+				<!--[if lt IE 10]><input type="radio" name="Listing" id="ListingYes" value="1" tabindex="1160"><![endif]-->
+				<label for="ListingYes" required>
+					Yes
+				</label>
+				<![if !IE]><input type="radio" name="Listing" id="ListingNo" value="0" tabindex="1170" style="margin-left:3em;" onchange="document.getElementById('Particular').style.display=this.value==1?'inline-block':'none';"><![endif]>
+				<!--[if lt IE 10]><input type="radio" name="Listing" id="ListingNo" value="0" tabindex="1170"><![endif]-->
+				<label for="ListingNo" required>
+					No
+				</label><br>
+				<div id="Particular" style="display: inline-block;">
+					<![if !IE]><noscript><![endif]>If so, p</noscript>
+					<![if !IE]><script type="text/javascript">
+						document.write("P");
+					</script><![endif]>lease specify:
+					<input type="text" name="Particular" tabindex="1180">
+					<br><br>
+				</div>
+				<br>
+				What qualities and characteristics do you desire in your new pet?
+				<br>
+				<textarea tabindex="1190" name="Characteristics" style="width:40em;height:7em;"></textarea>
+				<h2>About your home</h2>
+				Please describe your residence:<br>
+				<textarea tabindex="1200" name="Residence" style="width:40em;height:7em;"></textarea>
+				<br>
+				<div style="display:inline-block;text-align:right;">
+					<div style="display:inline-block;">
+						<div style="display:inline-block;margin-bottom:5px;">
+							This residence is:
+						</div>
+						<br>
+						The pet will live:
+					</div>
+					<div style="display:inline-block;position:relative;text-align:left;margin-left:3em;">
+						<input type="radio" name="Rent" id="RentNo" style="margin-top:0;margin-bottom:0;" value="0" tabindex="1210" onchange="document.getElementById('Rent').style.display=this.value==1?'inline-block':'none';" required>
+						<label for="RentNo">
+							Owned
+						</label><br>
+						<input type="radio" name="LiveIn" id="LiveIn" value="LiveIn" tabindex="1230" onchange="document.getElementById('OutQuestions').style.display=this.value!=='LiveIn'?'inline-block':'none';">
+						<label for="LiveIn">
+							Inside
+						</label>
+					</div>
+					<div style="display:inline-block;text-align:left;margin-left:3em;">
+						<input type="radio" name="Rent" id="RentYes" style="margin-top:0;margin-bottom:0;" value="1" tabindex="1220" style="margin-left:3em;" onchange="document.getElementById('Rent').style.display=this.value==1?'inline-block':'none';" required>
+						<label for="RentYes">
+							Rented
+						</label><br>
+						<input type="hidden" name="LiveOutLIES" value="0" id="LOL">
+						<input type="radio" name="LiveIn" id="LiveOut" value="LiveOut" tabindex="1240" onchange="document.getElementById('LOL').value=1;document.getElementById('OutQuestions').style.display=this.value!=='LiveIn'?'inline-block':'none';">
+						<label for="LiveOut">
+							Outside
+						</label>
+					</div>
+					<div style="display:inline-block;text-align:left;margin-left:3em;">
+						<br>
+						<input type="radio" name="LiveIn" id="LiveBoth" value="LiveBoth" tabindex="1241" onchange="document.getElementById('LOL').value=1;document.getElementById('OutQuestions').style.display=this.value!=='LiveIn'?'inline-block':'none';">
+						<label for="LiveBoth">
+							Both
+						</label>
+					</div>
+				</div><br>
+				<div id="Rent" style="display:inline-block;color:red;width:40em;text-align:justify;height:3em;font-style:italic;">
+					<![if !IE]><noscript><![endif]>If your home is rented, p</noscript>
+					<![if !IE]><script type="text/javascript">
+						document.write("P");
+					</script><![endif]>lease attach below, email to <script type="text/javascript"><!-- BEGIN Script
+						var cry1=String.fromCharCode(109,97,105,108,116,111,58);document.write("<a style=\"text-decoration:none;\" href=\"");document.write(cry1);document.write("adopt");document.write(String.fromCharCode(64));
+						document.write("forgetmenotshelter.org");
+						document.write("?subject=Note from adoption application\">");
+						document.write("adopt");document.write(String.fromCharCode(64));
+						document.write("forgetmenotshelter.org");
+						document.write("</a>");
+						//END --></script><noscript>
+						<nobr>
+						A D O P T - A T - F O R G E T M E N O T S H E L T E R - D O T - O R G
+						</nobr>
+					</noscript>,
+					or fax to (208)&nbsp;410-8200
+					a copy of the pet clause of your lease or other written permission, along with contact information for your landlord or managing agent.
+					<br><br>
+				</div><br>
+				<div id="OutQuestions" style="display:inline-block;">
+					Is the yard fenced?
+					<![if !IE]><input type="radio" name="Fence" id="FenceYes" value="1" tabindex="1250" onchange="document.getElementById('Fence').innerHTML=this.value==1?'the height and type of fencing':'how you plan to exercise and confine the pet';"><![endif]>
+					<!--[if lt IE 10]><input type="radio" name="Fence" id="FenceYes" value="1" tabindex="1250"><![endif]-->
+					<label for="FenceYes">
+						Yes
+					</label>
+					<![if !IE]><input type="radio" name="Fence" id="FenceNo" value="0" tabindex="1260" style="margin-left:3em;" onchange="document.getElementById('Fence').innerHTML=this.value==1?'the height and type of fencing':'how you plan to exercise and confine the pet';"><![endif]>
+					<!--[if lt IE 10]><input type="radio" name="Fence" id="FenceNo" value="0" tabindex="1260"><![endif]-->
+					<label for="FenceNo">
+						No
+					</label><br>
+					<div style="width:40em;display:inline-block;">
+						Please describe
+						<span id="Fence">
+							the height and type of fencing, or if no fence, how you plan to exercise and confine the pet</span>:
+					</div><br>
+					<textarea tabindex="1270" name="Fencing" style="width:40em;height:7em;"></textarea>
+					<br><br>
+					When outside, the pet will be:<br>
+					<table border="0" style="display:inline-block;">
+						<tr>
+							<td>
+								<input type="radio" name="OutsideMode" id="SChained" value="Chained" tabindex="1280">
+							</td>
+							<td>
+								<input type="radio" name="OutsideMode" id="SFenced" value="Fenced" tabindex="1290">
+							</td>
+							<td>
+								<input type="radio" name="OutsideMode" id="SLeashed" value="Leashed" tabindex="1300">
+							</td>
+							<td>
+								<input type="radio" name="OutsideMode" id="SFree" value="Free" tabindex="1310">
+							</td>
+						</tr>
+						<tr>
+							<td style="padding-left:1em;padding-right:1em;">
+								<label for="SChained">
+									Chained/tied
+								</label>
+							</td>
+							<td style="padding-left:1em;padding-right:1em;">
+								<label for="SFenced">
+									Fenced in yard
+								</label>
+							</td>
+							<td style="padding-left:1em;padding-right:1em;">
+								<label for="SLeashed">
+									Leashed
+								</label>
+							</td>
+							<td style="padding-left:1em;padding-right:1em;">
+								<label for="SFree">
+									Free to roam
+								</label>
+							</td>
+						</tr>
+					</table>
+					<br><br>
+				</div><br>
+				Where will the pet sleep at night?<br>
+				<input type="text" tabindex="1320" name="Sleep" style="width:40em;">
+				<br><br>
+				<div style="width:40em;display:inline-block;text-align:justify;">
+					Approximately how many hours per week will the pet be left without human companionship? Will the pet be indoors or outdoors when alone? What other pets will be with this pet?
+				</div><br>
+				<textarea tabindex="1330" name="Companionship" style="width:40em;height:7em;"></textarea>
+				<h2>References</h2>
+				<table border="0" style="display:inline-block;width:40em;">
+					<tr>
+						<td rowspan="3" style="text-align:right;">
+							<strong>Veterinarian</strong><br>
+							<span style="font-size:smaller;font-style:italic;">
+								If you do not have a current vet, a past vet is fine; if this is your first pet, please tell us what vet you plan to use.
+							</span>
+						</td>
+						<td>
+							<input type="text" tabindex="1340" name="VetName" required>
+						</td>
+						<td style="text-align:left;font-size:smaller;font-style:italic;">
+							Name
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<textarea name="VetAddress" tabindex="1350" required></textarea>
+						</td>
+						<td style="text-align:left;font-size:smaller;font-style:italic;">
+							Address
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<input type="tel" tabindex="1360" name="VetPhone" pattern="(\+?1)?[\- ]?\(?[0-9]{3}\)?[ \-]?[0-9]{3}[ \-]?[0-9]{4}.*" title="Phone number (must include area code)" required>
+						</td>
+						<td style="text-align:left;font-size:smaller;font-style:italic;">
+							Phone
+						</td>
+					</tr>
+					<tr>
+						<td rowspan="3" style="text-align:right;padding-top:2em;">
+							<strong>Personal Reference</strong><br>
+							<span style="font-size:smaller;font-style:italic;">
+								If there is anyone who is particularly familiar with your pets and your pet care who would like to act as a reference for you, please list them here.
+							</span>
+						</td>
+						<td style="padding-top:2em;">
+							<input type="text" tabindex="1370" name="RefName">
+						</td>
+						<td style="text-align:left;font-size:smaller;font-style:italic;padding-top:2em;">
+							Name
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<textarea name="RefAddress" tabindex="1380"></textarea>
+						</td>
+						<td style="text-align:left;font-size:smaller;font-style:italic;">
+							Address
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<input type="tel" tabindex="1390" name="RefPhone" pattern="(\+?1)?[\- ]?\(?[0-9]{3}\)?[ \-]?[0-9]{3}[ \-]?[0-9]{4}.*" title="Phone number (must include area code)">
+						</td>
+						<td style="text-align:left;font-size:smaller;font-style:italic;">
+							Phone
+						</td>
+					</tr>
+				</table>
+				<h2>Attachments</h2>
+				Attachments are not currently working.<br>
+				For now, please send attachments via email to <script type="text/javascript"><!-- BEGIN Script
+					var cry1=String.fromCharCode(109,97,105,108,116,111,58);document.write("<a style=\"text-decoration:none;\" href=\"");document.write(cry1);document.write("adopt");document.write(String.fromCharCode(64));
+					document.write("forgetmenotshelter.org");
+					document.write("?subject=Note from adoption application\">");
+					document.write("adopt");document.write(String.fromCharCode(64));
+					document.write("forgetmenotshelter.org");
+					document.write("</a>");
+					//END --></script><noscript>
+					<nobr>
+						A D O P T - A T - F O R G E T M E N O T S H E L T E R - D O T - O R G
+					</nobr>
+				</noscript>.<br>
+				If you live outside the Republic/Curlew area, please send photos of your home.
+				<h2>Comments</h2>
+				<textarea name="Comments" tabindex="1400" style="display:inline-block;width:40em;height:7em;"></textarea>
+				<br><br>
+				<div id="submitButton">
+					<button type="submit" value="Submit Application" style="cursor:pointer;">Submit Application</button>
+				</div>
+			</form>
+		</div>
+	</body>
+</html>
