@@ -11,8 +11,10 @@ $transportDate = strtotime(_G_transport_date());
 	<nav>
 		<h1><?php logo(); ?></h1>
 		<?php donate(); ?>
-		<a href="https://www.facebook.com/ForgetMeNotAnimalShelter/">Facebook</a>
-		<a href="/blog">Blog</a>
+		<ul>
+			<li><a href="https://www.facebook.com/ForgetMeNotAnimalShelter/">Facebook</a>
+			<li><a href="/blog">Blog</a>
+		</ul>
 		<form id="adopt" action="/application" method="POST">
 			<h2>Adopt a Pet</h2>
 			<a href="/application">
