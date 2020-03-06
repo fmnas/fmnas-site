@@ -14,41 +14,54 @@ function contains(string $haystack, string $needle): bool {
 }
 
 /**
- * The absolute path to the site root directory (containing admin/, public/, secrets/, src/)
+ * @return string The absolute path to the site root directory (containing admin/, public/, secrets/, src/)
  */
-$root = dirname(__DIR__, 1);
+function root(): string {
+	return dirname(__DIR__, 1);
+}
 
 /**
- * The absolute path to the src directory
+ * @return string The absolute path to the src directory
  */
-$src = "$root/src";
+function src(): string {
+	return root() . "/src";
+}
 
 /**
- * The absolute path to the templates directory
+ * @return string The absolute path to the templates directory
  */
-$t = "$src/templates";
+function t(): string {
+	return src() . "/templates";
+}
 
 /**
- * The absolute path to the secrets directory
+ * @return string The absolute path to the secrets directory
  */
-$secrets = "$root/secrets";
+function secrets(): string {
+	return root() . "/secrets";
+}
 
 /**
  * The relative path to the assets directory (from the file where execution started, i.e. the current page)
  */
-$assets = (function(): string {
+function assets(): string {
 	$cwd            = getcwd();
 	$host           = $_SERVER["HTTP_HOST"];
 	$adminSubdomain = "admin.";
 	if (endsWith($cwd, "/public")) {
 		return "assets";
 	}
-	if (contains($cwd, "/public/")) {
-		return "/assets";
-	}
-	if (startsWith($host, $adminSubdomain)) {
+	if (startsWith($host, $adminSubdomain) && !contains($cwd, "/public/")) {
 		return "//" . substr($host, strlen($adminSubdomain)) . "/assets";
 	}
 	return "/assets"; // give up and hope
-})();
-$assets ??= "/assets"; // This is mostly here because PhpStorm does not correctly understand the above
+}
+
+/**
+ * Global variables from the above functions
+ */
+$assets  = assets();
+$t       = t();
+$src     = src();
+$root    = root();
+$secrets = secrets();
