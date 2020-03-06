@@ -1,4 +1,5 @@
-secrets/
+secrets/*
+!secrets/*_sample*
 
 # Windows thumbnail cache files
 Thumbs.db
