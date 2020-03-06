@@ -2,6 +2,7 @@
 require_once("../src/common.php");
 require_once("$t/logo.php");
 require_once("$t/donate.php");
+require_once("$t/adopt_button.php");
 $transportDate = strtotime(_G_transport_date());
 ?>
 <!DOCTYPE html>
@@ -15,12 +16,7 @@ $transportDate = strtotime(_G_transport_date());
 			<li><a href="https://www.facebook.com/ForgetMeNotAnimalShelter/">Facebook</a>
 			<li><a href="/blog">Blog</a>
 		</ul>
-		<form id="adopt" action="/application" method="POST">
-			<h2>Adopt a Pet</h2>
-			<a href="/application">
-				<button id="adopt_button" type="submit">Apply Online Now</button>
-			</a>
-		</form>
+		<?php adopt_button(); ?>
 	</nav>
 </header>
 <section id="listings">

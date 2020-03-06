@@ -70,7 +70,8 @@ $secrets = secrets();
  * Dummy definitions for use by PhpStorm
  */
 $root ??= "..";
-$src ??= __DIR__;
+$src ??= "$root/src";
+$t ??= "$src/templates";
 
 // Generate and load the generated source with constants from database
 if (!file_exists("$src/generated.php")) {
