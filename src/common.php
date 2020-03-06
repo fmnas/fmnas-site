@@ -1,11 +1,6 @@
 <?php
 declare(strict_types = 1);
 
-// For debugging:
-ini_set('display_startup_errors', 1);
-ini_set('display_errors', 1);
-error_reporting(-1);
-
 function startsWith(string $haystack, string $needle): bool {
 	return substr_compare($haystack, $needle, 0, strlen($needle)) === 0;
 }
@@ -21,7 +16,7 @@ function contains(string $haystack, string $needle): bool {
 /**
  * The absolute path to the site root directory (containing admin/, public/, secrets/, src/)
  */
-$root = dirname(__FILE__, 1);
+$root = dirname(__DIR__, 1);
 
 /**
  * The absolute path to the src directory
@@ -32,6 +27,11 @@ $src = "$root/src";
  * The absolute path to the templates directory
  */
 $t = "$src/templates";
+
+/**
+ * The absolute path to the secrets directory
+ */
+$secrets = "$root/secrets";
 
 /**
  * The relative path to the assets directory (from the file where execution started, i.e. the current page)
@@ -51,3 +51,4 @@ $assets = (function(): string {
 	}
 	return "/assets"; // give up and hope
 })();
+$assets ??= "/assets"; // This is mostly here because PhpStorm does not correctly understand the above
