@@ -42,7 +42,7 @@ function secrets(): string {
 }
 
 /**
- * The relative path to the assets directory (from the file where execution started, i.e. the current page)
+ * @return string The relative path to the assets directory (from the file where execution started, i.e. the current page)
  */
 function assets(): string {
 	$cwd            = getcwd();
