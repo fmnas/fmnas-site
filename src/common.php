@@ -1,6 +1,11 @@
 <?php
 declare(strict_types = 1);
 
+// For debugging:
+ini_set('display_startup_errors', 1);
+ini_set('display_errors', 1);
+error_reporting(-1);
+
 function startsWith(string $haystack, string $needle): bool {
 	return substr_compare($haystack, $needle, 0, strlen($needle)) === 0;
 }
@@ -32,8 +37,8 @@ $t = "$src/templates";
  * The relative path to the assets directory (from the file where execution started, i.e. the current page)
  */
 $assets = (function(): string {
-	$cwd = getcwd();
-	$host = $_SERVER["HTTP_HOST"];
+	$cwd            = getcwd();
+	$host           = $_SERVER["HTTP_HOST"];
 	$adminSubdomain = "admin.";
 	if (endsWith($cwd, "/public")) {
 		return "assets";
