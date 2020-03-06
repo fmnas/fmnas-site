@@ -4,5 +4,5 @@ require_once("$t/logo.php");
 require_once("$t/donate.php");
 ?>
 <!DOCTYPE html>
-<title>Forget Me Not Animal Shelter of Ferry County</title>
+<title><?=_G_longname()?></title>
 <?php logo(); donate(); ?>
