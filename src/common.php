@@ -1,6 +1,12 @@
 <?php
 declare(strict_types = 1);
 
+if (!file_exists("$src/generated.php")) {
+	require_once("$src/generator.php");
+	generate();
+}
+require_once("$src/generated.php");
+
 function startsWith(string $haystack, string $needle): bool {
 	return substr_compare($haystack, $needle, 0, strlen($needle)) === 0;
 }
@@ -72,8 +78,13 @@ $secrets = secrets();
 $root ??= "..";
 $src ??= __DIR__;
 
-if (!file_exists("$src/generated.php")) {
-	require_once("$src/generator.php");
-	generate();
+/**
+ * Import a stylesheet
+ * @param string $name The relative path to the stylesheet file, optionally including .css or .php
+ */
+function style(string $name = "/common"): void {
+	if (!endsWith($name, ".css") && !endsWith($name, ".php")) {
+		$name .= ".css";
+	}
+	echo "<link rel=\"stylesheet\" href=\"" . htmlspecialchars($name) . "\">";
 }
-require_once("$src/generated.php");

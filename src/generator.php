@@ -7,8 +7,9 @@ function generate() {
 	$values = array();
 
 	// TODO: Get these from the database
-	$values["shortname"] = "Forget Me Not Animal Shelter";
-	$values["longname"]  = "Forget Me Not Animal Shelter of Ferry County";
+	$values["shortname"]      = "Forget Me Not Animal Shelter";
+	$values["longname"]       = "Forget Me Not Animal Shelter of Ferry County";
+	$values["transport_date"] = "2020-03-14";
 
 	ob_start();
 	?>
