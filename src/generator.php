@@ -13,10 +13,12 @@ function generate() {
 	ob_start();
 	?>
 
-	// This is a static configuration file generated from the database.
-	// Instead of changing values in this file, you should simply delete it and allow it to be regenerated.
+// This is a static configuration file generated from the database.
+// Instead of changing values in this file, you should simply delete it and allow it to be regenerated.
 
-	<?php foreach ($values as $key => $value): ?> function _G_<?=$key?>(){return "<?=addslashes($value)?>";}<?php
+<?php
+	foreach ($values as $key => $value):
+		?> function _G_<?=$key?>(){return"<?=addslashes($value)?>";}<?php
 	endforeach;
 	$output = "<?php" . ob_get_clean();
 	file_put_contents(__DIR__ . "/generated.php", $output);
