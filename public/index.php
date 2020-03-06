@@ -27,7 +27,7 @@ $transportDate = strtotime(_G_transport_date());
 <section id="transport">
 	<h2>Transport dates</h2>
 	<h3>Next Seattle area transport</h3>
-	<p><time datetime="<?=date("Y-m-d")?>"><?=date("M n")?></time> (Monroe)
+	<p><time datetime="<?=date("Y-m-d")?>"><?=date("M j")?></time> (Monroe)
 	<h3>Next Spokane transport</h3>
 	<p>frequent, flexible
 </section>
