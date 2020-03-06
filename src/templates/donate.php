@@ -1,4 +1,4 @@
 <?php
 function donate(): void { ?>
-	Please donate
+Please donate
 <?php }
