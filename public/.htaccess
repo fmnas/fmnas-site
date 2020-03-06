@@ -1,7 +1,15 @@
-# enforce https
-#RewriteEngine On
+
+RewriteEngine On
+# enforce https - enable when cert problem resolved
 #RewriteCond %{HTTPS} !=on
 #RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# redirect old /Application to /application
+Redirect 301 /Application /application
+RewriteRule ^Application/(.*)$ /application/$1 [L,R=301]
+
+# redirect to handler.php for non-existing directories
+FallbackResource /handler.php
 
 # compress text, html, javascript, css, xml:
 AddOutputFilterByType DEFLATE text/plain
