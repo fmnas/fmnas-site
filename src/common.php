@@ -1,12 +1,6 @@
 <?php
 declare(strict_types = 1);
 
-if (!file_exists("$src/generated.php")) {
-	require_once("$src/generator.php");
-	generate();
-}
-require_once("$src/generated.php");
-
 function startsWith(string $haystack, string $needle): bool {
 	return substr_compare($haystack, $needle, 0, strlen($needle)) === 0;
 }
@@ -77,6 +71,13 @@ $secrets = secrets();
  */
 $root ??= "..";
 $src ??= __DIR__;
+
+// Generate and load the generated source with constants from database
+if (!file_exists("$src/generated.php")) {
+	require_once("$src/generator.php");
+	generate();
+}
+require_once("$src/generated.php");
 
 /**
  * Import a stylesheet
