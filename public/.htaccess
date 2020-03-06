@@ -15,7 +15,7 @@ AddOutputFilterByType DEFLATE application/javascript
 AddOutputFilterByType DEFLATE application/x-javascript
 
 # Temporary password protection for development
-AuthName "Development Site"
+AuthName "Public Site"
 AuthType Basic
 AuthUserFile /home/kimgil5/newsite/secrets/.htpasswd
 Require valid-user
