@@ -1,5 +1,4 @@
 <?php
-require_once("../common.php");
-function logo(): void { ?>
+function donate(): void { ?>
 	Please donate
 <?php }
