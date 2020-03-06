@@ -2,6 +2,6 @@
 require_once("../../src/common.php");
 ?>
 <!DOCTYPE html>
-<title><?=_G_longname()?></title>
+<title>Adoption Application - <?=_G_longname()?></title>
 <?php style(); ?>
 Application
