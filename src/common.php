@@ -65,3 +65,15 @@ $t       = t();
 $src     = src();
 $root    = root();
 $secrets = secrets();
+
+/**
+ * Dummy definitions for use by PhpStorm
+ */
+$root ??= "..";
+$src ??= "../src";
+
+if (!file_exists("$src/generated.php")) {
+	require_once("$src/generator.php");
+	generate();
+}
+require_once("$src/generated.php");
