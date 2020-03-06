@@ -2,7 +2,7 @@
 require_once("../src/common.php");
 require_once("$t/logo.php");
 require_once("$t/donate.php");
-$transportDate = strtotime($_G_transport_date);
+$transportDate = strtotime(_G_transport_date());
 ?>
 <!DOCTYPE html>
 <title><?=_G_longname()?></title>
