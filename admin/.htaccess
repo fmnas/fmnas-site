@@ -1,6 +1,10 @@
+# Temporary password protection for development
 AuthType Basic
 AuthName "Development Site"
 AuthUserFile /home/kimgil5/newsite/secrets/.htpasswd
+Require valid-user
+
+# Enforce https
 RewriteEngine On
 RewriteCond %{HTTPS} !=on
 RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301,NE]
