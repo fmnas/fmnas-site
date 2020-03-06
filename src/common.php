@@ -14,17 +14,17 @@ function contains(string $haystack, string $needle): bool {
 }
 
 /**
- * @return string The absolute path to the site root directory (containing admin/, public/, secrets/, src/)
- */
-function root(): string {
-	return dirname(__DIR__, 1);
-}
-
-/**
  * @return string The absolute path to the src directory
  */
 function src(): string {
-	return root() . "/src";
+	return __DIR__;
+}
+
+/**
+ * @return string The absolute path to the site root directory (containing admin/, public/, secrets/, src/)
+ */
+function root(): string {
+	return dirname(src(), 1);
 }
 
 /**
@@ -70,7 +70,7 @@ $secrets = secrets();
  * Dummy definitions for use by PhpStorm
  */
 $root ??= "..";
-$src ??= "../src";
+$src ??= __DIR__;
 
 if (!file_exists("$src/generated.php")) {
 	require_once("$src/generator.php");
