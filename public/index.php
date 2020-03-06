@@ -15,19 +15,25 @@ $transportDate = strtotime(_G_transport_date());
 		<a href="/blog">Blog</a>
 		<form id="adopt" action="/application" method="POST">
 			<h2>Adopt a Pet</h2>
-			<a href="/application"><button id="adopt_button" type="submit">Apply Online Now</button></a>
+			<a href="/application">
+				<button id="adopt_button" type="submit">Apply Online Now</button>
+			</a>
 		</form>
 	</nav>
 </header>
 <section id="listings">
 	<h2>Adoptable pets</h2>
-	<a href="/cats">See our Cats &amp; Kittens</a>
-	<a href="/dogs">See our Dogs &amp; Puppies</a>
+	<ul>
+		<li><a href="/cats">See our Cats &amp; Kittens</a>
+		<li><a href="/dogs">See our Dogs &amp; Puppies</a>
+	</ul>
 </section>
 <section id="transport">
 	<h2>Transport dates</h2>
 	<h3>Next Seattle area transport</h3>
-	<p><time datetime="<?=date("Y-m-d")?>"><?=date("M j")?></time> (Monroe)
+	<p>
+		<time datetime="<?=date("Y-m-d")?>"><?=date("M j")?></time>
+		(Monroe)
 	<h3>Next Spokane transport</h3>
 	<p>frequent, flexible
 </section>
