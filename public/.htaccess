@@ -9,6 +9,7 @@ Redirect 301 /Application /application
 RewriteRule ^Application/(.*)$ /application/$1 [L,R=301]
 
 # redirect to handler.php for non-existing directories
+DirectoryIndex /index.php
 FallbackResource /handler.php
 
 # compress text, html, javascript, css, xml:
