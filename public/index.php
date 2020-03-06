@@ -13,7 +13,7 @@ $transportDate = strtotime($_G_transport_date);
 		<?php donate(); ?>
 		<a href="https://www.facebook.com/ForgetMeNotAnimalShelter/">Facebook</a>
 		<a href="/blog">Blog</a>
-		<form id="adopt" action="/application">
+		<form id="adopt" action="/application" method="POST">
 			<label for="adopt_button">Adopt a Pet</label>
 			<button id="adopt_button" type="submit">Apply Online Now</button>
 		</form>
