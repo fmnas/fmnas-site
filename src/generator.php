@@ -16,7 +16,7 @@ function generate() {
 
 	$dog = new Species();
 	$dog->setAll([
-		"key" => "1",
+		"id" => "1",
 		"name" => "dog",
 		"plural" => "dogs",
 		"young" => "puppy",
@@ -29,7 +29,7 @@ function generate() {
 	]);
 	$cat = new Species();
 	$cat->setAll([
-		"key" => "1",
+		"id" => "0",
 		"name" => "cat",
 		"plural" => "cats",
 		"young" => "kitten",
