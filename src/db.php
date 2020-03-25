@@ -171,13 +171,29 @@ class Database {
 	public function getAssetByPath(string $path): Asset {
 		if (!$this->getAssetByPath->bind_param("s", $path)) {
 			log_err("Binding path $path to getAssetByPath failed");
-			return null;
-		}
-		if (!$this->getAssetByPath->execute()) {
+		} else if (!$this->getAssetByPath->execute()) {
 			log_err("Executing getAssetByPath failed");
-			return null;
+		} else {
+			$result = $this->getAssetByPath->get_result();
 		}
-		return self::createAsset($this->getAssetByPath->get_result()->fetch_assoc());
+
+		if (!isset($result) || $result->num_rows === 0) {
+			// Try the alternate paths
+			if (!$this->getAssetByAlternatePath->bind_param("ss", $path, $path)) {
+				log_err("Binding path $path to getAssetByAlternatePath failed");
+				return null;
+			}
+			if (!$this->getAssetByAlternatePath->execute()) {
+				log_err("Executing getAssetByAlternatePath failed");
+				return null;
+			}
+			$result = $this->getAssetByAlternatePath->get_result();
+			if ($result->num_rows === 0) {
+				log_err("Found no asset with path $path");
+				return null;
+			}
+		}
+		return self::createAsset($result->fetch_assoc());
 	}
 
 	public function getPetById(string $id): Pet {
