@@ -50,50 +50,8 @@ class Database {
 		return $a;
 	}
 
-	public function getAssetByKey(string $key): Asset {
-		if (!$this->getAssetByKey->bind_param("s", $key)) {
-			log_err("Binding key $key to getAssetByKey failed");
-			return new Asset();
-		}
-		if (!$this->getAssetByKey->execute()) {
-			log_err("Executing getAssetByKey failed");
-			return new Asset();
-		}
-		return self::createAsset($this->getAssetByKey->get_result()->fetch_assoc());
-	}
-
-	public function getAssetByPath(string $path): Asset {
-		if (!$this->getAssetByPath->bind_param("s", $path)) {
-			log_err("Binding path $path to getAssetByPath failed");
-			return new Asset();
-		}
-		if (!$this->getAssetByPath->execute()) {
-			log_err("Executing getAssetByPath failed");
-			return new Asset();
-		}
-		return self::createAsset($this->getAssetByPath->get_result()->fetch_assoc());
-	}
-
-	public function getPet(string $id): Pet {
-		$p = new Pet();
-
-		if (!$this->getPet->bind_param("s", $id)) {
-			log_err("Binding id $id to getPet failed");
-			return $p;
-		}
-		if (!$this->getPet->execute()) {
-			log_err("Executing getPet failed");
-			return $p;
-		}
-
-		if (!$this->getPhotos->bind_param("s", $id)) {
-			log_err("Binding pet id $id to getPhotos failed");
-		}
-		if (!$this->getPhotos->execute()) {
-			log_err("Executing getPhotos failed");
-		}
-
-		$pet            = $this->getPet->get_result()->fetch_assoc();
+	private static function createPet(array $pet, array $photos = []): Pet {
+		$p              = new Pet();
 		$p->id          = $pet["pet.id"];
 		$p->name        = $pet["name"];
 		$p->species     = _G_species()[$pet["species"]];
@@ -109,8 +67,68 @@ class Database {
 			"path" => $pet["dsc.path"],
 			"type" => $pet["dsc.type"]
 		]);
-		$p->photos      = array_map("self::createAsset", $this->getPhotos->get_result()->fetch_all(MYSQLI_ASSOC));
-
+		$p->photos      = array_map("self::createAsset", $photos);
+		$p->status      = _G_statuses()[$pet["status"]];
 		return $p;
+	}
+
+	public function getAssetByKey(string $key): Asset {
+		if (!$this->getAssetByKey->bind_param("s", $key)) {
+			log_err("Binding key $key to getAssetByKey failed");
+			return null;
+		}
+		if (!$this->getAssetByKey->execute()) {
+			log_err("Executing getAssetByKey failed");
+			return null;
+		}
+		return self::createAsset($this->getAssetByKey->get_result()->fetch_assoc());
+	}
+
+	public function getAssetByPath(string $path): Asset {
+		if (!$this->getAssetByPath->bind_param("s", $path)) {
+			log_err("Binding path $path to getAssetByPath failed");
+			return null;
+		}
+		if (!$this->getAssetByPath->execute()) {
+			log_err("Executing getAssetByPath failed");
+			return null;
+		}
+		return self::createAsset($this->getAssetByPath->get_result()->fetch_assoc());
+	}
+
+	public function getPetById(string $id): Pet {
+		if (!$this->getPet->bind_param("s", $id)) {
+			log_err("Binding id $id to getPet failed");
+			return null;
+		}
+		if (!$this->getPet->execute()) {
+			log_err("Executing getPet failed");
+			return null;
+		}
+
+		if (!$this->getPhotos->bind_param("s", $id)) {
+			log_err("Binding pet id $id to getPhotos failed");
+		}
+		if (!$this->getPhotos->execute()) {
+			log_err("Executing getPhotos failed");
+		}
+
+		return self::createPet(
+			$this->getPet->get_result()->fetch_assoc(),
+			$this->getPhotos->get_result()->fetch_all(MYSQLI_ASSOC)
+		);
+	}
+
+	public function getPetByPath(string $path): Pet {
+		// TODO
+		log_err("getPetByPath not yet implemented");
+		return null;
+	}
+
+	// Returns an array of Pets
+	public function getAdoptablePets(): array {
+		// TODO
+		log_err("getAdoptablePets not yet implemented");
+		return [];
 	}
 }
