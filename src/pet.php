@@ -76,8 +76,17 @@ class Species {
 }
 
 class Sex {
-	public string $key;
+	public int $key;
 	public string $name;
+}
+
+class Status {
+	public int $key;
+	public string $name;
+	public bool $displayStatus; // Display the status in lieu of the adoption fee?
+	public bool $listed; // Display this animal in the adoptable animal listings?
+	public bool $deleted; // If true, this animal will not be shown in admin view
+	public string $description; // Optional explanatory description, where $listed is true and $displayStatus is true
 }
 
 class Pet {
@@ -90,4 +99,5 @@ class Pet {
 	public Asset $photo; // profile picture asset
 	public array $photos; // photo assets (array of Assets)
 	public Asset $description; // description asset
+	public Status $status;
 }

@@ -50,6 +50,36 @@ function generate() {
 	$female->key = 2;
 	$values["sexes"] = [1 => $male, 2 => $female];
 
+	$adoptable = new Status();
+	$adopted = new Status();
+	$pending = new Status();
+	$closed = new Status();
+	$deleted = new Status();
+	$adoptable->key = 1;
+	$adopted->key = 2;
+	$pending->key = 3;
+	$closed->key = 4;
+	$deleted->key = 5;
+	$adoptable->name = "Adoptable";
+	$adopted->name = "Adopted";
+	$pending->name = "Adoption Pending";
+	$closed->name = "Applications Closed";
+	$deleted->name = "DELETE";
+	$adoptable->deleted = false;
+	$adopted->deleted = false;
+	$pending->deleted = false;
+	$closed->deleted = false;
+	$deleted->deleted = false;
+	$adoptable->displayStatus = false;
+	$pending->displayStatus = true;
+	$closed->displayStatus = true;
+	$adoptable->listed = true;
+	$adopted->listed = false;
+	$pending->listed = true;
+	$closed->listed = true;
+	$deleted->listed = false;
+	$values["statuses"] = [1 => $adoptable, 2 => $adopted, 3 => $pending, 4 => $closed, 5 => $deleted];
+
 	ob_start();
 	?>
 
