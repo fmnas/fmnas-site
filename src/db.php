@@ -10,6 +10,9 @@ class Database {
 	private mysqli_stmt $getAssetByPath;
 	private mysqli_stmt $getPet;
 	private mysqli_stmt $getPhotos;
+	private mysqli_stmt $getAdoptablePets;
+	private mysqli_stmt $getAdoptablePetsBySpeciesPlural;
+	private mysqli_stmt $getAllPets;
 
 	public function __construct() {
 		$this->db = new mysqli(Config::$db_host, Config::$db_username, Config::$db_pass, Config::$db_name);
@@ -38,6 +41,45 @@ class Database {
 			) p LEFT JOIN assets ON p.assetId = assets.id
 			"))) {
 			log_err("Failed to prepare getPhotos");
+		}
+		if (!($this->getAdoptablePets = $this->db->prepare("
+			SELECT * FROM (
+			    SELECT pets.* FROM pets 
+					LEFT JOIN statuses ON 
+						pets.status = statuses.id AND 
+						statuses.isAdoptable = 1
+			) pet
+			LEFT JOIN assets pic ON pet.photo = pic.id
+			LEFT JOIN assets dsc ON pet.description = dsc.id
+			"))) {
+			log_err("Failed to prepare getAdoptablePets");
+		}
+		if (!($this->getAdoptablePetsBySpeciesPlural = $this->db->prepare("
+			SELECT * FROM (
+			    SELECT pets.* FROM pets 
+					LEFT JOIN statuses ON 
+						pets.status = statuses.id AND 
+						statuses.listed = 1
+			) pet
+			LEFT JOIN assets pic ON pet.photo = pic.id
+			LEFT JOIN assets dsc ON pet.description = dsc.id
+			LEFT JOIN species ON 
+			    pet.species = species.id AND 
+			    species.plural = ?
+			"))) {
+			log_err("Failed to prepare getAdoptablePetsBySpeciesPlural");
+		}
+		if (!($this->getAllPets = $this->db->prepare("
+			SELECT * FROM (
+			    SELECT pets.* FROM pets 
+					LEFT JOIN statuses ON 
+						pets.status = statuses.id AND 
+						statuses.deleted = 0
+			) pet
+			LEFT JOIN assets pic ON pet.photo = pic.id
+			LEFT JOIN assets dsc ON pet.description = dsc.id
+			"))) {
+			log_err("Failed to prepare getAllPets");
 		}
 	}
 
