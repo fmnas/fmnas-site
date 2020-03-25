@@ -17,8 +17,8 @@ CREATE TABLE `assets` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `config` (
-  `configKey` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `configValue` text COLLATE utf8mb4_unicode_ci
+  `config_key` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `config_value` text COLLATE utf8mb4_unicode_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Global configuration values; these are cached by the backend';
 
 INSERT INTO `config` VALUES
@@ -86,7 +86,7 @@ ALTER TABLE `assets`
   ADD KEY `path` (`path`(768));
 
 ALTER TABLE `config`
-  ADD PRIMARY KEY (`configKey`);
+  ADD PRIMARY KEY (`config_key`);
 
 ALTER TABLE `pets`
   ADD PRIMARY KEY (`id`),
