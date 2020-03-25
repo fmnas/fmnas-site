@@ -8,7 +8,10 @@ class Database {
 	private mysqli $db;
 	private mysqli_stmt $getAssetByKey;
 	private mysqli_stmt $getAssetByPath;
+	private mysqli_stmt $getAssetByAlternatePath;
 	private mysqli_stmt $getPet;
+	private mysqli_stmt $getPetByPath;
+	private mysqli_stmt $getPetByLegacyPath;
 	private mysqli_stmt $getPhotos;
 	private mysqli_stmt $getAdoptablePets;
 	private mysqli_stmt $getAdoptablePetsBySpeciesPlural;
@@ -22,6 +25,27 @@ class Database {
 		}
 		if (!($this->getAssetByPath = $this->db->prepare("SELECT * FROM assets WHERE path = ? LIMIT 1"))) {
 			log_err("Failed to prepare getAssetByPath");
+		}
+
+		// Some assets may have non-canonical pathnames, such as those shared by multiple pets or those belonging to
+		// pets with a different legacy_path.
+		if (!($this->getAssetByAlternatePath = $this->db->prepare("
+			SELECT assets.* FROM (
+			    SELECT * from photos
+				LEFT JOIN assets ON photos.photo = assets.id
+				LEFT JOIN pets ON photos.pet = pets.id
+			) WHERE CONCAT(
+			    pets.path,
+			    '/',
+			    SUBSTRING_INDEX(assets.path, '/', -1)
+			) = ? OR CONCAT(
+			    pets.legacy_path,
+			    '/',
+			    SUBSTRING_INDEX(assets.path, '/', -1)
+			) = ? 
+			LIMIT 1
+			"))) {
+			log_err("Failed to prepare getAssetByAlternatePath");
 		}
 
 		if (!($this->getPet = $this->db->prepare("
@@ -41,6 +65,24 @@ class Database {
 			) p LEFT JOIN assets ON p.assetId = assets.id
 			"))) {
 			log_err("Failed to prepare getPhotos");
+		}
+		if (!($this->getPetByPath = $this->db->prepare("
+			SELECT * FROM (
+			    SELECT * FROM pets WHERE path = ? LIMIT 1
+			) pet
+			LEFT JOIN assets pic ON pet.photo = pic.id
+			LEFT JOIN assets dsc ON pet.description = dsc.id
+			"))) {
+			log_err("Failed to prepare getPetByPath");
+		}
+		if (!($this->getPetByLegacyPath = $this->db->prepare("
+			SELECT * FROM (
+			    SELECT * FROM pets WHERE legacy_path = ? LIMIT 1
+			) pet
+			LEFT JOIN assets pic ON pet.photo = pic.id
+			LEFT JOIN assets dsc ON pet.description = dsc.id
+			"))) {
+			log_err("Failed to prepare getPetByLegacyPath");
 		}
 		if (!($this->getAdoptablePets = $this->db->prepare("
 			SELECT * FROM (
@@ -85,7 +127,7 @@ class Database {
 
 	private static function createAsset(array $asset): Asset {
 		$a       = new Asset();
-		$a->key  = $asset["key"];
+		$a->key  = $asset["id"];
 		$a->path = $asset["path"];
 		$a->setType($asset["type"]);
 		$a->data = unserialize($asset["data"]);
@@ -114,8 +156,8 @@ class Database {
 		return $p;
 	}
 
-	public function getAssetByKey(string $key): Asset {
-		if (!$this->getAssetByKey->bind_param("s", $key)) {
+	public function getAssetByKey(int $key): Asset {
+		if (!$this->getAssetByKey->bind_param("i", $key)) {
 			log_err("Binding key $key to getAssetByKey failed");
 			return null;
 		}
@@ -162,16 +204,69 @@ class Database {
 	}
 
 	public function getPetByPath(string $path): Pet {
-		// TODO
-		log_err("getPetByPath not yet implemented");
-		return null;
+		if (!$this->getPetByPath->bind_param("s", $path)) {
+			log_err("Binding path $path to getPetByPath failed");
+		} else if (!$this->getPet->execute()) {
+			log_err("Executing getPetByPath failed");
+		} else {
+			$result = $this->getPetByPath->get_result();
+		}
+
+		if (!isset($result) || $result->num_rows === 0) {
+			if (!$this->getPetByLegacyPath->bind_param("s", $path)) {
+				log_err("Binding path $path to getPetByLegacyPath failed");
+				return null;
+			}
+			if (!$this->getPetByLegacyPath->execute()) {
+				log_err("Executing getPetByLegacyPath failed");
+				return null;
+			}
+			$result = $this->getPetByLegacyPath->get_result();
+			if ($result->num_rows === 0) {
+				log_err("Found no pet with path $path");
+				return null;
+			}
+		}
+
+		$pet = self::createPet($result->fetch_assoc());
+
+		if (!$this->getPhotos->bind_param("s", $pet["id"])) {
+			log_err("Binding pet id {$pet["id"]} to getPhotos failed");
+		}
+		if (!$this->getPhotos->execute()) {
+			log_err("Executing getPhotos failed");
+		}
+
+		$pet->photos = array_map("self::createAsset", $this->getPhotos->get_result()->fetch_all(MYSQLI_ASSOC));
+		return $pet;
 	}
 
 	// Returns an array of Pets
 	public function getAdoptablePets(): array {
-		// TODO
-		log_err("getAdoptablePets not yet implemented");
-		return [];
+		if (!$this->getAdoptablePets->execute()) {
+			log_err("Executing getAdoptablePets failed");
+			return [];
+		}
+		return array_map("self::createPet", $this->getAdoptablePets->get_result()->fetch_all(MYSQLI_ASSOC));
+	}
+	public function getAdoptablePetsBySpeciesPlural(string $species): array {
+		// Note table collation is case-insensitive
+		if (!$this->getAdoptablePetsBySpeciesPlural->bind_param("s", $species)) {
+			log_err("Binding species $species to getAdoptablePetsBySpeciesPlural failed");
+			return [];
+		}
+		if (!$this->getAdoptablePetsBySpeciesPlural->execute()) {
+			log_err("Executing getAdoptablePetsBySpeciesPlural failed");
+			return [];
+		}
+		return array_map("self::createPet", $this->getAdoptablePetsBySpeciesPlural->get_result()->fetch_all(MYSQLI_ASSOC));
+	}
+	public function getAllPets(): array {
+		if (!$this->getAllPets->execute()) {
+			log_err("Executing getAllPets failed");
+			return [];
+		}
+		return array_map("self::createPet", $this->getAdoptablePets->get_result()->fetch_all(MYSQLI_ASSOC));
 	}
 
 	public function query(string $query): array {
