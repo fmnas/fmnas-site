@@ -58,6 +58,13 @@ function assets(): string {
 }
 
 /**
+ * @return string The absolute path to the stored assets directory
+ */
+function stored_assets(): string {
+	return root() . "/public/assets/stored";
+}
+
+/**
  * Global variables from the above functions
  */
 $assets  = assets();
@@ -72,6 +79,7 @@ $secrets = secrets();
 $root ??= "..";
 $src ??= "$root/src";
 $t ??= "$src/templates";
+$secrets ??= "$root/secrets";
 
 // Generate and load the generated source with constants from database
 if (!file_exists("$src/generated.php")) {
@@ -89,4 +97,12 @@ function style(string $name = "/common"): void {
 		$name .= ".css";
 	}
 	echo "<link rel=\"stylesheet\" href=\"" . htmlspecialchars($name) . "\">";
+}
+
+/**
+ * Logger
+ * @param $msg string Message to log, along with backtrace
+ */
+function log_err(string $msg = "") {
+	file_put_contents(root() . "/log", $msg . "\n" . debug_backtrace() . "\n\n", FILE_APPEND);
 }
