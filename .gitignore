@@ -1,6 +1,8 @@
 secrets/*
 !secrets/*_sample*
 
+stored_assets/
+
 # Windows thumbnail cache files
 Thumbs.db
 Thumbs.db:encryptable

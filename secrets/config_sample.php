@@ -1,5 +1,7 @@
 <?php
-$db_name = "shelter";
-$db_username = "username";
-$db_pass = "password";
-$db_host = "localhost";
+class Config {
+	static string $db_name = "shelter";
+	static string $db_username = "username";
+	static string $db_pass = "password";
+	static string $db_host = "localhost";
+}
