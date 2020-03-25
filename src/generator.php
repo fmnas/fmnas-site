@@ -16,7 +16,7 @@ function generate() {
 
 	$dog = new Species();
 	$dog->setAll([
-		"id" => "1",
+		"id" => "2",
 		"name" => "dog",
 		"plural" => "dogs",
 		"young" => "puppy",
@@ -29,7 +29,7 @@ function generate() {
 	]);
 	$cat = new Species();
 	$cat->setAll([
-		"id" => "0",
+		"id" => "1",
 		"name" => "cat",
 		"plural" => "cats",
 		"young" => "kitten",
@@ -40,15 +40,15 @@ function generate() {
 		"young_cutoff" => 6,
 		"old_cutoff" => 96
 	]);
-	$values["species"] = ["0" => $cat, "1" => $dog];
+	$values["species"] = ["1" => $cat, "2" => $dog];
 
 	$male = new Sex();
 	$male->name = "male";
-	$male->key = "0";
+	$male->key = "1";
 	$female = new Sex();
 	$female->name = "female";
-	$female->key = "1";
-	$values["sexes"] = ["0" => $male, "1" => $female];
+	$female->key = "2";
+	$values["sexes"] = ["1" => $male, "2" => $female];
 
 	ob_start();
 	?>
