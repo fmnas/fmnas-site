@@ -131,4 +131,16 @@ class Database {
 		log_err("getAdoptablePets not yet implemented");
 		return [];
 	}
+
+	public function query(string $query): array {
+		if (!($stmt = $this->db->prepare($query))) {
+			log_err("Failed to prepare query $query");
+			return [];
+		}
+		if (!($stmt->execute())) {
+			log_err("Failed to execute query $query");
+			return [];
+		}
+		return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+	}
 }
