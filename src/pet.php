@@ -32,10 +32,10 @@ class Species {
 			}
 		}
 		$age ??= $this->__get("young_cutoff") ?? 36;
-		if ($this->__get("young_cutoff") ?? 0 < $age) {
+		if ($age >= ($this->__get("young_cutoff") ?? 0)) {
 			return $plural ? ($this->__get("young_plural") ?? $this->__get("plural")) : ($this->__get("young") ?? $this->__get("name"));
 		}
-		if ($this->__get("old_cutoff") ?? PHP_INT_MAX <= $age) {
+		if ($age >= ($this->__get("old_cutoff") ?? PHP_INT_MAX)) {
 			return $plural ? ($this->__get("old_plural") ?? $this->__get("plural")) : ($this->__get("old") ?? $this->__get("name"));
 		}
 		return $plural ? $this->__get("plural") : $this->__get("name");
