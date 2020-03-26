@@ -283,9 +283,10 @@ class Database {
 			$result = $this->getAssetByAlternatePath->get_result();
 			if ($result->num_rows === 0) {
 				log_err("Found no asset with path $path: {$this->db->error}");
-				return null;
+				return urldecode($path) !== $path ? $this->getAssetByPath(urldecode($path)) : null;
 			}
 		}
+
 		return self::createAsset($result->fetch_assoc());
 	}
 
@@ -335,7 +336,7 @@ class Database {
 			$result = $this->getPetByLegacyPath->get_result();
 			if ($result->num_rows === 0) {
 				log_err("Found no pet with path $path");
-				return null;
+				return urldecode($path) !== $path ? $this->getPetByPath(urldecode($path)) : null;
 			}
 		}
 
