@@ -19,6 +19,6 @@ foreach (_G_species() as $species) {
 	}
 }
 
-// Add any additional page handlers here
+// Add additional page handlers here
 
 require_once("$src/errors/404.php");
