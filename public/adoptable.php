@@ -29,7 +29,7 @@ function relativePath(string $basePath): string {
 
 ?>
 	<!DOCTYPE html>
-	<title><?=$species->__get("plural")?> for adoption at <?=_G_longname()?></title>
+	<title><?=htmlspecialchars(ucfirst($species->__get("plural")))?> for adoption at <?=_G_longname()?></title>
 <?php
 style();
 style("adoptable");
