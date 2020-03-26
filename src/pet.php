@@ -47,6 +47,9 @@ class Species {
 	 * @return string Printable version of the age
 	 */
 	public function age(string $dob): string {
+		if (!$dob) {
+			return "&nbsp;";
+		}
 		try {
 			$interval = (new DateTime())->diff(new DateTime($dob));
 			$months = $interval->y * 12 + $interval->m;
