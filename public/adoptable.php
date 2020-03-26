@@ -145,7 +145,7 @@ pageHeader();
 		$pets = $db->getAdoptablePetsBySpecies($species);
 		foreach ($pets as $pet) {
 			/* @var $pet Pet */
-			$listed = ($pet->description !== null && strlen(trim($pet->description->fetch())) > 0) || ($pet->photos !== null && count($pet->photos) > 0);
+			$listed = $pet->listed();
 
 			$href = "";
 			if ($listed) {

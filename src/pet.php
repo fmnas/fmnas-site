@@ -117,4 +117,8 @@ class Pet {
 	public function age(): string {
 		return $this->species->age($this->dob);
 	}
+
+	public function listed(): bool {
+		return ($this->description !== null && strlen(trim($this->description->fetch())) > 0) || ($this->photos !== null && count($this->photos) > 0);
+	}
 }
