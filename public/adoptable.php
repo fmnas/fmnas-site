@@ -145,7 +145,7 @@ style("adoptable");
 
 			$href = "";
 			if ($listed) {
-				$href .= ' href="';
+				$href .= "href=\"/$path/";
 				$href .= htmlspecialchars($pet->id);
 				$href .= htmlspecialchars(str_replace(" ", "", $pet->name));
 				$href .= '"';
