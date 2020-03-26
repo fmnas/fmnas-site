@@ -13,6 +13,7 @@ function generate() {
 	$values["shortname"]      = "Forget Me Not Animal Shelter";
 	$values["longname"]       = "Forget Me Not Animal Shelter of Ferry County";
 	$values["transport_date"] = "2020-03-14";
+	// TODO: validate values
 
 	$dog = new Species();
 	$dog->setAll([
