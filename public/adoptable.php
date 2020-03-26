@@ -37,15 +37,20 @@ style("adoptable");
 	<style type="text/css">
 		<?php
 		$displayedStatusSelectors = array();
+		$hoverStatusSelectors = array();
 		foreach(_G_statuses() as $status) {
 			/* @var $status Status */
-			// The content to display when hovering over the status
 			if (isset($status->displayStatus) && $status->displayStatus) {
 				$sel = "tr.st_{$status->key}";
 				$displayedStatusSelectors[] = $sel;
-				echo $sel . '>td.fee::before{content:"';
-				echo cssspecialchars($status->name . ":\\A" . $status->description);
-				echo '";} "';
+				if (isset($status->description) && strlen(trim($status->description)) > 0) {
+					$hoverStatusSelectors[] = $sel;
+
+					// The content to display when hovering over the status
+					echo $sel . '>td.fee::before{content:"';
+					echo cssspecialchars($status->name . ":\\A" . $status->description);
+					echo '";} "';
+				}
 			}
 		}
 
@@ -54,7 +59,7 @@ style("adoptable");
 		echo "{background-color:#ddd;} ";
 
 		// Display the ? to hover over to see the status
-		echo buildSelector($displayedStatusSelectors, ">td.fee>*::after") . <<<CSS
+		echo buildSelector($hoverStatusSelectors, ">td.fee>*::after") . <<<CSS
 		{
 			content: "?";
 			margin-left: 0.5ex;
@@ -74,20 +79,20 @@ style("adoptable");
 		// TODO: minify CSS on-the-fly?
 
 		// Make the ? a different color when hovering
-		echo buildSelector($displayedStatusSelectors, ">td.fee>*:hover::after");
+		echo buildSelector($hoverStatusSelectors, ">td.fee>*:hover::after");
 		echo "{background-color:#00f;color:#fff;} ";
 
 		// Hide the ? when printing
 		echo "@media print {";
-		echo buildSelector($displayedStatusSelectors, ">td.fee>*::after");
+		echo buildSelector($hoverStatusSelectors, ">td.fee>*::after");
 		echo "{display: none;} } ";
 
 		// Make the popup able to overflow outside the box when hovering
-		echo buildSelector($displayedStatusSelectors, ">td.fee>*::after");
+		echo buildSelector($hoverStatusSelectors, ">td.fee>*::after");
 		echo "{overflow:visible;position:relative;} ";
 
 		// Style the popup
-		echo buildSelector($displayedStatusSelectors, ">td.fee::before") . <<<CSS
+		echo buildSelector($hoverStatusSelectors, ">td.fee::before") . <<<CSS
 		{
 			width: 100%;
 			border-radius: 0.5em;
@@ -109,7 +114,7 @@ style("adoptable");
 		CSS;
 
 		// popup transition
-		echo buildSelector($displayedStatusSelectors, ">td.fee:hover::before");
+		echo buildSelector($hoverStatusSelectors, ">td.fee:hover::before");
 		echo "{opacity:0.9;transition:all 0.18s ease-out 0.18s;z-index:2;} ";
 		// TODO: mobile friendly popup
 		?>
@@ -193,8 +198,8 @@ style("adoptable");
 			<?php
 			foreach (_G_statuses() as $status) {
 				/* @var $status Status */
-				$description = $status->description ? $status->description->fetch() : "";
-				if ($status->displayStatus && strlen(trim($description)) > 0) {
+				$description = (isset($status->description) && $status->description !== null) ? $status->description->fetch() : "";
+				if (isset($status->displayStatus) && $status->displayStatus && strlen(trim($description)) > 0) {
 					echo "<p><strong>{$status->name}:</strong><br>";
 					echo nl2br(htmlspecialchars($description));
 				}
