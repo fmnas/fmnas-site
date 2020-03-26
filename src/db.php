@@ -81,11 +81,12 @@ class Database {
 			       dsc.data AS dsc_data,
 			       dsc.type AS dsc_type,
 			       dsc.path AS dsc_path
-			FROM (
-			    SELECT * FROM pets WHERE path = ? LIMIT 1
-			) pet
-			LEFT JOIN assets pic ON pet.photo = pic.id
-			LEFT JOIN assets dsc ON pet.description = dsc.id
+			FROM pets
+			LEFT JOIN assets pic ON 
+				path = ? AND
+				pets.photo = pic.id
+			LEFT JOIN assets dsc ON pets.description = dsc.id
+			LIMIT 1
 			"))) {
 			log_err("Failed to prepare getPetByPath: {$this->db->error}");
 		} else {
@@ -113,14 +114,12 @@ class Database {
 			       dsc.data AS dsc_data,
 			       dsc.type AS dsc_type,
 			       dsc.path AS dsc_path
-			FROM (
-			    SELECT pets.* FROM pets 
-					LEFT JOIN statuses ON 
-						pets.status = statuses.id AND 
-						statuses.listed = 1
-			) pet
-			LEFT JOIN assets pic ON pet.photo = pic.id
-			LEFT JOIN assets dsc ON pet.description = dsc.id
+			FROM pets 
+			LEFT JOIN statuses ON 
+				pets.status = statuses.id AND 
+				statuses.listed = 1
+			LEFT JOIN assets pic ON pets.photo = pic.id
+			LEFT JOIN assets dsc ON pets.description = dsc.id
 			"))) {
 			log_err("Failed to prepare getAdoptablePets: {$this->db->error}");
 		} else {
@@ -177,14 +176,12 @@ class Database {
 			       dsc.data AS dsc_data,
 			       dsc.type AS dsc_type,
 			       dsc.path AS dsc_path
-			FROM (
-			    SELECT pets.* FROM pets 
-					LEFT JOIN statuses ON 
-						pets.status = statuses.id AND 
-						statuses.deleted = 0
-			) pet
-			LEFT JOIN assets pic ON pet.photo = pic.id
-			LEFT JOIN assets dsc ON pet.description = dsc.id
+			FROM pets 
+			LEFT JOIN statuses ON 
+				pets.status = statuses.id AND 
+				statuses.deleted = 0
+			LEFT JOIN assets pic ON pets.photo = pic.id
+			LEFT JOIN assets dsc ON pets.description = dsc.id
 			"))) {
 			log_err("Failed to prepare getAllPets: {$this->db->error}");
 		} else {
