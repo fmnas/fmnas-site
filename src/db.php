@@ -83,7 +83,7 @@ class Database {
 			       dsc.path AS dsc_path
 			FROM pets
 			LEFT JOIN assets pic ON 
-				path = ? AND
+				pets.path = ? AND
 				pets.photo = pic.id
 			LEFT JOIN assets dsc ON pets.description = dsc.id
 			LIMIT 1
