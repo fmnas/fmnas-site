@@ -161,7 +161,7 @@ style("adoptable");
 			echo '</a></th>';
 
 			echo '<td class="sex">';
-			echo $pet->sex->name;
+			echo ucfirst($pet->sex->name);
 			if (strlen(trim($pet->breed)) > 2) {
 				echo " " . $pet->breed;
 			}
