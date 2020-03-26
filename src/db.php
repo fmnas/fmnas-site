@@ -16,6 +16,7 @@ class Database {
 	private mysqli_stmt $getAdoptablePets;
 	private mysqli_stmt $getAdoptablePetsBySpeciesPlural;
 	private mysqli_stmt $getAllPets;
+	private mysqli_stmt $getAllSpecies;
 
 	public function __construct() {
 		$this->db = new mysqli(Config::$db_host, Config::$db_username, Config::$db_pass, Config::$db_name);
@@ -123,6 +124,13 @@ class Database {
 			"))) {
 			log_err("Failed to prepare getAllPets");
 		}
+		if (!($this->getAllSpecies = $this->db->prepare("
+			SELECT species.*, COUNT(pets.id) AS species_count
+			FROM species LEFT JOIN pets ON species.id = pets.species
+			GROUP BY species.id
+			"))) {
+			log_err("Failed to prepare getAllSpecies");
+		}
 	}
 
 	private static function createAsset(array $asset): Asset {
@@ -155,6 +163,12 @@ class Database {
 		$p->status      = _G_statuses()[$pet["status"]];
 		$p->breed       = $pet["breed"];
 		return $p;
+	}
+
+	private static function createSpecies(array $species): Species {
+		$s = new Species();
+		$s->setAll($species);
+		return $s;
 	}
 
 	public function getAssetByKey(int $key): Asset {
@@ -290,6 +304,14 @@ class Database {
 			return [];
 		}
 		return array_map("self::createPet", $this->getAdoptablePets->get_result()->fetch_all(MYSQLI_ASSOC));
+	}
+
+	public function getAllSpecies(): array {
+		if (!$this->getAllSpecies->execute()) {
+			log_err("Executing getAllSpecies failed");
+			return [];
+		}
+		return array_map("self::createSpecies", $this->getAllSpecies->get_result()->fetch_all(MYSQLI_ASSOC));
 	}
 
 	public function query(string $query): array {
