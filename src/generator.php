@@ -73,7 +73,7 @@ function generate() {
 	// This is a static configuration file generated from the database.
 	// Instead of changing values in this file, you should simply delete it and allow it to be regenerated.
 
-	function _G(){return unserialize("<?=addslashes(serialize($values));?>");} $_G=_G(); <?php
+	require_once(__DIR__."/pet.php");function _G(){return unserialize("<?=addslashes(serialize($values));?>");} $_G=_G(); <?php
 	foreach ($values as $key => $value):
 		// TODO: validate key!
 		?> function _G_<?=$key?>(){global $_G; return $_G["<?=$key?>"];}<?php
