@@ -31,7 +31,7 @@ class Species {
 				log_err("Exception when converting $dob to DateTime: " . $e->getMessage());
 			}
 		}
-		$age ??= $this->__get("young_cutoff") ?? $this->__get("old_cutoff") ?? 36;
+		$age ??= $this->__get("young_cutoff") ?? 36;
 		if ($this->__get("young_cutoff") ?? 0 < $age) {
 			return $plural ? ($this->__get("young_plural") ?? $this->__get("plural")) : ($this->__get("young") ?? $this->__get("name"));
 		}

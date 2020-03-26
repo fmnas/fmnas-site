@@ -19,10 +19,10 @@ $db            = new Database();
 			/* @var $species Species */
 			if ($species->__get("species_count")):
 				$displayedSpecies++;?>
-				<li><a href="/<?=$species->__get("plural")?>">See our <?=ucfirst($species->__get("plural"))?>
-					&amp; <?=ucfirst($species->__get("young_plural"))?></a>
+				<li><a href="/<?=$species->nameGivenDob(null, true)?>">See our <?=ucfirst($species->nameGivenDob(null, true))?>
+					&amp; <?=ucfirst($species->nameGivenDob("now", true))?></a>
 			<?php else: ?>
-				<!-- Found zero adoptable <?=$species->__get("plural")?> -->
+				<!-- Found zero adoptable <?=$species->nameGivenDob(null, true)?> -->
 			<?php endif;
 		}
 		if ($displayedSpecies === 0): ?>
