@@ -100,4 +100,5 @@ class Pet {
 	public array $photos; // photo assets (array of Assets)
 	public Asset $description; // description asset
 	public Status $status;
+	public string $breed; // breed or other description
 }

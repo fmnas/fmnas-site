@@ -153,6 +153,7 @@ class Database {
 		]);
 		$p->photos      = array_map("self::createAsset", $photos);
 		$p->status      = _G_statuses()[$pet["status"]];
+		$p->breed       = $pet["breed"];
 		return $p;
 	}
 
@@ -171,10 +172,12 @@ class Database {
 	public function getAssetByPath(string $path): Asset {
 		if (!$this->getAssetByPath->bind_param("s", $path)) {
 			log_err("Binding path $path to getAssetByPath failed");
-		} else if (!$this->getAssetByPath->execute()) {
-			log_err("Executing getAssetByPath failed");
 		} else {
-			$result = $this->getAssetByPath->get_result();
+			if (!$this->getAssetByPath->execute()) {
+				log_err("Executing getAssetByPath failed");
+			} else {
+				$result = $this->getAssetByPath->get_result();
+			}
 		}
 
 		if (!isset($result) || $result->num_rows === 0) {
@@ -222,10 +225,12 @@ class Database {
 	public function getPetByPath(string $path): Pet {
 		if (!$this->getPetByPath->bind_param("s", $path)) {
 			log_err("Binding path $path to getPetByPath failed");
-		} else if (!$this->getPet->execute()) {
-			log_err("Executing getPetByPath failed");
 		} else {
-			$result = $this->getPetByPath->get_result();
+			if (!$this->getPet->execute()) {
+				log_err("Executing getPetByPath failed");
+			} else {
+				$result = $this->getPetByPath->get_result();
+			}
 		}
 
 		if (!isset($result) || $result->num_rows === 0) {
@@ -265,6 +270,7 @@ class Database {
 		}
 		return array_map("self::createPet", $this->getAdoptablePets->get_result()->fetch_all(MYSQLI_ASSOC));
 	}
+
 	public function getAdoptablePetsBySpeciesPlural(string $species): array {
 		// Note table collation is case-insensitive
 		if (!$this->getAdoptablePetsBySpeciesPlural->bind_param("s", $species)) {
@@ -277,6 +283,7 @@ class Database {
 		}
 		return array_map("self::createPet", $this->getAdoptablePetsBySpeciesPlural->get_result()->fetch_all(MYSQLI_ASSOC));
 	}
+
 	public function getAllPets(): array {
 		if (!$this->getAllPets->execute()) {
 			log_err("Executing getAllPets failed");
