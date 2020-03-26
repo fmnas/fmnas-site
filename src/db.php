@@ -21,16 +21,20 @@ class Database {
 	public function __construct() {
 		$this->db = new mysqli(Config::$db_host, Config::$db_username, Config::$db_pass, Config::$db_name);
 
-		if (!($this->getAssetByKey = $this->db->prepare("SELECT * FROM assets WHERE id = ?"))) {
-			log_err("Failed to prepare getAssetByKey");
+		if (!($getAssetByKey = $this->db->prepare("SELECT * FROM assets WHERE id = ?"))) {
+			log_err("Failed to prepare getAssetByKey: {$this->db->error}");
+		} else {
+			$this->getAssetByKey = $getAssetByKey;
 		}
-		if (!($this->getAssetByPath = $this->db->prepare("SELECT * FROM assets WHERE path = ? LIMIT 1"))) {
-			log_err("Failed to prepare getAssetByPath");
+		if (@!($getAssetByPath = $this->db->prepare("SELECT * FROM assets WHERE path = ? LIMIT 1"))) {
+			log_err("Failed to prepare getAssetByPath: {$this->db->error}");
+		} else {
+			$this->getAssetByPath = $getAssetByPath;
 		}
 
 		// Some assets may have non-canonical pathnames, such as those shared by multiple pets or those belonging to
 		// pets with a different legacy_path.
-		if (!($this->getAssetByAlternatePath = $this->db->prepare("
+		if (!($getAssetByAlternatePath = $this->db->prepare("
 			SELECT assets.* FROM (
 			    SELECT * from photos
 				LEFT JOIN assets ON photos.photo = assets.id
@@ -46,46 +50,56 @@ class Database {
 			) = ? 
 			LIMIT 1
 			"))) {
-			log_err("Failed to prepare getAssetByAlternatePath");
+			log_err("Failed to prepare getAssetByAlternatePath: {$this->db->error}");
+		} else {
+			$this->getAssetByAlternatePath = $getAssetByAlternatePath;
 		}
 
-		if (!($this->getPet = $this->db->prepare("
+		if (!($getPet = $this->db->prepare("
 			SELECT * FROM ( 
 			    SELECT * FROM pets WHERE id = ? 
 			) pet 
     		LEFT JOIN assets pic ON pet.photo = pic.id 
 			LEFT JOIN assets dsc ON pet.description = dsc.id
 			"))) {
-			log_err("Failed to prepare getPet");
+			log_err("Failed to prepare getPet: {$this->db->error}");
+		} else {
+			$this->getPet = $getPet;
 		}
-		if (!($this->getPhotos = $this->db->prepare("
+		if (!($getPhotos = $this->db->prepare("
 			SELECT assets.* FROM (
 				SELECT photos.assetId FROM (
 					  SELECT * FROM pets WHERE id = ?
 				) pet LEFT JOIN photos ON pet.id = photos.petId
 			) p LEFT JOIN assets ON p.assetId = assets.id
 			"))) {
-			log_err("Failed to prepare getPhotos");
+			log_err("Failed to prepare getPhotos: {$this->db->error}");
+		} else {
+			$this->getPhotos = $getPhotos;
 		}
-		if (!($this->getPetByPath = $this->db->prepare("
+		if (!($getPetByPath = $this->db->prepare("
 			SELECT * FROM (
 			    SELECT * FROM pets WHERE path = ? LIMIT 1
 			) pet
 			LEFT JOIN assets pic ON pet.photo = pic.id
 			LEFT JOIN assets dsc ON pet.description = dsc.id
 			"))) {
-			log_err("Failed to prepare getPetByPath");
+			log_err("Failed to prepare getPetByPath: {$this->db->error}");
+		} else {
+			$this->getPetByPath = $getPetByPath;
 		}
-		if (!($this->getPetByLegacyPath = $this->db->prepare("
+		if (!($getPetByLegacyPath = $this->db->prepare("
 			SELECT * FROM (
 			    SELECT * FROM pets WHERE legacy_path = ? LIMIT 1
 			) pet
 			LEFT JOIN assets pic ON pet.photo = pic.id
 			LEFT JOIN assets dsc ON pet.description = dsc.id
 			"))) {
-			log_err("Failed to prepare getPetByLegacyPath");
+			log_err("Failed to prepare getPetByLegacyPath: {$this->db->error}");
+		} else {
+			$this->getPetByLegacyPath = $getPetByLegacyPath;
 		}
-		if (!($this->getAdoptablePets = $this->db->prepare("
+		if (!($getAdoptablePets = $this->db->prepare("
 			SELECT * FROM (
 			    SELECT pets.* FROM pets 
 					LEFT JOIN statuses ON 
@@ -95,9 +109,11 @@ class Database {
 			LEFT JOIN assets pic ON pet.photo = pic.id
 			LEFT JOIN assets dsc ON pet.description = dsc.id
 			"))) {
-			log_err("Failed to prepare getAdoptablePets");
+			log_err("Failed to prepare getAdoptablePets: {$this->db->error}");
+		} else {
+			$this->getAdoptablePets = $getAdoptablePets;
 		}
-		if (!($this->getAdoptablePetsBySpeciesPlural = $this->db->prepare("
+		if (!($getAdoptablePetsBySpeciesPlural = $this->db->prepare("
 			SELECT * FROM (
 			    SELECT pets.* FROM pets 
 					LEFT JOIN statuses ON 
@@ -111,8 +127,10 @@ class Database {
 			    species.plural = ?
 			"))) {
 			log_err("Failed to prepare getAdoptablePetsBySpeciesPlural");
+		} else {
+			$this->getAdoptablePetsBySpeciesPlural = $getAdoptablePetsBySpeciesPlural;
 		}
-		if (!($this->getAllPets = $this->db->prepare("
+		if (!($getAllPets = $this->db->prepare("
 			SELECT * FROM (
 			    SELECT pets.* FROM pets 
 					LEFT JOIN statuses ON 
@@ -122,14 +140,19 @@ class Database {
 			LEFT JOIN assets pic ON pet.photo = pic.id
 			LEFT JOIN assets dsc ON pet.description = dsc.id
 			"))) {
-			log_err("Failed to prepare getAllPets");
+			log_err("Failed to prepare getAllPets: {$this->db->error}");
+		} else {
+			$this->getAllPets = $getAllPets;
 		}
-		if (!($this->getAllSpecies = $this->db->prepare("
+
+		if (!($getAllSpecies = $this->db->prepare("
 			SELECT species.*, COUNT(pets.id) AS species_count
 			FROM species LEFT JOIN pets ON species.id = pets.species
 			GROUP BY species.id
 			"))) {
-			log_err("Failed to prepare getAllSpecies");
+			log_err("Failed to prepare getAllSpecies: {$this->db->error}");
+		} else {
+			$this->getAllSpecies = $getAllSpecies;
 		}
 	}
 
@@ -173,11 +196,11 @@ class Database {
 
 	public function getAssetByKey(int $key): Asset {
 		if (!$this->getAssetByKey->bind_param("i", $key)) {
-			log_err("Binding key $key to getAssetByKey failed");
+			log_err("Binding key $key to getAssetByKey failed: {$this->db->error}");
 			return null;
 		}
 		if (!$this->getAssetByKey->execute()) {
-			log_err("Executing getAssetByKey failed");
+			log_err("Executing getAssetByKey failed: {$this->db->error}");
 			return null;
 		}
 		return self::createAsset($this->getAssetByKey->get_result()->fetch_assoc());
@@ -185,10 +208,10 @@ class Database {
 
 	public function getAssetByPath(string $path): Asset {
 		if (!$this->getAssetByPath->bind_param("s", $path)) {
-			log_err("Binding path $path to getAssetByPath failed");
+			log_err("Binding path $path to getAssetByPath failed: {$this->db->error}");
 		} else {
 			if (!$this->getAssetByPath->execute()) {
-				log_err("Executing getAssetByPath failed");
+				log_err("Executing getAssetByPath failed: {$this->db->error}");
 			} else {
 				$result = $this->getAssetByPath->get_result();
 			}
@@ -197,16 +220,16 @@ class Database {
 		if (!isset($result) || $result->num_rows === 0) {
 			// Try the alternate paths
 			if (!$this->getAssetByAlternatePath->bind_param("ss", $path, $path)) {
-				log_err("Binding path $path to getAssetByAlternatePath failed");
+				log_err("Binding path $path to getAssetByAlternatePath failed: {$this->db->error}");
 				return null;
 			}
 			if (!$this->getAssetByAlternatePath->execute()) {
-				log_err("Executing getAssetByAlternatePath failed");
+				log_err("Executing getAssetByAlternatePath failed: {$this->db->error}");
 				return null;
 			}
 			$result = $this->getAssetByAlternatePath->get_result();
 			if ($result->num_rows === 0) {
-				log_err("Found no asset with path $path");
+				log_err("Found no asset with path $path: {$this->db->error}");
 				return null;
 			}
 		}
@@ -215,19 +238,19 @@ class Database {
 
 	public function getPetById(string $id): Pet {
 		if (!$this->getPet->bind_param("s", $id)) {
-			log_err("Binding id $id to getPet failed");
+			log_err("Binding id $id to getPet failed: {$this->db->error}");
 			return null;
 		}
 		if (!$this->getPet->execute()) {
-			log_err("Executing getPet failed");
+			log_err("Executing getPet failed: {$this->db->error}");
 			return null;
 		}
 
 		if (!$this->getPhotos->bind_param("s", $id)) {
-			log_err("Binding pet id $id to getPhotos failed");
+			log_err("Binding pet id $id to getPhotos failed: {$this->db->error}");
 		}
 		if (!$this->getPhotos->execute()) {
-			log_err("Executing getPhotos failed");
+			log_err("Executing getPhotos failed: {$this->db->error}");
 		}
 
 		return self::createPet(
@@ -238,10 +261,10 @@ class Database {
 
 	public function getPetByPath(string $path): Pet {
 		if (!$this->getPetByPath->bind_param("s", $path)) {
-			log_err("Binding path $path to getPetByPath failed");
+			log_err("Binding path $path to getPetByPath failed: {$this->db->error}");
 		} else {
 			if (!$this->getPet->execute()) {
-				log_err("Executing getPetByPath failed");
+				log_err("Executing getPetByPath failed: {$this->db->error}");
 			} else {
 				$result = $this->getPetByPath->get_result();
 			}
