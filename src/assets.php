@@ -152,7 +152,7 @@ class Asset {
 	 */
 	public function imgTag(?string $alt = "", bool $link = false, bool $relative = false, int $height = 600): string {
 		if ($this->path) {
-			$path = $relative ? basename($this->path) : $this->path;
+			$path = $relative ? basename($this->path) : '/' . $this->path;
 		} else {
 			$path = "/assets/stored/$this->key";
 		}
