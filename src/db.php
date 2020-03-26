@@ -249,7 +249,11 @@ class Database {
 			log_err("Executing getAssetByKey failed: {$this->db->error}");
 			return null;
 		}
-		return self::createAsset($this->getAssetByKey->get_result()->fetch_assoc());
+		$result = $this->getAssetByKey->get_result();
+		if ($result === null || $result->num_rows === 0) {
+			return null;
+		}
+		return self::createAsset($result->fetch_assoc());
 	}
 
 	public function getAssetByPath(string $path): Asset {

@@ -5,7 +5,7 @@ require_once("../src/common.php");
 require_once("$src/pet.php");
 
 // Probable assets
-if (endsWith($path, [".jpg", ".jpeg", ".txt"])) {
+if (endsWith($path, ".jpeg") || $path[-4] === ".") {
 	require_once("asset.php");
 }
 
