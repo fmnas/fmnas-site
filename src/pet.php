@@ -98,11 +98,12 @@ class Pet {
 	public string $id;
 	public string $name;
 	public Species $species; // a reference
+	public string $breed; // breed or other description
+	public string $dob; // date of birth
 	public Sex $sex; // a reference
 	public string $fee; // adoption fee
 	public Asset $photo; // profile picture asset
 	public array $photos; // photo assets (array of Assets)
 	public Asset $description; // description asset
 	public Status $status;
-	public string $breed; // breed or other description
 }
