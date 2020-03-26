@@ -8,6 +8,7 @@ class Asset {
 	public ?array $data; // generic data associated with this asset
 	private ?string $type; // MIME type
 	private ?string $contents;
+	private ?array $size; // intrinsic size of image
 
 	public function absolutePath(): string {
 		return stored_assets() . "/" . $this->key;
@@ -25,16 +26,26 @@ class Asset {
 		if (!$this->type && $this->path) {
 			if (endsWith($this->path, [".jpg", ".jpeg", ".jfif"])) {
 				$this->type = "image/jpeg";
-			} else if (endsWith($this->path, ".png")) {
-				$this->type = "image/png";
-			} else if (endsWith($this->path, ".gif")) {
-				$this->type = "image/gif";
-			} else if (endsWith($this->path, ".pdf")) {
-				$this->type = "application/pdf";
-			} else if (endsWith($this->path, ".txt")) {
-				$this->type = "text/plain";
-			} else if (endsWith($this->path, [".htm", ".html"])) {
-				$this->type = "text/html";
+			} else {
+				if (endsWith($this->path, ".png")) {
+					$this->type = "image/png";
+				} else {
+					if (endsWith($this->path, ".gif")) {
+						$this->type = "image/gif";
+					} else {
+						if (endsWith($this->path, ".pdf")) {
+							$this->type = "application/pdf";
+						} else {
+							if (endsWith($this->path, ".txt")) {
+								$this->type = "text/plain";
+							} else {
+								if (endsWith($this->path, [".htm", ".html"])) {
+									$this->type = "text/html";
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 		// If above fails to detect type, detect it from the file itself
@@ -44,5 +55,128 @@ class Asset {
 
 	public function setType(string $type): void {
 		$this->type = $type;
+	}
+
+	private function size(): array {
+		$this->size ??= getimagesize($this->absolutePath());
+		return $this->size;
+	}
+
+	/**
+	 * Cache an image at the specified width if not already done
+	 * @param int $height desired height or 0 for no scaling
+	 * @return string The path to the image, relative to root/public (e.g. "/assets/cache/1_0.jpg")
+	 */
+	private function cachedImage(int $height): string {
+		if (!file_exists($this->absolutePath())) {
+			log_err("Did not find stored image with key $this->key at {$this->absolutePath()}");
+			return "";
+		}
+
+		$intrinsicHeight = $this->size()[1];
+		$ratio           = $this->size()[0] / $this->size()[1];
+
+		if ($height === 0 || $height >= $intrinsicHeight) {
+			$height = $intrinsicHeight;
+		}
+
+		$filename = "/assets/cache/" . $this->key . "_" . $height;
+		switch ($this->getType()) {
+			case "image/jpeg":
+				$filename .= ".jpg";
+				break;
+			case "image/png":
+				$filename .= ".png";
+				break;
+			case "image/gif":
+				$filename .= ".gif";
+				break;
+		}
+		$absoluteTarget = root() . "/public$filename";
+		if (file_exists($absoluteTarget)) {
+			return $filename;
+		}
+
+		if ($height === $intrinsicHeight) {
+			if (!copy($this->absolutePath(), $absoluteTarget)) {
+				log_err("Failed to copy {$this->absolutePath()} to $absoluteTarget");
+				return "/assets/stored/$this->key";
+			}
+			return $filename;
+		}
+
+		switch ($this->getType()) {
+			case "image/jpeg":
+				$image = imagecreatefromjpeg($this->absolutePath());
+				break;
+			case "image/png":
+				$image = imagecreatefrompng($this->absolutePath());
+				break;
+			case "image/gif":
+				$image = imagecreatefromgif($this->absolutePath());
+				break;
+			default:
+				log_err("Don't know how to resize {$this->getType()}");
+				return "/assets/stored/$this->key";
+		}
+
+		imagescale($image, $height * $ratio, $height);
+
+		$success = false;
+		switch ($this->getType()) {
+			case "image/jpeg":
+				$success = imagejpeg($image, $absoluteTarget, 80);
+				break;
+			case "image/png":
+				$success = imagepng($image, $absoluteTarget, 9);
+				break;
+			case "image/gif":
+				$success = imagegif($image, $absoluteTarget);
+				break;
+		}
+		if (!$success) {
+			log_err("Failed to save image at $absoluteTarget");
+			return "/assets/stored/$this->key";
+		}
+
+		return $filename;
+	}
+
+	/**
+	 * Create an image tag
+	 * @param string $alt alt text
+	 * @param bool $link Whether to wrap it in a link to the full size image
+	 * @param bool $relative Whether the full size image is "in" the current directory
+	 * @param int $height Desired height of scaled image or 0 for no scaling (default: 600)
+	 * @return string img tag
+	 */
+	public function imgTag(?string $alt = "", bool $link = false, bool $relative = false, int $height = 600): string {
+		if ($this->path) {
+			$path = $relative ? basename($this->path) : $this->path;
+		} else {
+			$path = "/assets/stored/$this->key";
+		}
+		$tag = '';
+		if ($link) {
+			$tag .= "<a href=\"$path\">";
+		}
+		$tag .= '<img';
+		if ($height !== 0 && $height < $this->size()[1]) {
+			$intrinsicWidth = $this->size()[0];
+			$ratio          = $this->size()[0] / $this->size()[1];
+			$newWidth       = $ratio * $height;
+			$tag            .= ' srcset="';
+			$tag            .= $this->cachedImage($height);
+			$tag            .= " {$newWidth}w, $path {$intrinsicWidth}w\"";
+		}
+		$tag .= ' src="' . $path . '"';
+		if ($alt) {
+			$tag .= ' alt="' . htmlspecialchars($alt) . '"';
+		}
+		$tag .= '>';
+		if ($link) {
+			$tag .= '</a>';
+		}
+		return $tag;
 	}
 }
