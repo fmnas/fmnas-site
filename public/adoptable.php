@@ -40,7 +40,7 @@ style("adoptable");
 		foreach(_G_statuses() as $status) {
 			/* @var $status Status */
 			// The content to display when hovering over the status
-			if ($status->displayStatus) {
+			if (isset($status->displayStatus) && $status->displayStatus) {
 				$sel = "tr.st_{$status->key}";
 				$displayedStatusSelectors[] = $sel;
 				echo $sel . '>td.fee::before{content:"';
