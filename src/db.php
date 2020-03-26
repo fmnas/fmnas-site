@@ -240,7 +240,7 @@ class Database {
 		return $s;
 	}
 
-	public function getAssetByKey(int $key): Asset {
+	public function getAssetByKey(int $key): ?Asset {
 		if (!$this->getAssetByKey->bind_param("i", $key)) {
 			log_err("Binding key $key to getAssetByKey failed: {$this->db->error}");
 			return null;
@@ -256,7 +256,7 @@ class Database {
 		return self::createAsset($result->fetch_assoc());
 	}
 
-	public function getAssetByPath(string $path): Asset {
+	public function getAssetByPath(string $path): ?Asset {
 		if (!$this->getAssetByPath->bind_param("s", $path)) {
 			log_err("Binding path $path to getAssetByPath failed: {$this->db->error}");
 		} else {
@@ -309,7 +309,7 @@ class Database {
 		);
 	}
 
-	public function getPetByPath(string $path): Pet {
+	public function getPetByPath(string $path): ?Pet {
 		if (!$this->getPetByPath->bind_param("s", $path)) {
 			log_err("Binding path $path to getPetByPath failed: {$this->db->error}");
 		} else {
