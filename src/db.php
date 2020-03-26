@@ -200,6 +200,9 @@ class Database {
 	}
 
 	private static function createAsset(array $asset): Asset {
+		if (!$asset["id"]) {
+			return null;
+		}
 		$a       = new Asset();
 		$a->key  = $asset["id"];
 		$a->path = $asset["path"];
