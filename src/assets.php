@@ -14,7 +14,7 @@ class Asset {
 	}
 
 	public function fetch(): string {
-		if (!$this->contents) {
+		if (!isset($this->contents) || !trim($this->contents)) {
 			$this->contents = file_get_contents($this->absolutePath());
 		}
 		return $this->contents;
