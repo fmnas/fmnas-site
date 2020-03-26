@@ -90,24 +90,24 @@ class Sex {
 class Status {
 	public int $key;
 	public string $name;
-	public bool $displayStatus; // Display the status in lieu of the adoption fee?
+	public ?bool $displayStatus; // Display the status in lieu of the adoption fee?
 	public bool $listed; // Display this animal in the adoptable animal listings?
 	public bool $deleted; // If true, this animal will not be shown in admin view
-	public string $description; // Optional explanatory description, where $listed is true and $displayStatus is true
+	public ?string $description; // Optional explanatory description, where $listed is true and $displayStatus is true
 }
 
 class Pet {
 	// Properties corresponding to database fields
 	public string $id;
 	public string $name;
-	public Species $species; // a reference
-	public string $breed; // breed or other description
-	public string $dob; // date of birth
-	public Sex $sex; // a reference
-	public string $fee; // adoption fee
-	public Asset $photo; // profile picture asset
-	public array $photos; // photo assets (array of Assets)
-	public Asset $description; // description asset
+	public ?Species $species;
+	public ?string $breed; // breed or other description
+	public ?string $dob; // date of birth
+	public ?Sex $sex;
+	public ?string $fee; // adoption fee
+	public ?Asset $photo; // profile picture asset
+	public ?array $photos; // photo assets (array of Assets)
+	public ?Asset $description; // description asset
 	public Status $status;
 
 	public function age(): string {
