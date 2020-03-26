@@ -35,20 +35,13 @@ class Database {
 		// Some assets may have non-canonical pathnames, such as those shared by multiple pets or those belonging to
 		// pets with a different legacy_path.
 		if (!($getAssetByAlternatePath = $this->db->prepare("
-			SELECT assets.* FROM (
-			    SELECT * from photos photo
-				LEFT JOIN assets asset ON photo.photo = asset.id
-				LEFT JOIN pets pet ON photo.pet = pet.id
-			) p WHERE CONCAT(
-			    pet.path,
-			    '/',
-			    SUBSTRING_INDEX(asset.path, '/', -1)
-			) = ? OR CONCAT(
-			    pet.legacy_path,
-			    '/',
-			    SUBSTRING_INDEX(asset.path, '/', -1)
-			) = ? 
-			LIMIT 1
+			SELECT assets.* FROM photos
+				LEFT JOIN assets ON photos.photo = assets.id
+				LEFT JOIN pets ON photos.pet = pets.id 
+				INNER JOIN species ON pets.species = species.id AND (
+					CONCAT_WS('/', species.plural, pets.path, SUBSTRING_INDEX(assets.path, '/', -1)) = ? OR
+					CONCAT_WS('/', species.plural, pets.legacy_path, SUBSTRING_INDEX(assets.path, '/', -1)) = ?
+				) LIMIT 1
 			"))) {
 			log_err("Failed to prepare getAssetByAlternatePath: {$this->db->error}");
 		} else {
