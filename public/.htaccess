@@ -16,6 +16,14 @@ RewriteRule (.*) $1/index.php [L]
 Redirect 301 /Application /application
 RewriteRule ^Application/(.*)$ /application/$1 [L,R=301]
 
+# redirect old /Cats to /cats
+Redirect 301 /Cats /cats
+RewriteRule ^Cats/(.*)$ /cats/$1 [L,R=301]
+
+# redirect old /Dogs to /dogs
+Redirect 301 /Dogs /dogs
+RewriteRule ^Dogs/(.*)$ /dogs/$1 [L,R=301]
+
 # redirect to handler.php for non-existing directories
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
