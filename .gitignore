@@ -1,6 +1,8 @@
 secrets/*
 !secrets/*_sample*
 
+/log
+
 stored_assets/
 
 # Windows thumbnail cache files
