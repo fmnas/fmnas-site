@@ -42,7 +42,6 @@ CREATE TABLE pets (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE photos (
-  relation_key int(11) NOT NULL,
   pet varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   photo int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -109,7 +108,7 @@ ALTER TABLE pets
   ADD KEY status (status);
 
 ALTER TABLE photos
-  ADD PRIMARY KEY (relation_key),
+  ADD PRIMARY KEY (pet,photo),
   ADD KEY pet (pet),
   ADD KEY photo (photo);
 
@@ -125,9 +124,6 @@ ALTER TABLE statuses
 
 ALTER TABLE assets
   MODIFY id int(11) NOT NULL AUTO_INCREMENT;
-
-ALTER TABLE photos
-  MODIFY relation_key int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE sexes
   MODIFY id tinyint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
