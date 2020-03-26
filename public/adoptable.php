@@ -1,5 +1,6 @@
 <?php
 require_once("../src/common.php");
+require_once("$t/header.php");
 require_once("$t/footer.php");
 require_once("$src/db.php");
 require_once("$src/css.php");
@@ -123,6 +124,9 @@ style("adoptable");
 		}
 		?>
 	</style>
+<?php
+pageHeader();
+?>
 	<h2>Adoptable <?=$species->nameGivenDob(null, true)?></h2>
 	<table class="listings">
 		<thead>
