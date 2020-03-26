@@ -205,7 +205,7 @@ style("adoptable");
 				$description = (isset($status->description) && $status->description !== null) ? $status->description : "";
 				if (isset($status->displayStatus) && $status->displayStatus && strlen(trim($description)) > 0) {
 					echo "<p><strong>{$status->name}:</strong><br>";
-					echo nl2br(htmlspecialchars($description));
+					echo nl2br(htmlspecialchars($description), false);
 				}
 			}
 			?>
