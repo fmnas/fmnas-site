@@ -153,7 +153,7 @@ style("adoptable");
 
 			echo '<tr class="st_';
 			echo $pet->status->key;
-			if ($listed) {
+			if (!$listed) {
 				echo ' soon';
 			}
 			echo '">';
