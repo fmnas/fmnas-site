@@ -29,8 +29,10 @@ $db            = new Database();
 		foreach ($db->getAllSpecies() as $species) {
 			/* @var $species Species */
 			if ($species->__get("species_count")): ?>
-			<li><a href="/<?=$species->__get("plural")?>">See our <?=$species->__get("plural")?>
-					&amp; <?=$species->__get("young_plural")?></a>
+			<li><a href="/<?=$species->__get("plural")?>">See our <?=ucfirst($species->__get("plural"))?>
+					&amp; <?=ucfirst($species->__get("young_plural"))?></a>
+			<?php else: ?>
+				<!-- Found zero adoptable <?=$species->__get("plural")?> -->
 			<?php endif;
 		} ?>
 	</ul>

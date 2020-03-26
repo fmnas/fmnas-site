@@ -39,7 +39,7 @@ class Database {
 			    SELECT * from photos
 				LEFT JOIN assets ON photos.photo = assets.id
 				LEFT JOIN pets ON photos.pet = pets.id
-			) WHERE CONCAT(
+			) p WHERE CONCAT(
 			    pets.path,
 			    '/',
 			    SUBSTRING_INDEX(assets.path, '/', -1)
@@ -68,9 +68,9 @@ class Database {
 		}
 		if (!($getPhotos = $this->db->prepare("
 			SELECT assets.* FROM (
-				SELECT photos.assetId FROM (
+				SELECT photos.photo FROM (
 					  SELECT * FROM pets WHERE id = ?
-				) pet LEFT JOIN photos ON pet.id = photos.petId
+				) pet LEFT JOIN photos ON pet.id = photos.pet
 			) p LEFT JOIN assets ON p.assetId = assets.id
 			"))) {
 			log_err("Failed to prepare getPhotos: {$this->db->error}");
@@ -104,7 +104,7 @@ class Database {
 			    SELECT pets.* FROM pets 
 					LEFT JOIN statuses ON 
 						pets.status = statuses.id AND 
-						statuses.isAdoptable = 1
+						statuses.listed = 1
 			) pet
 			LEFT JOIN assets pic ON pet.photo = pic.id
 			LEFT JOIN assets dsc ON pet.description = dsc.id
@@ -185,6 +185,7 @@ class Database {
 		$p->photos      = array_map("self::createAsset", $photos);
 		$p->status      = _G_statuses()[$pet["status"]];
 		$p->breed       = $pet["breed"];
+		$p->dob         = $pet["dob"];
 		return $p;
 	}
 

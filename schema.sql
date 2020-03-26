@@ -31,6 +31,7 @@ CREATE TABLE pets (
   name varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   species tinyint(4) DEFAULT NULL,
   breed varchar(1023) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'or other description',
+  dob date DEFAULT NULL,
   sex tinyint(4) DEFAULT NULL,
   fee varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   photo int(11) DEFAULT NULL,
@@ -81,6 +82,13 @@ CREATE TABLE statuses (
   description text COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO statuses VALUES
+(1, 'Adoptable', 0, 1, 0, ''),
+(2, 'Adopted', NULL, 0, 0, ''),
+(3, 'Adoption Pending', 1, 1, 0, 'We either have so many applications we are confident of finding the pet\'s new home from among them, OR the pet has been offered to an applicant who has accepted placement, and we will be delivering the pet on the next Seattle or Spokane trip.\r\n\r\nYou can submit an application for one of these pets if you\'d like to be a \"backup home\" should anything not work out with the prior applicants, but it\'s a longshot.'),
+(4, 'Applications Closed', 1, 1, 0, 'We have received a fairly large number of applications in a fairly short period of time, and need a chance to review them to see if any will be a great match to the particular pet. If the right match is not found in the applications already received, we will REOPEN applications.\r\n\r\nYou may still submit an application for one of these pets, and we will review it right away if the right match is not found first.'),
+(5, 'DELETE', NULL, 0, 1, '');
+
 
 ALTER TABLE assets
   ADD PRIMARY KEY (id),
@@ -128,7 +136,7 @@ ALTER TABLE species
   MODIFY id tinyint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 ALTER TABLE statuses
-  MODIFY id smallint(6) NOT NULL AUTO_INCREMENT;
+  MODIFY id smallint(6) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 
 ALTER TABLE pets
