@@ -360,7 +360,8 @@ class Database {
 
 	public function getAdoptablePetsBySpecies(Species $species): array {
 		// Note table collation is case-insensitive
-		if (!$this->getAdoptablePetsBySpecies->bind_param("i", $species->__get("id"))) {
+		$id = $species->__get("id");
+		if (!$this->getAdoptablePetsBySpecies->bind_param("i", $id)) {
 			log_err("Binding species id {$species->__get("id")} to getAdoptablePetsBySpecies failed");
 			return [];
 		}
