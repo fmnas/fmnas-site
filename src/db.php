@@ -210,7 +210,6 @@ class Database {
 
 	private static function createPet(array $pet, array $photos = []): Pet {
 		$p              = new Pet();
-		var_dump($pet);
 		$p->id          = $pet["id"];
 		$p->name        = $pet["name"];
 		$p->species     = _G_species()[$pet["species"]];
