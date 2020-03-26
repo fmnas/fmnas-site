@@ -49,13 +49,16 @@ class Species {
 	public function age(string $dob): string {
 		try {
 			$interval = (new DateTime())->diff(new DateTime($dob));
+			if ($interval->m < 4) {
+				return "DOB " . (new DateTime($dob))->format("n/j/y");
+			}
 			if ($interval->m == 0) {
-				return $interval->d . " day" . ($interval->d === 1 ? "s" : "");
+				return $interval->d . " day" . ($interval->d === 1 ? "s" : "") . " old";
 			}
 			if ($this->__get("age_unit_cutoff") ?: 12 > $interval->m) {
-				return $interval->y . " year" . ($interval->y === 1 ? "s" : "");
+				return $interval->y . " year" . ($interval->y === 1 ? "s" : "") . " old";
 			}
-			return $interval->m . " month" . ($interval->m === 1 ? "s" : "");
+			return $interval->m . " month" . ($interval->m === 1 ? "s" : "") . " old";
 		} catch (Exception $e) {
 			log_err("Exception when converting $dob to DateTime: " . $e->getMessage());
 			return null;
@@ -106,4 +109,8 @@ class Pet {
 	public array $photos; // photo assets (array of Assets)
 	public Asset $description; // description asset
 	public Status $status;
+
+	public function age(): string {
+		return $this->species->age($this->dob);
+	}
 }

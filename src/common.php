@@ -1,5 +1,6 @@
 <?php
 declare(strict_types = 1);
+@header("Content-Encoding: UTF-8");
 
 function startsWith(string $haystack, string $needle): bool {
 	return substr_compare($haystack, $needle, 0, strlen($needle)) === 0;
@@ -11,6 +12,12 @@ function endsWith(string $haystack, string $needle): bool {
 
 function contains(string $haystack, string $needle): bool {
 	return strpos($haystack, $needle) !== false;
+}
+
+function validateIdentifier(string $id): bool {
+	return strlen($id) > 0 &&
+		   ctype_alnum(str_replace("_", "", $id)) &&
+		   (ctype_alnum($id[0]) || $id[0] === "_");
 }
 
 /**
@@ -76,9 +83,9 @@ $secrets = secrets();
 /**
  * Dummy definitions for use by PhpStorm
  */
-$root ??= "..";
-$src ??= "$root/src";
-$t ??= "$src/templates";
+$root    ??= "..";
+$src     ??= "$root/src";
+$t       ??= "$src/templates";
 $secrets ??= "$root/secrets";
 
 // Generate and load the generated source with constants from database
@@ -93,6 +100,9 @@ require_once("$src/generated.php");
  * @param string $name The relative path to the stylesheet file, optionally including .css or .php
  */
 function style(string $name = "/common"): void {
+	if (!startsWith($name, "/")) {
+		$name = "/" . $name;
+	}
 	if (!endsWith($name, ".css") && !endsWith($name, ".php")) {
 		$name .= ".css";
 	}

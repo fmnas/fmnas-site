@@ -1,0 +1,155 @@
+/*Kuranda beds*/
+.kuranda p {
+    color: #f00;
+    background-color: #ff6;
+    font-size: 28pt;
+    font-family: "Arial Black", Gadget, sans-serif;
+    text-align: center;
+    padding: 0.25in;
+}
+
+.kuranda img {
+    float: none;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 100%;
+}
+
+/*Listings table*/
+table.listings {
+    width: 100%;
+    display: block;
+    /*background-color: #ddd;*/
+}
+
+table.listings tbody {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+@media print {
+    table.listings tbody {
+        display: block;
+    }
+}
+
+/*Listings table - individual listings*/
+table.listings tbody tr {
+    display: inline-block;
+    float: left;
+    padding: 1em;
+    box-sizing: border-box;
+}
+
+table.listings tbody tr > *:first-child {
+    border-top: 1px solid #ccc;
+    border-radius: 1em 1em 0 0;
+    padding-top: 0.5em;
+}
+
+table.listings tbody tr > *:last-child {
+    border-bottom: 1px solid #ccc;
+    border-radius: 0 0 1em 1em;
+    padding-bottom: 0.5em;
+}
+
+table.listings tbody tr > * {
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+}
+
+table.listings tbody td, table.listings tbody th {
+    display: block;
+    padding-left: 1em;
+    padding-right: 1em;
+    box-sizing: border-box;
+}
+
+table.listings tbody td.img {
+    padding-left: 2em;
+    padding-right: 2em;
+    /* Ensures 2em margin either side of image but only 1em either side of name */
+}
+
+/*Listings table - individual data*/
+th.name {
+    font-size: 18pt;
+    display: inline;
+}
+
+table.listings img {
+    display: block;
+    width: 200px;
+    height: 300px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+table.listings td, th {
+    width: 100%;
+    text-align: center;
+    vertical-align: middle;
+}
+
+table.listings thead {
+    display: none;
+}
+
+td.fee {
+    color: red;
+}
+
+td.inquiry > a {
+    font-size: 10pt;
+    text-decoration: none;
+}
+
+table.listings tr {
+    order: 1;
+}
+
+table.listings tr.soon {
+    order: 2;
+}
+
+/* put in middle */
+
+table.listings tr a:hover {
+    text-decoration: none;
+}
+
+table.listings tr:not(.soon) th.name a {
+    border-bottom: 1pt solid #066;
+}
+
+table.listings tr:not(.soon) th.name a:visited {
+    border-bottom: 1pt solid #39f;
+}
+
+table.listings tr:not(.soon) th.name a:hover {
+    border-bottom-width: 1.5pt;
+}
+
+tr * {
+    background-color: #fff;
+}
+
+tr.soon > td.fee > *::before {
+    content: "Coming Soon";
+}
+
+tr.soon > td.fee > span {
+    display: none;
+}
+
+th.name > *:not([id=""])::after {
+    content: ' (id#' attr(id) ')';
+    font-size: 11pt;
+    vertical-align: 10%;
+}
+
+td.fee::before {
+    white-space: pre-line;
+}

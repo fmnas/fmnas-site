@@ -14,7 +14,7 @@ class Database {
 	private mysqli_stmt $getPetByLegacyPath;
 	private mysqli_stmt $getPhotos;
 	private mysqli_stmt $getAdoptablePets;
-	private mysqli_stmt $getAdoptablePetsBySpeciesPlural;
+	private mysqli_stmt $getAdoptablePetsBySpecies;
 	private mysqli_stmt $getAllPets;
 	private mysqli_stmt $getAllSpecies;
 
@@ -113,22 +113,35 @@ class Database {
 		} else {
 			$this->getAdoptablePets = $getAdoptablePets;
 		}
-		if (!($getAdoptablePetsBySpeciesPlural = $this->db->prepare("
-			SELECT * FROM (
-			    SELECT pets.* FROM pets 
-					LEFT JOIN statuses ON 
-						pets.status = statuses.id AND 
-						statuses.listed = 1
-			) pet
+//		if (!($getAdoptablePetsBySpeciesPlural = $this->db->prepare("
+//			SELECT * FROM (
+//			    SELECT pets.* FROM pets
+//					LEFT JOIN statuses ON
+//						pets.status = statuses.id AND
+//						statuses.listed = 1
+//			) pet
+//			LEFT JOIN assets pic ON pet.photo = pic.id
+//			LEFT JOIN assets dsc ON pet.description = dsc.id
+//			LEFT JOIN species ON
+//			    pet.species = species.id AND
+//			    species.plural = ?
+//			"))) {
+//			log_err("Failed to prepare getAdoptablePetsBySpeciesPlural");
+//		} else {
+//			$this->getAdoptablePetsBySpeciesPlural = $getAdoptablePetsBySpeciesPlural;
+//		}
+		if (!($getAdoptablePetsBySpecies = $this->db->prepare("
+			SELECT pets.*, pic.*, dsc.* FROM pets
+			LEFT JOIN statuses ON
+			    pets.species = ? AND
+				pets.status = statuses.id AND 
+				statuses.listed = 1
 			LEFT JOIN assets pic ON pet.photo = pic.id
 			LEFT JOIN assets dsc ON pet.description = dsc.id
-			LEFT JOIN species ON 
-			    pet.species = species.id AND 
-			    species.plural = ?
 			"))) {
-			log_err("Failed to prepare getAdoptablePetsBySpeciesPlural");
+			log_err("Failed to prepare getAdoptablePetsBySpecies");
 		} else {
-			$this->getAdoptablePetsBySpeciesPlural = $getAdoptablePetsBySpeciesPlural;
+			$this->getAdoptablePetsBySpecies = $getAdoptablePetsBySpecies;
 		}
 		if (!($getAllPets = $this->db->prepare("
 			SELECT * FROM (
@@ -309,17 +322,17 @@ class Database {
 		return array_map("self::createPet", $this->getAdoptablePets->get_result()->fetch_all(MYSQLI_ASSOC));
 	}
 
-	public function getAdoptablePetsBySpeciesPlural(string $species): array {
+	public function getAdoptablePetsBySpecies(Species $species): array {
 		// Note table collation is case-insensitive
-		if (!$this->getAdoptablePetsBySpeciesPlural->bind_param("s", $species)) {
-			log_err("Binding species $species to getAdoptablePetsBySpeciesPlural failed");
+		if (!$this->getAdoptablePetsBySpecies->bind_param("i", $species->__get("id"))) {
+			log_err("Binding species id {$species->__get("id")} to getAdoptablePetsBySpecies failed");
 			return [];
 		}
-		if (!$this->getAdoptablePetsBySpeciesPlural->execute()) {
-			log_err("Executing getAdoptablePetsBySpeciesPlural failed");
+		if (!$this->getAdoptablePetsBySpecies->execute()) {
+			log_err("Executing getAdoptablePetsBySpecies failed");
 			return [];
 		}
-		return array_map("self::createPet", $this->getAdoptablePetsBySpeciesPlural->get_result()->fetch_all(MYSQLI_ASSOC));
+		return array_map("self::createPet", $this->getAdoptablePetsBySpecies->get_result()->fetch_all(MYSQLI_ASSOC));
 	}
 
 	public function getAllPets(): array {
