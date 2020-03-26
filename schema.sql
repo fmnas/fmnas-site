@@ -30,6 +30,7 @@ CREATE TABLE pets (
   id varchar(15) COLLATE utf8mb4_unicode_ci NOT NULL,
   name varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   species tinyint(4) DEFAULT NULL,
+  breed varchar(1023) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'or other description',
   sex tinyint(4) DEFAULT NULL,
   fee varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   photo int(11) DEFAULT NULL,
