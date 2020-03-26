@@ -199,7 +199,7 @@ class Database {
 		}
 	}
 
-	private static function createAsset(array $asset): Asset {
+	private static function createAsset(array $asset): ?Asset {
 		if (!$asset["id"]) {
 			return null;
 		}
