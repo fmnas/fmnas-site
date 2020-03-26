@@ -190,11 +190,9 @@ pageHeader();
 
 			echo '<td class="img"><a';
 			echo $href;
-			echo '><img src="';
-			echo relativePath($pet->photo->path);
-			echo '" alt="';
-			echo htmlspecialchars($pet->name);
-			echo '"></a></td>';
+			echo '>';
+			echo $pet->photo->imgTag(htmlspecialchars($pet->name));
+			echo '</a></td>';
 
 			echo '<td class="inquiry"><a data-email></a></td>';
 		}
