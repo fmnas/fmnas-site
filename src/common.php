@@ -139,5 +139,4 @@ function style(string $name = "/common"): void {
  */
 function log_err(string $msg = "") {
 	file_put_contents(root() . "/log", $msg . "\nBacktrace:\n" . print_r(debug_backtrace(), true) . "\n\n", FILE_APPEND);
-	echo "<!-- An error was logged! -->";
 }
