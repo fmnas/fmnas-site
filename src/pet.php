@@ -54,12 +54,12 @@ class Species {
 				return "DOB " . (new DateTime($dob))->format("n/j/y");
 			}
 			if ($months == 0) {
-				return $interval->d . " day" . ($interval->d === 1 ? "s" : "") . " old";
+				return $interval->d . " day" . ($interval->d === 1 ? "" : "s") . " old";
 			}
 			if ($this->__get("age_unit_cutoff") ?: 12 > $interval->m) {
-				return $interval->y . " year" . ($interval->y === 1 ? "s" : "") . " old";
+				return $interval->y . " year" . ($interval->y === 1 ? "" : "s") . " old";
 			}
-			return $months . " month" . ($months === 1 ? "s" : "") . " old";
+			return $months . " month" . ($months === 1 ? "" : "s") . " old";
 		} catch (Exception $e) {
 			log_err("Exception when converting $dob to DateTime: " . $e->getMessage());
 			return null;
