@@ -71,7 +71,17 @@ class Database {
 			$this->getPhotos = $getPhotos;
 		}
 		if (!($getPetByPath = $this->db->prepare("
-			SELECT * FROM (
+			SELECT 
+			       pets.*, 
+			       pic.id AS pic_id, 
+			       pic.data AS pic_data, 
+			       pic.type AS pic_type,
+			       pic.path AS pic_path,
+			       dsc.id AS dsc_id,
+			       dsc.data AS dsc_data,
+			       dsc.type AS dsc_type,
+			       dsc.path AS dsc_path
+			FROM (
 			    SELECT * FROM pets WHERE path = ? LIMIT 1
 			) pet
 			LEFT JOIN assets pic ON pet.photo = pic.id
@@ -93,7 +103,17 @@ class Database {
 			$this->getPetByLegacyPath = $getPetByLegacyPath;
 		}
 		if (!($getAdoptablePets = $this->db->prepare("
-			SELECT * FROM (
+			SELECT 
+			       pets.*, 
+			       pic.id AS pic_id, 
+			       pic.data AS pic_data, 
+			       pic.type AS pic_type,
+			       pic.path AS pic_path,
+			       dsc.id AS dsc_id,
+			       dsc.data AS dsc_data,
+			       dsc.type AS dsc_type,
+			       dsc.path AS dsc_path
+			FROM (
 			    SELECT pets.* FROM pets 
 					LEFT JOIN statuses ON 
 						pets.status = statuses.id AND 
@@ -124,7 +144,17 @@ class Database {
 //			$this->getAdoptablePetsBySpeciesPlural = $getAdoptablePetsBySpeciesPlural;
 //		}
 		if (!($getAdoptablePetsBySpecies = $this->db->prepare("
-			SELECT pets.*, pic.*, dsc.* FROM pets
+			SELECT 
+			       pets.*, 
+			       pic.id AS pic_id, 
+			       pic.data AS pic_data, 
+			       pic.type AS pic_type,
+			       pic.path AS pic_path,
+			       dsc.id AS dsc_id,
+			       dsc.data AS dsc_data,
+			       dsc.type AS dsc_type,
+			       dsc.path AS dsc_path
+			FROM pets
 			LEFT JOIN statuses ON
 			    pets.species = ? AND
 				pets.status = statuses.id AND 
@@ -137,7 +167,17 @@ class Database {
 			$this->getAdoptablePetsBySpecies = $getAdoptablePetsBySpecies;
 		}
 		if (!($getAllPets = $this->db->prepare("
-			SELECT * FROM (
+			SELECT 
+			       pets.*, 
+			       pic.id AS pic_id, 
+			       pic.data AS pic_data, 
+			       pic.type AS pic_type,
+			       pic.path AS pic_path,
+			       dsc.id AS dsc_id,
+			       dsc.data AS dsc_data,
+			       dsc.type AS dsc_type,
+			       dsc.path AS dsc_path
+			FROM (
 			    SELECT pets.* FROM pets 
 					LEFT JOIN statuses ON 
 						pets.status = statuses.id AND 
@@ -173,20 +213,23 @@ class Database {
 
 	private static function createPet(array $pet, array $photos = []): Pet {
 		$p              = new Pet();
-		$p->id          = $pet["pet.id"];
+		var_dump($pet);
+		$p->id          = $pet["id"];
 		$p->name        = $pet["name"];
 		$p->species     = _G_species()[$pet["species"]];
 		$p->sex         = _G_sexes()[$pet["sex"]];
 		$p->fee         = $pet["fee"];
 		$p->photo       = self::createAsset([
-			"id"   => $pet["pic.id"],
-			"path" => $pet["pic.path"],
-			"type" => $pet["pic.type"]
+			"id"   => $pet["pic_id"],
+			"data" => $pet["pic_data"],
+			"path" => $pet["pic_path"],
+			"type" => $pet["pic_type"]
 		]);
 		$p->description = self::createAsset([
-			"id"   => $pet["dsc.id"],
-			"path" => $pet["dsc.path"],
-			"type" => $pet["dsc.type"]
+			"id"   => $pet["dsc_id"],
+			"data" => $pet["dsc_data"],
+			"path" => $pet["dsc_path"],
+			"type" => $pet["dsc_type"]
 		]);
 		$p->photos      = array_map("self::createAsset", $photos);
 		$p->status      = _G_statuses()[$pet["status"]];
