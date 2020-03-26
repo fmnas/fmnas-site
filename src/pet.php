@@ -46,7 +46,7 @@ class Species {
 	 * @param string $dob Date of birth of the animal
 	 * @return string Printable version of the age
 	 */
-	public function age(string $dob): string {
+	public function age(?string $dob): string {
 		if (!$dob) {
 			return "&nbsp;";
 		}
