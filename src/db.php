@@ -207,7 +207,7 @@ class Database {
 		$a->key  = $asset["id"];
 		$a->path = $asset["path"];
 		$a->setType($asset["type"]);
-		$a->data = unserialize($asset["data"]);
+		$a->data = unserialize($asset["data"]) ?: [];
 		return $a;
 	}
 
