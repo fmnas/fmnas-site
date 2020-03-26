@@ -2,15 +2,39 @@
 declare(strict_types = 1);
 @header("Content-Encoding: UTF-8");
 
-function startsWith(string $haystack, string $needle): bool {
+function startsWith(string $haystack, $needle): bool {
+	if (is_array($needle)) {
+		foreach ($needle as $item) {
+			if (startsWith($haystack, $item)) {
+				return true;
+			}
+		}
+		return false;
+	}
 	return substr_compare($haystack, $needle, 0, strlen($needle)) === 0;
 }
 
-function endsWith(string $haystack, string $needle): bool {
+function endsWith(string $haystack, $needle): bool {
+	if (is_array($needle)) {
+		foreach ($needle as $item) {
+			if (endsWith($haystack, $item)) {
+				return true;
+			}
+		}
+		return false;
+	}
 	return substr_compare($haystack, $needle, -strlen($needle)) === 0;
 }
 
-function contains(string $haystack, string $needle): bool {
+function contains(string $haystack, $needle): bool {
+	if (is_array($needle)) {
+		foreach ($needle as $item) {
+			if (contains($haystack, $item)) {
+				return true;
+			}
+		}
+		return false;
+	}
 	return strpos($haystack, $needle) !== false;
 }
 
