@@ -7,6 +7,8 @@ require_once("db.php");
  * This function will be called only if generated.php does not already exist or the values are modified from the admin interface.
  */
 function generate() {
+	$db = new Database();
+
 	$values = array();
 
 	// TODO: Get these from the database
@@ -15,33 +17,13 @@ function generate() {
 	$values["transport_date"] = "2020-03-14";
 	// TODO: validate values
 
-	$dog = new Species();
-	$dog->setAll([
-		"id" => 2,
-		"name" => "dog",
-		"plural" => "dogs",
-		"young" => "puppy",
-		"young_plural" => "puppies",
-		"old" => "senior dog",
-		"old_plural" => "senior dogs",
-		"age_unit_cutoff" => 12,
-		"young_cutoff" => 6,
-		"old_cutoff" => 96
-	]);
-	$cat = new Species();
-	$cat->setAll([
-		"id" => 1,
-		"name" => "cat",
-		"plural" => "cats",
-		"young" => "kitten",
-		"young_plural" => "kittens",
-		"old" => "senior cat",
-		"old_plural" => "senior cats",
-		"age_unit_cutoff" => 12,
-		"young_cutoff" => 6,
-		"old_cutoff" => 96
-	]);
-	$values["species"] = [1 => $cat, 2 => $dog];
+	$values["species"] = [];
+	$species = $db->getAllSpecies();
+	foreach($species as $s) {
+		/* @var $s Species */
+		$s->__set("species_count", null);
+		$values["species"][$s->__get("id")] = $s;
+	}
 
 	$male = new Sex();
 	$male->name = "male";

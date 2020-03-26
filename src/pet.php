@@ -67,7 +67,11 @@ class Species {
 	}
 
 	public function __set($key, $val) {
-		$this->values[$key] = $val;
+		if ($val === null) {
+			unset($this->values[$key]);
+		} else {
+			$this->values[$key] = $val;
+		}
 	}
 
 	public function setAll(array $arr) {
