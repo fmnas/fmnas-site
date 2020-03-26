@@ -36,17 +36,17 @@ class Database {
 		// pets with a different legacy_path.
 		if (!($getAssetByAlternatePath = $this->db->prepare("
 			SELECT assets.* FROM (
-			    SELECT * from photos
-				LEFT JOIN assets ON photos.photo = assets.id
-				LEFT JOIN pets ON photos.pet = pets.id
+			    SELECT * from photos photo
+				LEFT JOIN assets asset ON photo.photo = asset.id
+				LEFT JOIN pets pet ON photo.pet = pet.id
 			) p WHERE CONCAT(
-			    pets.path,
+			    pet.path,
 			    '/',
-			    SUBSTRING_INDEX(assets.path, '/', -1)
+			    SUBSTRING_INDEX(asset.path, '/', -1)
 			) = ? OR CONCAT(
-			    pets.legacy_path,
+			    pet.legacy_path,
 			    '/',
-			    SUBSTRING_INDEX(assets.path, '/', -1)
+			    SUBSTRING_INDEX(asset.path, '/', -1)
 			) = ? 
 			LIMIT 1
 			"))) {
@@ -71,7 +71,7 @@ class Database {
 				SELECT photos.photo FROM (
 					  SELECT * FROM pets WHERE id = ?
 				) pet LEFT JOIN photos ON pet.id = photos.pet
-			) p LEFT JOIN assets ON p.assetId = assets.id
+			) p LEFT JOIN assets ON p.photo = assets.id
 			"))) {
 			log_err("Failed to prepare getPhotos: {$this->db->error}");
 		} else {
@@ -126,7 +126,7 @@ class Database {
 //			    pet.species = species.id AND
 //			    species.plural = ?
 //			"))) {
-//			log_err("Failed to prepare getAdoptablePetsBySpeciesPlural");
+//			log_err("Failed to prepare getAdoptablePetsBySpeciesPlural: {$this->db->error}");
 //		} else {
 //			$this->getAdoptablePetsBySpeciesPlural = $getAdoptablePetsBySpeciesPlural;
 //		}
@@ -136,10 +136,10 @@ class Database {
 			    pets.species = ? AND
 				pets.status = statuses.id AND 
 				statuses.listed = 1
-			LEFT JOIN assets pic ON pet.photo = pic.id
-			LEFT JOIN assets dsc ON pet.description = dsc.id
+			LEFT JOIN assets pic ON pets.photo = pic.id
+			LEFT JOIN assets dsc ON pets.description = dsc.id
 			"))) {
-			log_err("Failed to prepare getAdoptablePetsBySpecies");
+			log_err("Failed to prepare getAdoptablePetsBySpecies: {$this->db->error}");
 		} else {
 			$this->getAdoptablePetsBySpecies = $getAdoptablePetsBySpecies;
 		}
