@@ -1,5 +1,5 @@
 <?php
-require_once(__DIR__ . "/../common.php");
+require_once __DIR__ . "/../common.php";
 function footer(): void { ?>
 <footer>
 	<address><?=nl2br(_G_address(), false)?></address>

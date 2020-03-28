@@ -1,15 +1,15 @@
 <?php
-require_once("../src/common.php");
-require_once("$t/header.php");
-require_once("$t/footer.php");
-require_once("$src/db.php");
-require_once("$src/css.php");
+require_once "../src/common.php";
+require_once "$t/header.php";
+require_once "$t/footer.php";
+require_once "$src/db.php";
+require_once "$src/css.php";
 if (isset($_GET["species"])) {
 	$species = _G_species()[intval($_GET["species"])];
 }
 if (!isset($species)) {
 	log_err("Unknown species");
-	require_once("$src/errors/510.php");
+	require_once "$src/errors/510.php";
 	exit();
 }
 /* @var $species Species */

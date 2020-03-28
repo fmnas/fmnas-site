@@ -93,7 +93,7 @@ The listing parser (`src/parser.php`) depends on
 The admin interface imports [**Mithril**](https://mithril.js.org) from cdnjs.
 The listing editor imports 
 [**Toast UI Editor**](https://ui.toast.com/tui-editor/)
-from cdnjs.
+from the Toast CDN.
 
 The error pages supplied in `src/errors` use images from [**http.cat**](https://http.cat).
 

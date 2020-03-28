@@ -1,8 +1,8 @@
 <?php
-require_once(__DIR__ . "/logo.php");
-require_once(__DIR__ . "/donate.php");
-require_once(__DIR__ . "/adopt_button.php");
-require_once(__DIR__ . "/adopted.php");
+require_once __DIR__ . "/logo.php";
+require_once __DIR__ . "/donate.php";
+require_once __DIR__ . "/adopt_button.php";
+require_once __DIR__ . "/adopted.php";
 function pageHeader(bool $isHome = false): void { ?>
 	<header>
 		<nav>

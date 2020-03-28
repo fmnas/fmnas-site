@@ -1,6 +1,6 @@
 <?php
-require_once("common.php");
-require_once("db.php");
+require_once "common.php";
+require_once "db.php";
 
 class Asset {
 	public string $key; // Database key & storage filename

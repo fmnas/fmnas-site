@@ -1,6 +1,6 @@
 <?php
-require_once("common.php");
-require_once("assets.php");
+require_once "common.php";
+require_once "assets.php";
 
 class Species {
 	private array $values = array();
