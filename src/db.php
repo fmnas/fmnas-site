@@ -83,7 +83,7 @@ class Database {
 			       dsc.path AS dsc_path
 			FROM pets
 			LEFT JOIN assets pic ON 
-				pets.path = ? AND
+				( pets.path = ? OR pets.legacy_path = ? ) AND
 				pets.photo = pic.id
 			LEFT JOIN assets dsc ON pets.description = dsc.id
 			LIMIT 1
@@ -92,17 +92,7 @@ class Database {
 		} else {
 			$this->getPetByPath = $getPetByPath;
 		}
-		if (!($getPetByLegacyPath = $this->db->prepare("
-			SELECT * FROM (
-			    SELECT * FROM pets WHERE legacy_path = ? LIMIT 1
-			) pet
-			LEFT JOIN assets pic ON pet.photo = pic.id
-			LEFT JOIN assets dsc ON pet.description = dsc.id
-			"))) {
-			log_err("Failed to prepare getPetByLegacyPath: {$this->db->error}");
-		} else {
-			$this->getPetByLegacyPath = $getPetByLegacyPath;
-		}
+
 		if (!($getAdoptablePets = $this->db->prepare("
 			SELECT 
 			       pets.*, 
@@ -325,7 +315,7 @@ class Database {
 			}
 		}
 
-		if (!$this->getPetByPath->bind_param("s", $path)) {
+		if (!$this->getPetByPath->bind_param("ss", $path, $path)) {
 			log_err("Binding path $path to getPetByPath failed: {$this->db->error}");
 		} else {
 			if (!$this->getPet->execute()) {
@@ -336,19 +326,8 @@ class Database {
 		}
 
 		if (!isset($result) || $result->num_rows === 0) {
-			if (!$this->getPetByLegacyPath->bind_param("s", $path)) {
-				log_err("Binding path $path to getPetByLegacyPath failed");
-				return null;
-			}
-			if (!$this->getPetByLegacyPath->execute()) {
-				log_err("Executing getPetByLegacyPath failed");
-				return null;
-			}
-			$result = $this->getPetByLegacyPath->get_result();
-			if ($result->num_rows === 0) {
-				log_err("Found no pet with path $path");
-				return urldecode($path) !== $path ? $this->getPetByPath(urldecode($path)) : null;
-			}
+			log_err("Found no pet with path $path");
+			return urldecode($path) !== $path ? $this->getPetByPath(urldecode($path)) : null;
 		}
 
 		$pet_arr = $result->fetch_assoc();
