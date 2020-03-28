@@ -212,6 +212,7 @@ class Database {
 	}
 
 	private static function createPet(array $pet, array $photos = []): Pet {
+		var_dump($pet);
 		$p              = new Pet();
 		$p->id          = $pet["id"];
 		$p->name        = $pet["name"];
@@ -350,17 +351,16 @@ class Database {
 			}
 		}
 
-		$pet = self::createPet($result->fetch_assoc());
-
-		if (!$this->getPhotos->bind_param("s", $pet["id"])) {
-			log_err("Binding pet id {$pet["id"]} to getPhotos failed");
+		$pet_arr = $result->fetch_assoc();
+		var_dump($pet_arr);
+		if (!$this->getPhotos->bind_param("s", $pet_arr["id"])) {
+			log_err("Binding pet id {$pet_arr["id"]} to getPhotos failed");
 		}
 		if (!$this->getPhotos->execute()) {
 			log_err("Executing getPhotos failed");
 		}
 
-		$pet->photos = array_map("self::createAsset", $this->getPhotos->get_result()->fetch_all(MYSQLI_ASSOC));
-		return $pet;
+		return self::createPet($pet_arr, $this->getPhotos->get_result()->fetch_all(MYSQLI_ASSOC));
 	}
 
 	// Returns an array of Pets
