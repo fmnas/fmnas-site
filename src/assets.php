@@ -10,6 +10,10 @@ class Asset {
 	private ?string $contents;
 	private ?array $size; // intrinsic size of image
 
+	private static function createCacheDirectory(): void {
+		@mkdir(root() . "/public/assets/cache", 0755, true);
+	}
+
 	public function absolutePath(): string {
 		return stored_assets() . "/" . $this->key;
 	}
@@ -30,6 +34,8 @@ class Asset {
 	 * @return string HTML code
 	 */
 	public function parse(): string {
+		self::createCacheDirectory();
+
 		if (!$this->getType() !== "text/x-handlebars-template") {
 			log_err("Warning: attempting to parse something with mime-type " . $this->getType() . " (not text/x-handlebars-template");
 		}
@@ -154,6 +160,7 @@ class Asset {
 
 		imagescale($image, $height * $ratio, $height);
 
+		self::createCacheDirectory();
 		$success = false;
 		switch ($this->getType()) {
 			case "image/jpeg":
