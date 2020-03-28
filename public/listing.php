@@ -26,6 +26,8 @@ if (!($pet = $db->getPetByPath($path)) || $pet->status->deleted) {
 	/* @var $photo Asset */
 	echo $photo->imgTag(null, true, true);
 }
-echo $pet->description->parse();
+if ($pet->description !== null) {
+	echo $pet->description->parse();
+}
 footer();
 exit(0); // Exit afterwards if this is indeed a listing
