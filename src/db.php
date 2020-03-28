@@ -212,8 +212,7 @@ class Database {
 	}
 
 	private static function createPet(array $pet, array $photos = []): Pet {
-		var_dump($pet);
-		echo debug_backtrace();
+		var_dump($pet, debug_backtrace());
 		$p              = new Pet();
 		$p->id          = $pet["id"];
 		$p->name        = $pet["name"];
