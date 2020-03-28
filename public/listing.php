@@ -24,7 +24,7 @@ if (!($pet = $db->getPetByPath($path)) || $pet->status->deleted) {
 <h1><?=htmlspecialchars($pet->id . " " . $pet->name)?></h1>
 <?php foreach ($pet->photos as $photo) {
 	/* @var $photo Asset */
-	echo $photo->imgTag(null, true, true);
+	echo $photo->imgTag(null, true, false);
 }
 if ($pet->description !== null) {
 	echo $pet->description->parse();
