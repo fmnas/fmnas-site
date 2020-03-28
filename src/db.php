@@ -1,8 +1,8 @@
 <?php
-require_once("common.php");
-require_once("$secrets/config.php");
-require_once("pet.php");
-require_once("assets.php");
+require_once "common.php";
+require_once "$secrets/config.php";
+require_once "pet.php";
+require_once "assets.php";
 
 class Database {
 	private mysqli $db;

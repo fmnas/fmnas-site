@@ -1,9 +1,9 @@
 <?php
-require_once("../src/common.php");
-require_once("$t/header.php");
-require_once("$t/footer.php");
-require_once("$src/db.php");
-require_once("$src/pet.php");
+require_once "../src/common.php";
+require_once "$t/header.php";
+require_once "$t/footer.php";
+require_once "$src/db.php";
+require_once "$src/pet.php";
 $transportDate = strtotime(_G_transport_date());
 $db            = new Database();
 ?>

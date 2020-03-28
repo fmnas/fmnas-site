@@ -114,10 +114,10 @@ $secrets ??= "$root/secrets";
 
 // Generate and load the generated source with constants from database
 if (!file_exists("$src/generated.php")) {
-	require_once("$src/generator.php");
+	require_once "$src/generator.php";
 	generate();
 }
-require_once("$src/generated.php");
+require_once "$src/generated.php";
 
 /**
  * Import a stylesheet

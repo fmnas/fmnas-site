@@ -1,5 +1,5 @@
 <?php
-require_once(__DIR__ . "/../common.php");
+require_once __DIR__ . "/../common.php";
 function adopted(): void { ?>
 	<aside class="adopted">
 		<a href="https://www.facebook.com/groups/135175210176154/" title="Adopted Pets">
