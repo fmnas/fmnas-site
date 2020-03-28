@@ -7,7 +7,9 @@ require_once "db.php";
  * This function will be called only if generated.php does not already exist or the values are modified from the admin interface.
  */
 function generate() {
-	$db = new Database();
+	global $db;
+
+	$db ??= new Database();
 
 	$values = array();
 

@@ -31,6 +31,7 @@ function relativePath(string $basePath): string {
 ?>
 	<!DOCTYPE html>
 	<title><?=htmlspecialchars(ucfirst($species->nameGivenDob(null, true)))?> for adoption at <?=_G_longname()?></title>
+	<meta charset="utf-8">
 <?php
 style();
 style("adoptable");
