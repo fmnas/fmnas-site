@@ -304,7 +304,11 @@ class Database {
 		);
 	}
 
-	public function getPetByPath(string $path): ?Pet {
+	public function getPetByPath(string $path): Pet {
+		if (urldecode($path) !== $path) {
+			return $this->getPetByPath(urldecode($path));
+		}
+
 		foreach (_G_species() as $species) {
 			/* @var $species Species */
 			$prefix = $species->nameGivenDob(null, true) . "/";
@@ -326,7 +330,7 @@ class Database {
 
 		if (!isset($result) || $result->num_rows === 0) {
 			log_err("Found no pet with path $path");
-			return urldecode($path) !== $path ? $this->getPetByPath(urldecode($path)) : null;
+			return new Pet();
 		}
 
 		$pet_arr = $result->fetch_assoc();
