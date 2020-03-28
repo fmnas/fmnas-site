@@ -21,6 +21,39 @@ class Asset {
 		return $this->contents;
 	}
 
+	/**
+	 * Parse handlebars/markdown into HTML and cache, or retrieve from cache
+	 * @return string HTML code
+	 */
+	public function parse(): string {
+		if (file_exists($this->absolutePath())) {
+			log_err("Did not find stored text with key $this->key at {$this->absolutePath()}");
+			return "";
+		}
+
+		if (!$this->getType() !== "text/x-handlebars-template") {
+			log_err("Warning: attempting to parse something with mime-type " . $this->getType() . " (not text/x-handlebars-template");
+		}
+
+		$filename = root() . "/public/assets/cache/$this->key.html";
+		if (file_exists($filename)) {
+			return file_get_contents($filename);
+		}
+
+		require_once "parser.php";
+		$raw = $this->fetch();
+		if (!($parsed = parse($raw))) {
+			log_err("Failed to parse asset with key $this->key");
+			return $raw;
+		}
+
+		if (file_put_contents($filename, $parsed) === false) {
+			log_err("Failed to write parsed version of $this->key to cache at $filename");
+		}
+
+		return $parsed;
+	}
+
 	public function getType(): string {
 		// If type not already known, detect the most common types from file extension
 		if (!$this->type && $this->path) {

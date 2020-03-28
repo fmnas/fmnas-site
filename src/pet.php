@@ -84,11 +84,18 @@ class Species {
 	public function setAll(array $arr) {
 		$this->values = $arr;
 	}
+
+	public function __toString() {
+		return strval($this->values["name"]);
+	}
 }
 
 class Sex {
 	public int $key;
 	public string $name;
+	public function __toString() {
+		return $this->name;
+	}
 }
 
 class Status {
@@ -98,6 +105,9 @@ class Status {
 	public bool $listed; // Display this animal in the adoptable animal listings?
 	public bool $deleted; // If true, this animal will not be shown in admin view
 	public ?string $description; // Optional explanatory description, where $listed is true and $displayStatus is true
+	public function __toString() {
+		return $this->name;
+	}
 }
 
 class Pet {
@@ -113,6 +123,7 @@ class Pet {
 	public ?array $photos; // photo assets (array of Assets)
 	public ?Asset $description; // description asset
 	public Status $status;
+	public ?bool $plural;
 
 	public function age(): string {
 		return $this->species->age($this->dob);
@@ -120,5 +131,12 @@ class Pet {
 
 	public function listed(): bool {
 		return ($this->description !== null && strlen(trim($this->description->fetch())) > 0) || ($this->photos !== null && count($this->photos) > 0);
+	}
+
+	public function species(): string {
+		if (!isset($this->species) || $this->species === null) {
+			return null;
+		}
+		return $this->species->nameGivenDob($this->dob, $this->plural);
 	}
 }

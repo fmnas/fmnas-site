@@ -234,6 +234,7 @@ class Database {
 		$p->status      = _G_statuses()[$pet["status"]];
 		$p->breed       = $pet["breed"];
 		$p->dob         = $pet["dob"];
+		$p->plural      = $pet["plural"] ? true : false;
 		return $p;
 	}
 
@@ -314,6 +315,15 @@ class Database {
 	}
 
 	public function getPetByPath(string $path): ?Pet {
+		foreach (_G_species() as $species) {
+			/* @var $species Species */
+			$prefix = $species->nameGivenDob(null, true) . "/";
+			if (startsWith(strtolower($path), strtolower($prefix))) {
+				$path = substr($path, strlen($prefix));
+				break;
+			}
+		}
+
 		if (!$this->getPetByPath->bind_param("s", $path)) {
 			log_err("Binding path $path to getPetByPath failed: {$this->db->error}");
 		} else {

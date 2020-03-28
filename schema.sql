@@ -33,10 +33,11 @@ CREATE TABLE pets (
   breed varchar(1023) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'or other description',
   dob date DEFAULT NULL,
   sex tinyint(4) DEFAULT NULL,
-  fee varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  fee varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   photo int(11) DEFAULT NULL,
   description int(11) DEFAULT NULL,
   status smallint(6) NOT NULL DEFAULT '1',
+  plural tinyint(1) DEFAULT '0',
   legacy_path varchar(270) COLLATE utf8mb4_unicode_ci GENERATED ALWAYS AS (concat(`id`,`name`)) VIRTUAL,
   path varchar(270) COLLATE utf8mb4_unicode_ci GENERATED ALWAYS AS (concat(`id`,replace(`name`,' ',''))) VIRTUAL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -78,7 +79,7 @@ CREATE TABLE statuses (
   display tinyint(1) DEFAULT NULL,
   listed tinyint(1) NOT NULL DEFAULT '1',
   deleted tinyint(1) NOT NULL DEFAULT '0',
-  description text COLLATE utf8mb4_unicode_ci NOT NULL
+  description text COLLATE utf8mb4_unicode_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO statuses VALUES
