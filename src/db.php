@@ -318,7 +318,7 @@ class Database {
 		if (!$this->getPetByPath->bind_param("ss", $path, $path)) {
 			log_err("Binding path $path to getPetByPath failed: {$this->db->error}");
 		} else {
-			if (!$this->getPet->execute()) {
+			if (!$this->getPetByPath->execute()) {
 				log_err("Executing getPetByPath failed: {$this->db->error}");
 			} else {
 				$result = $this->getPetByPath->get_result();
