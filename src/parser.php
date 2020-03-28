@@ -6,7 +6,5 @@
  */
 function parse(string $raw): string {
 	// TODO
-	echo "PARSE THIS: ";
-	var_dump($raw);
 	return $raw;
 }

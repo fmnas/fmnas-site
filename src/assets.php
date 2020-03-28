@@ -16,6 +16,10 @@ class Asset {
 
 	public function fetch(): string {
 		if (!isset($this->contents) || !trim($this->contents)) {
+			if (!file_exists($this->absolutePath())) {
+				log_err("Did not find stored asset with key $this->key at {$this->absolutePath()}");
+				return null;
+			}
 			$this->contents = file_get_contents($this->absolutePath());
 		}
 		return $this->contents;
@@ -26,11 +30,6 @@ class Asset {
 	 * @return string HTML code
 	 */
 	public function parse(): string {
-		if (file_exists($this->absolutePath())) {
-			log_err("Did not find stored text with key $this->key at {$this->absolutePath()}");
-			return "";
-		}
-
 		if (!$this->getType() !== "text/x-handlebars-template") {
 			log_err("Warning: attempting to parse something with mime-type " . $this->getType() . " (not text/x-handlebars-template");
 		}
