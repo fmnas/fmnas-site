@@ -87,7 +87,10 @@ or `src/generator.php` is updated.
 
 The listing parser (`src/parser.php`) depends on
 [**lightncandy**](https://github.com/zordius/lightncandy) and
-[**Parsedown**](https://parsedown.org/).
+[**Parsedown**](https://parsedown.org/). These should be fetched by `src/dependencies.php` when they are first required.
+
+To update the dependencies, run `src/update_dependencies.php` or simply delete the existing `src/ligntncandy` and `src/parsedown`
+directories. This should be done regularly.
 
 ### Client-side dependencies
 The admin interface imports [**Mithril**](https://mithril.js.org) from cdnjs.
