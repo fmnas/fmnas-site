@@ -35,7 +35,7 @@ class Dependencies {
 			return;
 		}
 		$shellOutput = shell_exec(
-			"chmod +x " . __DIR__ . "/fetch_latest_release.sh" .
+			"chmod +x " . __DIR__ . "/fetch_latest_release.sh && " .
 			__DIR__ . "/fetch_latest_release.sh $owner $repository"
 		);
 		if (!$checker()) {
