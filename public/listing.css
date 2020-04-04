@@ -53,7 +53,7 @@ a.return {
 	margin-bottom: 0.25in;
 }
 
-img {
+img, iframe {
 	max-height: 640px;
 	max-width: 100%;
 }
