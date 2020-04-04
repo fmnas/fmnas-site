@@ -34,8 +34,6 @@ p > strong:first-child {
 section, footer {
     display: block;
     width: 100%;
-    padding-left: 6%;
-    padding-right: 6%;
     box-sizing: border-box;
 }
 
