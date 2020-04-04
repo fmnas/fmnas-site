@@ -34,11 +34,13 @@ if (!($pet = $db->getPetByPath($path)) || $pet->status->deleted) {
 	echo $photo->imgTag(null, true, false);
 }
 if ($pet->description !== null) {
+	echo '<section id="description">';
 	echo $pet->description->parse([
 		"pet" => $pet->toArray(),
 		"name" => $pet->name,
 		"fee" => $pet->fee
 	]);
+	echo '</section>';
 }
 footer();
 exit(0); // Exit afterwards if this is indeed a listing

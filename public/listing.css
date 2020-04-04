@@ -69,3 +69,14 @@ a.im > img {
 header a.return {
 	display: none;
 }
+
+iframe {
+	margin-bottom: 1em;
+}
+
+section#description {
+	max-width: 9in;
+	margin: 1em;
+	padding-left: auto;
+	padding-right: auto;
+}
