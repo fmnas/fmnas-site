@@ -34,9 +34,9 @@ class Dependencies {
 		if (self::checkLightncandy()) {
 			return;
 		}
-		shell_exec(__DIR__ . "/fetch_latest_release.sh zordius lightncandy");
+		$shellOutput = shell_exec(__DIR__ . "/fetch_latest_release.sh zordius lightncandy");
 		if (!self::checkLightncandy()) {
-			log_err("Failed to fetch lightncandy");
+			log_err("Failed to fetch lightncandy: $shellOutput");
 			echo "Failed to fetch lightncandy";
 		}
 	}
@@ -45,9 +45,9 @@ class Dependencies {
 		if (self::checkParsedown()) {
 			return;
 		}
-		shell_exec(__DIR__ . "/fetch_latest_release.sh erusev parsedown");
+		$shellOutput = shell_exec(__DIR__ . "/fetch_latest_release.sh erusev parsedown");
 		if (!self::checkParsedown()) {
-			log_err("Failed to fetch parsedown");
+			log_err("Failed to fetch parsedown: $shellOutput");
 			echo "Failed to fetch parsedown";
 		}
 	}
