@@ -94,10 +94,10 @@ class Species {
 	}
 
 	public function pluralWithYoung() {
-		return ucfirst($this->plural()) . ucfirst(
+		return ucfirst($this->plural()) . (
 			(($this->__get("young") ?: $this->__get("name")) === $this->__get("name")) ?
 				"" :
-				" &amp; " . ($this->__get("young_plural") ?: $this->__get("young") . 's')
+				" &amp; " . ucfirst($this->__get("young_plural") ?: $this->__get("young") . 's')
 			);
 	}
 }
