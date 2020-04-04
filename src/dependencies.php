@@ -37,7 +37,7 @@ class Dependencies {
 		shell_exec(__DIR__ . "/fetch_latest_release.sh zordius lightncandy");
 		if (!self::checkLightncandy()) {
 			log_err("Failed to fetch lightncandy");
-			include __DIR__ . "/errors/500.php";
+			echo "Failed to fetch lightncandy";
 		}
 	}
 
@@ -48,7 +48,7 @@ class Dependencies {
 		shell_exec(__DIR__ . "/fetch_latest_release.sh erusev parsedown");
 		if (!self::checkParsedown()) {
 			log_err("Failed to fetch parsedown");
-			include __DIR__ . "/errors/500.php";
+			echo "Failed to fetch parsedown";
 		}
 	}
 

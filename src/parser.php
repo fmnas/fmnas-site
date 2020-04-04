@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . "/common.php";
-require_once src() . "/dependencies.php";
+require_once __DIR__ . "/dependencies.php";
 Dependencies::parsedown();
 Dependencies::lightncandy();
 
