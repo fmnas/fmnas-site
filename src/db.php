@@ -20,6 +20,7 @@ class Database {
 
 	public function __construct() {
 		$this->db = new mysqli(Config::$db_host, Config::$db_username, Config::$db_pass, Config::$db_name);
+		$this->db->set_charset("utf8mb4");
 
 		if (!($getAssetByKey = $this->db->prepare("SELECT * FROM assets WHERE id = ?"))) {
 			log_err("Failed to prepare getAssetByKey: {$this->db->error}");
