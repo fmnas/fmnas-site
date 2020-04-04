@@ -30,26 +30,26 @@ class Dependencies {
 		return file_exists(__DIR__ . "/parsedown");
 	}
 
-	private static function fetchLightncandy(): void {
-		if (self::checkLightncandy()) {
+	private static function fetch(string $owner, string $repository, callable $checker): void {
+		if ($checker()) {
 			return;
 		}
-		$shellOutput = shell_exec(__DIR__ . "/fetch_latest_release.sh zordius lightncandy");
-		if (!self::checkLightncandy()) {
-			log_err("Failed to fetch lightncandy: $shellOutput");
-			echo "Failed to fetch lightncandy";
+		$shellOutput = shell_exec(
+			"chmod +x " . __DIR__ . "/fetch_latest_release.sh" .
+			__DIR__ . "/fetch_latest_release.sh $owner $repository"
+		);
+		if (!$checker()) {
+			log_err("Failed to fetch $repository: $shellOutput");
+			echo "Failed to fetch $repository";
 		}
 	}
 
+	private static function fetchLightncandy(): void {
+		self::fetch("zordius", "lightncandy", "self::checkLightncandy");
+	}
+
 	private static function fetchParsedown(): void {
-		if (self::checkParsedown()) {
-			return;
-		}
-		$shellOutput = shell_exec(__DIR__ . "/fetch_latest_release.sh erusev parsedown");
-		if (!self::checkParsedown()) {
-			log_err("Failed to fetch parsedown: $shellOutput");
-			echo "Failed to fetch parsedown";
-		}
+		self::fetch("erusev", "parsedown", "self::checkParsedown");
 	}
 
 	private static function rrmdir(string $src): void {
