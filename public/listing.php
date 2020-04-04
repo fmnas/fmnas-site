@@ -34,7 +34,11 @@ if (!($pet = $db->getPetByPath($path)) || $pet->status->deleted) {
 	echo $photo->imgTag(null, true, false);
 }
 if ($pet->description !== null) {
-	echo $pet->description->parse();
+	echo $pet->description->parse([
+		"pet" => $pet,
+		"name" => $pet->name,
+		"fee" => $pet->fee
+	]);
 }
 footer();
 exit(0); // Exit afterwards if this is indeed a listing

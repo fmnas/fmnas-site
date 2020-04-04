@@ -9,7 +9,7 @@ Dependencies::lightncandy();
  * @param string $raw Handlebars markdown
  * @return string HTML code
  */
-function parse(string $raw): string {
+function parse(string $raw, array $context): string {
 	$Parsedown = new Parsedown();
 	return $Parsedown->text(
 		LightnCandy\LightnCandy::prepare(
@@ -25,6 +25,6 @@ function parse(string $raw): string {
 				},
 				"flags" => LightnCandy\LightnCandy::FLAG_JS
 			])
-		)()
+		)($context)
 	);
 }

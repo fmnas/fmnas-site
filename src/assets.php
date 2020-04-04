@@ -33,7 +33,7 @@ class Asset {
 	 * Parse handlebars/markdown into HTML and cache, or retrieve from cache
 	 * @return string HTML code
 	 */
-	public function parse(): string {
+	public function parse(array $context): string {
 		self::createCacheDirectory();
 
 		if (!$this->getType() !== "text/x-handlebars-template") {
@@ -47,7 +47,7 @@ class Asset {
 
 		require_once "parser.php";
 		$raw = $this->fetch();
-		if (!($parsed = parse($raw))) {
+		if (!($parsed = parse($raw, $context))) {
 			log_err("Failed to parse asset with key $this->key");
 			return $raw;
 		}

@@ -46,15 +46,22 @@ should yield **[Github Flavored Markdown](https://github.github.com/gfm/)** (whi
 the tagfilter extension is **not** used).
 
 The following variables are likely to prove useful in listings:
-* **name**
-* **id**
-* **dob**: "3/28/20"
-* **dob_iso**: "2020-03-28"
-* **age**: "2 years old"
-* **sex**: "male"
-* **species**: "kitten"
-* **fee**: "$40"
-<!-- TODO: Litters -->
+* **pet**: Pet
+    * Properties:
+        * name: string
+        * dob: string ("2020-03-28")
+        * sex: Sex
+            * name: string ("male")
+        * species: Species
+            * name: string ("cat")
+            * plural: string ("cats")
+        * fee: string ("$40")
+    * Methods:
+        * age(): string ("2 years old")
+        * sex(): string ("male")
+        * species(): string ("kitten")
+* **litter**: Litter | null (TODO)
+    * Properties: pets (a list of Pets)
 
 ## Technologies
 **PHP** was chosen as the backend language to simplify deployment to Dreamhost shared hosting. 
