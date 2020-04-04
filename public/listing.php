@@ -30,6 +30,16 @@ if (!($pet = $db->getPetByPath($path)) || $pet->status->deleted) {
 </a>
 <article>
 <h2><?=$pet?></h2>
+<p class="subtitle age"><?=$pet->age()?>
+<p class="subtitle status"><?php
+	if (!$pet->status->listed || $pet->status->displayStatus) {
+		echo $pet->status->name;
+	} else {
+		echo $pet->status->name;
+		echo '&nbsp;&middot;&nbsp;';
+		echo $pet->fee;
+	}
+?>
 <aside class="images">
 <?php foreach ($pet->photos as $photo) {
 	/* @var $photo Asset */
