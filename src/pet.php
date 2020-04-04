@@ -52,7 +52,7 @@ class Species {
 		}
 		try {
 			$interval = (new DateTime())->diff(new DateTime($dob));
-			$months = $interval->y * 12 + $interval->m;
+			$months   = $interval->y * 12 + $interval->m;
 			if ($months < 4) {
 				return "DOB " . (new DateTime($dob))->format("n/j/y");
 			}
@@ -88,11 +88,24 @@ class Species {
 	public function __toString() {
 		return strval($this->values["name"]);
 	}
+
+	public function plural() {
+		return $this->__get("plural") ?: $this->__get("name") . 's';
+	}
+
+	public function pluralWithYoung() {
+		return ucfirst($this->plural()) . ucfirst(
+			(($this->__get("young") ?: $this->__get("name")) === $this->__get("name")) ?
+				"" :
+				" &amp; " . ($this->__get("young_plural") ?: $this->__get("young") . 's')
+			);
+	}
 }
 
 class Sex {
 	public int $key;
 	public string $name;
+
 	public function __toString() {
 		return $this->name;
 	}
@@ -105,6 +118,7 @@ class Status {
 	public bool $listed; // Display this animal in the adoptable animal listings?
 	public bool $deleted; // If true, this animal will not be shown in admin view
 	public ?string $description; // Optional explanatory description, where $listed is true and $displayStatus is true
+
 	public function __toString() {
 		return $this->name;
 	}

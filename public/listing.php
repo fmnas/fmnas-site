@@ -21,10 +21,14 @@ if (!($pet = $db->getPetByPath($path)) || $pet->status->deleted) {
 <meta charset="utf-8">
 <?php
 	style();
+	style("listing");
 	emailLinks();
 	pageHeader();
 ?>
-<h1><?=htmlspecialchars($pet->id . " " . $pet->name)?></h1>
+<a class="return" href="/<?=$pet->species->plural()?>" title="<?=ucfirst($pet->species->plural())?>">
+	Return to the <?=$pet->species->pluralWithYoung()?> page
+</a>
+<h1><?=htmlspecialchars("$pet->name $pet->id")?></h1>
 <?php foreach ($pet->photos as $photo) {
 	/* @var $photo Asset */
 	echo $photo->imgTag(null, true, false);

@@ -26,6 +26,4 @@ foreach (_G_species() as $species) {
 // Try asset handler again
 require_once "asset.php";
 
-// Add additional page handlers here
-
 require_once "$src/errors/404.php";
