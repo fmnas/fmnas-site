@@ -65,3 +65,7 @@ form.paypal {
 a.im > img {
 	vertical-align: bottom;
 }
+
+header a.return {
+	display: none;
+}
