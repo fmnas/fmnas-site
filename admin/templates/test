@@ -1,5 +1,0 @@
-I am a template!
-
-The pet's name is {{name}}
-
-<script>console.log("[Did I make it through?](https://forgetmenotshelter.org)");</script>
