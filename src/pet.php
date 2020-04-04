@@ -153,4 +153,8 @@ class Pet {
 		}
 		return $this->species->nameGivenDob($this->dob, $this->plural);
 	}
+
+	public function __toString() {
+		return htmlspecialchars("$this->name $this->id");
+	}
 }
