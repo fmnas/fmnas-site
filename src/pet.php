@@ -26,7 +26,8 @@ class Species {
 		$age = null;
 		if ($dob != null) {
 			try {
-				$age = (new DateTime())->diff(new DateTime($dob))->m;
+				$diff = (new DateTime())->diff(new DateTime($dob));
+				$age = $diff->y * 12 + $diff->m;
 			} catch (Exception $e) {
 				log_err("Exception when converting $dob to DateTime: " . $e->getMessage());
 			}
