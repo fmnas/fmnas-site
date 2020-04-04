@@ -6,7 +6,7 @@ class Dependencies {
 		if (!self::checkLightncandy()) {
 			self::fetchLightncandy();
 		}
-		// TODO: require it
+		require_once __DIR__ . "/lightncandy/src/loader.php";
 	}
 
 	public static function parsedown(): void {
@@ -14,28 +14,12 @@ class Dependencies {
 		if (!self::checkParsedown()) {
 			self::fetchParsedown();
 		}
-		// TODO: require it
+		require_once __DIR__ . "/parsedown/Parsedown.php";
 	}
 
 	public static function update(): void {
-		// Update lightncandy
-		if (!self::checkLightncandy()) {
-			echo "Lightncandy not detected.";
-			self::fetchLightncandy();
-			echo "Fetched lightncandy.";
-			return;
-		}
-		// TODO: check for update
-		rename(__DIR__ . "/lightncandy", __DIR__ . "/lightncandy~");
 		self::fetchLightncandy();
-		if (!self::checkLightncandy()) {
-			// Rollback
-			self::rrmdir(__DIR__ . "/lightncandy");
-			rename(__DIR__ . "/lightncandy~", __DIR__ . "/lightncandy");
-			fwrite(STDERR, "Failed to update lightncandy!");
-		} else {
-			echo "Successfully updated lightncandy.";
-		}
+		self::fetchParsedown();
 	}
 
 	private static function checkLightncandy(): bool {
@@ -50,17 +34,25 @@ class Dependencies {
 		if (self::checkLightncandy()) {
 			return;
 		}
-		// TODO: fetch lightncandy
+		shell_exec(__DIR__ . "/fetch_latest_release.sh zordius lightncandy");
+		if (!self::checkLightncandy()) {
+			log_err("Failed to fetch lightncandy");
+			include __DIR__ . "/errors/500.php";
+		}
 	}
 
 	private static function fetchParsedown(): void {
 		if (self::checkParsedown()) {
 			return;
 		}
-		// TODO: fetch parsedown
+		shell_exec(__DIR__ . "/fetch_latest_release.sh erusev parsedown");
+		if (!self::checkParsedown()) {
+			log_err("Failed to fetch parsedown");
+			include __DIR__ . "/errors/500.php";
+		}
 	}
 
-	private static function rrmdir($src): void {
+	private static function rrmdir(string $src): void {
 		$dir = opendir($src);
 		while (false !== ($file = readdir($dir))) {
 			if (($file != '.') && ($file != '..')) {
