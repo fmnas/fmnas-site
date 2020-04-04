@@ -28,7 +28,7 @@ if (!($pet = $db->getPetByPath($path)) || $pet->status->deleted) {
 <a class="return" href="/<?=$pet->species->plural()?>" title="<?=ucfirst($pet->species->plural())?>">
 	Return to the <?=$pet->species->pluralWithYoung()?> page
 </a>
-<h1><?=htmlspecialchars("$pet->name $pet->id")?></h1>
+<h1><?=$pet?></h1>
 <?php foreach ($pet->photos as $photo) {
 	/* @var $photo Asset */
 	echo $photo->imgTag(null, true, false);
