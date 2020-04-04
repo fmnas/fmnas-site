@@ -22,7 +22,8 @@ function parse(string $raw): string {
 						log_err("Partial $name not found");
 						return "<!-- ERROR: Handlebars partial $name not found! -->";
 					}
-				}
+				},
+				"flags" => LightnCandy\LightnCandy::FLAG_JS
 			])
 		)()
 	);
