@@ -19,8 +19,11 @@ if (!($pet = $db->getPetByPath($path)) || $pet->status->deleted) {
 	<?=_G_longname()?>
 </title>
 <meta charset="utf-8">
-<?php style(); ?>
-<?php pageHeader(); ?>
+<?php
+	style();
+	emailLinks();
+	pageHeader();
+?>
 <h1><?=htmlspecialchars($pet->id . " " . $pet->name)?></h1>
 <?php foreach ($pet->photos as $photo) {
 	/* @var $photo Asset */
