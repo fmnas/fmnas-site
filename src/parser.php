@@ -24,7 +24,8 @@ function parse(string $raw, array $context): string {
 						return "<!-- ERROR: Handlebars partial $name not found! -->";
 					}
 				},
-				"flags" => LightnCandy\LightnCandy::FLAG_JS
+				"flags" => LightnCandy\LightnCandy::FLAG_JS |
+						   LightnCandy\LightnCandy::FLAG_RUNTIMEPARTIAL
 			])
 		)($context)
 	);
