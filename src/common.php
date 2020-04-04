@@ -80,13 +80,10 @@ function assets(): string {
 	$cwd            = getcwd();
 	$host           = $_SERVER["HTTP_HOST"];
 	$adminSubdomain = "admin.";
-	if (contains($cwd, "/public")) {
-		return "/assets";
-	}
-	if (startsWith($host, $adminSubdomain) && !contains($cwd, "/public/")) {
+	if (startsWith($host, $adminSubdomain)) {
 		return "//" . substr($host, strlen($adminSubdomain)) . "/assets";
 	}
-	return "/assets"; // give up and hope
+	return "/assets";
 }
 
 /**
