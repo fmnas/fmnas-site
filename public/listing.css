@@ -70,7 +70,7 @@ header a.return {
 	display: none;
 }
 
-article section.description iframe {
+section#description iframe {
 	margin: 0 auto 1em;
 	display: block;
 }
