@@ -35,7 +35,7 @@ if (!($pet = $db->getPetByPath($path)) || $pet->status->deleted) {
 }
 if ($pet->description !== null) {
 	echo $pet->description->parse([
-		"pet" => $pet,
+		"pet" => $pet->toArray(),
 		"name" => $pet->name,
 		"fee" => $pet->fee
 	]);

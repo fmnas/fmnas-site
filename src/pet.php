@@ -154,7 +154,22 @@ class Pet {
 		return $this->species->nameGivenDob($this->dob, $this->plural);
 	}
 
-	public function __toString() {
+	public function __toString(): string {
 		return htmlspecialchars("$this->name $this->id");
+	}
+
+	public function toArray(): array {
+		return [
+			"id" => $this->id,
+			"name" => $this->name,
+			"species" => $this->species(),
+			"breed" => $this->breed,
+			"dob" => $this->dob,
+			"age" => $this->age(),
+			"sex" => $this->sex->name,
+			"fee" => $this->fee,
+			"status" => $this->status->name,
+			"plural" => $this->plural
+		];
 	}
 }

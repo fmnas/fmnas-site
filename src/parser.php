@@ -7,6 +7,7 @@ Dependencies::lightncandy();
 /**
  * Parse with Handlebars and Parsedown
  * @param string $raw Handlebars markdown
+ * @param array $context Context to pass to handlebars parser
  * @return string HTML code
  */
 function parse(string $raw, array $context): string {
