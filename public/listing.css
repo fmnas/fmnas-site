@@ -54,8 +54,8 @@ a.return {
 }
 
 img {
-	max-width: 640px;
 	max-height: 640px;
+	max-width: 100%;
 }
 
 form.paypal {
