@@ -35,6 +35,7 @@ function relativePath(string $basePath): string {
 <?php
 style();
 style("adoptable");
+emailLinks();
 ?>
 	<style type="text/css">
 		<?php
