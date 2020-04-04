@@ -1,6 +1,7 @@
 <?php
 declare(strict_types = 1);
 @header("Content-Encoding: UTF-8");
+ini_set("pcre.jit", "0");
 
 function startsWith(string $haystack, $needle): bool {
 	if (is_array($needle)) {
