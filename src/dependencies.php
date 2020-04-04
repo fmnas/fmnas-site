@@ -45,11 +45,11 @@ class Dependencies {
 	}
 
 	private static function fetchLightncandy(): void {
-		self::fetch("zordius", "lightncandy", "self::checkLightncandy");
+		self::fetch("zordius", "lightncandy", [self::class, "checkLightncandy"]);
 	}
 
 	private static function fetchParsedown(): void {
-		self::fetch("erusev", "parsedown", "self::checkParsedown");
+		self::fetch("erusev", "parsedown", [self::class, "checkParsedown"]);
 	}
 
 	private static function rrmdir(string $src): void {
