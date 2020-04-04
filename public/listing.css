@@ -70,8 +70,9 @@ header a.return {
 	display: none;
 }
 
-iframe {
-	margin-bottom: 1em;
+article section.description iframe {
+	margin: 0 auto 1em;
+	display: block;
 }
 
 aside.images {

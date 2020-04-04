@@ -29,7 +29,7 @@ if (!($pet = $db->getPetByPath($path)) || $pet->status->deleted) {
 	Return to the <?=$pet->species->pluralWithYoung()?> page
 </a>
 <article>
-<h1><?=$pet?></h1>
+<h2><?=$pet?></h2>
 <aside class="images">
 <?php foreach ($pet->photos as $photo) {
 	/* @var $photo Asset */
