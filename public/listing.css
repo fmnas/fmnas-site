@@ -81,9 +81,16 @@ aside.images {
 	flex-wrap: wrap;
 	justify-content: space-around;
 	align-items: center;
+	margin-top: 1.5em;
 }
 
 section#description {
 	max-width: 15in;
 	margin: 1em auto;
+}
+
+p.subtitle {
+	text-align: center;
+	font-size: 18pt;
+	margin: 0.2em;
 }

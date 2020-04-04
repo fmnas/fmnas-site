@@ -30,8 +30,9 @@ if (!($pet = $db->getPetByPath($path)) || $pet->status->deleted) {
 </a>
 <article>
 <h2><?=$pet?></h2>
-<p class="subtitle age"><?=$pet->age()?>
-<p class="subtitle status"><?php
+<p class="subtitle"><?php
+	echo $pet->age();
+	echo '&nbsp;&middot;&nbsp;';
 	if (!$pet->status->listed || $pet->status->displayStatus) {
 		echo $pet->status->name;
 	} else {
