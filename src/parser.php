@@ -25,7 +25,9 @@ function parse(string $raw, array $context): string {
 					}
 				},
 				"flags" => LightnCandy\LightnCandy::FLAG_JS |
-						   LightnCandy\LightnCandy::FLAG_NAMEDARG
+						   LightnCandy\LightnCandy::FLAG_NAMEDARG |
+						   LightnCandy\LightnCandy::FLAG_ERROR_EXCEPTION |
+						   LightnCandy\LightnCandy::FLAG_HANDLEBARS
 			])
 		)($context)
 	);
