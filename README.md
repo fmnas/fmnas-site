@@ -24,6 +24,7 @@ To deploy, simply clone or checkout this repository and configure the server as 
         * libJPEG (tested with 8)
         * libPNG (tested with 1.6.34)
     * mysqli (tested with 7.4.3)
+    * Needs shell access (with `shell_exec`) and `curl` in PATH to automatically fetch server-side dependencies
 * MySQL (MariaDB should work)
 
 ### Configuration
@@ -66,6 +67,7 @@ The following variables are likely to prove useful in listings:
 ## Technologies
 **PHP** was chosen as the backend language to simplify deployment to Dreamhost shared hosting. 
 
+<!-- TODO -->
 [**Mithril**](https://mithril.js.org) is used in the admin interface. This library is chosen in lieu of
 a heavyweight JavaScript framework and view library in order to eliminate the additional compilation step when deploying.
 
