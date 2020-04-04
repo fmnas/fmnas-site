@@ -67,7 +67,6 @@ The following variables are likely to prove useful in listings:
 ## Technologies
 **PHP** was chosen as the backend language to simplify deployment to Dreamhost shared hosting. 
 
-<!-- TODO -->
 [**Mithril**](https://mithril.js.org) is used in the admin interface. This library is chosen in lieu of
 a heavyweight JavaScript framework and view library in order to eliminate the additional compilation step when deploying.
 
@@ -100,7 +99,7 @@ The listing editor imports
 [**Toast UI Editor**](https://ui.toast.com/tui-editor/)
 from the Toast CDN.
 
-The error pages supplied in `src/errors` use images from [**http.cat**](https://http.cat).
+The error pages in `src/errors` use images from [**http.cat**](https://http.cat).
 
 The public site expects browser support for the following features, but should gracefully degrade when they are unavailable.
 * CSS 2.1 support including attr() and inline-block (IE 8, Firefox 3, Chrome 4, Safari 3.1, Opera 10)
@@ -108,8 +107,14 @@ The public site expects browser support for the following features, but should g
 * Flexbox (IE 10, Firefox 28, Chrome 21, Safari 6.1, Opera 12.1)
 * ::before animation (Edge 12, Firefox 4, Chrome 26, Opera 15)
 * \<figcaption\> (IE 9, Firefox 4, Chrome 8, Safari 5.1, Opera 11.5)
+* For email link generation:
+    * querySelector (IE 8, Firefox 3.5, Chrome 4, Safari 3.1, Opera 10)
+    * parentElement (IE 9, Firefox 9, Chrome 4, Safari 3.1, Opera 10)
+    * Template literals (Edge 13, Firefox 34, Chrome 41, Safari 9.1, Opera 29)
+    * Element.closest() (Edge 15, Firefox 35, Chrome 41, Safari 9, Opera 28)
 
-As such, the public site should appear mostly complete on IE 10+, Edge, Firefox 28+, Chrome 21+, Safari 6.1+, and Opera 12.1+. 
+Though more recent browser features are required for some minor functionality, 
+the public site should appear mostly complete on IE 10+, Edge, Firefox 28+, Chrome 21+, Safari 6.1+, and Opera 12.1+. 
 As of March 2020, this includes approximately 98% of desktop users. The required features are supported by nearly 100% of mobile devices.
 
 
