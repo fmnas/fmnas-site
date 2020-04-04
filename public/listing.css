@@ -74,9 +74,15 @@ iframe {
 	margin-bottom: 1em;
 }
 
+aside.images {
+	width: 100%;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-around;
+	align-items: center;
+}
+
 section#description {
-	max-width: 9in;
-	margin: 1em;
-	padding-left: auto;
-	padding-right: auto;
+	max-width: 15in;
+	margin: 1em auto;
 }
