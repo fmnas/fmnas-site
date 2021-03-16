@@ -1,5 +1,5 @@
 secrets/*
-!secrets/*_sample*
+!secrets/*_sample.*
 
 /log
 
