@@ -5,12 +5,9 @@ website of the [Forget Me Not Animal Shelter](https://forgetmenotshelter.org) (R
 
 Over time, the complete website will be migrated into this repository.
 
-This code is written specifically for Forget Me Not and not intended for use in other applications;
-however, it is provided here in case someone else finds it useful.
-
 ## License
 
-At this time, all rights reserved by the Forget Me Not Animal Shelter.
+At this time, all rights reserved by Forget Me Not Animal Shelter.
 
 ## Deployment
 This site is designed to be easy to deploy to any LAMP server, including shared web hosts such as Dreamhost.
@@ -99,23 +96,3 @@ The listing editor imports
 from the Toast CDN.
 
 The error pages in `src/errors` use images from [**http.cat**](https://http.cat).
-
-The public site expects browser support for the following features, but should gracefully degrade when they are unavailable.
-* CSS 2.1 support including attr() and inline-block (IE 8, Firefox 3, Chrome 4, Safari 3.1, Opera 10)
-* CSS3 selectors (IE 9, Firefox 3.5, Chrome 4, Safari 3.2, Opera 10)
-* Flexbox (IE 10, Firefox 28, Chrome 21, Safari 6.1, Opera 12.1)
-* ::before animation (Edge 12, Firefox 4, Chrome 26, Opera 15)
-* \<figcaption\> (IE 9, Firefox 4, Chrome 8, Safari 5.1, Opera 11.5)
-* For email link generation:
-    * querySelector (IE 8, Firefox 3.5, Chrome 4, Safari 3.1, Opera 10)
-    * parentElement (IE 9, Firefox 9, Chrome 4, Safari 3.1, Opera 10)
-    * Template literals (Edge 13, Firefox 34, Chrome 41, Safari 9.1, Opera 29)
-    * Element.closest() (Edge 15, Firefox 35, Chrome 41, Safari 9, Opera 28)
-
-Though more recent browser features are required for some minor functionality, 
-the public site should appear mostly complete on IE 10+, Edge, Firefox 28+, Chrome 21+, Safari 6.1+, and Opera 12.1+. 
-As of March 2020, this includes approximately 98% of desktop users. The required features are supported by nearly 100% of mobile devices.
-
-
-The admin site requires browser support for the following features:
-* ECMAScript 5 (IE 10, Firefox 21, Chrome 23, Safari 6)
