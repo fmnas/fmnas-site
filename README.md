@@ -67,7 +67,8 @@ The following variables are likely to prove useful in listings:
 a heavyweight JavaScript framework and view library in order to eliminate the additional compilation step when deploying.
 
 On the server side, listings are first compiled with [lightncandy](https://github.com/zordius/lightncandy),
-then parsed with [Parsedown](https://parsedown.org/). Any PHP code embedded in listings will **not** be executed on the server. The resulting HTML is cached; the cached assets are automatically
+then parsed with [Parsedown](https://parsedown.org/). Any PHP code embedded in listings will **not** be executed on the server (TODO: verify). 
+The resulting HTML is cached (TODO); the cached assets are automatically
 deleted when listings are updated through the admin interface, but must be manually deleted if changes are made to the asset or 
 corresponding database records outside the admin interface.
 
