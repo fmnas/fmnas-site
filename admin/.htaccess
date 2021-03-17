@@ -14,6 +14,7 @@ AddOutputFilterByType DEFLATE application/rss+xml
 AddOutputFilterByType DEFLATE application/javascript
 AddOutputFilterByType DEFLATE application/x-javascript
 
+# TODO: OAuth authentication for admin site
 # Temporary password protection for development
 AuthName "Development Site"
 AuthType Basic

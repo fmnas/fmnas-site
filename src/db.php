@@ -11,7 +11,6 @@ class Database {
 	private mysqli_stmt $getAssetByAlternatePath;
 	private mysqli_stmt $getPet;
 	private mysqli_stmt $getPetByPath;
-	private mysqli_stmt $getPetByLegacyPath;
 	private mysqli_stmt $getPhotos;
 	private mysqli_stmt $getAdoptablePets;
 	private mysqli_stmt $getAdoptablePetsBySpecies;
