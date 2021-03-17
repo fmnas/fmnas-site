@@ -2,7 +2,8 @@
 RewriteEngine On
 # TODO: enforce https when cert problem resolved
 #RewriteCond %{HTTPS} !=on
-#RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+#RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=308]
+#TODO check behavior on IE11 on Win7
 
 # TODO: why is this commented
 # allow access to directories without trailing slash
