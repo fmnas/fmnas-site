@@ -4,6 +4,7 @@ require_once "assets.php";
 
 class Species {
 	private array $values = array();
+//  values include such keys as:
 //	private string $key;
 //	private string $name;
 //	private string $plural;
@@ -27,7 +28,7 @@ class Species {
 		if ($dob != null) {
 			try {
 				$diff = (new DateTime())->diff(new DateTime($dob));
-				$age = $diff->y * 12 + $diff->m;
+				$age  = $diff->y * 12 + $diff->m;
 			} catch (Exception $e) {
 				log_err("Exception when converting $dob to DateTime: " . $e->getMessage());
 			}
@@ -161,16 +162,16 @@ class Pet {
 
 	public function toArray(): array {
 		return [
-			"id" => $this->id,
-			"name" => $this->name,
+			"id"      => $this->id,
+			"name"    => $this->name,
 			"species" => $this->species(),
-			"breed" => $this->breed,
-			"dob" => $this->dob,
-			"age" => $this->age(),
-			"sex" => $this->sex->name,
-			"fee" => $this->fee,
-			"status" => $this->status->name,
-			"plural" => $this->plural
+			"breed"   => $this->breed,
+			"dob"     => $this->dob,
+			"age"     => $this->age(),
+			"sex"     => $this->sex->name,
+			"fee"     => $this->fee,
+			"status"  => $this->status->name,
+			"plural"  => $this->plural
 		];
 	}
 }

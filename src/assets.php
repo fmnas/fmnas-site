@@ -64,16 +64,26 @@ class Asset {
 		if (!$this->type && $this->path) {
 			if (endsWith($this->path, [".jpg", ".jpeg", ".jfif"])) {
 				$this->type = "image/jpeg";
-			} else if (endsWith($this->path, ".png")) {
-				$this->type = "image/png";
-			} else if (endsWith($this->path, ".gif")) {
-				$this->type = "image/gif";
-			} else if (endsWith($this->path, ".pdf")) {
-				$this->type = "application/pdf";
-			} else if (endsWith($this->path, ".txt")) {
-				$this->type = "text/plain";
-			} else if (endsWith($this->path, [".htm", ".html"])) {
-				$this->type = "text/html";
+			} else {
+				if (endsWith($this->path, ".png")) {
+					$this->type = "image/png";
+				} else {
+					if (endsWith($this->path, ".gif")) {
+						$this->type = "image/gif";
+					} else {
+						if (endsWith($this->path, ".pdf")) {
+							$this->type = "application/pdf";
+						} else {
+							if (endsWith($this->path, ".txt")) {
+								$this->type = "text/plain";
+							} else {
+								if (endsWith($this->path, [".htm", ".html"])) {
+									$this->type = "text/html";
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 		// If above fails to detect type, detect it from the file itself
@@ -180,6 +190,7 @@ class Asset {
 	 * @return string img tag
 	 */
 	public function imgTag(?string $alt = "", bool $link = false, bool $relative = false, int $height = 600): string {
+		// TODO: use a source set
 		if ($this->path) {
 			$path = $relative ? basename($this->path) : '/' . $this->path;
 		} else {

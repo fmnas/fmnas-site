@@ -1,9 +1,10 @@
 
 RewriteEngine On
-# enforce https - enable when cert problem resolved
+# TODO: enforce https when cert problem resolved
 #RewriteCond %{HTTPS} !=on
 #RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
+# TODO: why is this commented
 # allow access to directories without trailing slash
 #Options -Indexes
 #DirectorySlash Off
@@ -12,6 +13,7 @@ RewriteEngine On
 #RewriteCond %{REQUEST_FILENAME}/index.php -f
 #RewriteRule (.*) $1/index.php [L]
 
+# TODO: update application
 # redirect old /Application to /application
 #Redirect 301 /Application /application
 #RewriteRule ^Application/(.*)$ /application/$1 [L,R=301]
@@ -44,6 +46,7 @@ AddOutputFilterByType DEFLATE application/rss+xml
 AddOutputFilterByType DEFLATE application/javascript
 AddOutputFilterByType DEFLATE application/x-javascript
 
+# TODO: remove authentication from public site
 # Temporary password protection for development
 AuthName "Public Site"
 AuthType Basic
