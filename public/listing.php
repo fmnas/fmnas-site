@@ -19,6 +19,7 @@ if (!($pet = $db->getPetByPath($path)) || $pet->status->deleted) {
 	<?=_G_longname()?>
 </title>
 <meta charset="utf-8">
+<meta name="robots" content="<?=$pet->status->listed ? "index" : "noindex"?>">
 <?php
 	style();
 	style("listing");
