@@ -7,6 +7,6 @@ function footer(): void { ?>
 	<p><a href="/application">Send in an application</a> to become a pre-approved adopter; we can schedule an appointment for you to meet all the pets that interest you at the shelter, or send the pet of your dreams out to you on one of our regular transports!
 	<p class="big">For more information, call&nbsp;<a href="tel:<?=_G_phone_intl()?>"><?=_G_phone()?></a><br>
 		fax&nbsp;<?=_G_fax()?><br>
-		or <a data-email>send email</a>
+		or email <a data-email></a>
 </footer>
 <?php }
