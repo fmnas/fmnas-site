@@ -27,5 +27,4 @@ foreach (_G_species() as $species) {
 // Try image editor again
 require_once "image.php";
 
-// Go to
 require_once "$src/errors/404.php";
