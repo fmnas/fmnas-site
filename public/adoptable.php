@@ -143,7 +143,7 @@ pageHeader();
 		</thead>
 		<tbody>
 		<?php
-		$db   = new Database();
+		$db   ??= new Database();
 		$pets = $db->getAdoptablePetsBySpecies($species);
 		foreach ($pets as $pet) {
 			/* @var $pet Pet */

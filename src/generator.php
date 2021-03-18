@@ -9,7 +9,6 @@ require_once "common.php";
  */
 function generate() {
 	global $db;
-
 	$db ??= new Database();
 
 	$values = array();
@@ -40,13 +39,13 @@ function generate() {
 
 	$values["statuses"] = [];
 	foreach ($db->query("SELECT * FROM statuses") as $item) {
-		$status = new Status();
-		$status->key = $item["id"];
-		$status->description = $item["description"];
-		$status->displayStatus = $item["display"];
-		$status->listed = $item["listed"];
-		$status->deleted = $item["deleted"];
-		$status->name = htmlspecialchars($item["name"]);
+		$status                           = new Status();
+		$status->key                      = $item["id"];
+		$status->description              = $item["description"];
+		$status->displayStatus            = $item["display"];
+		$status->listed                   = $item["listed"];
+		$status->deleted                  = $item["deleted"];
+		$status->name                     = htmlspecialchars($item["name"]);
 		$values["statuses"][$status->key] = $status;
 	}
 
