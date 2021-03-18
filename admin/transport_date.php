@@ -4,7 +4,7 @@ require_once "auth.php";
 $error = false;
 if (@isset($_POST["set_date"])) {
 	require_once "db.php";
-	$dbw ??= new DatabaseWriter();
+	$dbw = new DatabaseWriter();
 
 	$transportDate = DateTime::createFromFormat("Y-m-d", $_POST["set_date"]);
 	if (!($transportDate && $transportDate->format("Y-m-d") == $_POST["set_date"])) {

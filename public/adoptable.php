@@ -30,7 +30,7 @@ function relativePath(string $basePath): string {
 
 ?>
 	<!DOCTYPE html>
-	<title><?=htmlspecialchars(ucfirst($species->nameGivenDob(null, true)))?> for adoption at <?=_G_longname()?></title>
+	<title><?=htmlspecialchars(ucfirst($species->plural()))?> for adoption at <?=_G_longname()?></title>
 	<meta charset="utf-8">
 <?php
 style();
@@ -129,7 +129,7 @@ emailLinks();
 <?php
 pageHeader();
 ?>
-	<h2>Adoptable <?=$species->nameGivenDob(null, true)?></h2>
+	<h2>Adoptable <?=$species->plural()?></h2>
 	<table class="listings">
 		<thead>
 		<tr>

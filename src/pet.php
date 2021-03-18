@@ -2,19 +2,21 @@
 require_once "common.php";
 require_once "assets.php";
 
+/**
+ * @property int|null species_count
+ * @property int key
+ * @property string|null name
+ * @property string|null plural
+ * @property string|null young
+ * @property string|null young_plural
+ * @property string|null old
+ * @property string|null old_plural
+ * @property int|null age_unit_cutoff // Number of months after which age shall be reported in years
+ * @property int|null young_cutoff // Below this number of months, exclusive, use "young name"
+ * @property int|null old_cutoff // Above this number of months, inclusive, use "old name"
+ */
 class Species {
 	private array $values = array();
-//  values include such keys as:
-//	private string $key;
-//	private string $name;
-//	private string $plural;
-//	private string $young;
-//	private string $young_plural;
-//	private string $old;
-//	private string $old_plural;
-//	private int $age_unit_cutoff; // number of months after which age shall be reported in years
-//	private int $young_cutoff; // below this number of months, exclusive, use "young name"
-//	private int $old_cutoff; // above this number of months, inclusive, use "old name"
 
 	/**
 	 * Get an appropriate name for this species depending on age and plurality
@@ -33,14 +35,14 @@ class Species {
 				log_err("Exception when converting $dob to DateTime: " . $e->getMessage());
 			}
 		}
-		$age ??= $this->__get("young_cutoff") ?? 36;
-		if ($age < ($this->__get("young_cutoff") ?? 0)) {
-			return $plural ? ($this->__get("young_plural") ?? $this->__get("plural")) : ($this->__get("young") ?? $this->__get("name"));
+		$age ??= $this->young_cutoff ?? 36;
+		if ($age < ($this->young_cutoff ?? 0)) {
+			return $plural ? ($this->young_plural ?? $this->plural) : ($this->young ?? $this->name);
 		}
-		if ($age >= ($this->__get("old_cutoff") ?? PHP_INT_MAX)) {
-			return $plural ? ($this->__get("old_plural") ?? $this->__get("plural")) : ($this->__get("old") ?? $this->__get("name"));
+		if ($age >= ($this->old_cutoff ?? PHP_INT_MAX)) {
+			return $plural ? ($this->old_plural ?? $this->plural) : ($this->old ?? $this->name);
 		}
-		return $plural ? $this->__get("plural") : $this->__get("name");
+		return $plural ? $this->plural : $this->name;
 	}
 
 	/**
@@ -61,7 +63,7 @@ class Species {
 			if ($months == 0) {
 				return $interval->d . " day" . ($interval->d === 1 ? "" : "s") . " old";
 			}
-			if ($this->__get("age_unit_cutoff") ?: 12 > $interval->m) {
+			if ($this->age_unit_cutoff ?: 12 > $interval->m) {
 				return $interval->y . " year" . ($interval->y === 1 ? "" : "s") . " old";
 			}
 			return $months . " month" . ($months === 1 ? "" : "s") . " old";
@@ -92,14 +94,14 @@ class Species {
 	}
 
 	public function plural() {
-		return $this->__get("plural") ?: $this->__get("name") . 's';
+		return $this->plural ?: $this->name . 's';
 	}
 
 	public function pluralWithYoung() {
 		return ucfirst($this->plural()) . (
-			(($this->__get("young") ?: $this->__get("name")) === $this->__get("name")) ?
+			(($this->young ?: $this->name) === $this->name) ?
 				"" :
-				" &amp; " . ucfirst($this->__get("young_plural") ?: $this->__get("young") . 's')
+				" &amp; " . ucfirst($this->young_plural ?: $this->young . 's')
 			);
 	}
 }
@@ -138,7 +140,7 @@ class Pet {
 	public ?array $photos; // photo assets (array of Assets)
 	public ?Asset $description; // description asset
 	public Status $status;
-	public ?bool $plural;
+	public ?bool $plural; // TODO: Two animals in one listing?
 
 	public function age(): string {
 		return $this->species->age($this->dob);

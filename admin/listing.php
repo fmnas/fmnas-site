@@ -1,22 +1,96 @@
 <?php
 require_once "auth.php";
-require_once "$src/pet.php";
-require_once "$src/db.php";
-require_once "$src/assets.php";
+require_once "db.php";
 
-/* @var $path string */
-$db ??= new Database();
+$db = new DatabaseWriter();
+
+/** @var string $path */
+/** @var Pet $pet */
 $pet = null;
 if (@isset($path)) {
 	$pet = $db->getPetByPath($path);
-} elseif (@isset($_GET["id"])) {
-	$pet = $db->getPetById($_GET["id"]);
+} else {
+	if (@isset($_GET["id"])) {
+		$pet = $db->getPetById($_GET["id"]);
+	}
 }
 if ($pet === null) {
-	return; // this is not a valid listing, so exit from handler.php if that's what brought you here
+	$pet = new Pet();
+	return; // this is not a valid listing, so go back to handler.php if applicable
+}
+
+if (@isset($_POST["id"])) {
+	// TODO: Add or update a listing
 }
 
 // TODO: listing editor
+?>
+	<!DOCTYPE html>
+	<title><?=$pet->id ? htmlspecialchars($pet->id) . ' ' . htmlspecialchars($pet->name) : 'Listing Editor'?></title>
+	<meta charset="UTF-8">
+<?php
+style();
+?>
 
+	<form method="POST">
+		<ul>
+			<li class="name"><label>Name:
+					<input type="text" name="name" value="<?=htmlspecialchars($pet->name)?>">
+				</label>
+			<li class="species"><label>Species:
+					<select name="species">
+						<?php
+						foreach (_G_species() as $species) {
+							/** @var Species $species */
+							echo '<option value="' . $species->key . '"';
+							if ($species === $pet->species) {
+								echo ' selected';
+							}
+							echo '>';
+							echo $species->name;
+							echo '</option>';
+						}
+						?>
+					</select>
+				</label>
+			<li class="breed"><label>Breed:
+					<input type="text" name="breed" value="<?=htmlspecialchars($pet->breed)?>">
+				</label>
+			<li class="dob"><label>
+					<abbr title="date of birth">DOB</abbr>:
+					<input type="date" name="dob" value="<?=$pet->dob?>">
+				</label>
+			<li class="sex">
+				<fieldset>
+					<legend>Sex</legend>
+					<?php foreach (_G_sexes() as $sex): ?>
+						<input type="radio" name="sex" value="<?=$sex->key?>" id="sex_<?=$sex->key?>">
+						<label for="sex_<?=$sex->key?>">
+							<abbr title="<?=$sex->name?>"><?=strtoupper($sex->name[0])?></abbr>
+						</label>
+					<?php endforeach; ?>
+				</fieldset>
+			<li class="fee"><label>Fee:
+					<input type="text" name="fee" value="<?=htmlspecialchars($pet->fee ?: '$')?>">
+				</label>
+			<li class="status"><label>Status:
+					<select name="status">
+						<?php
+						foreach (_G_statuses() as $status) {
+							/** @var Status $status */
+							echo '<option value="' . $status->key . '"';
+							if ($status === $pet->status) {
+								echo ' selected';
+							}
+							echo '>';
+							echo $status->name;
+							echo '</option>';
+						}
+						?>
+					</select>
+				</label>
+		</ul>
+	</form>
 
-exit(0); // Exit from handler.php if the listing was found
+<?php
+exit(0); // Exit from handler.php if applicable

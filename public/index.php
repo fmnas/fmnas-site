@@ -21,11 +21,11 @@ pageHeader(true);
 			$displayedSpecies = 0;
 			foreach ($db->getAllSpecies() as $species) { // TODO: cache?
 			/* @var $species Species */
-			if ($species->__get("species_count")):
+			if ($species->species_count):
 			$displayedSpecies++; ?>
-			<li><a href="/<?=$species->plural()?>">See our <?=ucfirst($species->pluralWithYoung())?></a>
+			<li><a href="/<?=$species->plural()?>">See our <?=$species->pluralWithYoung()?></a>
 				<?php else: ?>
-					<!-- Found zero adoptable <?=$species->nameGivenDob(null, true)?> -->
+					<!-- Found zero adoptable <?=$species->plural()?> -->
 				<?php endif;
 				}
 				if ($displayedSpecies === 0): ?>
