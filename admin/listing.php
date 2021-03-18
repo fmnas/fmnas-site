@@ -25,7 +25,7 @@ if (@isset($_POST["id"])) {
 // TODO: listing editor
 ?>
 	<!DOCTYPE html>
-	<title><?=$pet->id ? htmlspecialchars($pet->id) . ' ' . htmlspecialchars($pet->name) : 'Listing Editor'?></title>
+	<title><?=$pet ? htmlspecialchars($pet->id) . ' ' . htmlspecialchars($pet->name) : 'Listing Editor'?></title>
 	<meta charset="UTF-8">
 <?php
 style();
