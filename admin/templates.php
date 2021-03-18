@@ -1,0 +1,2 @@
+<?php
+// TODO: template manager

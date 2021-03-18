@@ -14,6 +14,11 @@ AddOutputFilterByType DEFLATE application/rss+xml
 AddOutputFilterByType DEFLATE application/javascript
 AddOutputFilterByType DEFLATE application/x-javascript
 
+# redirect to handler.php for non-existing directories
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^.*$ /handler.php [L]
+
 # TODO: OAuth authentication for admin site
 # Temporary password protection for development
 AuthName "Development Site"
