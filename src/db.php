@@ -5,7 +5,7 @@ require_once "pet.php";
 require_once "assets.php";
 
 class Database {
-	private mysqli $db;
+	protected mysqli $db;
 	private mysqli_stmt $getAssetByKey;
 	private mysqli_stmt $getAssetByPath;
 	private mysqli_stmt $getAssetByAlternatePath;
@@ -16,9 +16,6 @@ class Database {
 	private mysqli_stmt $getAdoptablePetsBySpecies;
 	private mysqli_stmt $getAllPets;
 	private mysqli_stmt $getAllSpecies;
-
-	private mysqli_stmt $addHistoryEntry; // TODO: add version history
-	private mysqli_stmt $setTransportDate;
 
 	public function __construct() {
 		$this->db = new mysqli(Config::$db_host, Config::$db_username, Config::$db_pass, Config::$db_name);
@@ -62,6 +59,7 @@ class Database {
 		} else {
 			$this->getPet = $getPet;
 		}
+
 		if (!($getPhotos = $this->db->prepare("
 			SELECT assets.* FROM (
 				SELECT photos.photo FROM (
@@ -73,6 +71,7 @@ class Database {
 		} else {
 			$this->getPhotos = $getPhotos;
 		}
+
 		if (!($getPetByPath = $this->db->prepare("
 			SELECT 
 			       pets.*, 
@@ -118,6 +117,7 @@ class Database {
 		} else {
 			$this->getAdoptablePets = $getAdoptablePets;
 		}
+
 //		if (!($getAdoptablePetsBySpeciesPlural = $this->db->prepare("
 //			SELECT * FROM (
 //			    SELECT pets.* FROM pets
@@ -135,6 +135,7 @@ class Database {
 //		} else {
 //			$this->getAdoptablePetsBySpeciesPlural = $getAdoptablePetsBySpeciesPlural;
 //		}
+
 		if (!($getAdoptablePetsBySpecies = $this->db->prepare("
 			SELECT 
 			       pets.*, 
@@ -158,6 +159,7 @@ class Database {
 		} else {
 			$this->getAdoptablePetsBySpecies = $getAdoptablePetsBySpecies;
 		}
+
 		if (!($getAllPets = $this->db->prepare("
 			SELECT 
 			       pets.*, 
