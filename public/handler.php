@@ -19,6 +19,7 @@ foreach (_G_species() as $species) {
 	}
 	if (startsWith($path, $species->plural() . "/")) {
 		// Try displaying an individual pet
+		$expectListing = true;
 		require_once "listing.php";
 	}
 }

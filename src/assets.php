@@ -190,7 +190,6 @@ class Asset {
 	 * @return string img tag
 	 */
 	public function imgTag(?string $alt = "", bool $link = false, bool $relative = false, int $height = 600): string {
-		// TODO: use a source set
 		if ($this->path) {
 			$path = $relative ? basename($this->path) : '/' . $this->path;
 		} else {

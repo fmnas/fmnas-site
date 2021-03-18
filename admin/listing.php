@@ -7,15 +7,14 @@ $db = new DatabaseWriter();
 /** @var string $path */
 /** @var Pet $pet */
 $pet = null;
-if (@isset($path)) {
+if (isset($path)) {
 	$pet = $db->getPetByPath($path);
 } else {
 	if (@isset($_GET["id"])) {
 		$pet = $db->getPetById($_GET["id"]);
 	}
 }
-if ($pet === null) {
-	$pet = new Pet();
+if ($pet === null && isset($expectListing) && $expectListing) {
 	return; // this is not a valid listing, so go back to handler.php if applicable
 }
 
@@ -35,7 +34,7 @@ style();
 	<form method="POST">
 		<ul>
 			<li class="name"><label>Name:
-					<input type="text" name="name" value="<?=htmlspecialchars($pet->name)?>">
+					<input type="text" name="name" value="<?=$pet ? htmlspecialchars($pet->name) : ''?>">
 				</label>
 			<li class="species"><label>Species:
 					<select name="species">
@@ -43,7 +42,7 @@ style();
 						foreach (_G_species() as $species) {
 							/** @var Species $species */
 							echo '<option value="' . $species->key . '"';
-							if ($species === $pet->species) {
+							if ($pet && $species === $pet->species) {
 								echo ' selected';
 							}
 							echo '>';
@@ -54,24 +53,30 @@ style();
 					</select>
 				</label>
 			<li class="breed"><label>Breed:
-					<input type="text" name="breed" value="<?=htmlspecialchars($pet->breed)?>">
+					<input type="text" name="breed" value="<?=$pet ? htmlspecialchars($pet->breed) : ''?>">
 				</label>
 			<li class="dob"><label>
 					<abbr title="date of birth">DOB</abbr>:
-					<input type="date" name="dob" value="<?=$pet->dob?>">
+					<input type="date" name="dob" value="<?=$pet ? $pet->dob : ''?>">
 				</label>
 			<li class="sex">
 				<fieldset>
 					<legend>Sex</legend>
 					<?php foreach (_G_sexes() as $sex): ?>
-						<input type="radio" name="sex" value="<?=$sex->key?>" id="sex_<?=$sex->key?>">
+						<input type="radio" name="sex" value="<?=$sex->key?>" id="sex_<?=$sex->key?>"
+						<?php
+							if ($pet && $pet->sex === $sex) {
+								echo ' selected';
+							}
+						?>
+						>
 						<label for="sex_<?=$sex->key?>">
 							<abbr title="<?=$sex->name?>"><?=strtoupper($sex->name[0])?></abbr>
 						</label>
 					<?php endforeach; ?>
 				</fieldset>
 			<li class="fee"><label>Fee:
-					<input type="text" name="fee" value="<?=htmlspecialchars($pet->fee ?: '$')?>">
+					<input type="text" name="fee" value="<?=htmlspecialchars($pet ? $pet->fee : '$')?>">
 				</label>
 			<li class="status"><label>Status:
 					<select name="status">
@@ -79,7 +84,7 @@ style();
 						foreach (_G_statuses() as $status) {
 							/** @var Status $status */
 							echo '<option value="' . $status->key . '"';
-							if ($status === $pet->status) {
+							if ($pet && $status === $pet->status) {
 								echo ' selected';
 							}
 							echo '>';
@@ -91,6 +96,7 @@ style();
 				</label>
 		</ul>
 	</form>
+<?=null?>
 
 <?php
 exit(0); // Exit from handler.php if applicable
