@@ -15,7 +15,7 @@ foreach (_G_species() as $species) {
 	if (strtolower($path) === strtolower($species->__get("plural"))) {
 		// Go to listing editor main page
 		header("HTTP/1.1 303 See Other");
-		header("Location: http://$_SERVER[HTTP_HOST]/listings.php");
+		header("Location: https://$_SERVER[HTTP_HOST]/listings.php");
 		exit();
 	}
 	if (startsWith($path, $species->__get("plural") . "/")) {
