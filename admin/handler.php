@@ -12,13 +12,13 @@ if (endsWith($path, ".jpeg") || $path[-4] === ".") {
 // URLs starting with species (cats, dogs/1022Fido, etc)
 foreach (_G_species() as $species) {
 	/* @var $species Species */
-	if (strtolower($path) === strtolower($species->__get("plural"))) {
+	if (strtolower($path) === strtolower($species->plural())) {
 		// Go to listing editor main page
 		header("HTTP/1.1 303 See Other");
 		header("Location: https://$_SERVER[HTTP_HOST]/listings.php");
 		exit();
 	}
-	if (startsWith($path, $species->__get("plural") . "/")) {
+	if (startsWith($path, $species->plural() . "/")) {
 		// Edit a specific listing
 		require_once "listing.php";
 	}

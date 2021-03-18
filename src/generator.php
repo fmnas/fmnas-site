@@ -25,8 +25,8 @@ function generate() {
 	$values["species"] = [];
 	foreach ($db->getAllSpecies() as $s) {
 		/* @var $s Species */
-		$s->__set("species_count", null);
-		$values["species"][$s->__get("id")] = $s;
+		$s->species_count           = null;
+		$values["species"][$s->key] = $s;
 	}
 
 	$values["sexes"] = [];

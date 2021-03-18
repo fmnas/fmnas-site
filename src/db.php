@@ -314,7 +314,7 @@ class Database {
 
 		foreach (_G_species() as $species) {
 			/* @var $species Species */
-			$prefix = $species->nameGivenDob(null, true) . "/";
+			$prefix = $species->plural() . "/";
 			if (startsWith(strtolower($path), strtolower($prefix))) {
 				$path = substr($path, strlen($prefix));
 				break;
@@ -358,9 +358,9 @@ class Database {
 
 	public function getAdoptablePetsBySpecies(Species $species): array {
 		// Note table collation is case-insensitive
-		$id = $species->__get("id");
+		$id = $species->key;
 		if (!$this->getAdoptablePetsBySpecies->bind_param("i", $id)) {
-			log_err("Binding species id {$species->__get("id")} to getAdoptablePetsBySpecies failed");
+			log_err("Binding species id $id to getAdoptablePetsBySpecies failed");
 			return [];
 		}
 		if (!$this->getAdoptablePetsBySpecies->execute()) {

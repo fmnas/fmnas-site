@@ -12,12 +12,12 @@ if (endsWith($path, ".jpeg") || $path[-4] === ".") {
 // URLs starting with species (cats, dogs/1022Fido, etc)
 foreach (_G_species() as $species) {
 	/* @var $species Species */
-	if (strtolower($path) === strtolower($species->__get("plural"))) {
+	if (strtolower($path) === strtolower($species->plural())) {
 		// Display adoptable pets listing
 		require_once "adoptable.php";
 		exit();
 	}
-	if (startsWith($path, $species->__get("plural") . "/")) {
+	if (startsWith($path, $species->plural() . "/")) {
 		// Try displaying an individual pet
 		require_once "listing.php";
 	}
