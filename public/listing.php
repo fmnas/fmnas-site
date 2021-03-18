@@ -59,4 +59,4 @@ if ($pet->description !== null) {
 }
 echo '</article>';
 footer();
-exit(0); // Exit afterwards if this is indeed a listing
+exit(0); // Exit from handler.php if this is indeed a listing

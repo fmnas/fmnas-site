@@ -17,3 +17,6 @@ if ($pet === null || $pet->status->deleted) {
 }
 
 // TODO: listing editor
+
+
+exit(0); // Exit from handler.php if the listing was found

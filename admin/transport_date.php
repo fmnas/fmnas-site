@@ -1,7 +1,7 @@
 <?php
 require_once "../src/common.php";
 
-if ($_POST["set_date"]) {
+if (isset($_POST["set_date"])) {
 	// TODO: validate and set transport date
 	var_dump($_POST);
 	require "$src/generator.php";
@@ -24,6 +24,6 @@ style();
 <form method="POST">
 	<label for="date">
 		Transport date:
-		<input type="date" name="set_date" value="$transportDate" min="<?=date("Y-m-d")?>">
+		<input type="date" name="set_date" value="$transportDate" min="<?=date("Y-m-d", $transportDate)?>">
 	</label>
 </form>
