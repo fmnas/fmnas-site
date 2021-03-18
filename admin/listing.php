@@ -34,10 +34,11 @@ style();
 	<form method="POST">
 		<ul>
 			<li class="name"><label>Name:
-					<input type="text" name="name" value="<?=$pet ? htmlspecialchars($pet->name) : ''?>">
+					<input type="text" name="name" value="<?=$pet ? htmlspecialchars($pet->name) : ''?>" required>
 				</label>
 			<li class="species"><label>Species:
-					<select name="species">
+					<select name="species" required>
+						<option value=""></option>
 						<?php
 						foreach (_G_species() as $species) {
 							/** @var Species $species */
@@ -57,19 +58,18 @@ style();
 				</label>
 			<li class="dob"><label>
 					<abbr title="date of birth">DOB</abbr>:
-					<input type="date" name="dob" value="<?=$pet ? $pet->dob : ''?>">
+					<input type="date" name="dob" value="<?=$pet ? $pet->dob : ''?>" required>
 				</label>
 			<li class="sex">
 				<fieldset>
 					<legend>Sex</legend>
 					<?php foreach (_G_sexes() as $sex): ?>
 						<input type="radio" name="sex" value="<?=$sex->key?>" id="sex_<?=$sex->key?>"
-						<?php
+							<?php
 							if ($pet && $pet->sex === $sex) {
 								echo ' selected';
 							}
-						?>
-						>
+							?> required>
 						<label for="sex_<?=$sex->key?>">
 							<abbr title="<?=$sex->name?>"><?=strtoupper($sex->name[0])?></abbr>
 						</label>
@@ -79,7 +79,8 @@ style();
 					<input type="text" name="fee" value="<?=htmlspecialchars($pet ? $pet->fee : '$')?>">
 				</label>
 			<li class="status"><label>Status:
-					<select name="status">
+					<select name="status" required>
+						<option value=""></option>
 						<?php
 						foreach (_G_statuses() as $status) {
 							/** @var Status $status */
