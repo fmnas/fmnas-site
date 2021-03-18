@@ -13,7 +13,7 @@ if (@isset($_POST["set_date"])) {
 	} elseif ($_POST["set_date"] != _G_transport_date() && $error = $dbw->setTransportDate($_POST["set_date"])) {
 		$error = "Failed to set transport date: $error";
 	} else {
-		header("Location: http://$_SERVER[HTTP_HOST]/");
+		header("Location: https://$_SERVER[HTTP_HOST]/");
 		exit();
 	}
 }
