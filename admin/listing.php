@@ -64,7 +64,7 @@ style();
 						<input type="radio" name="sex" value="<?=$sex->key?>" id="sex_<?=$sex->key?>"
 							<?php
 							if ($pet && $pet->sex === $sex) {
-								echo ' selected';
+								echo ' checked';
 							}
 							?> required>
 						<label for="sex_<?=$sex->key?>">
