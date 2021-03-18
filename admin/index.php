@@ -17,6 +17,6 @@ style();
 	<li><a href="transport_date.php">Update transport date</a> (currently <?=date("F j", $transportDate)?>)
 	<!-- TODO:
 	<li><a href="metadata.php">Update site metadata</a>
-	<li><a href="audit_log.php">View audit log and revert changes</a>
+	<li><a href="history.php">View and revert changes</a>
 	<li><a href="logout.php">Log out</a>
 	-->

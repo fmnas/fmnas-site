@@ -2,6 +2,7 @@
 require_once "auth.php";
 
 if (@isset($_POST["set_date"])) {
+
 	// TODO: validate and set transport date
 	var_dump($_POST);
 	require "$src/generator.php";

@@ -17,6 +17,9 @@ class Database {
 	private mysqli_stmt $getAllPets;
 	private mysqli_stmt $getAllSpecies;
 
+	private mysqli_stmt $addHistoryEntry; // TODO: add version history
+	private mysqli_stmt $setTransportDate;
+
 	public function __construct() {
 		$this->db = new mysqli(Config::$db_host, Config::$db_username, Config::$db_pass, Config::$db_name);
 		$this->db->set_charset("utf8mb4");
