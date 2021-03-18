@@ -1,5 +1,5 @@
 <?php
-require_once "../src/common.php";
+require_once "auth.php";
 $transportDate = strtotime(_G_transport_date());
 ?>
 <!DOCTYPE html>
