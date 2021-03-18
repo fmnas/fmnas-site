@@ -33,31 +33,30 @@ style();
 
 	<form method="POST">
 		<ul>
-			<li class="name"><label>Name:
-					<input type="text" name="name" value="<?=$pet ? htmlspecialchars($pet->name) : ''?>" required>
-				</label>
-			<li class="species"><label>Species:
-					<select name="species" required>
-						<option value=""></option>
-						<?php
-						foreach (_G_species() as $species) {
-							/** @var Species $species */
-							echo '<option value="' . $species->key . '"';
-							if ($pet && $species === $pet->species) {
-								echo ' selected';
-							}
-							echo '>' . ucfirst($species->name) . '</option>';
+			<li class="name">
+				<label for="name">Name</label>
+				<input type="text" name="name" id="name" value="<?=$pet ? htmlspecialchars($pet->name) : ''?>" required>
+			<li class="species">
+				<label for="species">Species</label>
+				<select name="species" id="species" required>
+					<option value=""></option>
+					<?php
+					foreach (_G_species() as $species) {
+						/** @var Species $species */
+						echo '<option value="' . $species->key . '"';
+						if ($pet && $species === $pet->species) {
+							echo ' selected';
 						}
-						?>
-					</select>
-				</label>
-			<li class="breed"><label>Breed:
-					<input type="text" name="breed" value="<?=$pet ? htmlspecialchars($pet->breed) : ''?>">
-				</label>
-			<li class="dob"><label>
-					<abbr title="date of birth">DOB</abbr>:
-					<input type="date" name="dob" value="<?=$pet ? $pet->dob : ''?>" required>
-				</label>
+						echo '>' . ucfirst($species->name) . '</option>';
+					}
+					?>
+				</select>
+			<li class="breed">
+				<label for="breed">Breed</label>
+				<input type="text" name="breed" id="breed" value="<?=$pet ? htmlspecialchars($pet->breed) : ''?>">
+			<li class="dob">
+				<label for="dob"><abbr title="date of birth">DOB</abbr></label>
+				<input type="date" name="dob" id="dob" value="<?=$pet ? $pet->dob : ''?>" required>
 			<li class="sex">
 				<fieldset>
 					<legend>Sex</legend>
@@ -73,26 +72,26 @@ style();
 						</label>
 					<?php endforeach; ?>
 				</fieldset>
-			<li class="fee"><label>Fee:
-					<input type="text" name="fee" value="<?=htmlspecialchars($pet ? $pet->fee : '$')?>">
-				</label>
-			<li class="status"><label>Status:
-					<select name="status" required>
-						<option value=""></option>
-						<?php
-						foreach (_G_statuses() as $status) {
-							/** @var Status $status */
-							echo '<option value="' . $status->key . '"';
-							if ($pet && $status === $pet->status) {
-								echo ' selected';
-							}
-							echo '>';
-							echo $status->name;
-							echo '</option>';
+			<li class="fee">
+				<label for="fee">Fee</label>
+				<input type="text" name="fee" id="fee" value="<?=htmlspecialchars($pet ? $pet->fee : '$')?>">
+			<li class="status">
+				<label for="status">Status</label>
+				<select name="status" id="status" required>
+					<option value=""></option>
+					<?php
+					foreach (_G_statuses() as $status) {
+						/** @var Status $status */
+						echo '<option value="' . $status->key . '"';
+						if ($pet && $status === $pet->status) {
+							echo ' selected';
 						}
-						?>
-					</select>
-				</label>
+						echo '>';
+						echo $status->name;
+						echo '</option>';
+					}
+					?>
+				</select>
 		</ul>
 	</form>
 <?=null?>
