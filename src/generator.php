@@ -44,7 +44,6 @@ function generate() {
 		$status->description              = $item["description"];
 		$status->displayStatus            = $item["display"];
 		$status->listed                   = $item["listed"];
-		$status->deleted                  = $item["deleted"];
 		$status->name                     = htmlspecialchars($item["name"]);
 		$values["statuses"][$status->key] = $status;
 	}

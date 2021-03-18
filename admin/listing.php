@@ -12,8 +12,8 @@ if (@isset($path)) {
 } elseif (@isset($_GET["id"])) {
 	$pet = $db->getPetById($_GET["id"]);
 }
-if ($pet === null || $pet->status->deleted) {
-	return; // this is not a valid listing
+if ($pet === null) {
+	return; // this is not a valid listing, so exit from handler.php if that's what brought you here
 }
 
 // TODO: listing editor

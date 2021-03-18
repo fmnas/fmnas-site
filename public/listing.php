@@ -8,7 +8,7 @@ require_once "$t/footer.php";
 /* @var $path string */
 /* @var $species Species */
 $db ??= new Database();
-if (!($pet = $db->getPetByPath($path)) || $pet->status->deleted) {
+if (!($pet = $db->getPetByPath($path))) {
 	return; // this is not a valid listing
 }
 ?>
