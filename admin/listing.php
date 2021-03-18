@@ -46,9 +46,7 @@ style();
 							if ($pet && $species === $pet->species) {
 								echo ' selected';
 							}
-							echo '>';
-							echo $species->name;
-							echo '</option>';
+							echo '>' . ucfirst($species->name) . '</option>';
 						}
 						?>
 					</select>
