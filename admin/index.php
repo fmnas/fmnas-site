@@ -5,7 +5,7 @@ $transportDate = strtotime(_G_transport_date());
 <!DOCTYPE html>
 <title>FMNAS Admin</title>
 <meta charset="UTF-8">
-<meta name="robots" content="none">
+<meta name="robots" content="noindex, nofollow">
 <?php
 style();
 ?>

@@ -1,5 +1,5 @@
 <?php
-require_once "../src/common.php";
+require_once "auth.php";
 require_once "$src/pet.php";
 require_once "$src/db.php";
 require_once "$src/assets.php";
@@ -7,9 +7,9 @@ require_once "$src/assets.php";
 /* @var $path string */
 $db ??= new Database();
 $pet = null;
-if (isset($path)) {
+if (@isset($path)) {
 	$pet = $db->getPetByPath($path);
-} elseif (isset($_GET["id"])) {
+} elseif (@isset($_GET["id"])) {
 	$pet = $db->getPetById($_GET["id"]);
 }
 if ($pet === null || $pet->status->deleted) {
