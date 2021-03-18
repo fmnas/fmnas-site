@@ -9,7 +9,7 @@ $db            = new Database();
 ?>
 <!DOCTYPE html>
 <title><?=_G_longname()?></title>
-<meta charset="utg-8">
+<meta charset="utf-8">
 <?php style(); pageHeader(true); ?>
 <section id="listings">
 	<h2>Adoptable pets</h2>
