@@ -172,9 +172,7 @@ class Database {
 			       dsc.type AS dsc_type,
 			       dsc.path AS dsc_path
 			FROM pets 
-			LEFT JOIN statuses ON 
-				pets.status = statuses.id AND 
-				statuses.deleted = 0
+			LEFT JOIN statuses ON pets.status = statuses.id
 			LEFT JOIN assets pic ON pets.photo = pic.id
 			LEFT JOIN assets dsc ON pets.description = dsc.id
 			"))) {

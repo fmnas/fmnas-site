@@ -118,7 +118,6 @@ class Status {
 	public string $name;
 	public ?bool $displayStatus; // Display the status in lieu of the adoption fee?
 	public bool $listed; // Display this animal in the adoptable animal listings?
-	public bool $deleted; // If true, this animal will not be shown in admin view
 	public ?string $description; // Optional explanatory description, where $listed is true and $displayStatus is true
 
 	public function __toString() {

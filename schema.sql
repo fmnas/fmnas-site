@@ -78,16 +78,14 @@ CREATE TABLE statuses (
   name varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   display tinyint(1) DEFAULT NULL,
   listed tinyint(1) NOT NULL DEFAULT '1',
-  deleted tinyint(1) NOT NULL DEFAULT '0',
   description text COLLATE utf8mb4_unicode_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO statuses VALUES
-(1, 'Adoptable', 0, 1, 0, ''),
-(2, 'Adopted', NULL, 0, 0, ''),
-(3, 'Adoption Pending', 1, 1, 0, 'We either have so many applications we are confident of finding the pet\'s new home from among them, OR the pet has been offered to an applicant who has accepted placement, and we will be delivering the pet on the next Seattle or Spokane trip.\r\n\r\nYou can submit an application for one of these pets if you\'d like to be a \"backup home\" should anything not work out with the prior applicants, but it\'s a longshot.'),
-(4, 'Applications Closed', 1, 1, 0, 'We have received a fairly large number of applications in a fairly short period of time, and need a chance to review them to see if any will be a great match to the particular pet. If the right match is not found in the applications already received, we will REOPEN applications.\r\n\r\nYou may still submit an application for one of these pets, and we will review it right away if the right match is not found first.'),
-(5, 'DELETE', NULL, 0, 1, '');
+(1, 'Adoptable', 0, 1, ''),
+(2, 'Adopted', NULL, 0, ''),
+(3, 'Adoption Pending', 1, 1, 'We either have so many applications we are confident of finding the pet\'s new home from among them, OR the pet has been offered to an applicant who has accepted placement, and we will be delivering the pet on the next Seattle or Spokane trip.\r\n\r\nYou can submit an application for one of these pets if you\'d like to be a \"backup home\" should anything not work out with the prior applicants, but it\'s a longshot.'),
+(4, 'Applications Closed', 1, 1, 'We have received a fairly large number of applications in a fairly short period of time, and need a chance to review them to see if any will be a great match to the particular pet. If the right match is not found in the applications already received, we will REOPEN applications.\r\n\r\nYou may still submit an application for one of these pets, and we will review it right away if the right match is not found first.');
 
 
 ALTER TABLE assets
