@@ -27,6 +27,7 @@ if (@isset($_POST["id"])) {
 	<!DOCTYPE html>
 	<title><?=$pet ? htmlspecialchars($pet->id) . ' ' . htmlspecialchars($pet->name) : 'Listing Editor'?></title>
 	<meta charset="UTF-8">
+	<script src="https://unpkg.com/vue@next"></script>
 <?php
 style();
 ?>
@@ -35,7 +36,7 @@ style();
 		<ul>
 			<li class="name">
 				<label for="name">Name</label>
-				<input type="text" name="name" id="name" value="<?=$pet ? htmlspecialchars($pet->name) : ''?>" required>
+				<input type="text" name="name" id="name" v-model="name" value="<?=$pet ? htmlspecialchars($pet->name) : ''?>" required>
 			<li class="species">
 				<label for="species">Species</label>
 				<select name="species" id="species" required>
