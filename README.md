@@ -61,10 +61,11 @@ The following variables are likely to prove useful in listings:
     * Properties: pets (a list of Pets)
 
 ## Technologies
-**PHP** was chosen as the backend language to simplify deployment to Dreamhost shared hosting. 
+**PHP** is used as the backend language to simplify deployment to Dreamhost shared hosting. 
 
-[**Mithril**](https://mithril.js.org) is used in the admin interface. This library is chosen in lieu of
-a heavyweight JavaScript framework and view library in order to eliminate the additional compilation step when deploying.
+[**Vue**](https:/vuejs.org) is used in the admin interface.
+No build tooling is used, to ensure that deployment and maintenance remain as simple as possible
+due to the limited resources available.
 
 On the server side, listings are first compiled with [lightncandy](https://github.com/zordius/lightncandy),
 then parsed with [Parsedown](https://parsedown.org/). Any PHP code embedded in listings will **not** be executed on the server (TODO: verify). 
@@ -91,7 +92,7 @@ To update the dependencies, run `src/update_dependencies.php` or simply delete t
 directories. (TODO: Will need a way to automate periodic updates someday)
 
 ### Client-side dependencies
-The admin interface imports [**Mithril**](https://mithril.js.org) from cdnjs.
+The admin interface imports [**Vue**](https://vuejs.org) from unpkg.
 The listing editor imports 
 [**Toast UI Editor**](https://ui.toast.com/tui-editor/)
 from the Toast CDN.
