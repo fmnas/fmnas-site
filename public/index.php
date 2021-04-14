@@ -19,7 +19,7 @@ pageHeader(true);
 		<ul>
 			<?php
 			$displayedSpecies = 0;
-			foreach ($db->getAllSpecies() as $species) { // TODO: cache?
+			foreach ($db->getAllSpecies() as $species) { // @todo cache?
 			/* @var $species Species */
 			if ($species->species_count):
 			$displayedSpecies++; ?>

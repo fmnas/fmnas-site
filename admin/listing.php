@@ -19,10 +19,10 @@ if ($pet === null && isset($expectListing) && $expectListing) {
 }
 
 if (@isset($_POST["id"])) {
-	// TODO: Add or update a listing
+	// @todo Add or update a listing
 }
 
-// TODO: listing editor
+// @todo listing editor
 ?>
 	<!DOCTYPE html>
 	<title><?=$pet ? htmlspecialchars($pet->id) . ' ' . htmlspecialchars($pet->name) : 'Listing Editor'?></title>

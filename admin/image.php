@@ -1,3 +1,3 @@
 <?php
 require_once "auth.php";
-// TODO: image editor
+// @todo image editor
