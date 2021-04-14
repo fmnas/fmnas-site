@@ -82,7 +82,7 @@ emailLinks();
 				cursor: default;
 			} 
 			CSS;
-			// TODO: minify CSS on-the-fly?
+			// @todo minify CSS on-the-fly?
 
 			// Make the ? a different color when hovering
 			echo buildSelector($hoverStatusSelectors, ">td.fee>*:hover::after");
@@ -122,7 +122,7 @@ emailLinks();
 			// popup transition
 			echo buildSelector($hoverStatusSelectors, ">td.fee:hover::before");
 			echo "{opacity:0.9;transition:all 0.18s ease-out 0.18s;z-index:2;} ";
-			// TODO: mobile friendly popup
+			// @todo mobile friendly popup
 		}
 		?>
 	</style>

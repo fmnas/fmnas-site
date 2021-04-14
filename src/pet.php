@@ -140,7 +140,7 @@ class Pet {
 	public ?array $photos; // photo assets (array of Assets)
 	public ?Asset $description; // description asset
 	public Status $status;
-	public ?bool $plural; // TODO: Two animals in one listing?
+	public ?bool $plural; // @todo Two animals in one listing?
 
 	public function age(): string {
 		return $this->species->age($this->dob);

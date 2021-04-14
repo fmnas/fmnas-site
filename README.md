@@ -66,9 +66,10 @@ The following variables are likely to prove useful in listings:
 [**Vue**](https:/vuejs.org) is used in the admin interface.
 No build tooling is used, to ensure that deployment and maintenance remain as simple as possible
 due to the limited resources available.
+(See: [Use Vue to create a SPA without any Node Modules](https://dev.to/arswaw/create-a-lightweight-componentized-spa-without-node-569j) for an overview of this architecture.)
 
 On the server side, listings are first compiled with [lightncandy](https://github.com/zordius/lightncandy),
-then parsed with [Parsedown](https://parsedown.org/). Any PHP code embedded in listings will **not** be executed on the server (TODO: verify). 
+then parsed with [Parsedown](https://parsedown.org/). Any PHP code embedded in listings will **not** be executed on the server (@todo verify). 
 The resulting HTML is cached (TODO); the cached assets are automatically
 deleted when listings are updated through the admin interface, but must be manually deleted if changes are made to the asset or 
 corresponding database records outside the admin interface.
@@ -89,7 +90,7 @@ The listing parser (`src/parser.php`) depends on
 [**Parsedown**](https://parsedown.org/). These should be fetched by `src/dependencies.php` when they are first required.
 
 To update the dependencies, run `src/update_dependencies.php` or simply delete the existing `src/ligntncandy` and `src/parsedown`
-directories. (TODO: Will need a way to automate periodic updates someday)
+directories. (@todo Will need a way to automate periodic updates someday)
 
 ### Client-side dependencies
 The admin interface imports [**Vue**](https://vuejs.org) from unpkg.

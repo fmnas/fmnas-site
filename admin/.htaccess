@@ -19,7 +19,7 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^.*$ /handler.php [L]
 
-# TODO: OAuth authentication for admin site
+# @todo OAuth authentication for admin site
 # Temporary password protection for development
 AuthName "Development Site"
 AuthType Basic
