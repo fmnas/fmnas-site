@@ -25,8 +25,8 @@ AddOutputFilterByType DEFLATE application/x-javascript
 
 # route API requests
 RewriteCond %{REQUEST_FILENAME} !.php
-RewriteRule ^api/([^/]+)/?$ /api/$1.php [L]
-RewriteRule ^api/([^/]+)/([^/]+)/?$ /api/$1.php?v=$2 [L]
+RewriteRule ^api/([^/]+)/?$ /api/$1.php [L,QSA]
+RewriteRule ^api/([^/]+)/([^/]+)/?$ /api/$1.php?v=$2 [L,QSA]
 
 # route with vue
 RewriteCond %{REQUEST_FILENAME} !-f

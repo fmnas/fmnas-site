@@ -16,7 +16,7 @@ To deploy, simply clone or checkout this repository and configure the server as 
 ### Requirements
 * Linux (any POSIX-compatible OS should work)
 * Apache (Litespeed or any other web server with .htaccess and PHP support should work)
-* PHP 7.4 (not yet tested with PHP 8)
+* PHP (admin site must be PHP 8; public site can be PHP 7.4)
     * GD (tested with 2.1.0)
         * libJPEG (tested with 8)
         * libPNG (tested with 1.6.34)
