@@ -1,32 +1,32 @@
 /*Kuranda beds*/
 .kuranda p {
-    color: #f00;
+    color:            #f00;
     background-color: #ff6;
-    font-size: 28pt;
-    font-family: "Arial Black", Gadget, sans-serif;
-    text-align: center;
-    padding: 0.25in;
+    font-size:        28pt;
+    font-family:      "Arial Black", Gadget, sans-serif;
+    text-align:       center;
+    padding:          0.25in;
 }
 
 .kuranda img {
-    float: none;
-    display: block;
-    margin-left: auto;
+    float:        none;
+    display:      block;
+    margin-left:  auto;
     margin-right: auto;
-    max-width: 100%;
+    max-width:    100%;
 }
 
 /*Listings table*/
 table.listings {
-    width: 100%;
+    width:   100%;
     display: block;
     /*background-color: #ddd;*/
 }
 
 table.listings tbody {
-    display: flex;
+    display:         flex;
     justify-content: space-around;
-    flex-wrap: wrap;
+    flex-wrap:       wrap;
 }
 
 @media print {
@@ -37,38 +37,38 @@ table.listings tbody {
 
 /*Listings table - individual listings*/
 table.listings tbody tr {
-    display: inline-block;
-    float: left;
-    padding: 1em;
+    display:    inline-block;
+    float:      left;
+    padding:    1em;
     box-sizing: border-box;
 }
 
 table.listings tbody tr > *:first-child {
-    border-top: 1px solid #ccc;
+    border-top:    1px solid #ccc;
     border-radius: 1em 1em 0 0;
-    padding-top: 0.5em;
+    padding-top:   0.5em;
 }
 
 table.listings tbody tr > *:last-child {
-    border-bottom: 1px solid #ccc;
-    border-radius: 0 0 1em 1em;
+    border-bottom:  1px solid #ccc;
+    border-radius:  0 0 1em 1em;
     padding-bottom: 0.5em;
 }
 
 table.listings tbody tr > * {
-    border-left: 1px solid #ccc;
+    border-left:  1px solid #ccc;
     border-right: 1px solid #ccc;
 }
 
 table.listings tbody td, table.listings tbody th {
-    display: block;
-    padding-left: 1em;
+    display:       block;
+    padding-left:  1em;
     padding-right: 1em;
-    box-sizing: border-box;
+    box-sizing:    border-box;
 }
 
 table.listings tbody td.img {
-    padding-left: 2em;
+    padding-left:  2em;
     padding-right: 2em;
     /* Ensures 2em margin either side of image but only 1em either side of name */
 }
@@ -76,20 +76,20 @@ table.listings tbody td.img {
 /*Listings table - individual data*/
 th.name {
     font-size: 18pt;
-    display: inline;
+    display:   inline;
 }
 
 table.listings img {
-    display: block;
-    width: 200px;
-    height: 300px;
-    margin-left: auto;
+    display:      block;
+    width:        200px;
+    height:       300px;
+    margin-left:  auto;
     margin-right: auto;
 }
 
 table.listings td, th {
-    width: 100%;
-    text-align: center;
+    width:          100%;
+    text-align:     center;
     vertical-align: middle;
 }
 
@@ -102,7 +102,7 @@ td.fee {
 }
 
 td.inquiry > a {
-    font-size: 10pt;
+    font-size:       10pt;
     text-decoration: none;
 }
 
@@ -145,8 +145,8 @@ tr.soon > td.fee > span {
 }
 
 th.name > *:not([id=""])::after {
-    content: ' (id#' attr(id) ')';
-    font-size: 11pt;
+    content:        ' (id#' attr(id) ')';
+    font-size:      11pt;
     vertical-align: 10%;
 }
 

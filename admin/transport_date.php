@@ -3,20 +3,22 @@ require_once "auth.php";
 
 $error = false;
 if (@isset($_POST["set_date"])) {
-	require_once "db.php";
-	$dbw = new DatabaseWriter();
+    require_once "db.php";
+    $dbw = new DatabaseWriter();
 
-	$transportDate = DateTime::createFromFormat("Y-m-d", $_POST["set_date"]);
-	if (!($transportDate && $transportDate->format("Y-m-d") == $_POST["set_date"])) {
-		// date failed Y-m-d validation
-		$error = "Received date {$_POST["set_date"]} is not in YYYY-MM-DD format";
-	} elseif ($_POST["set_date"] != _G_transport_date() && $error = $dbw->setTransportDate($_POST["set_date"])) {
-		$error = "Failed to set transport date: $error";
-	} else {
-		sleep(1); // Needed to make sure index catches up with new transport date on server side
-		header("Location: https://$_SERVER[HTTP_HOST]/");
-		exit();
-	}
+    $transportDate = DateTime::createFromFormat("Y-m-d", $_POST["set_date"]);
+    if (!($transportDate && $transportDate->format("Y-m-d") == $_POST["set_date"])) {
+        // date failed Y-m-d validation
+        $error = "Received date {$_POST["set_date"]} is not in YYYY-MM-DD format";
+    } else {
+        if ($_POST["set_date"] != _G_transport_date() && $error = $dbw->setTransportDate($_POST["set_date"])) {
+            $error = "Failed to set transport date: $error";
+        } else {
+            sleep(1); // Needed to make sure index catches up with new transport date on server side
+            header("Location: https://$_SERVER[HTTP_HOST]/");
+            exit();
+        }
+    }
 }
 
 // Current transport date
@@ -31,15 +33,16 @@ style();
 
 <a href="/" id="back">Back to admin home page</a>
 
-<?php if($error): ?>
-<aside class="error"><?=$error?></aside>
+<?php if ($error): ?>
+    <aside class="error"><?=$error?></aside>
 <?php endif; ?>
 
 <form method="POST">
-	<label for="date">
-		Transport date:
-		<input type="date" name="set_date" value="<?=date("Y-m-d", $transportDate)?>" min="<?=date("Y-m-d", strtotime("2 days ago"))?>">
-	</label>
-	<br>
-	<input type="submit" value="Update">
+    <label for="date">
+        Transport date:
+        <input type="date" name="set_date" value="<?=date("Y-m-d", $transportDate)?>"
+               min="<?=date("Y-m-d", strtotime("2 days ago"))?>">
+    </label>
+    <br>
+    <input type="submit" value="Update">
 </form>
