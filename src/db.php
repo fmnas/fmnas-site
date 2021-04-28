@@ -284,7 +284,7 @@ class Database {
         return self::createAsset($result->fetch_assoc());
     }
 
-    public function getPetById(string $id): Pet {
+    public function getPetById(string $id): ?Pet {
         if (!$this->getPet->bind_param("s", $id)) {
             log_err("Binding id $id to getPet failed: {$this->db->error}");
             return null;
@@ -307,7 +307,7 @@ class Database {
         );
     }
 
-    public function getPetByPath(string $path): Pet {
+    public function getPetByPath(string $path): ?Pet {
         if (urldecode($path) !== $path) {
             return $this->getPetByPath(urldecode($path));
         }
@@ -333,7 +333,7 @@ class Database {
 
         if (!isset($result) || $result->num_rows === 0) {
             log_err("Found no pet with path $path");
-            return new Pet();
+            return null;
         }
 
         $pet_arr = $result->fetch_assoc();
