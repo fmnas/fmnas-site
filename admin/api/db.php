@@ -1,5 +1,6 @@
 <?php
-require_once "auth.php";
+$src = "../../src"; // Wanted to get this from common.php, but it breaks PHPStorm
+require_once "$src/common.php";
 require_once "$src/db.php";
 require_once "$src/generator.php";
 
