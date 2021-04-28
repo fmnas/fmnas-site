@@ -69,7 +69,7 @@ class Species {
             return $months . " month" . ($months === 1 ? "" : "s") . " old";
         } catch (Exception $e) {
             log_err("Exception when converting $dob to DateTime: " . $e->getMessage());
-            return null;
+            return '';
         }
     }
 
@@ -152,7 +152,7 @@ class Pet {
 
     public function species(): string {
         if (!isset($this->species) || $this->species === null) {
-            return null;
+            return '';
         }
         return $this->species->nameGivenDob($this->dob, $this->plural);
     }
