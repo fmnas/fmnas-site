@@ -8,7 +8,7 @@ if [ -z "$tarball" ]; then
   echo >&2 "Failed to fetch latest release of $1/$2 from github."
   exit 2
 fi
-echo "Tarball URL is $tarball";
+echo "Tarball URL is $tarball"
 if [ -e "$2/VERSION" ]; then
   existing="$(cat "$2/VERSION")"
   if [ "$tarball" = "$existing" ]; then

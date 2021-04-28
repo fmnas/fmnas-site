@@ -6,22 +6,22 @@ require_once "$src/pet.php";
 
 // Probable images
 if (endsWith($path, ".jpeg") || $path[-4] === ".") {
-	require_once "image.php";
+    require_once "image.php";
 }
 
 // URLs starting with species (cats, dogs/1022Fido, etc)
 foreach (_G_species() as $species) {
-	/* @var $species Species */
-	if (strtolower($path) === strtolower($species->plural())) {
-		// Go to listing editor main page
-		header("HTTP/1.1 303 See Other");
-		header("Location: https://$_SERVER[HTTP_HOST]/listings.php");
-		exit();
-	}
-	if (startsWith($path, $species->plural() . "/")) {
-		// Edit a specific listing
-		require_once "listing.php";
-	}
+    /* @var $species Species */
+    if (strtolower($path) === strtolower($species->plural())) {
+        // Go to listing editor main page
+        header("HTTP/1.1 303 See Other");
+        header("Location: https://$_SERVER[HTTP_HOST]/listings.php");
+        exit();
+    }
+    if (startsWith($path, $species->plural() . "/")) {
+        // Edit a specific listing
+        require_once "listing.php";
+    }
 }
 
 // Try image editor again

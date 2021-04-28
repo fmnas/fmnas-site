@@ -5,59 +5,60 @@ require_once "common.php";
 
 /**
  * Generate a static configuration file, generated.php, using data from the database.
- * This function will be called only if generated.php does not already exist or the values are modified from the admin interface.
+ * This function will be called only if generated.php does not already exist or the values are modified from the admin
+ * interface.
  */
 function generate() {
-	global $db;
-	$db ??= new Database();
+    global $db;
+    $db ??= new Database();
 
-	$values = array();
+    $values = array();
 
-	foreach ($db->query("SELECT * FROM config") as $item) {
-		if (!preg_match("/^[a-z0-9][a-z0-9_]*[a-z0-9]$/i", $item["config_key"])) {
-			log_err("Got invalid config key {$item['config_key']} from database! Aborting generator!");
-			require_once src() . "/errors/500.php";
-			exit(500);
-		}
-		$values[$item["config_key"]] = $item["config_value"];
-	}
+    foreach ($db->query("SELECT * FROM config") as $item) {
+        if (!preg_match("/^[a-z0-9][a-z0-9_]*[a-z0-9]$/i", $item["config_key"])) {
+            log_err("Got invalid config key {$item['config_key']} from database! Aborting generator!");
+            require_once src() . "/errors/500.php";
+            exit(500);
+        }
+        $values[$item["config_key"]] = $item["config_value"];
+    }
 
-	$values["species"] = [];
-	foreach ($db->getAllSpecies() as $s) {
-		/* @var $s Species */
-		$s->species_count           = null;
-		$values["species"][$s->key] = $s;
-	}
+    $values["species"] = [];
+    foreach ($db->getAllSpecies() as $s) {
+        /* @var $s Species */
+        $s->species_count           = null;
+        $values["species"][$s->key] = $s;
+    }
 
-	$values["sexes"] = [];
-	foreach ($db->query("SELECT * FROM sexes") as $item) {
-		$sex                        = new Sex();
-		$sex->name                  = $item["name"];
-		$sex->key                   = $item["id"];
-		$values["sexes"][$sex->key] = $sex;
-	}
+    $values["sexes"] = [];
+    foreach ($db->query("SELECT * FROM sexes") as $item) {
+        $sex                        = new Sex();
+        $sex->name                  = $item["name"];
+        $sex->key                   = $item["id"];
+        $values["sexes"][$sex->key] = $sex;
+    }
 
-	$values["statuses"] = [];
-	foreach ($db->query("SELECT * FROM statuses") as $item) {
-		$status                           = new Status();
-		$status->key                      = $item["id"];
-		$status->description              = $item["description"];
-		$status->displayStatus            = $item["display"];
-		$status->listed                   = $item["listed"];
-		$status->name                     = htmlspecialchars($item["name"]);
-		$values["statuses"][$status->key] = $status;
-	}
+    $values["statuses"] = [];
+    foreach ($db->query("SELECT * FROM statuses") as $item) {
+        $status                           = new Status();
+        $status->key                      = $item["id"];
+        $status->description              = $item["description"];
+        $status->displayStatus            = $item["display"];
+        $status->listed                   = $item["listed"];
+        $status->name                     = htmlspecialchars($item["name"]);
+        $values["statuses"][$status->key] = $status;
+    }
 
-	ob_start();
-	?>
+    ob_start();
+    ?>
 
-	// This is a static configuration file generated from the database.
-	// Instead of changing values in this file, you should simply delete it and allow it to be regenerated.
+    // This is a static configuration file generated from the database.
+    // Instead of changing values in this file, you should simply delete it and allow it to be regenerated.
 
-	require_once __DIR__."/pet.php";$_G=unserialize(base64_decode("<?=base64_encode(serialize($values));?>"));<?php
-	foreach ($values as $key => $value):
-		?> function _G_<?=$key?>(){global $_G;return $_G["<?=$key?>"];}<?php
-	endforeach;
-	$output = "<?php" . ob_get_clean();
-	file_put_contents(__DIR__ . "/generated.php", $output);
+    require_once __DIR__."/pet.php";$_G=unserialize(base64_decode("<?=base64_encode(serialize($values));?>"));<?php
+    foreach ($values as $key => $value):
+        ?> function _G_<?=$key?>(){global $_G;return $_G["<?=$key?>"];}<?php
+    endforeach;
+    $output = "<?php" . ob_get_clean();
+    file_put_contents(__DIR__ . "/generated.php", $output);
 }
