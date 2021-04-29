@@ -32,6 +32,8 @@ class Database {
             $this->getAssetByPath = $getAssetByPath;
         }
 
+        // @todo rewrite sql queries
+
         // Some assets may have non-canonical pathnames, such as those shared by multiple pets or those belonging to
         // pets with a different legacy_path.
         if (!($getAssetByAlternatePath = $this->db->prepare("
@@ -50,7 +52,7 @@ class Database {
 
         if (!($getPet = $this->db->prepare("
 			SELECT * FROM ( 
-			    SELECT * FROM pets WHERE id = ? 
+			    SELECT * FROM pets WHERE id = ? AND species = ?
 			) pet 
     		LEFT JOIN assets pic ON pet.photo = pic.id 
 			LEFT JOIN assets dsc ON pet.description = dsc.id
@@ -84,10 +86,9 @@ class Database {
 			       dsc.type AS dsc_type,
 			       dsc.path AS dsc_path
 			FROM pets
-			LEFT JOIN assets pic ON 
-				( pets.path = ? OR pets.legacy_path = ? ) AND
-				pets.photo = pic.id
+			LEFT JOIN assets pic ON pets.photo = pic.id
 			LEFT JOIN assets dsc ON pets.description = dsc.id
+			WHERE (pets.path = ? OR pets.legacy_path = ?) AND pets.species = ?
 			LIMIT 1
 			"))) {
             log_err("Failed to prepare getPetByPath: {$this->db->error}");
@@ -107,7 +108,7 @@ class Database {
 			       dsc.type AS dsc_type,
 			       dsc.path AS dsc_path
 			FROM pets 
-			LEFT JOIN statuses ON 
+			JOIN statuses ON 
 				pets.status = statuses.id AND 
 				statuses.listed = 1
 			LEFT JOIN assets pic ON pets.photo = pic.id
@@ -148,7 +149,7 @@ class Database {
 			       dsc.type AS dsc_type,
 			       dsc.path AS dsc_path
 			FROM pets
-			LEFT JOIN statuses ON
+			JOIN statuses ON
 			    pets.species = ? AND
 				pets.status = statuses.id AND 
 				statuses.listed = 1
@@ -172,7 +173,7 @@ class Database {
 			       dsc.type AS dsc_type,
 			       dsc.path AS dsc_path
 			FROM pets 
-			LEFT JOIN statuses ON pets.status = statuses.id
+			JOIN statuses ON pets.status = statuses.id
 			LEFT JOIN assets pic ON pets.photo = pic.id
 			LEFT JOIN assets dsc ON pets.description = dsc.id
 			"))) {
@@ -227,7 +228,7 @@ class Database {
         $p->status      = _G_statuses()[$pet["status"]];
         $p->breed       = $pet["breed"];
         $p->dob         = $pet["dob"];
-        $p->plural      = $pet["plural"] ? true : false;
+        $p->plural      = (bool) $pet["plural"];
         return $p;
     }
 
@@ -284,8 +285,8 @@ class Database {
         return self::createAsset($result->fetch_assoc());
     }
 
-    public function getPetById(string $id): ?Pet {
-        if (!$this->getPet->bind_param("s", $id)) {
+    public function getPetById(string $id, Species $species): ?Pet {
+        if (!$this->getPet->bind_param("ss", $id, $species->id)) {
             log_err("Binding id $id to getPet failed: {$this->db->error}");
             return null;
         }
@@ -312,16 +313,26 @@ class Database {
             return $this->getPetByPath(urldecode($path));
         }
 
+        $expected_species = null;
+
         foreach (_G_species() as $species) {
             /* @var $species Species */
             $prefix = $species->plural() . "/";
             if (startsWith(strtolower($path), strtolower($prefix))) {
                 $path = substr($path, strlen($prefix));
+                $expected_species = $species;
                 break;
             }
         }
 
-        if (!$this->getPetByPath->bind_param("ss", $path, $path)) {
+        if ($expected_species === null) {
+            log_err("Found no species in path $path");
+            return null;
+        }
+
+        $species_id = $expected_species->id;
+
+        if (!$this->getPetByPath->bind_param("sss", $path, $path, $species_id)) {
             log_err("Binding path $path to getPetByPath failed: {$this->db->error}");
         } else {
             if (!$this->getPetByPath->execute()) {
@@ -358,7 +369,7 @@ class Database {
 
     public function getAdoptablePetsBySpecies(Species $species): array {
         // Note table collation is case-insensitive
-        $id = $species->key;
+        $id = $species->id;
         if (!$this->getAdoptablePetsBySpecies->bind_param("i", $id)) {
             log_err("Binding species id $id to getAdoptablePetsBySpecies failed");
             return [];

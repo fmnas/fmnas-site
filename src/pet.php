@@ -4,7 +4,7 @@ require_once "assets.php";
 
 /**
  * @property int|null species_count
- * @property int key
+ * @property int id
  * @property string|null name
  * @property string|null plural
  * @property string|null young
