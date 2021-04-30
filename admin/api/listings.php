@@ -23,7 +23,7 @@ endpoint(...[
         return new Result(200, $db->getAdoptablePets());
     },
     'get_value' => function($value) use ($db): Result {
-        $pet = $db->getPetByPath($value);
+        $pet = $db->getPetById($value);
         if ($pet === null) {
             return new Result(404, "Pet $value not found");
         }

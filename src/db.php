@@ -10,6 +10,7 @@ class Database {
     private mysqli_stmt $getAssetByPath;
     private mysqli_stmt $getAssetByAlternatePath;
     private mysqli_stmt $getPet;
+    private mysqli_stmt $getPetById;
     private mysqli_stmt $getPetByPath;
     private mysqli_stmt $getPhotos;
     private mysqli_stmt $getAdoptablePets;
@@ -32,18 +33,16 @@ class Database {
             $this->getAssetByPath = $getAssetByPath;
         }
 
-        // @todo rewrite sql queries
-
         // Some assets may have non-canonical pathnames, such as those shared by multiple pets or those belonging to
         // pets with a different legacy_path.
         if (!($getAssetByAlternatePath = $this->db->prepare("
 			SELECT assets.* FROM photos
 				LEFT JOIN assets ON photos.photo = assets.id
 				LEFT JOIN pets ON photos.pet = pets.id 
-				INNER JOIN species ON pets.species = species.id AND (
-					CONCAT_WS('/', species.plural, pets.path, SUBSTRING_INDEX(assets.path, '/', -1)) = ? OR
-					CONCAT_WS('/', species.plural, pets.legacy_path, SUBSTRING_INDEX(assets.path, '/', -1)) = ?
-				) LIMIT 1
+				INNER JOIN species ON pets.species = species.id
+				WHERE CONCAT_WS('/', species.plural, pets.path, SUBSTRING_INDEX(assets.path, '/', -1)) = ? OR
+					  CONCAT_WS('/', species.plural, pets.legacy_path, SUBSTRING_INDEX(assets.path, '/', -1)) = ?
+				LIMIT 1
 			"))) {
             log_err("Failed to prepare getAssetByAlternatePath: {$this->db->error}");
         } else {
@@ -60,6 +59,17 @@ class Database {
             log_err("Failed to prepare getPet: {$this->db->error}");
         } else {
             $this->getPet = $getPet;
+        }
+
+        if (!($getPetById = $this->db->prepare("
+			SELECT *, pets.id AS id FROM pets
+            LEFT JOIN assets pic on pets.photo = pic.id
+            LEFT JOIN assets dsc on pets.description = dsc.id
+            WHERE pets.id = ? AND pets.species = ?
+			"))) {
+            log_err("Failed to prepare getPetById: {$this->db->error}");
+        } else {
+            $this->getPetById = $getPetById;
         }
 
         if (!($getPhotos = $this->db->prepare("
@@ -206,18 +216,19 @@ class Database {
     }
 
     private static function createPet(array $pet, array $photos = []): Pet {
-        $p              = new Pet();
-        $p->id          = $pet["id"];
-        $p->name        = $pet["name"];
-        $p->species     = _G_species()[$pet["species"]];
-        $p->sex         = $pet["sex"] ? _G_sexes()[$pet["sex"]] : null;
-        $p->fee         = $pet["fee"];
-        $p->photo       = self::createAsset([
+        $p          = new Pet();
+        $p->id      = $pet["id"];
+        $p->name    = $pet["name"];
+        $p->species = _G_species()[$pet["species"]];
+        $p->sex     = $pet["sex"] ? _G_sexes()[$pet["sex"]] : null;
+        $p->fee     = $pet["fee"];
+        $p->photo   = self::createAsset([
             "id"   => $pet["pic_id"],
             "data" => $pet["pic_data"],
             "path" => $pet["pic_path"],
             "type" => $pet["pic_type"],
         ]);
+        echo 'here';
         $p->description = self::createAsset([
             "id"   => $pet["dsc_id"],
             "data" => $pet["dsc_data"],
@@ -285,13 +296,30 @@ class Database {
         return self::createAsset($result->fetch_assoc());
     }
 
-    public function getPetById(string $id, Species $species): ?Pet {
-        if (!$this->getPet->bind_param("ss", $id, $species->id)) {
-            log_err("Binding id $id to getPet failed: {$this->db->error}");
-            return null;
+    public function getPetById(string $id, ?Species $species = null): ?Pet {
+        $r = null;
+        if ($species === null) {
+            if (!$this->getPetById->bind_param("s", $id)) {
+                log_err("Binding id $id to getPet failed: {$this->db->error}");
+                return null;
+            }
+            if (!$this->getPetById->execute()) {
+                log_err("Executing getPetById failed: {$this->db->error}");
+                return null;
+            }
+            $r = $this->getPetById->get_result()->fetch_assoc();
+        } else {
+            if (!$this->getPet->bind_param("ss", $id, $species->id)) {
+                log_err("Binding id $id and species {$species->id} to getPet failed: {$this->db->error}");
+                return null;
+            }
+            if (!$this->getPet->execute()) {
+                log_err("Executing getPet failed: {$this->db->error}");
+                return null;
+            }
+            $r = $this->getPet->get_result()->fetch_assoc();
         }
-        if (!$this->getPet->execute()) {
-            log_err("Executing getPet failed: {$this->db->error}");
+        if ($r === null) {
             return null;
         }
 
@@ -302,10 +330,11 @@ class Database {
             log_err("Executing getPhotos failed: {$this->db->error}");
         }
 
-        return self::createPet(
-            $this->getPet->get_result()->fetch_assoc(),
+        self::createPet(
+            $r,
             $this->getPhotos->get_result()->fetch_all(MYSQLI_ASSOC)
         );
+        return null;
     }
 
     public function getPetByPath(string $path): ?Pet {
@@ -319,7 +348,7 @@ class Database {
             /* @var $species Species */
             $prefix = $species->plural() . "/";
             if (startsWith(strtolower($path), strtolower($prefix))) {
-                $path = substr($path, strlen($prefix));
+                $path             = substr($path, strlen($prefix));
                 $expected_species = $species;
                 break;
             }
