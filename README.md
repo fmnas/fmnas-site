@@ -1,4 +1,4 @@
-# fmnas-site
+# Forget Me Not Animal Shelter
 
 This repository contains the source code for the newest portions of the 
 website of the [Forget Me Not Animal Shelter](https://forgetmenotshelter.org) (Republic, WA).
@@ -7,7 +7,18 @@ Over time, the complete website will be migrated into this repository.
 
 ## License
 
-At this time, all rights reserved by Forget Me Not Animal Shelter.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ## Deployment
 This site is designed to be easy to deploy to any LAMP server, including shared web hosts such as Dreamhost.
