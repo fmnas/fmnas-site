@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+	<title>Kane - dog for adoption at Forget Me Not Animal Shelter of Ferry County</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<!-- Jquery -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script type="text/javascript">
+		//Email links
+		$(function() {
+			$("a[data-email]").each(function() { //for every email link (with data-email attribute)
+				user = 'adopt'; //default value
+				domain = '@forgetmenotshelter.org';
+				data = $(this).attr('data-email');
+				subject = '';
+				if(!!$.trim(data)) user=data; //if data-email attribute non-empty, use as user part
+				else if ($(this).parent().is('td.inquiry')) { //empty in inquiry link on listing
+					pet = $(this).closest('tr').find('th.name>*').first(); //find name on listing
+					user = 'adopt+'+pet.attr('id'); //add id to adopt+ for user
+					subject = pet.text();
+					$(this).text('Email to adopt '+subject+'!'); //set link text
+				}
+				if(user.charAt(0)=='+') user='adopt'+user; //for adoption links
+				if(!$.trim($(this).text())) $(this).html(user+domain); //make text email address if still blank
+				$(this).attr('href','mailto:'+user+domain+'?subject='+subject); //set href
+			});
+		});
+	</script>
+
+<link rel="stylesheet" href="/listings.css?">
+
+</head>
+<body>
+	<a class="return" href="/Dogs" title="Dogs">Return to the Dogs &amp; Puppies page</a>
+	<h1>Kane 1524</h1>
+	
+    <a href="./Kane (1).JPG" class="im"><img src="1.jpg"></a><a href="./Kane (10).JPG" class="im"><img src="2.jpg"></a><a href="./Kane (2).JPG" class="im"><img src="3.jpg"></a><a href="./Kane (3).JPG" class="im"><img src="4.jpg"></a><a href="./Kane (4).JPG" class="im"><img src="5.jpg"></a><a href="./Kane (5).JPG" class="im"><img src="6.jpg"></a><a href="./Kane (6).JPG" class="im"><img src="7.jpg"></a><a href="./Kane (7).JPG" class="im"><img src="8.jpg"></a><a href="./Kane (8).JPG" class="im"><img src="9.jpg"></a><a href="./Kane (9).JPG" class="im"><img src="10.jpg"></a>
+    <p>
+        Kane (and his friend Ranger - you'll see a lot of similarities in their listings) arrived knowing very little about how to be a dog and a family member. Kane, who currently weighs 67 pounds,  is just barely over a year old - still in "puppy brain" mode! He spent that first year living outside, left pretty much to his own devices. This, of course, led to boredom, which led to Kane seeking to find his own source of fun and stimulation, which involved digging and climbing fences and chasing cats and chickens and anything small that looks like a fun squeaky toy. He is a cheerful dog who loves human attention.
+<p>
+        Kane has not yet learned about toys, and we are sure he is going to love a good game of tug or kill-the-squeaker just as soon as he figures it out. When he arrived, he was "blowing coat" (that fun game every summer where a shepherd's undercoat starts hurling itself to the wind, singing "Born Free" and providing soft bedding for birdsnests everywhere). It seemed like he had never been brushed, and it turns out he LOVES being brushed!
+        <p>
+        He is a relatively smart boy who is very treat motivated, so should be a fun dog to train. In spite of his outdoor existence, he has not once soiled his kennel at the shelter, so appears to be potty trained. After that year as an outside dog, we have found that Kane desires nothing more than to be inside with people.
+        <p>
+        His challenges include digging holes or climbing over the fence when left outside alone; a crazy-high prey drive toward cats and chickens; and some jumping up for attention (though he is learning the rewards are better when his butt stays on the ground). He is also selective about his dog friends, and plays pretty roughly. His ideal home would be as an only pet, or if you have another large adult dog, they should meet at the shelter in Republic first to see if they like each other. Due to Kane's size and current jumping up habit, we recommend only older children in his home - toddlers would be like bowling pins in front of his goofy enthusiasm.
+        <p>
+        The volunteers say Kane really calms down after some exercise and when he is away from Ranger and enjoying the humans all to himself. We feel that Ranger and Kane should go to separate homes to give each the opportunity to blossom.
+        <p>
+        Are you the right person or family to teach this (usually) Very Good Boy what it REALLY means to be a great family dog or best friend?
+            
+            <div class="video"><iframe src="https://www.youtube-nocookie.com/embed/eOTxUmcGXKA?rel=0" frameborder="0" allowfullscreen></iframe></div>
+            <p>
+                All pets arrive spayed/neutered, dewormed, microchipped and vaccinated. Adoption fee is a suggested minimum of $95 (more gratefully accepted). All pets are placed with a 30-day money-back trial period, to give pet and family enough time to discover any unknown allergies or other conflicts.
+<p>
+                Can't come to Republic? Don't let that stop you! We have monthly transports to both the Seattle area and Spokane, delivering adopted pets to their new owners. If you can add a little to your donation to help us cover our transport expenses, that would be great!<p>                
+                <form action="/Application" method="POST" class="apply">
+		If you would like to know more about, or think you might like to adopt, Kane, <button>Apply Online Now</button><br>
+		or email us at: <a data-email>Adopt Kane!</a>
+	</form>
+
+	<p class="big">Can't adopt, but want to help? <strong>Sponsor this pet:</strong>
+	<section class="donate">
+		<form action="https://www.paypal.com/cgi-bin/webscr" method="post" class="paypal">
+			<input type="hidden" name="cmd" value="_s-xclick">
+			<input type="hidden" name="hosted_button_id" value="9649881">
+			<input type="image" src="https://www.paypal.com/en_US/i/btn/btn_donateCC_LG.gif" name="submit" alt="Donate through PayPal">
+			<img border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
+		</form>
+		<a href="https://www.networkforgood.org/donation/ExpressDonation.aspx?ORGID2=91-1996344"><img src="/Cats/networkforgoodlogo.gif" alt="Donate through Network For Good"></a>
+	</section>
