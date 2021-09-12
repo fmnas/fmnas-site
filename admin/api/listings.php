@@ -1,15 +1,6 @@
 <?php
 require_once 'api.php';
 
-function findSpecies(): ?Species {
-    foreach(_G_species() as $species) {
-        if (strtolower($species->plural) === $_GET['species']) {
-            return $species;
-        }
-    }
-    return null;
-}
-
 endpoint(...[
     'get'       => function() use ($db): Result {
         if (isset($_GET['species'])) {
