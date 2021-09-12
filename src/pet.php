@@ -15,7 +15,7 @@ require_once "assets.php";
  * @property int|null young_cutoff // Below this number of months, exclusive, use "young name"
  * @property int|null old_cutoff // Above this number of months, inclusive, use "old name"
  */
-class Species {
+class Species implements JsonSerializable {
     private array $values = array();
 
     /**
@@ -104,18 +104,26 @@ class Species {
                 " &amp; " . ucfirst($this->young_plural ?: $this->young . 's')
             );
     }
+
+    public function jsonSerialize() {
+        return $this->id;
+    }
 }
 
-class Sex {
+class Sex implements JsonSerializable {
     public int $key;
     public string $name;
 
     public function __toString() {
         return $this->name;
     }
+
+    public function jsonSerialize() {
+        return $this->key;
+    }
 }
 
-class Status {
+class Status implements JsonSerializable {
     public int $key;
     public string $name;
     public ?bool $displayStatus; // Display the status in lieu of the adoption fee?
@@ -124,6 +132,10 @@ class Status {
 
     public function __toString() {
         return $this->name;
+    }
+
+    public function jsonSerialize() {
+        return $this->key;
     }
 }
 
