@@ -1,4 +1,5 @@
 <?php
+
 require_once "common.php";
 require_once "assets.php";
 
@@ -89,15 +90,15 @@ class Species implements JsonSerializable {
         $this->values = $arr;
     }
 
-    public function __toString() {
+    public function __toString(): string {
         return strval($this->values["name"]);
     }
 
-    public function plural() {
+    public function plural(): string {
         return $this->plural ?: $this->name . 's';
     }
 
-    public function pluralWithYoung() {
+    public function pluralWithYoung(): string {
         return ucfirst($this->plural()) . (
             (($this->young ?: $this->name) === $this->name) ?
                 "" :
@@ -105,25 +106,21 @@ class Species implements JsonSerializable {
             );
     }
 
-    public function jsonSerialize() {
-        return $this->id;
+    public function jsonSerialize(): array {
+        return $this->values;
     }
 }
 
-class Sex implements JsonSerializable {
+class Sex {
     public int $key;
     public string $name;
 
     public function __toString() {
         return $this->name;
     }
-
-    public function jsonSerialize() {
-        return $this->key;
-    }
 }
 
-class Status implements JsonSerializable {
+class Status {
     public int $key;
     public string $name;
     public ?bool $displayStatus; // Display the status in lieu of the adoption fee?
@@ -133,13 +130,9 @@ class Status implements JsonSerializable {
     public function __toString() {
         return $this->name;
     }
-
-    public function jsonSerialize() {
-        return $this->key;
-    }
 }
 
-class Pet {
+class Pet implements JsonSerializable {
     // Properties corresponding to database fields
     public string $id;
     public string $name;
@@ -184,6 +177,20 @@ class Pet {
             "sex"     => $this->sex->name,
             "fee"     => $this->fee,
             "status"  => $this->status->name,
+            "plural"  => $this->plural,
+        ];
+    }
+
+    public function jsonSerialize(): array {
+        return [
+            "id"      => $this->id,
+            "name"    => $this->name,
+            "species" => $this->species->id,
+            "breed"   => $this->breed,
+            "dob"     => $this->dob,
+            "sex"     => $this->sex->key,
+            "fee"     => $this->fee,
+            "status"  => $this->status->key,
             "plural"  => $this->plural,
         ];
     }
