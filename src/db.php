@@ -228,7 +228,6 @@ class Database {
             "path" => $pet["pic_path"],
             "type" => $pet["pic_type"],
         ]);
-        echo 'here';
         $p->description = self::createAsset([
             "id"   => $pet["dsc_id"],
             "data" => $pet["dsc_data"],
