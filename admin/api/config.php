@@ -30,6 +30,7 @@ endpoint(...[
         }
         return new Result(404, error: "Config key $key not found");
     },
+    'put'       => $reject,
     'put_value' => function($key, $value) use ($db): Result {
         if (!is_string($value)) {
             return new Result(400, error: "Supplied value must be a string");
@@ -41,4 +42,5 @@ endpoint(...[
         regenerate();
         return new Result(200);
     },
+    'delete'    => $reject,
 ]);

@@ -21,4 +21,5 @@ endpoint(...[
         }
         return new Result(200, $pet);
     },
+    'post_value' => $reject,
 ]);
