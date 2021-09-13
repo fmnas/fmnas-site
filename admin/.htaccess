@@ -27,6 +27,7 @@ AddOutputFilterByType DEFLATE application/x-javascript
 RewriteCond %{REQUEST_FILENAME} !.php
 RewriteRule ^api/([^/]+)/?$ /api/$1.php [L,QSA]
 RewriteRule ^api/([^/]+)/([^/]+)/?$ /api/$1.php?v=$2 [L,QSA]
+# @todo figure out how to 404 on nonexistent endpoints
 
 # route with vue
 RewriteCond %{REQUEST_FILENAME} !-f

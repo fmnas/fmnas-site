@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
-<title>Page Title</title>
+<title>FMNAS Admin</title> <!-- @todo Dynamic title -->
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 <script src="https://unpkg.com/vue@3"></script>
 <script src="https://unpkg.com/vue-router@4"></script>
-<script src="https://cdn.jsdelivr.net/npm/vue3-sfc-loader@0.7.3"></script>
-<script src="/common.js"></script>
+<script src="https://unpkg.com/vue3-sfc-loader"></script>
+<script src="common.js"></script>
 <script type="module">
   const options = {
     moduleCache: {
@@ -51,5 +52,6 @@
 
   const app = Vue.createApp({template: '<router-view></router-view>'});
   app.use(router);
+
   app.mount(document.body);
 </script>
