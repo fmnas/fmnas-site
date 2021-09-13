@@ -77,3 +77,8 @@ function endpoint(?callable $get = null, ?callable $post = null, ?callable $put 
     http_response_code($result->status);
     echo json_encode($result);
 }
+
+$reject = function($key = null, $value = null): Result {
+    return new Result(405, "Action not allowed");
+};
+
