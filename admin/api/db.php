@@ -2,35 +2,34 @@
 $src = "../../src"; // Wanted to get this from common.php, but it breaks PHPStorm
 require_once "$src/common.php";
 require_once "$src/db.php";
-require_once "$src/generator.php";
 
 class DatabaseWriter extends Database {
     private mysqli_stmt $addHistoryEntry; // @todo add version history
-    private mysqli_stmt $setTransportDate;
+    private mysqli_stmt $setConfigValue;
 
     public function __construct() {
         parent::__construct();
-        if (!($setTransportDate = $this->db->prepare("
-			UPDATE config SET config_value=? WHERE config_key='transport_date' LIMIT 1
+        if (!($setConfigValue = $this->db->prepare("
+			UPDATE config SET config_value=? WHERE config_key=? LIMIT 1
 			"))) {
-            log_err("Failed to prepare setTransportDate: {$this->db->error}");
+            log_err("Failed to prepare setConfigValue: {$this->db->error}");
         } else {
-            $this->setTransportDate = $setTransportDate;
+            $this->setConfigValue = $setConfigValue;
         }
     }
 
-    public function setTransportDate(string $transportDate): ?string {
+    public function setConfigValue(string $key, string $value): ?string {
         $error = null;
-        if (!$this->setTransportDate->bind_param("s", $transportDate)) {
-            $error = "Binding transport date $transportDate to setTransportDate failed: {$this->db->error}";
+        if (!$this->setConfigValue->bind_param("ss", $value, $key)) {
+            $error = "Binding $key,$value to setConfigValue failed: {$this->db->error}";
         } else {
-            if (!$this->setTransportDate->execute()) {
-                $error = "Executing setTransportDate failed: {$this->db->error}";
+            if (!$this->setConfigValue->execute()) {
+                $error = "Executing setConfigValue failed: {$this->db->error}";
             } else {
-                if ($this->setTransportDate->affected_rows !== 1) {
-                    $error = "setTransportDate affected {$this->setTransportDate->affected_rows} rows instead of 1";
+                if ($this->setConfigValue->affected_rows !== 1) {
+                    $error = "setConfigValue affected {$this->setConfigValue->affected_rows} rows instead of 1";
                 } else {
-                    generate();
+                    regenerate();
                 }
             }
         }

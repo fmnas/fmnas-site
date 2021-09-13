@@ -10,9 +10,6 @@
   export default {
     name: 'Index',
     components: {Listings, TransportDate},
-    created: () => {
-      console.log('created Index')
-    }
   };
 </script>
 
