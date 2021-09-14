@@ -50,11 +50,20 @@ class Database {
         }
 
         if (!($getPet = $this->db->prepare("
-			SELECT * FROM ( 
-			    SELECT * FROM pets WHERE id = ? AND species = ?
-			) pet 
-    		LEFT JOIN assets pic ON pet.photo = pic.id 
-			LEFT JOIN assets dsc ON pet.description = dsc.id
+			SELECT 
+			       pets.*, 
+			       pic.id AS pic_id, 
+			       pic.data AS pic_data, 
+			       pic.type AS pic_type,
+			       pic.path AS pic_path,
+			       dsc.id AS dsc_id,
+			       dsc.data AS dsc_data,
+			       dsc.type AS dsc_type,
+			       dsc.path AS dsc_path
+			FROM pets
+    		LEFT JOIN assets pic ON pets.photo = pic.id 
+			LEFT JOIN assets dsc ON pets.description = dsc.id
+            WHERE pets.id = ? and pets.species = ?
 			"))) {
             log_err("Failed to prepare getPet: {$this->db->error}");
         } else {
@@ -62,16 +71,27 @@ class Database {
         }
 
         if (!($getPetById = $this->db->prepare("
-			SELECT *, pets.id AS id FROM pets
+			SELECT 
+			       pets.*, 
+			       pic.id AS pic_id, 
+			       pic.data AS pic_data, 
+			       pic.type AS pic_type,
+			       pic.path AS pic_path,
+			       dsc.id AS dsc_id,
+			       dsc.data AS dsc_data,
+			       dsc.type AS dsc_type,
+			       dsc.path AS dsc_path
+			FROM pets
             LEFT JOIN assets pic on pets.photo = pic.id
             LEFT JOIN assets dsc on pets.description = dsc.id
-            WHERE pets.id = ? AND pets.species = ?
+            WHERE pets.id = ?
 			"))) {
             log_err("Failed to prepare getPetById: {$this->db->error}");
         } else {
             $this->getPetById = $getPetById;
         }
 
+        // @todo Rewrite getPhotos query
         if (!($getPhotos = $this->db->prepare("
 			SELECT assets.* FROM (
 				SELECT photos.photo FROM (
@@ -299,7 +319,7 @@ class Database {
         $r = null;
         if ($species === null) {
             if (!$this->getPetById->bind_param("s", $id)) {
-                log_err("Binding id $id to getPet failed: {$this->db->error}");
+                log_err("Binding id $id to getPetById failed: {$this->db->error}");
                 return null;
             }
             if (!$this->getPetById->execute()) {
@@ -329,11 +349,10 @@ class Database {
             log_err("Executing getPhotos failed: {$this->db->error}");
         }
 
-        self::createPet(
+        return self::createPet(
             $r,
             $this->getPhotos->get_result()->fetch_all(MYSQLI_ASSOC)
         );
-        return null;
     }
 
     public function getPetByPath(string $path): ?Pet {
