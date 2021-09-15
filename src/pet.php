@@ -166,6 +166,7 @@ class Pet implements JsonSerializable {
         return htmlspecialchars("$this->name $this->id");
     }
 
+    // Strings provided to listing description parser.
     public function toArray(): array {
         return [
             "id"      => $this->id,
@@ -181,17 +182,21 @@ class Pet implements JsonSerializable {
         ];
     }
 
+    // Data provided to listing editor.
     public function jsonSerialize(): array {
         return [
-            "id"      => $this->id,
-            "name"    => $this->name,
-            "species" => $this->species->id,
-            "breed"   => $this->breed,
-            "dob"     => $this->dob,
-            "sex"     => $this->sex->key,
-            "fee"     => $this->fee,
-            "status"  => $this->status->key,
-            "plural"  => $this->plural,
+            "id"          => $this->id,
+            "name"        => $this->name,
+            "species"     => $this->species->id,
+            "breed"       => $this->breed,
+            "dob"         => $this->dob,
+            "sex"         => $this->sex->key,
+            "fee"         => $this->fee,
+            "status"      => $this->status->key,
+            "plural"      => $this->plural,
+            "photo"       => $this->photo,
+            "photos"      => $this->photos,
+            "description" => $this->description,
         ];
     }
 }

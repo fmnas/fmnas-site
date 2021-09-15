@@ -18,7 +18,7 @@ class Asset {
         return stored_assets() . "/" . $this->key;
     }
 
-    public function fetch(): string {
+    public function fetch(): ?string {
         if (!isset($this->contents) || !trim($this->contents)) {
             if (!file_exists($this->absolutePath())) {
                 log_err("Did not find stored asset with key $this->key at {$this->absolutePath()}");
@@ -36,7 +36,7 @@ class Asset {
     public function parse(array $context): string {
         self::createCacheDirectory();
 
-        if (!$this->getType() !== "text/x-handlebars-template") {
+        if (!$this->getType() != "text/x-handlebars-template") {
             log_err("Warning: attempting to parse something with mime-type " . $this->getType() . " (not text/x-handlebars-template)");
         }
 
@@ -183,7 +183,7 @@ class Asset {
 
     /**
      * Create an image tag
-     * @param string $alt alt text
+     * @param string|null $alt alt text
      * @param bool $link Whether to wrap it in a link to the full size image
      * @param bool $relative Whether the full size image is "in" the current directory
      * @param int $height Desired height of scaled image or 0 for no scaling (default: 600)
