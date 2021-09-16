@@ -236,13 +236,14 @@ class Database {
     }
 
     private static function createPet(array $pet, array $photos = []): Pet {
-        $p          = new Pet();
-        $p->id      = $pet["id"];
-        $p->name    = $pet["name"];
-        $p->species = _G_species()[$pet["species"]];
-        $p->sex     = $pet["sex"] ? _G_sexes()[$pet["sex"]] : null;
-        $p->fee     = $pet["fee"];
-        $p->photo   = self::createAsset([
+        $p              = new Pet();
+        $p->id          = $pet["id"];
+        $p->name        = $pet["name"];
+        $p->species     = _G_species()[$pet["species"]];
+        $p->path        = $pet["path"];
+        $p->sex         = $pet["sex"] ? _G_sexes()[$pet["sex"]] : null;
+        $p->fee         = $pet["fee"];
+        $p->photo       = self::createAsset([
             "id"   => $pet["pic_id"],
             "data" => $pet["pic_data"],
             "path" => $pet["pic_path"],
