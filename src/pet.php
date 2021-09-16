@@ -136,7 +136,8 @@ class Pet implements JsonSerializable {
     // Properties corresponding to database fields
     public string $id;
     public string $name;
-    public ?Species $species;
+    public string $path;
+    public Species $species;
     public ?string $breed; // breed or other description
     public ?string $dob; // date of birth
     public ?Sex $sex;
@@ -178,6 +179,7 @@ class Pet implements JsonSerializable {
             "sex"     => $this->sex->name,
             "fee"     => $this->fee,
             "status"  => $this->status->name,
+            "path"    => $this->path,
             "plural"  => $this->plural,
         ];
     }
@@ -193,6 +195,7 @@ class Pet implements JsonSerializable {
             "sex"         => $this->sex->key,
             "fee"         => $this->fee,
             "status"      => $this->status->key,
+            "path"        => $this->path,
             "plural"      => $this->plural,
             "photo"       => $this->photo,
             "photos"      => $this->photos,

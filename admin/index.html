@@ -5,7 +5,7 @@
 <script src="https://unpkg.com/vue@3"></script>
 <script src="https://unpkg.com/vue-router@4"></script>
 <script src="https://unpkg.com/vue3-sfc-loader"></script>
-<script src="common.js"></script>
+<script src="/common.js"></script>
 <script type="module">
   const options = {
     moduleCache: {
@@ -32,6 +32,11 @@
 
   const routes = [
     {
+      name: 'new',
+      path: '/new',
+      component: Listing,
+    },
+    {
       path: '/:species?',
       component: Index,
     },
@@ -50,7 +55,10 @@
     routes,
   });
 
-  const app = Vue.createApp({template: '<router-view></router-view>'});
+  const app = Vue.createApp({
+    template: '<router-view></router-view>',
+  });
+  app.mixin(globals);
   app.use(router);
 
   app.mount(document.body);

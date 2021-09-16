@@ -32,6 +32,7 @@ endpoint(...[
     },
     'put'       => $reject,
     'put_value' => function($key, $value) use ($db): Result {
+        global $src;
         if (!is_string($value)) {
             return new Result(400, error: "Supplied value must be a string");
         }
@@ -39,7 +40,7 @@ endpoint(...[
         if ($error) {
             return new Result(500, error: $error);
         }
-        regenerate();
+        require_once '$src/generator.php';
         return new Result(200);
     },
     'delete'    => $reject,

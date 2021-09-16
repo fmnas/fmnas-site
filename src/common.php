@@ -112,16 +112,12 @@ $t       ??= "$src/templates";
 $secrets ??= "$root/secrets";
 
 /**
- * Generate and load the generated source with constants from database
+ * Generate and load the generated source with constants from database.
+ * This can't be moved to a function because it uses the globals and PHP is PHP.
  */
-function regenerate(): void {
-    global $src;
+if (!file_exists("$src/generated.php")) {
     require_once "$src/generator.php";
     generate();
-}
-
-if (!file_exists("$src/generated.php")) {
-    regenerate();
 }
 require_once "$src/generated.php";
 

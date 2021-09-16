@@ -19,6 +19,8 @@ class DatabaseWriter extends Database {
     }
 
     public function setConfigValue(string $key, string $value): ?string {
+        global $src;
+
         $error = null;
         if (!$this->setConfigValue->bind_param("ss", $value, $key)) {
             $error = "Binding $key,$value to setConfigValue failed: {$this->db->error}";
@@ -29,7 +31,7 @@ class DatabaseWriter extends Database {
                 if ($this->setConfigValue->affected_rows !== 1) {
                     $error = "setConfigValue affected {$this->setConfigValue->affected_rows} rows instead of 1";
                 } else {
-                    regenerate();
+                    require_once "$src/generator.php";
                 }
             }
         }

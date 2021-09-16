@@ -27,6 +27,7 @@ CREATE TABLE config
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci COMMENT ='Global configuration values; these are cached by the backend';
 
+# @todo Update config values in schema.sql
 INSERT INTO config
 VALUES ('longname', 'Forget Me Not Animal Shelter of Ferry County'),
        ('shortname', 'Forget Me Not Animal Shelter'),
