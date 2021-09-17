@@ -1,5 +1,5 @@
 <template>
-  <form method="POST">
+  <form id="metadata">
     <ul>
       <li class="name">
         <label for="name">Name</label>
@@ -47,6 +47,7 @@ export default {
       species: this.$route.params.species,
       path: this.$route.params.pet,
       pet: {},
+      original: {}, // @todo Track original values of pet metadata and indicate changes
     };
   },
   created() {
