@@ -32,7 +32,7 @@ export default {
   mounted() {
     // @todo Add a loading indicator for transport date editor
     fetch('/api/config/transport_date', {
-      method: 'get',
+      method: 'GET',
     }).then(res => {
       if (!res.ok) throw res;
       return res.json();

@@ -43,19 +43,19 @@ export default {
   props: ['species'],
   data() {
     return {
-      api_url: '/api/listings',
+      apiUrl: '/api/listings',
       listings: [],
     };
   },
   created() {
     if (this.species) {
-      this.api_url += `/?species=${this.species}`;
+      this.apiUrl += `/?species=${this.species}`;
     }
   },
   mounted() {
     // @todo Add a loading indicator for listings
-    fetch(this.api_url, {
-      method: 'get',
+    fetch(this.apiUrl, {
+      method: 'GET',
     }).then(res => {
       if (!res.ok) throw res;
       return res.json();

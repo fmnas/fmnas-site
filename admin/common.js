@@ -3,15 +3,17 @@ function r404(path) {
 }
 
 const globalsPromise = fetch('/api/config', {
-  method: 'get',
+  method: 'GET',
 }).then(res => {
   if (!res.ok) throw res;
   return res.json();
 }).then((config) => {
+  const getPathForPet = (pet) => `${pet['id']}${pet['name']?.split(' ').join('')}`;
+  const getFullPathForPet = (pet) => `${config['species']?.[pet['species']]?.['plural']}/${getPathForPet(pet)}`;
   return {
     methods: {
-      getPathForPet: (pet) =>
-        `${config['species']?.[pet['species']]?.['plural']}/${pet['id']}${pet['name']?.split(' ').join('')}`,
+      getPathForPet,
+      getFullPathForPet,
     },
     data() {
       return {
@@ -20,7 +22,3 @@ const globalsPromise = fetch('/api/config', {
     },
   };
 });
-
-// Dummy definitions for PhpStorm:
-const config = {};
-const getPathForPet = (pet) => {};
