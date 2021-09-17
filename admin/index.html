@@ -58,7 +58,7 @@
   const app = Vue.createApp({
     template: '<router-view></router-view>',
   });
-  app.mixin(globals);
+  app.mixin(await globalsPromise);
   app.use(router);
 
   app.mount(document.body);

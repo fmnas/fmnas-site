@@ -30,7 +30,7 @@
       <td class="fee">{{ listing['fee'] }}</td>
       <td class="status">{{ config['statuses']?.[listing['status']]?.['name'] }}</td>
       <td class="options">
-        <router-link :to="{ path: '/' + getPathForPet(listing, config) }">Edit</router-link>
+        <router-link :to="{ path: '/' + getPathForPet(listing) }">Edit</router-link>
       </td>
     </tr>
     </tbody>
@@ -40,7 +40,7 @@
 <script>
 export default {
   name: 'Listings',
-  props: ['config', 'species'],
+  props: ['species'],
   data() {
     return {
       api_url: '/api/listings',
