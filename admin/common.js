@@ -42,11 +42,6 @@ const globalsPromise = fetch('/api/config', {
       if (months < 4) {
         return `DOB ${startDate.getMonth() + 1}/${startDate.getDate() + 1}/${startDate.getFullYear()}`;
       }
-      if (months === 0) {
-        return dayDiff < 0 ?
-          new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0).getDate() + dayDiff :
-          dayDiff;
-      }
       if (months > (species?.['age_unit_cutoff'] || 12)) {
         return `${years} years old`;
       }
