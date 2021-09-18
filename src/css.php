@@ -32,8 +32,8 @@ function cssspecialchars(string $content): string {
                 // Discard character
                 continue;
             } else {
-                // Escape character
-                $output .= "\\" . strtoupper(dechex(mb_ord($char, "UTF-8")));
+                // Escape character (hex sequence is terminated by space)
+                $output .= "\\" . strtoupper(dechex(mb_ord($char, "UTF-8"))) . ' ';
             }
         }
     }

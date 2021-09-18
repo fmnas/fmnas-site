@@ -1,5 +1,5 @@
 <template>
-  <form id="metadata">
+  <form id="metadata" @submit.prevent>
     <ul>
       <li class="name">
         <label for="name">Name</label>
@@ -49,7 +49,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr :class="`st_${pet['status']}${listed() ? '' : ' soon'}`">
+    <tr :class="[`st_${pet['status']}`, listed() ? '' : ' soon']">
       <th class="name">{{ pet['name'] }}</th>
       <td class="sex">{{ ucfirst(config['sexes'][pet['sex']]?.['name']) }}</td>
       <td class="age">{{ petAge(pet) }}</td>
@@ -59,7 +59,7 @@
         }}
       </td>
       <td class="img"><img :src="`/api/raw/stored/${pet['photo']?.['key']}`" :alt="pet['name']"></td>
-      <td class="inquiry"><a href="mailto:adopt@forgetmenotshelter.org">
+      <td class="inquiry"><a href="mailto:adopt@forgetmenotshelter.org" @click.prevent>
         Email to adopt {{ pet['name'] }}!
       </a></td>
     </tr>

@@ -1,4 +1,4 @@
-/*Kuranda beds*/
+/* Kuranda beds */
 .kuranda p {
     color:            #f00;
     background-color: #ff6;
@@ -16,11 +16,10 @@
     max-width:    100%;
 }
 
-/*Listings table*/
+/* Listings table */
 table.listings {
     width:   100%;
     display: block;
-    /*background-color: #ddd;*/
 }
 
 table.listings tbody {
@@ -35,10 +34,10 @@ table.listings tbody {
     }
 }
 
-/*Listings table - individual listings*/
+/* Listings table - individual listings */
 table.listings tbody tr {
-    display:    inline-block;
     float:      left;
+    max-width:  50%;
     padding:    1em;
     box-sizing: border-box;
 }
@@ -73,7 +72,8 @@ table.listings tbody td.img {
     /* Ensures 2em margin either side of image but only 1em either side of name */
 }
 
-/*Listings table - individual data*/
+
+/* Listings table - individual data */
 th.name {
     font-size: 18pt;
     display:   inline;
@@ -106,15 +106,16 @@ td.inquiry > a {
     text-decoration: none;
 }
 
+/* Listings table - applications pending & closed */
+
 table.listings tr {
     order: 1;
 }
 
 table.listings tr.soon {
+    /* put in middle */
     order: 2;
 }
-
-/* put in middle */
 
 table.listings tr a:hover {
     text-decoration: none;
@@ -144,7 +145,7 @@ tr.soon > td.fee > span {
     display: none;
 }
 
-th.name > *:not([id=""])::after {
+th.name > *:not([id=''])::after {
     content:        ' (id#' attr(id) ')';
     font-size:      11pt;
     vertical-align: 10%;

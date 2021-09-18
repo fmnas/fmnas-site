@@ -77,8 +77,8 @@ function generate() {
 
                 // The content to display when hovering over the status
                 echo $sel . '>td.fee::before{content:"';
-                echo cssspecialchars($status->name . ":\\A" . $status->description);
-                echo '";} "';
+                echo cssspecialchars($status->name . ":\n" . $status->description);
+                echo '";}';
             }
         }
     }
@@ -94,7 +94,7 @@ function generate() {
         echo buildSelector($hoverStatusSelectors, ">td.fee>*::after") . <<<CSS
             {
                 content: "?";
-                margin-left: 0.5ex;
+                margin-left: 0.38ex;
                 color: #00f;
                 font-size: 9pt;
                 border: 1pt solid #00f;
@@ -141,12 +141,13 @@ function generate() {
                 text-align: justify;
                 text-justify: inter-character;
                 z-index: -1;
+                transition: opacity 0.18s ease-in 0.18s, z-index 0s 0.36s;
             }
             CSS;
-
-        // popup transition
         echo buildSelector($hoverStatusSelectors, ">td.fee:hover::before");
-        echo "{opacity:0.9;transition:all 0.18s ease-out 0.18s;z-index:2;} ";
+        echo "{opacity:0.9;transition:opacity 0.18s ease-out 0.18s;z-index:2;} ";
+        echo buildSelector($hoverStatusSelectors, ">td.fee");
+        echo "{overflow:visible;position:relative;}";
     }
     $output = ob_get_clean();
     file_put_contents(root() . "/public/adoptable.generated.css", $output);
