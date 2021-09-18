@@ -8,7 +8,7 @@
         <label for="species">Species</label>
         <select name="species" id="species" v-model="pet['species']" required>
           <option value=""></option>
-          <option v-for="s of config['species']" :value="s['id']">{{ s['name'] }}</option>
+          <option v-for="s of config['species']" :value="s['id']">{{ ucfirst(s['name']) }}</option>
         </select>
       <li class="breed">
         <label for="breed">Breed/info</label>
@@ -21,7 +21,7 @@
           <legend>Sex</legend>
           <label v-for="sex of config['sexes']">
             <input type="radio" name="sex" :value="sex['key']" v-model="pet['sex']" required>
-            <abbr :title="sex['name']">{{ sex['name'][0] }}</abbr>
+            <abbr :title="sex['name']">{{ sex['name'][0].toUpperCase() }}</abbr>
           </label>
         </fieldset>
       <li class="fee">
