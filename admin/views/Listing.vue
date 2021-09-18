@@ -49,7 +49,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr :class="`st_${config['statuses'][pet['status']]?.['key']}${listed() ? '' : ' soon'}`">
+    <tr :class="`st_${pet['status']}${listed() ? '' : ' soon'}`">
       <th class="name">{{ pet['name'] }}</th>
       <td class="sex">{{ ucfirst(config['sexes'][pet['sex']]?.['name']) }}</td>
       <td class="age">{{ petAge(pet) }}</td>
