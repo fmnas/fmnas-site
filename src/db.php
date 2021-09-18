@@ -215,6 +215,7 @@ class Database {
         if (!($getAllSpecies = $this->db->prepare("
 			SELECT species.*, COUNT(pets.id) AS species_count
 			FROM species LEFT JOIN pets ON species.id = pets.species
+			JOIN statuses on pets.status = statuses.id AND statuses.listed = 1
 			GROUP BY species.id
 			"))) {
             log_err("Failed to prepare getAllSpecies: {$this->db->error}");
