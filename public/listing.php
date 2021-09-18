@@ -44,6 +44,9 @@ if (!$pet->status->listed || $pet->status->displayStatus) {
 ?>
     <aside class="images">
 <?php foreach ($pet->photos as $photo) {
+    if ($photo === null) {
+        break;
+    }
     /* @var $photo Asset */
     echo $photo->imgTag(null, true, false);
 }
