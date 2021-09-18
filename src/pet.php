@@ -64,7 +64,7 @@ class Species implements JsonSerializable {
             if ($months == 0) {
                 return $interval->d . " day" . ($interval->d === 1 ? "" : "s") . " old";
             }
-            if ($this->age_unit_cutoff ?: 12 > $interval->m) {
+            if ($months > ($this->age_unit_cutoff ?: 12)) {
                 return $interval->y . " year" . ($interval->y === 1 ? "" : "s") . " old";
             }
             return $months . " month" . ($months === 1 ? "" : "s") . " old";
