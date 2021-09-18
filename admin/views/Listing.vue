@@ -1,6 +1,9 @@
 <template>
   <form id="metadata" @submit.prevent>
     <ul>
+      <li class="id">
+        <label for="id">ID</label>
+        <input type="text" name="id" id="id" v-model="pet['id']" required>
       <li class="name">
         <label for="name">Name</label>
         <input type="text" name="name" id="name" v-model="pet['name']" required>
@@ -61,8 +64,9 @@
         <span>{{ pet['fee'] }}</span>
       </td>
       <td class="img">
-        <a :href="listed() ? `//${config['public_domain']}/${getFullPathForPet(pet)}` : null" @click.prevent>
-          <img :src="`/api/raw/stored/${pet['photo']?.['key']}`" :alt="pet['name']">
+        <a :href="listed() ? `//${config['public_domain']}/${getFullPathForPet(pet)}` : null"
+           @click.prevent="editProfileImage">
+          <img :src="pet['photo']?.['key'] ? `/api/raw/stored/${pet['photo']?.['key']}` : null" alt="Add profile image">
         </a>
       </td>
       <td class="inquiry"><a :href="`mailto:${config['default_email_user']}@${config['public_domain']}`" @click.prevent>
@@ -134,6 +138,7 @@ Introducing {{name}} <` + /* i hate javascript */ `!-- Write the rest of the lis
       return (this.species && this.path) ? `/api/listings/${this.species}/${this.path}` : '/api/listings';
     },
     save() {
+      // @todo Handle changing id of existing pet
       fetch(this.apiUrl(), {
         method: this.path ? 'PUT' : 'POST',
       }).then(res => {
@@ -169,6 +174,11 @@ Introducing {{name}} <` + /* i hate javascript */ `!-- Write the rest of the lis
     },
     listed() {
       return !this.description.startsWith('{{>coming_soon}}') && (this.description || this.pet['photos']?.length);
+    },
+    editProfileImage() {
+      console.log('eee');
+      alert('Should bring up the profile image editor.');
+      // @todo profile image editor
     },
   },
 };
