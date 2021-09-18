@@ -153,7 +153,9 @@ class Pet implements JsonSerializable {
     }
 
     public function listed(): bool {
-        return ($this->description !== null && strlen(trim($this->description->fetch())) > 0) || ($this->photos !== null && count($this->photos) > 0);
+        return !($this->description !== null && startsWith($this->description->fetch(), "{{>coming_soon}}")) &&
+               (($this->description !== null && strlen(trim($this->description->fetch())) > 0) ||
+                ($this->photos !== null && count($this->photos) > 0));
     }
 
     public function species(): string {

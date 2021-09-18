@@ -23,7 +23,12 @@ require_once 'api.php';
 endpoint(...[
     'get'          => $reject,
     'get_value'    => function($value) use ($db): Result {
-        $asset = $db->getAssetByPath($value);
+        if (startsWith($value, "cached/")) {
+            // @todo Handle cached images in raw api and use in listing editor
+            return new Result(501, "Can't read cache");
+        }
+        $asset = startsWith($value, "stored/") ?
+            $db->getAssetByKey(intval(substr($value, strlen("stored/")))) : $db->getAssetByPath($value);
         if ($asset === null) {
             return new Result(404, "Asset $value not found");
         }

@@ -37,7 +37,34 @@
         </select>
     </ul>
   </form>
+  <table class="listings">
+    <thead>
+    <tr>
+      <th>Name</th>
+      <th>Sex</th>
+      <th>Age</th>
+      <th>Adoption fee</th>
+      <th>Image</th>
+      <th>Email inquiry</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr :class="`st_${config['statuses'][pet['status']]?.['key']}${listed() ? '' : ' soon'}`">
+      <th class="name">{{ pet['name'] }}</th>
+      <td class="sex">{{ ucfirst(config['sexes'][pet['sex']]?.['name']) }}</td>
+      <td class="age">{{ petAge(pet) }}</td>
+      <td class="fee">{{
+          config['statuses'][pet['status']]?.['displayStatus'] ?
+              config['statuses'][pet['status']]?.['name'] : pet['fee']
+        }}
+      </td>
+      <td class="img"><img :src="`/api/raw/stored/${pet['photo']?.['key']}`" :alt="pet['name']"></td>
+      <td class="inquiry"><a data-email></a></td>
+    </tr>
+    </tbody>
+  </table>
   modified status: {{ modified() }}
+  loading status: {{ loading }}
 </template>
 
 <script>
@@ -49,24 +76,48 @@ export default {
       path: this.$route.params.pet,
       pet: {},
       original: {},
+      description: `{{>coming_soon}}
+
+Introducing {{name}} <` + /* i hate javascript */ `!-- Write the rest of the listing here -->
+
+{{>youtube id='<` + `!-- video id here -->'}}
+
+{{>single_kitten}} <` + `!-- Remove if not applicable -->
+
+{{>standard_info}}`,
+      originalDescription: '',
+      loading: true,
     };
   },
   created() {
     if (this.species && this.path) {
       // Updating an existing listing
       // @todo Add a loading indicator for single listing
-      fetch(this.apiUrl(), {
-        method: 'GET',
-      }).then(res => {
+      fetch(this.apiUrl()).then(res => {
         if (!res.ok) throw res;
         return res.json();
       }).then(data => {
         this.pet = data;
         this.updateAfterSave();
+        try {
+          fetch(`/api/raw/stored/${this.pet['description']?.['key']}`).then(res => {
+            if (!res.ok) throw res;
+            return res.text();
+          }).then(data => {
+            this.description = data;
+            this.originalDescription = data;
+            this.loading = false;
+          });
+        } catch (e) {
+          console.error(e);
+          this.loading = false;
+        }
       });
     } else {
       // Creating a new listing
       this.pet['species'] = Object.values(this.config['species']).find((s) => s['plural'] === this.species)?.['id'];
+      this.originalDescription = this.description;
+      this.loading = false;
     }
   },
   methods: {
@@ -106,11 +157,14 @@ export default {
         }
       }
       return false;
-    }
+    },
+    listed() {
+      return !this.description.startsWith('{{>coming_soon}}') && (this.description || this.pet['photos']?.length);
+    },
   },
 };
 </script>
 
 <style scoped>
-
+  @import '/adoptable.css.php';
 </style>

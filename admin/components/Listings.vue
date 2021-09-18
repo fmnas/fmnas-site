@@ -20,7 +20,7 @@
     <!-- @todo Make listing metadata editable from table view -->
     <tr v-for="listing of listings">
       <!-- @todo Use HTTPS for img src once https public site works -->
-      <td class="photo"><img :src="`/api/raw/${listing['photo']?.['path']}`" :alt="listing['name']"></td>
+      <td class="photo"><img :src="`/api/raw/stored/${listing['photo']?.['id']}`" :alt="listing['name']"></td>
       <td class="id">{{ listing['id'] }}</td>
       <td class="name">{{ listing['name'] }}</td>
       <td v-if="!species" class="species">{{ config['species']?.[listing['species']]?.['name'] }}</td>
