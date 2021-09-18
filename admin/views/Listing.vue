@@ -53,10 +53,7 @@
       <th class="name">{{ pet['name'] }}</th>
       <td class="sex">{{ ucfirst(config['sexes'][pet['sex']]?.['name']) }}</td>
       <td class="age">{{ petAge(pet) }}</td>
-      <td class="fee">{{
-          config['statuses'][pet['status']]?.['displayStatus'] ?
-              config['statuses'][pet['status']]?.['name'] : pet['fee']
-        }}
+      <td class="fee"><div></div><span>{{ pet['fee'] }}</span>
       </td>
       <td class="img"><img :src="`/api/raw/stored/${pet['photo']?.['key']}`" :alt="pet['name']"></td>
       <td class="inquiry"><a href="mailto:adopt@forgetmenotshelter.org" @click.prevent>

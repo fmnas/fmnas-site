@@ -72,6 +72,10 @@ function generate() {
         if (isset($status->displayStatus) && $status->displayStatus) {
             $sel                        = "tr.st_{$status->key}";
             $displayedStatusSelectors[] = $sel;
+            echo $sel . '>td.fee>*::before{content:"';
+            echo cssspecialchars($status->name);
+            echo '";}';
+            // @todo Render status text in fee cell on server side for a11y
             if (isset($status->description) && strlen(trim($status->description)) > 0) {
                 $hoverStatusSelectors[] = $sel;
 
@@ -86,7 +90,19 @@ function generate() {
     if (count($displayedStatusSelectors)) {
         // Display pending animals with a grey background
         echo buildSelector($displayedStatusSelectors, " *");
-        echo "{background-color:#ddd;} ";
+        echo "{background-color:#ddd;}";
+
+        // Show status instead of fee
+        echo buildSelector($displayedStatusSelectors, ">td.fee>span");
+        echo "{display:none;}";
+
+        // Move them to the end
+        echo buildSelector($displayedStatusSelectors);
+        echo "{order:3 !important;}";
+
+        // Hide email link
+        echo buildSelector($displayedStatusSelectors, " .inquiry>a");
+        echo "{visibility:hidden;}";
     }
 
     if (count($hoverStatusSelectors)) {

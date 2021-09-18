@@ -99,11 +99,7 @@ pageHeader();
             echo '</time></td>';
 
             echo '<td class="fee"><div></div><span>';
-            if ($pet->status->displayStatus) {
-                echo $pet->status->name;
-            } else {
-                echo $pet->fee;
-            }
+            echo $pet->fee;
             echo '</span></td>';
 
             echo '<td class="img"><a';
