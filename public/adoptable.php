@@ -109,7 +109,7 @@ pageHeader();
             echo '<td class="img"><a';
             echo $href;
             echo '>';
-            echo $pet->photo->imgTag(htmlspecialchars($pet->name));
+            echo $pet->photo->imgTag(htmlspecialchars($pet->name), false, false, 300);
             echo '</a></td>';
 
             echo '<td class="inquiry"><a data-email></a></td>';

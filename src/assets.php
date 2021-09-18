@@ -158,19 +158,19 @@ class Asset {
                 return "/assets/stored/$this->key";
         }
 
-        imagescale($image, $height * $ratio, $height);
+        $scaled = imagescale($image, round($height * $ratio), $height, IMG_BICUBIC);
 
         self::createCacheDirectory();
         $success = false;
         switch ($this->getType()) {
             case "image/jpeg":
-                $success = imagejpeg($image, $absoluteTarget, 80);
+                $success = imagejpeg($scaled, $absoluteTarget, 80);
                 break;
             case "image/png":
-                $success = imagepng($image, $absoluteTarget, 9);
+                $success = imagepng($scaled, $absoluteTarget, 9);
                 break;
             case "image/gif":
-                $success = imagegif($image, $absoluteTarget);
+                $success = imagegif($scaled, $absoluteTarget);
                 break;
         }
         if (!$success) {
@@ -186,7 +186,7 @@ class Asset {
      * @param string|null $alt alt text
      * @param bool $link Whether to wrap it in a link to the full size image
      * @param bool $relative Whether the full size image is "in" the current directory
-     * @param int $height Desired height of scaled image or 0 for no scaling (default: 600)
+     * @param int $height Desired height of 1x image or 0 for no scaling (default: 600)
      * @return string img tag
      */
     public function imgTag(?string $alt = "", bool $link = false, bool $relative = false, int $height = 600): string {
@@ -201,12 +201,18 @@ class Asset {
         }
         $tag .= '<img';
         if ($height !== 0 && $height < $this->size()[1]) {
-            $intrinsicWidth = $this->size()[0];
-            $ratio          = $this->size()[0] / $this->size()[1];
-            $newWidth       = $ratio * $height;
-            $tag            .= ' srcset="';
-            $tag            .= $this->cachedImage($height);
-            $tag            .= " {$newWidth}w, $path {$intrinsicWidth}w\"";
+            $intrinsicWidth  = $this->size()[0];
+            $intrinsicHeight = $this->size()[1];
+            $ratio           = $this->size()[0] / $this->size()[1];
+            $newWidth        = round($ratio * $height);
+            $tag             .= ' srcset="';
+            $currentScale    = 1;
+            while ($currentScale * $height < $intrinsicHeight) {
+                $tag          .= $this->cachedImage($currentScale * $height);
+                $tag          .= " {$currentScale}x, ";
+                $currentScale += 0.5;
+            }
+            $tag .= "$path " . $intrinsicHeight / $height . "x\"";
         }
         $tag .= ' src="' . $path . '"';
         if ($alt) {
