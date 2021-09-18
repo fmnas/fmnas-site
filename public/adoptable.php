@@ -35,95 +35,11 @@ function relativePath(string $basePath): string {
 <?php
 style();
 style("adoptable");
+style("adoptable.generated"); // I hate this
 emailLinks();
 ?>
     <style type="text/css">
         <?php
-        $displayedStatusSelectors = array();
-        $hoverStatusSelectors = array();
-        foreach (_G_statuses() as $status) {
-            /* @var $status Status */
-            if (isset($status->displayStatus) && $status->displayStatus) {
-                $sel = "tr.st_{$status->key}";
-                $displayedStatusSelectors[] = $sel;
-                if (isset($status->description) && strlen(trim($status->description)) > 0) {
-                    $hoverStatusSelectors[] = $sel;
-
-                    // The content to display when hovering over the status
-                    echo $sel . '>td.fee::before{content:"';
-                    echo cssspecialchars($status->name . ":\\A" . $status->description);
-                    echo '";} "';
-                }
-            }
-        }
-
-        if (count($displayedStatusSelectors)) {
-            // Display pending animals with a grey background
-            echo buildSelector($displayedStatusSelectors, " *");
-            echo "{background-color:#ddd;} ";
-        }
-
-        if (count($hoverStatusSelectors)) {
-            // Display the ? to hover over to see the status
-            echo buildSelector($hoverStatusSelectors, ">td.fee>*::after") . <<<CSS
-            {
-                content: "?";
-                margin-left: 0.5ex;
-                color: #00f;
-                font-size: 9pt;
-                border: 1pt solid #00f;
-                padding: 0.1em;
-                width: 1em;
-                height: 1em;
-                line-height: 1em;
-                border-radius: 1em;
-                vertical-align: 0.1em;
-                display: inline-block;
-                cursor: default;
-            } 
-            CSS;
-            // @todo minify CSS on-the-fly?
-
-            // Make the ? a different color when hovering
-            echo buildSelector($hoverStatusSelectors, ">td.fee>*:hover::after");
-            echo "{background-color:#00f;color:#fff;} ";
-
-            // Hide the ? when printing
-            echo "@media print {";
-            echo buildSelector($hoverStatusSelectors, ">td.fee>*::after");
-            echo "{display: none;} } ";
-
-            // Make the popup able to overflow outside the box when hovering
-            echo buildSelector($hoverStatusSelectors, ">td.fee>*::after");
-            echo "{overflow:visible;position:relative;} ";
-
-            // Style the popup
-            echo buildSelector($hoverStatusSelectors, ">td.fee::before") . <<<CSS
-            {
-                width: 100%;
-                border-radius: 0.5em;
-                border: 1px solid black;
-                position: absolute;
-                left: 50%;
-                top: 1.3em;;
-                margin-top: 0;
-                transform: translate(-50%, 10px);
-                background-color: #fff;
-                color: #000;
-                padding: 1em;
-                opacity: 0;
-                box-shadow: -2pt 2pt 5pt #000;
-                text-align: justify;
-                text-justify: inter-character;
-                z-index: -1;
-            }
-            CSS;
-
-            // popup transition
-            echo buildSelector($hoverStatusSelectors, ">td.fee:hover::before");
-            echo "{opacity:0.9;transition:all 0.18s ease-out 0.18s;z-index:2;} ";
-            // @todo mobile friendly popup
-        }
         ?>
     </style>
 <?php
