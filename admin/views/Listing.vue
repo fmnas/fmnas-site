@@ -59,12 +59,15 @@
         }}
       </td>
       <td class="img"><img :src="`/api/raw/stored/${pet['photo']?.['key']}`" :alt="pet['name']"></td>
-      <td class="inquiry"><a data-email></a></td>
+      <td class="inquiry"><a href="mailto:adopt@forgetmenotshelter.org">
+        Email to adopt {{ pet['name'] }}!
+      </a></td>
     </tr>
     </tbody>
   </table>
-  modified status: {{ modified() }}
-  loading status: {{ loading }}
+  <p>modified status: {{ modified() }}</p>
+  <p>loading status: {{ loading }}</p>
+  <pre>{{ description }}</pre>
 </template>
 
 <script>
