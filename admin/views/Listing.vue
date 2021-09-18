@@ -50,13 +50,22 @@
     </thead>
     <tbody>
     <tr :class="[`st_${pet['status']}`, listed() ? '' : ' soon']">
-      <th class="name">{{ pet['name'] }}</th>
+      <th class="name"><a
+          :href="listed() ? `//${config['public_domain']}/${getFullPathForPet(pet)}` : null"
+          :id="pet['id']" @click.prevent>{{ pet['name'] }}</a>
+      </th>
       <td class="sex">{{ ucfirst(config['sexes'][pet['sex']]?.['name']) }}</td>
       <td class="age">{{ petAge(pet) }}</td>
-      <td class="fee"><div></div><span>{{ pet['fee'] }}</span>
+      <td class="fee">
+        <div></div>
+        <span>{{ pet['fee'] }}</span>
       </td>
-      <td class="img"><img :src="`/api/raw/stored/${pet['photo']?.['key']}`" :alt="pet['name']"></td>
-      <td class="inquiry"><a href="mailto:adopt@forgetmenotshelter.org" @click.prevent>
+      <td class="img">
+        <a :href="listed() ? `//${config['public_domain']}/${getFullPathForPet(pet)}` : null" @click.prevent>
+          <img :src="`/api/raw/stored/${pet['photo']?.['key']}`" :alt="pet['name']">
+        </a>
+      </td>
+      <td class="inquiry"><a :href="`mailto:${config['default_email_user']}@${config['public_domain']}`" @click.prevent>
         Email to adopt {{ pet['name'] }}!
       </a></td>
     </tr>
@@ -166,5 +175,5 @@ Introducing {{name}} <` + /* i hate javascript */ `!-- Write the rest of the lis
 </script>
 
 <style scoped>
-  @import '/adoptable.css.php';
+@import '/adoptable.css.php';
 </style>

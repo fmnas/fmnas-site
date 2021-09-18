@@ -30,7 +30,8 @@
       <td class="fee">{{ listing['fee'] }}</td>
       <td class="status">{{ config['statuses']?.[listing['status']]?.['name'] }}</td>
       <td class="options">
-        <router-link :to="{ path: '/' + getPathForPet(listing) }">Edit</router-link>
+        <router-link :to="{ path: '/' + getFullPathForPet(listing) }">Edit</router-link>
+        <a :href="`//${config['public_domain']}/${getFullPathForPet(listing)}`">View</a>
       </td>
     </tr>
     </tbody>

@@ -7,6 +7,8 @@ const ucfirst = (str = '') => str.charAt(0).toUpperCase() + str.slice(1);
 // Dummy definitions for PhpStorm
 const config = {};
 const petAge = (pet) => '';
+const getPathForPet = (pet) => '';
+const getFullPathForPet = (pet) => '';
 
 const globalsPromise = fetch('/api/config', {
   method: 'GET',
