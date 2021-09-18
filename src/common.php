@@ -147,5 +147,5 @@ function log_err(string $msg = "") {
  * Include the email links script
  */
 function emailLinks(): void {
-    echo '<script src="/email.js"></script>';
+    echo '<script src="/email.js.php"></script>';
 }
