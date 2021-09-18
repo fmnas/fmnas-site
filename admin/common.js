@@ -19,7 +19,7 @@ const globalsPromise = fetch('/api/config', {
   const petAge = (pet) => {
     const dob = pet['dob'];
     if (!dob) {
-      return '&nbsp;';
+      return '\xa0'; // &nbsp;
     }
     try {
       const species = config['species']?.[pet['species']];
