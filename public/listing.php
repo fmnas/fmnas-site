@@ -48,7 +48,7 @@ if (!$pet->status->listed || $pet->status->displayStatus) {
         break;
     }
     /* @var $photo Asset */
-    echo $photo->imgTag(null, true, false);
+    echo $photo->imgTag(null, true, false, 640);
 }
 echo '</aside>';
 if ($pet->description !== null) {
