@@ -37,6 +37,7 @@
         </select>
     </ul>
   </form>
+  modified status: {{ modified() }}
 </template>
 
 <script>
@@ -47,7 +48,7 @@ export default {
       species: this.$route.params.species,
       path: this.$route.params.pet,
       pet: {},
-      original: {}, // @todo Track original values of pet metadata and indicate changes
+      original: {},
     };
   },
   created() {
@@ -61,7 +62,7 @@ export default {
         return res.json();
       }).then(data => {
         this.pet = data;
-        this.updatePath();
+        this.updateAfterSave();
       });
     } else {
       // Creating a new listing
@@ -77,10 +78,17 @@ export default {
         method: this.path ? 'PUT' : 'POST',
       }).then(res => {
         if (!res.ok) throw res;
-        this.updatePath();
+        this.updateAfterSave();
       });
     },
-    updatePath() {
+    updateAfterSave() {
+      // Update original pet
+      for (const [key, value] of Object.entries(this.pet)) {
+        if (typeof value !== 'object') {
+          this.original[key] = value;
+        }
+      }
+      // Update URL
       if (`${this.species}/${this.path}` !== this.getFullPathForPet(this.pet)) {
         this.species = this.config['species'][this.pet.species]['plural'];
         this.path = this.getPathForPet(this.pet);
@@ -88,6 +96,17 @@ export default {
         this.$router.replace(`/${this.getFullPathForPet(this.pet)}`);
       }
     },
+    modified() {
+      for (const key of new Set([...Object.keys(this.original), ...Object.keys(this.pet)])) {
+        if ((typeof this.pet[key] !== 'object' || typeof this.pet[key] !== 'object') &&
+            this.pet[key] !== this.original[key] &&
+            !(!this.pet[key] && !this.original[key]) // so null matches '', etc.
+        ) {
+          return true;
+        }
+      }
+      return false;
+    }
   },
 };
 </script>
