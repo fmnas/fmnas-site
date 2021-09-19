@@ -32,6 +32,16 @@ endpoint(...[
         if ($asset === null) {
             return new Result(404, "Asset $value not found");
         }
+
+        // Caching
+        $etag = '"' . filemtime(__FILE__) . filemtime($asset->absolutePath()) . '"';
+        header("ETag: $etag");
+        $ifNoneMatch = array_map('trim', explode(',', trim($_SERVER['HTTP_IF_NONE_MATCH'])));
+        if (in_array($etag, $ifNoneMatch, true)) {
+            header("HTTP/2 304 Not Modified");
+            exit();
+        }
+
         header("Content-Type: " . $asset->getType());
         readfile($asset->absolutePath());
         exit(); // Exit here to avoid outputting JSON
