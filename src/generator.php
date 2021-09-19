@@ -90,7 +90,7 @@ function generate() {
     if (count($displayedStatusSelectors)) {
         // Display pending animals with a grey background
         echo buildSelector($displayedStatusSelectors, " *");
-        echo "{background-color:#ddd;}";
+        echo "{background-color:var(--pending-color);}";
 
         // Show status instead of fee
         echo buildSelector($displayedStatusSelectors, ">td.fee>span");
@@ -111,9 +111,9 @@ function generate() {
             {
                 content: "?";
                 margin-left: 0.38ex;
-                color: #00f;
+                color: var(--info-color);
                 font-size: 9pt;
-                border: 1pt solid #00f;
+                border: 1pt solid var(--info-color);
                 padding: 0.1em;
                 width: 1em;
                 height: 1em;
@@ -127,7 +127,7 @@ function generate() {
 
         // Make the ? a different color when hovering
         echo buildSelector($hoverStatusSelectors, ">td.fee>*:hover::after");
-        echo "{background-color:#00f;color:#fff;} ";
+        echo "{background-color:var(--info-color);color:var(--background-color);} ";
 
         // Hide the ? when printing
         echo "@media print {";
@@ -146,11 +146,11 @@ function generate() {
                 border: 1px solid black;
                 position: absolute;
                 left: 50%;
-                top: 1.3em;;
+                top: 1.3em;
                 margin-top: 0;
                 transform: translate(-50%, 10px);
-                background-color: #fff;
-                color: #000;
+                background-color: var(--background-color);
+                color: var(--text-color);
                 padding: 1em;
                 opacity: 0;
                 box-shadow: -2pt 2pt 5pt #000;

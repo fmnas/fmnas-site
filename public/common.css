@@ -1,5 +1,15 @@
+:root {
+    --background-color: #fff;
+    --text-color:       #000;
+
+    --link-color:       #066;
+    --visited-color:    #39f;
+    --active-color:     #f60;
+}
+
 body {
-    color:       #000;
+    color:       var(--text-color);
+    background:  var(--background-color);
     font-family: sans-serif;
     font-size:   12pt;
     text-align:  justify;
@@ -10,11 +20,15 @@ a {
 }
 
 a:link {
-    color: #066;
+    color: var(--link-color);
 }
 
 a:visited {
-    color: #39f;
+    color: var(--visited-color);
+}
+
+a:active {
+    color: var(--active-color);
 }
 
 a:hover {
