@@ -88,9 +88,7 @@ pageHeader();
 
             echo '<td class="sex">';
             echo ucfirst(@($pet->sex->name) ?? "");
-            if (strlen(trim($pet->breed)) > 2) {
-                echo " " . $pet->breed;
-            }
+            echo " " . $pet->breed;
             echo '</td>';
 
             echo '<td class="age">';
