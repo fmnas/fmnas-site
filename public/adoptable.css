@@ -40,7 +40,8 @@ table.listings tbody {
 /* Listings table - individual listings */
 table.listings tbody tr {
     float:      left;
-    max-width:  50%;
+    max-width:  50vw;
+    min-width:  calc(200px + 8em);
     padding:    1em;
     box-sizing: border-box;
 }

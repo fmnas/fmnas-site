@@ -67,7 +67,7 @@
       <tr :class="[`st_${pet['status']}`, listed() ? '' : ' soon']">
         <th class="name"><a
             :href="listed() ? `//${config['public_domain']}/${getFullPathForPet(pet)}` : null"
-            :id="pet['id']" @click.prevent>{{ pet['name'] }}</a>
+            :id="pet['id'] || ''" @click.prevent>{{ pet['name'] }}</a>
         </th>
         <td class="sex">{{ ucfirst(config['sexes'][pet['sex']]?.['name']) }}</td>
         <td class="age">{{ petAge(pet) }}</td>
@@ -231,24 +231,33 @@ td.img img {
   cursor:              pointer;
   --stripe-1-color:    transparent;
   --stripe-2-color:    rgba(0, 0, 0, 0.03);
-  background-image:    url('/plus.svg'), linear-gradient(135deg, var(--stripe-1-color) 25%, var(--stripe-2-color) 25%, var(--stripe-2-color) 50%, var(--stripe-1-color) 50%, var(--stripe-1-color) 75%, var(--stripe-2-color) 75%, var(--stripe-2-color) 100%);
+  --plus-url:          url('/plus.svg.php?color=066');
+  background-image:    var(--plus-url), linear-gradient(135deg, var(--stripe-1-color) 25%, var(--stripe-2-color) 25%, var(--stripe-2-color) 50%, var(--stripe-1-color) 50%, var(--stripe-1-color) 75%, var(--stripe-2-color) 75%, var(--stripe-2-color) 100%);
   background-size:     20px 20px;
   background-repeat:   no-repeat, repeat;
   background-position: bottom 152px center, center;
   background-clip:     padding-box;
+  margin-top:          2px;
 }
 
-td.img img:not([src]) {
-  border: 1.5pt dashed var(--link-color);
+td.img img::before {
+  display: block;
+  width:   100%;
+  height:  100%;
+}
+
+td.img img:not([src]), td.img img[src]::before, td.img img:hover {
+  outline: 2px dashed var(--link-color);
 }
 
 td.img img:hover {
   text-decoration: underline;
 }
 
-td.img img:active {
-  color:        var(--active-color);
-  border-color: var(--active-color);
+td.img img:active, td.img img:active::before {
+  color:         var(--active-color);
+  outline-color: var(--active-color);
+  --plus-url:    url('/plus.svg.php?color=f60');
 }
 
 /* Styles for metadata editor */
@@ -265,8 +274,25 @@ td.img img:active {
   --error-color:              #f00;
 }
 
+section.metadata {
+  display:         flex;
+  flex-wrap:       wrap;
+  justify-content: space-evenly;
+  align-items:     center;
+}
+
+.metadata form {
+  flex-shrink: 0;
+}
+
+.metadata table {
+  width: auto;
+}
+
 .metadata ul {
   list-style: none;
+  padding:    var(--input-padding);
+  margin:     var(--input-margin);
 }
 
 .metadata li > label {
