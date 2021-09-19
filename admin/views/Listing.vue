@@ -73,7 +73,7 @@
             :href="listed() ? `//${config['public_domain']}/${getFullPathForPet(pet)}` : null"
             :id="pet['id'] || '____'" @click.prevent>{{ pet['name'] || '&nbsp;' }}</a>
         </th>
-        <td class="sex">{{ ucfirst(config['sexes'][pet['sex']]?.['name']) || '&nbsp;' }}</td>
+        <td class="sex">{{ `${ucfirst(config['sexes'][pet['sex']]?.['name'])} ${pet['breed'] || ''}` || '&nbsp;' }}</td>
         <td class="age">{{ petAge(pet) || '&nbsp;' }}</td>
         <td class="fee">
           <div></div>
