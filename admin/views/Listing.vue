@@ -1,80 +1,95 @@
 <template>
-  <form id="metadata" @submit.prevent>
-    <ul>
-      <li class="id">
-        <label for="id">ID</label>
-        <input type="text" name="id" id="id" v-model="pet['id']" required>
-      <li class="name">
-        <label for="name">Name</label>
-        <input type="text" name="name" id="name" v-model="pet['name']" required>
-      <li class="species">
-        <label for="species">Species</label>
-        <select name="species" id="species" v-model="pet['species']" required>
-          <option value=""></option>
-          <option v-for="s of config['species']" :value="s['id']">{{ ucfirst(s['name']) }}</option>
-        </select>
-      <li class="breed">
-        <label for="breed">Breed/info</label>
-        <input type="text" name="breed" id="breed" v-model="pet['breed']">
-      <li class="dob">
-        <label for="dob"><abbr title="date of birth">DOB</abbr></label>
-        <input type="date" name="dob" id="dob" v-model="pet['dob']" required>
-      <li class="sex">
-        <fieldset>
-          <legend>Sex</legend>
-          <label v-for="sex of config['sexes']">
-            <input type="radio" name="sex" :value="sex['key']" v-model="pet['sex']" required>
-            <abbr :title="sex['name']">{{ sex['name'][0].toUpperCase() }}</abbr>
-          </label>
-        </fieldset>
-      <li class="fee">
-        <label for="fee">Fee</label>
-        <input type="text" name="fee" id="fee" v-model="pet['fee']">
-      <li class="status">
-        <label for="status">Status</label>
-        <select name="status" id="status" v-model="pet['status']" required>
-          <option value=""></option>
-          <option v-for="status of config['statuses']" :value="status['key']">
-            {{ status['name'] }}
-          </option>
-        </select>
-    </ul>
-  </form>
-  <table class="listings">
-    <thead>
-    <tr>
-      <th>Name</th>
-      <th>Sex</th>
-      <th>Age</th>
-      <th>Adoption fee</th>
-      <th>Image</th>
-      <th>Email inquiry</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr :class="[`st_${pet['status']}`, listed() ? '' : ' soon']">
-      <th class="name"><a
-          :href="listed() ? `//${config['public_domain']}/${getFullPathForPet(pet)}` : null"
-          :id="pet['id']" @click.prevent>{{ pet['name'] }}</a>
-      </th>
-      <td class="sex">{{ ucfirst(config['sexes'][pet['sex']]?.['name']) }}</td>
-      <td class="age">{{ petAge(pet) }}</td>
-      <td class="fee">
-        <div></div>
-        <span>{{ pet['fee'] }}</span>
-      </td>
-      <td class="img">
-        <a :href="listed() ? `//${config['public_domain']}/${getFullPathForPet(pet)}` : null"
-           @click.prevent="editProfileImage">
-          <img :src="pet['photo']?.['key'] ? `/api/raw/stored/${pet['photo']?.['key']}` : null" alt="Add profile image">
-        </a>
-      </td>
-      <td class="inquiry"><a :href="`mailto:${config['default_email_user']}@${config['public_domain']}`" @click.prevent>
-        Email to adopt {{ pet['name'] }}!
-      </a></td>
-    </tr>
-    </tbody>
-  </table>
+  <section class="metadata">
+    <form @submit.prevent>
+      <ul>
+        <li class="id">
+          <label for="id">ID</label>
+          <input type="text" name="id" id="id" v-model="pet['id']" required>
+        </li>
+        <li class="name">
+          <label for="name">Name</label>
+          <input type="text" name="name" id="name" v-model="pet['name']" required>
+        </li>
+        <li class="species">
+          <label for="species">Species</label>
+          <select name="species" id="species" v-model="pet['species']" required>
+            <option value=""></option>
+            <option v-for="s of config['species']" :value="s['id']">{{ ucfirst(s['name']) }}</option>
+          </select>
+        </li>
+        <li class="breed">
+          <label for="breed">Breed/info</label>
+          <input type="text" name="breed" id="breed" v-model="pet['breed']">
+        </li>
+        <li class="dob">
+          <label for="dob"><abbr title="date of birth">DOB</abbr></label>
+          <input type="date" name="dob" id="dob" :max="new Date().toISOString().split('T')[0]"
+                 v-model="pet['dob']" required>
+        </li>
+        <li class="sex">
+          <label for="sexes">Sex</label>
+          <fieldset id="sexes" :class="sexInteracted ? 'validated' : ''">
+            <label v-for="sex of config['sexes']">
+              <input type="radio" name="sex" :value="sex['key']" v-model="pet['sex']" required>
+              <abbr :title="ucfirst(sex['name'])" @click.prevent="sexClick(sex)">{{
+                  sex['name'][0].toUpperCase()
+                }}</abbr>
+            </label>
+          </fieldset>
+        </li>
+        <li class="fee">
+          <label for="fee">Fee</label>
+          <input type="text" name="fee" id="fee" v-model="pet['fee']">
+        </li>
+        <li class="status">
+          <label for="status">Status</label>
+          <select name="status" id="status" v-model="pet['status']" required>
+            <option value=""></option>
+            <option v-for="status of config['statuses']" :value="status['key']">
+              {{ status['name'] }}
+            </option>
+          </select>
+        </li>
+      </ul>
+    </form>
+    <table class="listings">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Sex</th>
+        <th>Age</th>
+        <th>Adoption fee</th>
+        <th>Image</th>
+        <th>Email inquiry</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr :class="[`st_${pet['status']}`, listed() ? '' : ' soon']">
+        <th class="name"><a
+            :href="listed() ? `//${config['public_domain']}/${getFullPathForPet(pet)}` : null"
+            :id="pet['id']" @click.prevent>{{ pet['name'] }}</a>
+        </th>
+        <td class="sex">{{ ucfirst(config['sexes'][pet['sex']]?.['name']) }}</td>
+        <td class="age">{{ petAge(pet) }}</td>
+        <td class="fee">
+          <div></div>
+          <span>{{ pet['fee'] }}</span>
+        </td>
+        <td class="img">
+          <a :href="listed() ? `//${config['public_domain']}/${getFullPathForPet(pet)}` : null"
+             @click.prevent="editProfileImage">
+            <img :src="pet['photo']?.['key'] ? `/api/raw/stored/${pet['photo']?.['key']}` : null"
+                 alt="Add profile image">
+          </a>
+        </td>
+        <td class="inquiry"><a :href="`mailto:${config['default_email_user']}@${config['public_domain']}`"
+                               @click.prevent>
+          Email to adopt {{ pet['name'] }}!
+        </a></td>
+      </tr>
+      </tbody>
+    </table>
+  </section>
   <p>modified status: {{ modified() }}</p>
   <p>loading status: {{ loading }}</p>
   <editor v-model="description"/>
@@ -103,6 +118,7 @@ Introducing {{name}} <` + /* i hate javascript */ `!-- Write the rest of the lis
 {{>standard_info}}`,
       originalDescription: '',
       loading: true,
+      sexInteracted: false,
     };
   },
   created() {
@@ -193,6 +209,11 @@ Introducing {{name}} <` + /* i hate javascript */ `!-- Write the rest of the lis
       alert('Should bring up the profile image editor.');
       // @todo profile image editor
     },
+    sexClick(sex) {
+      // Allow deselecting a sex rather than just selecting one.
+      this.pet['sex'] = this.pet['sex'] === sex['key'] ? null : sex['key'];
+      this.sexInteracted = true;
+    },
   },
 };
 </script>
@@ -228,5 +249,104 @@ td.img img:hover {
 td.img img:active {
   color:        var(--active-color);
   border-color: var(--active-color);
+}
+
+/* Styles for metadata editor */
+.metadata {
+  --label-width:              6em;
+  --input-width:              14em;
+  --input-padding-vertical:   0.3em;
+  --input-padding-horizontal: 0.4em;
+  --input-padding:            var(--input-padding-vertical) var(--input-padding-horizontal);
+  --input-margin:             0.3em;
+  --border-radius:            0.3em;
+  --border-color:             #aaa;
+  --focus-color:              var(--visited-color);
+  --error-color:              #f00;
+}
+
+.metadata ul {
+  list-style: none;
+}
+
+.metadata li > label {
+  display: inline-block;
+  width:   var(--label-width);
+}
+
+.metadata input, .metadata option, .metadata select {
+  font-size:   inherit;
+  font-family: inherit;
+  padding:     var(--input-padding);
+  margin:      var(--input-margin);
+  width:       var(--input-width);
+}
+
+.metadata input, .metadata option, .metadata select, fieldset#sexes input + abbr {
+  box-sizing:    content-box;
+  border:        none;
+  box-shadow:    inset 0 0 0 1px var(--border-color);
+  border-radius: var(--border-radius);
+  outline:       none;
+}
+
+.metadata input:focus, fieldset#sexes input:checked + abbr, fieldset#sexes input + abbr:hover {
+  box-shadow: inset 0 0 2px 1px var(--focus-color);
+}
+
+/* user-invalid isn't ready yet */
+.validated input:invalid, fieldset#sexes.validated input:invalid + abbr {
+  color: var(--error-color);
+}
+
+.validated input:invalid, .validated select:invalid, fieldset#sexes.validated input:invalid + abbr {
+  border-color: var(--error-color);
+  border:       none;
+  box-shadow:   inset 0 0 2px 1px var(--error-color);
+}
+
+fieldset#sexes {
+  display:         inline-flex;
+  justify-content: space-evenly;
+  border:          none;
+  box-sizing:      content-box;
+  margin:          var(--input-margin);
+  padding:         0 var(--input-padding-horizontal);
+  width:           var(--input-width);
+}
+
+fieldset#sexes input {
+  display: none;
+}
+
+fieldset#sexes input + abbr {
+  display:     inline-block;
+  --dimension: calc(1em + 2 * var(--input-padding-vertical));
+  width:       calc(2 * var(--dimension));
+  height:      var(--dimension);
+  line-height: var(--dimension);
+  text-align:  center;
+  user-select: none;
+  transition:  all 0.2s;
+}
+
+fieldset#sexes input:not(:checked):not(:invalid) + abbr:hover,
+fieldset#sexes:not(.validated) input:not(:checked):invalid + abbr:hover {
+  background-color: var(--focus-color);
+  color:            var(--background-color);
+}
+
+fieldset#sexes input:checked + abbr:hover, fieldset#sexes input + abbr:active {
+  box-shadow: inset 0 0 2px 1px var(--active-color);
+}
+
+fieldset#sexes input + abbr:active {
+  background-color: var(--active-color) !important;
+  color:            var(--background-color) !important;
+  transition:       none;
+}
+
+.metadata abbr {
+  text-decoration: none;
 }
 </style>
