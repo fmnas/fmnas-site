@@ -1,9 +1,9 @@
 <template>
   <section class="metadata">
-    <form @submit.prevent="save" @invalid.capture.prevent="validated = true" :class="validated ? 'validated' : ''">
+    <form @submit.prevent="save" @invalid.capture="validated = true" :class="validated ? 'validated' : ''">
       <div class="buttons">
-        <button>Button</button>
-        <button @click.prevent="deleteListing">Delete</button>
+        <button class="save">Save</button>
+        <button @click.prevent="deleteListing" class="delete">Delete</button>
       </div>
       <ul>
         <li class="id">
@@ -309,7 +309,7 @@ section.metadata {
   width:   var(--label-width);
 }
 
-.metadata input, .metadata option, .metadata select {
+.metadata input, .metadata option, .metadata select, .metadata button {
   font-size:   inherit;
   font-family: inherit;
   padding:     var(--input-padding);
@@ -317,7 +317,7 @@ section.metadata {
   width:       var(--input-width);
 }
 
-.metadata input, .metadata option, .metadata select, fieldset#sexes input + abbr {
+.metadata input, .metadata option, .metadata select, .metadata button, fieldset#sexes input + abbr {
   box-sizing:    content-box;
   border:        none;
   box-shadow:    inset 0 0 0 1px var(--border-color);
@@ -325,7 +325,8 @@ section.metadata {
   outline:       none;
 }
 
-.metadata input:focus, fieldset#sexes input:checked + abbr, fieldset#sexes input + abbr:hover {
+.metadata input:focus, .metadata select:focus, fieldset#sexes input:checked + abbr, fieldset#sexes input + abbr:hover,
+.metadata button:hover {
   box-shadow: inset 0 0 2px 1px var(--focus-color);
 }
 
@@ -334,8 +335,8 @@ section.metadata {
   color: var(--error-color);
 }
 
-.validated input:invalid, .validated select:invalid, fieldset#sexes.validated input:invalid + abbr {
-  border-color: var(--error-color);
+.validated input:invalid, .validated select:invalid, fieldset#sexes.validated input:invalid + abbr,
+button.delete:hover {
   border:       none;
   box-shadow:   inset 0 0 2px 1px var(--error-color);
 }
@@ -355,33 +356,56 @@ fieldset#sexes input {
 }
 
 fieldset#sexes input + abbr {
-  display:     inline-block;
   --dimension: calc(1em + 2 * var(--input-padding-vertical));
   width:       calc(2 * var(--dimension));
   height:      var(--dimension);
   line-height: var(--dimension);
-  text-align:  center;
   user-select: none;
+}
+
+fieldset#sexes input + abbr, .metadata button {
+  display:     inline-block;
+  text-align:  center;
   transition:  all 0.2s;
 }
 
+.metadata button {
+  width: 5em;
+  height: 1.5em;
+  background-color: inherit;
+}
+
 fieldset#sexes input:not(:checked):not(:invalid) + abbr:hover,
-fieldset#sexes:not(.validated) input:not(:checked):invalid + abbr:hover {
+fieldset#sexes:not(.validated) input:not(:checked):invalid + abbr:hover,
+button.save:hover {
   background-color: var(--focus-color);
   color:            var(--background-color);
 }
 
-fieldset#sexes input:checked + abbr:hover, fieldset#sexes input + abbr:active {
+fieldset#sexes input:checked + abbr:hover, fieldset#sexes input + abbr:active, button.save:active {
   box-shadow: inset 0 0 2px 1px var(--active-color);
 }
 
-fieldset#sexes input + abbr:active {
+fieldset#sexes input + abbr:active, .metadata button:active {
   background-color: var(--active-color) !important;
   color:            var(--background-color) !important;
   transition:       none;
 }
 
+button.delete:hover {
+  box-shadow:   inset 0 0 0 1px var(--error-color);
+}
+
+.metadata button.delete:active {
+  background-color: var(--error-color) !important;
+}
+
 .metadata abbr {
   text-decoration: none;
+}
+
+div.buttons {
+  display: flex;
+  justify-content: space-evenly;
 }
 </style>
