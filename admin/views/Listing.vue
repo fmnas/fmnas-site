@@ -1,6 +1,10 @@
 <template>
   <section class="metadata">
-    <form @submit.prevent>
+    <form @submit.prevent="save" @invalid.capture.prevent="validated = true" :class="validated ? 'validated' : ''">
+      <div class="buttons">
+        <button>Button</button>
+        <button @click.prevent="deleteListing">Delete</button>
+      </div>
       <ul>
         <li class="id">
           <label for="id">ID</label>
@@ -24,11 +28,11 @@
         <li class="dob">
           <label for="dob"><abbr title="date of birth">DOB</abbr></label>
           <input type="date" name="dob" id="dob" :max="new Date().toISOString().split('T')[0]"
-                 v-model="pet['dob']" required>
+                 v-model="pet['dob']">
         </li>
         <li class="sex">
           <label for="sexes">Sex</label>
-          <fieldset id="sexes" :class="sexInteracted ? 'validated' : ''">
+          <fieldset id="sexes" :class="sexInteracted || validated ? 'validated' : ''">
             <label v-for="sex of config['sexes']">
               <input type="radio" name="sex" :value="sex['key']" v-model="pet['sex']" required>
               <abbr :title="ucfirst(sex['name'])" @click.prevent="sexClick(sex)">{{
@@ -67,13 +71,13 @@
       <tr :class="[`st_${pet['status']}`, listed() ? '' : ' soon']">
         <th class="name"><a
             :href="listed() ? `//${config['public_domain']}/${getFullPathForPet(pet)}` : null"
-            :id="pet['id'] || ''" @click.prevent>{{ pet['name'] }}</a>
+            :id="pet['id'] || '____'" @click.prevent>{{ pet['name'] || '&nbsp;' }}</a>
         </th>
-        <td class="sex">{{ ucfirst(config['sexes'][pet['sex']]?.['name']) }}</td>
-        <td class="age">{{ petAge(pet) }}</td>
+        <td class="sex">{{ ucfirst(config['sexes'][pet['sex']]?.['name']) || '&nbsp;' }}</td>
+        <td class="age">{{ petAge(pet) || '&nbsp;' }}</td>
         <td class="fee">
           <div></div>
-          <span>{{ pet['fee'] }}</span>
+          <span>{{ pet['fee'] || '&nbsp;' }}</span>
         </td>
         <td class="img">
           <a :href="listed() ? `//${config['public_domain']}/${getFullPathForPet(pet)}` : null"
@@ -119,6 +123,7 @@ Introducing {{name}} <` + /* i hate javascript */ `!-- Write the rest of the lis
       originalDescription: '',
       loading: true,
       sexInteracted: false,
+      validated: false,
     };
   },
   created() {
@@ -160,6 +165,7 @@ Introducing {{name}} <` + /* i hate javascript */ `!-- Write the rest of the lis
       return (this.species && this.path) ? `/api/listings/${this.species}/${this.path}` : '/api/listings';
     },
     save() {
+      console.log('eeeee');
       // @todo Handle changing id of existing pet
       fetch(this.apiUrl(), {
         method: this.path ? 'PUT' : 'POST',
@@ -213,6 +219,9 @@ Introducing {{name}} <` + /* i hate javascript */ `!-- Write the rest of the lis
       // Allow deselecting a sex rather than just selecting one.
       this.pet['sex'] = this.pet['sex'] === sex['key'] ? null : sex['key'];
       this.sexInteracted = true;
+    },
+    deleteListing() {
+      alert('Not yet implemented');
     },
   },
 };
