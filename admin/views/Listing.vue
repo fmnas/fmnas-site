@@ -209,7 +209,7 @@ Introducing {{name}} <` + /* i hate javascript */ `!-- Write the rest of the lis
       return false;
     },
     listed() {
-      return !this.description.startsWith('{{>coming_soon}}') && (this.description || this.pet['photos']?.length);
+      return !this.description?.startsWith('{{>coming_soon}}') && (this.description || this.pet['photos']?.length);
     },
     editProfileImage() {
       alert('Should bring up the profile image editor.');

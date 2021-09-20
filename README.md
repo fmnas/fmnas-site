@@ -85,8 +85,8 @@ The resulting HTML is cached (TODO); the cached assets are automatically
 deleted when listings are updated through the admin interface, but must be manually deleted if changes are made to the asset or 
 corresponding database records outside the admin interface.
 
-The client-side editor is [Toast UI Editor](https://ui.toast.com/tui-editor/). Need an extension for Handlebars support. Maybe use StackEdit or something instead.
-CKEditor, Simditor
+<!-- The client-side editor is [Toast UI Editor](https://ui.toast.com/tui-editor/). Need an extension for Handlebars support. Maybe use StackEdit or something instead.
+CKEditor, Simditor -->
 <!-- https://softwarerecs.stackexchange.com/questions/5746/markdown-editor-for-windows-with-live-rendering-in-the-editing-pane-not-in-a-se -->
 
 The layout templates in `src/templates` are written in vanilla PHP/HTML.
@@ -105,8 +105,8 @@ directories. (@todo Will need a way to automate periodic updates someday)
 
 ### Client-side dependencies
 The admin interface imports [**Vue**](https://vuejs.org) from unpkg.
-The listing editor imports 
+<!-- The listing editor imports 
 [**Toast UI Editor**](https://ui.toast.com/tui-editor/)
-from the Toast CDN.
+from the Toast CDN. -->
 
 The error pages in `src/errors` use images from [**http.cat**](https://http.cat).

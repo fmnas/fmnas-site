@@ -16,10 +16,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <template>
-  <textarea v-model="source"></textarea>
+  <div class="editor">
+    <textarea v-model="source"></textarea>
+    <div class="preview" aria-hidden="true"> {{ compiled() }}</div>
+  </div>
 </template>
 
 <script>
+// @todo Use Toast UI Editor
 export default {
   name: 'Editor',
   props: ['modelValue'],
@@ -31,12 +35,30 @@ export default {
       },
       set(value) {
         this.$emit('update:modelValue', value);
-      }
+      },
+    },
+  },
+  methods: {
+    compiled() {
+      // TODO: Compile Handlebars then GFM
+      return this.source;
     },
   },
 };
 </script>
 
 <style scoped>
+div.editor {
+  display:         flex;
+  justify-content: space-evenly;
+  flex-wrap:       wrap;
+  width:           100%;
+}
 
+textarea, div.preview {
+  display: inline-block;
+  width:   calc(50% - 4em);
+  min-height: 12em;
+  max-height: 100%;
+}
 </style>
