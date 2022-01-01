@@ -149,3 +149,6 @@ function log_err(string $msg = "") {
 function emailLinks(): void {
     echo '<script src="/email.js.php"></script>';
 }
+
+require_once "$secrets/config.php";
+$phpmailer_path = Config::$phpmailer_path;
