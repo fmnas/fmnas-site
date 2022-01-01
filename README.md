@@ -1,9 +1,8 @@
-# Forget Me Not Animal Shelter
+# fmnas-site
 
-This repository contains the source code for the newest portions of the 
-website of the [Forget Me Not Animal Shelter](https://forgetmenotshelter.org) (Republic, WA).
-
-Over time, the complete website will be migrated into this repository.
+This repository contains source code for the website of the
+[Forget Me Not Animal Shelter](https://forgetmenotshelter.org)
+in Republic, WA.
 
 ## License
 
@@ -21,21 +20,30 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ## Deployment
-This site is designed to be easy to deploy to any LAMP server, including shared web hosts such as Dreamhost.
-To deploy, simply clone or checkout this repository and configure the server as below. 
 
-### Requirements
+### Automatic deployment
+
+TODO: Set up automatic deployment
+
+### Manual deployment
+
+#### Requirements (build server)
+<!-- @todo Add requirements for vue build server --> 
+
+#### Requirements (web server)
 * Linux (any POSIX-compatible OS should work)
 * Apache (Litespeed or any other web server with .htaccess and PHP support should work)
-* PHP (admin site must be PHP 8; public site can be PHP 7.4)
+* PHP 8
     * GD (tested with 2.1.0)
         * libJPEG (tested with 8)
         * libPNG (tested with 1.6.34)
     * mysqli (tested with 7.4.3)
+    * PHPMailer (tested with 6.4.1)
     * Needs shell access (with `shell_exec`) and `curl` in PATH to automatically fetch server-side dependencies
 * MySQL (MariaDB should work)
 
-### Configuration
+#### Configuration
+<!-- @todo Add instructions to build admin site -->
 * Point a domain to the `public` directory (this will be the public web root)
 * Point a domain to the `admin` directory (this will be the admin interface root)
 * Copy `secrets/config_sample.php` to `secrets/config.php` and update the configuration values 

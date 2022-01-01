@@ -52,10 +52,11 @@ $formConfig->confirm = function(array $formData): void {
 
         return [$primaryEmail, $secondaryEmail];
     };
-    $formConfig->smtpServer = 'localhost';
-    $formConfig->smtpPort = 25;
-    $formConfig->smtpUser = 'root';
-    $formConfig->smtpPassword = '';
+    $formConfig->smtpHost = Config::$smtp_host;
+    $formConfig->smtpSecurity = Config::$smtp_security;
+    $formConfig->smtpPort = Config::$smtp_port;
+    $formConfig->smtpUser = Config::$smtp_username;
+    $formConfig->smtpPassword = Config::$smtp_password;
     ?>
 <!DOCTYPE html>
 <title>Adoption Application - <?=_G_longname()?></title>

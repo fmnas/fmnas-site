@@ -1,6 +1,12 @@
 <?php
 
 use JetBrains\PhpStorm\Pure;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+$phpmailer_path ??= '../lib/PHPMailer';
+require "$phpmailer_path/src/Exception.php";
+require "$phpmailer_path/src/PHPMailer.php";
+require "$phpmailer_path/src/SMTP.php";
 
 /**
  * The FormConfig class contains data that shall not be output to the browser
@@ -32,7 +38,8 @@ class FormConfig {
      */
     public Closure $emails;
 
-    public string $smtpServer;
+    public string $smtpHost;
+    public string $smtpSecurity;
     public int $smtpPort;
     public string $smtpUser;
     public string $smtpPassword;
@@ -150,6 +157,7 @@ register_shutdown_function('collectForm');
 /**
  * Send emails containing the submitted form data.
  * @param array $data Raw form data ($_GET or $_POST).
+ * @throws Exception
  */
 function processForm(array $data, string $html) {
     global $formConfig;
@@ -158,9 +166,50 @@ function processForm(array $data, string $html) {
         /** @var $emailConfig FormEmailConfig */
         $renderedForm = renderForm($data, $html, $emailConfig->values);
 
-        // @todo Email rendered form.
-        var_dump($renderedForm);
+        sendEmail($emailConfig, $renderedForm);
     }
+}
+
+/**
+ * Send an email.
+ * @param FormEmailConfig $emailConfig
+ * @param string $emailBody The HTML email body.
+ * @throws Exception
+ */
+function sendEmail(FormEmailConfig $emailConfig, string $emailBody) {
+    global $formConfig;
+    $mailer = new PHPMailer();
+    $mailer->IsSMTP();
+    $mailer->SMTPAuth = true;
+    $mailer->SMTPSecure = $formConfig->smtpSecurity;
+    $mailer->Host = $formConfig->smtpHost;
+    $mailer->SMTPAuth = true;
+    $mailer->Username = $formConfig->smtpUser;
+    $mailer->Password = $formConfig->smtpPassword;
+    $mailer->From = $emailConfig->from->address;
+    if ($emailConfig->from->name) {
+        $mailer->FromName = $emailConfig->from->name;
+    }
+    foreach($emailConfig->to as $to) {
+        /** @var $to EmailAddress */
+        $mailer->AddAddress($to->address, $to->name ?: '');
+    }
+    foreach($emailConfig->replyTo as $replyTo) {
+        /** @var $replyTo EmailAddress */
+        $mailer->AddReplyTo($replyTo->address, $replyTo->name ?: '');
+    }
+    foreach($emailConfig->cc as $cc) {
+        /** @var $cc EmailAddress */
+        $mailer->AddCc($cc->address, $cc->name ?: '');
+    }
+    foreach($emailConfig->bcc as $bcc) {
+        /** @var $bcc EmailAddress */
+        $mailer->AddBcc($bcc->address, $bcc->name ?: '');
+    }
+    $mailer->IsHTML(true);
+    $mailer->Subject = $emailConfig->subject;
+    $mailer->Body = $emailBody;
+    $mailer->Send();
 }
 
 /**
@@ -212,7 +261,8 @@ $formConfig->emails       = function(array $formData): array {
     $config = new FormEmailConfig($email, [$email], 'Form Data');
     return [$config];
 };
-$formConfig->smtpServer   = 'localhost';
+$formConfig->smtpHost   = 'localhost';
+$formConfig->smtpSecurity = 'tls';
 $formConfig->smtpPort     = 25;
 $formConfig->smtpUser     = 'root';
 $formConfig->smtpPassword = '';

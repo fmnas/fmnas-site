@@ -2,6 +2,7 @@ secrets/*
 !secrets/*_sample.*
 
 /log
+/lib
 
 stored_assets/
 
