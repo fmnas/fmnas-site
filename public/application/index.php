@@ -71,5 +71,5 @@ Application
     <label>Email
         <input type="text" name="applicant_email" required>
     </label>
-    <button formaction="submit">Submit Application</button>
+    <button type="submit">Submit Application</button>
 </form>
