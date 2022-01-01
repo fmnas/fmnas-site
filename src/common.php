@@ -3,6 +3,10 @@ declare(strict_types = 1);
 @header("Content-Encoding: UTF-8");
 ini_set("pcre.jit", "0");
 
+// @todo Restrict verbose errors to dev site.
+error_reporting(-1);
+ini_set('display_errors', 'On');
+
 function startsWith(string $haystack, $needle): bool {
     if (is_array($needle)) {
         foreach ($needle as $item) {
