@@ -39,6 +39,7 @@ TODO: Set up automatic deployment
         * libPNG (tested with 1.6.34)
     * mysqli (tested with 7.4.3)
     * PHPMailer (tested with 6.4.1)
+    * [html5-php](https://github.com/Masterminds/html5-php) (tested with 2.7.5)
     * Needs shell access (with `shell_exec`) and `curl` in PATH to automatically fetch server-side dependencies
 * MySQL (MariaDB should work)
 

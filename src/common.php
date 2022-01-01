@@ -156,3 +156,4 @@ function emailLinks(): void {
 
 require_once "$secrets/config.php";
 $phpmailer_path = Config::$phpmailer_path;
+$html5_php_path = Config::$html5_php_path;

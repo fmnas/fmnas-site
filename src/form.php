@@ -17,13 +17,101 @@
  */
 
 
+/**
+ * Include this file at the top of a form page, then set values of $formConfig.
+ *
+ * The <form> element will be replaced with an <article> element.
+ * All <input> and <select> elements will be replaced with <span> elements, except:
+ *   input[type="button"], input[type="submit"], input[type="reset"], input[type="password"] will be removed unless
+ *   they have an explicit falsy data-remove attribute, in which case they will be replaced with <span> elements.
+ * All <textarea> elements will be replaced with <pre> elements.
+ * All <fieldset> elements will be replaced with <section> elements containing <h3> headers.
+ * All <button> elements will be hidden unless they have an explicit falsy data-remove attribute, in which case they
+ * will be replaced with <div> elements.
+ *
+ * Elements with a truthy data-ignore attribute will not be modified.
+ * Elements with a truthy data-remove attribute will be removed from the rendered email.
+ *
+ * Inputs with a name ending in [] will be removed in the rendered email unless they have an explicit falsy data-remove
+ * attribute. To handle such repeated inputs, add an element with a data-foreach attribute.
+ * For example:
+ *   <ul>
+ *   <li><input type="text" name="cats[]" value="Stephen">
+ *   <li><input type="text" name="cats[]" value="Jonathan">
+ *   <li><input type="text" name="cats[]" value="Mittens">
+ *   <li data-foreach="cats">
+ *   </ul>
+ *
+ * data-foreach may also be used with data-as, in which case the value will be accessible through data-value:
+ *   <li data-foreach="cats" data-as="cat">Cat named <span data-value="cat"></span>
+ *
+ * To add output only used in the rendered email, use the data-hidden attribute. Elements with this attribute will be
+ * hidden on the form page by injected CSS:
+ *   <p data-hidden>Thank you for submitting the form! A copy of the received data is below.
+ *
+ * To use values from the form to generate output:
+ *
+ *   <input type="checkbox" name="display_message" value="1">
+ *   <p data-if="display_message">This text will be displayed if the checkbox is checked.
+ *
+ *   <input type="number" name="number_of_horses">
+ *   <p data-if="number_of_horses" data-operator="gt" data-rhs="100">Whoa! That's a lot of horses.
+ *   <p data-if="number_of_horses" data-operator="lt" data-rhs="0">That is an unreasonable number of horses.
+ *
+ *   <input type="number" name="number_of_dogs">
+ *   <p data-if="number_of_horses" data-rhs-value="number_of_dogs">There are the same number of horses and dogs.
+ *
+ * Valid values for data-operator are: gt, lt, eq, ge, le, ne
+ *
+ * To use values from the arrays provided by the callbacks in $formConfig, append -config to the attribute where a form
+ * value would otherwise be provided:
+ *   <p data-if-config="user-email">Thanks for submitting the form!
+ *   <p data-if-config="operator-email"><span data-value="name"></span> submitted the following form:
+ *
+ * All elements with the following attributes will be hidden on the form page by injected CSS, unless a falsy value
+ * is explicitly given for data-hidden:
+ * data-hidden
+ * data-foreach
+ * data-foreach-config
+ * data-if
+ * data-if-config
+ * data-value
+ * data-value-config
+ */
+
 use JetBrains\PhpStorm\Pure;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
+use Masterminds\HTML5;
+
 $phpmailer_path ??= '../lib/PHPMailer';
+$html5_php_path ??= '../lib/html5-php';
 require "$phpmailer_path/src/Exception.php";
 require "$phpmailer_path/src/PHPMailer.php";
 require "$phpmailer_path/src/SMTP.php";
+require "$html5_php_path/src/HTML5.php";
+
+// @todo Figure out how to get PSR-4 autoloading without composer.
+// Relevant: https://akrabat.com/using-composer-with-shared-hosting/
+require_once("$html5_php_path/src/HTML5/Elements.php");
+require_once("$html5_php_path/src/HTML5/Entities.php");
+require_once("$html5_php_path/src/HTML5/Exception.php");
+require_once("$html5_php_path/src/HTML5/InstructionProcessor.php");
+require_once("$html5_php_path/src/HTML5/Parser/EventHandler.php");
+require_once("$html5_php_path/src/HTML5/Serializer/RulesInterface.php");
+require_once("$html5_php_path/src/HTML5/Parser/InputStream.php");
+require_once("$html5_php_path/src/HTML5/Parser/StringInputStream.php");
+require_once("$html5_php_path/src/HTML5/Parser/Scanner.php");
+require_once("$html5_php_path/src/HTML5/Parser/Tokenizer.php");
+require_once("$html5_php_path/src/HTML5/Parser/TreeBuildingRules.php");
+require_once("$html5_php_path/src/HTML5/Parser/UTF8Utils.php");
+require_once("$html5_php_path/src/HTML5/Serializer/HTML5Entities.php");
+require_once("$html5_php_path/src/HTML5/Serializer/OutputRules.php");
+require_once("$html5_php_path/src/HTML5/Serializer/Traverser.php");
+require_once("$html5_php_path/src/HTML5/Parser/DOMTreeBuilder.php");
+require_once("$html5_php_path/src/HTML5/Parser/FileInputStream.php");
+require_once("$html5_php_path/src/HTML5/Parser/ParseError.php");
+require_once("$html5_php_path/src/HTML5/Parser/CharacterReference.php");
 
 /**
  * The FormConfig class contains data that shall not be output to the browser
@@ -72,15 +160,15 @@ class FormEmailConfig {
      * @param iterable<EmailAddress> $to The emails for the To header.
      * @param string $subject The value for the Subject header.
      * @param array|null $values An optional array of arbitrary data accessible
-     * when rendering the email. If an emelent in the form has a data-value
+     * when rendering the email. If an element in the form has a data-value
      * attribute, its value will be used as a key when accessing this array.
      * For example, <input type="hidden" data-value="foo"> will be rendered as
      * <span>{{$values['foo']}}</span>
      */
     public function __construct(public EmailAddress $from, public iterable $to, public string $subject, public ?array $values = []) {
         $this->replyTo = [];
-        $this->cc = [];
-        $this->bcc = [];
+        $this->cc      = [];
+        $this->bcc     = [];
     }
 
     /**
@@ -123,7 +211,7 @@ class FormException extends Exception {
      */
     public array $formData;
 
-    #[Pure] public function __construct(Exception $e, ?array $data) {
+    #[Pure] public function __construct(Exception $e, ?array $data = []) {
         parent::__construct($e->getMessage(), $e->getCode(), $e);
         $this->formData = $data ?? [];
     }
@@ -142,34 +230,26 @@ function collectForm() {
     $html = ob_get_clean();
 
     // Get the submitted POST or GET data.
-    $receivedData = isset($_POST['submit']) ? $_POST : $_GET;
+    $receivedData = $_POST ?: $_GET;
 
     // @todo Devise a way to allow multiple forms on a page.
-    if (isset($receivedData['submit'])) {
+    if ($receivedData || $_FILES) {
         try {
-            // Process the form and send emails.
             processForm($receivedData, $html);
-
-            // Call the confirm callback.
-            ($formConfig->confirm)();
+            ($formConfig->confirm)($receivedData);
         } catch (Exception $e) {
             ($formConfig->handler)(new FormException($e, $receivedData));
         }
     } else {
         // Display the form.
-        // @todo Inject styles into HTML for hidden elements.
         echo $html;
         ?>
         <style>
-            body {
-                background-color: blue;
-            }
+            /* Injected styles */
         </style>
         <?php
     }
 }
-
-register_shutdown_function('collectForm');
 
 /**
  * Send emails containing the submitted form data.
@@ -195,37 +275,40 @@ function processForm(array $data, string $html) {
  */
 function sendEmail(FormEmailConfig $emailConfig, string $emailBody) {
     global $formConfig;
-    $mailer = new PHPMailer();
+    $mailer = new PHPMailer(true);
     $mailer->IsSMTP();
-    $mailer->SMTPAuth = true;
+    $mailer->SMTPAuth   = true;
     $mailer->SMTPSecure = $formConfig->smtpSecurity;
-    $mailer->Host = $formConfig->smtpHost;
-    $mailer->SMTPAuth = true;
-    $mailer->Username = $formConfig->smtpUser;
-    $mailer->Password = $formConfig->smtpPassword;
-    $mailer->From = $emailConfig->from->address;
+    $mailer->Host       = $formConfig->smtpHost;
+    $mailer->Port       = $formConfig->smtpPort;
+    $mailer->SMTPAuth   = true;
+    $mailer->Username   = $formConfig->smtpUser;
+    $mailer->Password   = $formConfig->smtpPassword;
+    $mailer->From       = $emailConfig->from->address;
+    $mailer->CharSet    = 'UTF-8';
+    $mailer->Encoding   = 'base64';
     if ($emailConfig->from->name) {
         $mailer->FromName = $emailConfig->from->name;
     }
-    foreach($emailConfig->to as $to) {
+    foreach ($emailConfig->to as $to) {
         /** @var $to EmailAddress */
         $mailer->AddAddress($to->address, $to->name ?: '');
     }
-    foreach($emailConfig->replyTo as $replyTo) {
+    foreach ($emailConfig->replyTo as $replyTo) {
         /** @var $replyTo EmailAddress */
         $mailer->AddReplyTo($replyTo->address, $replyTo->name ?: '');
     }
-    foreach($emailConfig->cc as $cc) {
+    foreach ($emailConfig->cc as $cc) {
         /** @var $cc EmailAddress */
         $mailer->AddCc($cc->address, $cc->name ?: '');
     }
-    foreach($emailConfig->bcc as $bcc) {
+    foreach ($emailConfig->bcc as $bcc) {
         /** @var $bcc EmailAddress */
         $mailer->AddBcc($bcc->address, $bcc->name ?: '');
     }
     $mailer->IsHTML(true);
     $mailer->Subject = $emailConfig->subject;
-    $mailer->Body = $emailBody;
+    $mailer->Body    = $emailBody;
     $mailer->Send();
 }
 
@@ -235,11 +318,21 @@ function sendEmail(FormEmailConfig $emailConfig, string $emailBody) {
  * @param array|null $values Additional values to use when rendering data-value.
  * @param string $html The server-rendered HTML of the empty form.
  * @return string Rendered HTML containing the form values.
+ * @throws Exception
  */
 function renderForm(array $data, string $html, ?array $values = []): string {
     $values ??= [];
-    // @todo Render form.
-    return print_r([$data, $values, $html], true);
+    $html5 = new HTML5();
+    $dom = $html5->loadHTML($html);
+    $forms = $dom->getElementsByTagName('form');
+    if ($forms->length === 0) {
+        throw new Exception('No form elements were found in the rendered HTML.');
+    }
+    if ($forms->length > 1) {
+        throw new Exception('Multiple form elements were found in the rendered HTML.');
+    }
+    $form = $forms[0];
+    return $dom->saveHTML($form);
 }
 
 $formConfig = new FormConfig();
@@ -274,12 +367,15 @@ $formConfig->handler      = function(FormException $e): void {
     var_dump($e->formData);
 };
 $formConfig->emails       = function(array $formData): array {
-    $email = new EmailAddress('webmaster@' . $_SERVER['HTTP_HOST']);
+    $email  = new EmailAddress('webmaster@' . $_SERVER['HTTP_HOST']);
     $config = new FormEmailConfig($email, [$email], 'Form Data');
     return [$config];
 };
-$formConfig->smtpHost   = 'localhost';
+$formConfig->smtpHost     = 'localhost';
 $formConfig->smtpSecurity = 'tls';
 $formConfig->smtpPort     = 25;
 $formConfig->smtpUser     = 'root';
 $formConfig->smtpPassword = '';
+
+ob_start();
+register_shutdown_function('collectForm');

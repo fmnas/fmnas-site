@@ -1,5 +1,7 @@
 <?php
 
+// @todo Set up dependency management for phpmailer and html5-php
+
 class Dependencies {
     public static function lightncandy(): void {
         // Require lightncandy
