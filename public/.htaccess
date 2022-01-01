@@ -14,14 +14,9 @@ RewriteEngine On
 #RewriteCond %{REQUEST_FILENAME}/index.php -f
 #RewriteRule (.*) $1/index.php [L]
 
-# @todo update application
 # redirect old /Application to /application
-#Redirect 301 /Application /application
-#RewriteRule ^Application/(.*)$ /application/$1 [L,R=301]
-
-# redirect new /application to old /Application
-Redirect 307 /application /Application
-RewriteRule ^application/(.*)$ /Application/$1 [L,R=307]
+Redirect 301 /Application /application
+RewriteRule ^Application/(.*)$ /application/$1 [L,R=301]
 
 # redirect old /Cats to /cats
 Redirect 301 /Cats /cats
