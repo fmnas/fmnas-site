@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+	<title>Buddy - dog for adoption at Forget Me Not Animal Shelter of Ferry County</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<!-- Jquery -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script type="text/javascript">
+		//Email links
+		$(function() {
+			$("a[data-email]").each(function() { //for every email link (with data-email attribute)
+				user = 'adopt'; //default value
+				domain = '@forgetmenotshelter.org';
+				data = $(this).attr('data-email');
+				subject = '';
+				if(!!$.trim(data)) user=data; //if data-email attribute non-empty, use as user part
+				else if ($(this).parent().is('td.inquiry')) { //empty in inquiry link on listing
+					pet = $(this).closest('tr').find('th.name>*').first(); //find name on listing
+					user = 'adopt+'+pet.attr('id'); //add id to adopt+ for user
+					subject = pet.text();
+					$(this).text('Email to adopt '+subject+'!'); //set link text
+				}
+				if(user.charAt(0)=='+') user='adopt'+user; //for adoption links
+				if(!$.trim($(this).text())) $(this).html(user+domain); //make text email address if still blank
+				$(this).attr('href','mailto:'+user+domain+'?subject='+subject); //set href
+			});
+		});
+	</script>
+
+<link rel="stylesheet" href="/listings.css?20211216">
+
+</head>
+<body>
+	<a class="return" href="/Dogs" title="Dogs">Return to the Dogs &amp; Puppies page</a>
+	<h1>Buddy 1581</h1>
+	
+    <a href="./Buddy (1).JPG" class="im"><img src="1.jpg"></a><a href="./Buddy (2).JPG" class="im"><img src="2.jpg"></a><a href="./Buddy (3).JPG" class="im"><img src="3.jpg"></a><a href="./Buddy (4).JPG" class="im"><img src="4.jpg"></a><a href="./Buddy (5).JPG" class="im"><img src="5.jpg"></a><a href="./Buddy (6).JPG" class="im"><img src="6.jpg"></a><a href="./Buddy.jpg" class="im"><img src="7.jpg"></a><a href="./Buddy2.jpg" class="im"><img src="8.jpg"></a><a href="./Buddy3.jpg" class="im"><img src="9.jpg"></a><a href="./Buddy4.jpg" class="im"><img src="10.jpg"></a><a href="./Buddy5.jpg" class="im"><img src="11.jpg"></a>
+    <p>
+        We originally adopted Buddy to his family back in 2015, when he was a gangly juvenile pup. At that time, our best guess of breed mix was Hound, possibly Redbone Coonhound. Boy, were we wrong!
+<p>
+        His family had a DNA test done that showed Buddy is 50% Cocker Spaniel, 12% Australian Cattle Dog, 9% Boxer, 7% Miniature Pinscher, 5% Pug, and 17% Supermutt.
+        <p>
+        The unfortunate part of this breed mix is the Cocker Spaniel genetics, which led to development of IVDD (Intravertebral Disc Disease) in Buddy. One morning in late 2018, Buddy woke up with hind limb paralysis.
+        <p>
+        His family really went the extra mile for him, having MRIs, surgery, laser therapy, water therapy, massage therapy - every possible treatment to help him. It worked! Buddy, though still a bit wobbly in the hind end, regained the use of his rear legs and is able to have a happy and fun life again. The only remaining challenge from his prior paralysis is a touch of incontinence - sometimes he will defecate without realizing it, most often overnight while sleeping. This does not occur every night, but often enough that Buddy sleeps on a bed with a washable protective cover. He has very occasional bladder control issues, but those seem to have been improving.
+        <p>
+        When Buddy's family was no longer able to care for him, they tried everything to find him a great new home, or to find a no-kill shelter in California where they were living. Unfortunately, they struck out at every turn, so reached back out to us to see if there was any way Forget Me Not could take him back and try again to find him another wonderful family - we said "of COURSE!" A Forget Me Not adoptee is family for life with us, and we are honored that Buddy's family drove him all the way from CA to Republic so he could be loved by our staff and volunteers until his new home is found.
+        <p>
+        He is considered a "young senior" at 7 years old, and is about 10-15 pounds overweight right now. Taking off the extra weight will help him with his spinal issues, too, so he is learning to enjoy "treats" like fresh veggies, and is having a grand time playing gentle "soccer-fetch" with the volunteers. He loves to chase the ball, and as long as he isn't encouraged to jump up in the air to "catch" it, it is good exercise for him.
+        <p>
+        Buddy's ideal home will be with someone who can handle the occasional need for "cleanup on aisle 9" when he has an accident. Availability and affordability of laser therapy, water therapy, acupuncture, massage, and a veterinarian knowledgeable about IVDD would be ideal. No stairs for Buddy, please.
+        <p>
+        You can read up on IVDD online to learn more about this condition which is all too common in breeds like dachshunds and, in Buddy's case, Cocker spaniels. There are a number of things you, as his new person, can do to help him live the best possible life:
+        <ul>
+        <li> continue bringing his weight down to a comfortable level. In Buddy's case, when you start thinking he might be a little too thin, that is probably about the perfect weight for him.
+
+            <li> provide raised bowls for food and water, to reduce strain on his neck and back.
+            
+            <li> use a back brace or other style of harness, rather than a collar or head harness
+            
+            <li> avoid situations that would lead to jumping
+            
+            <li> encourage gentle daily exercise/walking
+            
+            <li> consider heat and/or laser therapies, water therapy, acupuncture, and supplements and pain medications as needed
+        </ul>
+        <p>
+            Buddy has many good years ahead of him and would love to share them with you. This wonderful boy is all heart and will be a fantastic friend and companion.
+                    <p>
+        <div class="video"><iframe src="https://www.youtube-nocookie.com/embed/l1E9eoMZW5s?rel=0" frameborder="0" allowfullscreen></iframe></div>
+            <p>
+                All pets arrive spayed/neutered, dewormed, microchipped and vaccinated. Adoption fee is a suggested minimum of $50 (more gratefully accepted), or Senior for Senior - adopters over 65 may name their own adoption fee. All pets are placed with a 30-day money-back trial period, to give pet and family enough time to discover any unknown allergies or other conflicts.
+<p>
+                Can't come to Republic? Don't let that stop you! We have monthly transports to both the Seattle area and Spokane, delivering adopted pets to their new owners. If you can add a little to your donation to help us cover our transport expenses, that would be great!
+                <p>
+<form action="/Application" method="POST" class="apply">
+		If you would like to know more about, or think you might like to adopt, Buddy, <button>Apply Online Now</button><br>
+		or email us at: <a data-email>Adopt Buddy!</a>
+	</form>
+
+	<p class="big">Can't adopt, but want to help? <strong>Sponsor this pet:</strong>
+	<section class="donate">
+		<form action="https://www.paypal.com/cgi-bin/webscr" method="post" class="paypal">
+			<input type="hidden" name="cmd" value="_s-xclick">
+			<input type="hidden" name="hosted_button_id" value="9649881">
+			<input type="image" src="https://www.paypal.com/en_US/i/btn/btn_donateCC_LG.gif" name="submit" alt="Donate through PayPal">
+			<img border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
+		</form>
+		<a href="https://www.networkforgood.org/donation/ExpressDonation.aspx?ORGID2=91-1996344"><img src="/Cats/networkforgoodlogo.gif" alt="Donate through Network For Good"></a>
+	</section>

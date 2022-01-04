@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+	<title>Chrissy - dog for adoption at Forget Me Not Animal Shelter of Ferry County</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<!-- Jquery -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script type="text/javascript">
+		//Email links
+		$(function() {
+			$("a[data-email]").each(function() { //for every email link (with data-email attribute)
+				user = 'adopt'; //default value
+				domain = '@forgetmenotshelter.org';
+				data = $(this).attr('data-email');
+				subject = '';
+				if(!!$.trim(data)) user=data; //if data-email attribute non-empty, use as user part
+				else if ($(this).parent().is('td.inquiry')) { //empty in inquiry link on listing
+					pet = $(this).closest('tr').find('th.name>*').first(); //find name on listing
+					user = 'adopt+'+pet.attr('id'); //add id to adopt+ for user
+					subject = pet.text();
+					$(this).text('Email to adopt '+subject+'!'); //set link text
+				}
+				if(user.charAt(0)=='+') user='adopt'+user; //for adoption links
+				if(!$.trim($(this).text())) $(this).html(user+domain); //make text email address if still blank
+				$(this).attr('href','mailto:'+user+domain+'?subject='+subject); //set href
+			});
+		});
+	</script>
+
+<link rel="stylesheet" href="/listings.css?20211216">
+
+</head>
+<body>
+	<a class="return" href="/Dogs" title="Dogs">Return to the Dogs &amp; Puppies page</a>
+	<h1>Chrissy 1577</h1>
+	
+    <a href="./Chrissy (1).JPG" class="im"><img src="1.jpg"></a><a href="./Chrissy (2).JPG" class="im"><img src="2.jpg"></a><a href="./Chrissy (3).JPG" class="im"><img src="3.jpg"></a><a href="./Chrissy (4).JPG" class="im"><img src="4.jpg"></a><a href="./Chrissy (5).JPG" class="im"><img src="5.jpg"></a><a href="./Chrissy (6).JPG" class="im"><img src="6.jpg"></a><a href="./Chrissy (7).JPG" class="im"><img src="7.jpg"></a><a href="./Chrissy (8).JPG" class="im"><img src="8.jpg"></a>
+    <p>
+        Chrissy is a wonderful young "senior" of 7 who maintains her extreme love of all things BALL RELATED!!! She just adores playing, and is a very sweet and loving girl who appears to be a mix of Golden and Labrador Retriever.
+<p>
+        Chrissy loves car rides - everything in life is a fun adventure to this happy gal - and is quite well behaved as a passenger. She is totally housetrained, will play with you as long as you want but not be obnoxious about it when it's time to quit, and will also play with toys on her own. She is very enthusiastic about everything - definitely an optimist, with a big smile and sparkle in her eyes. She is kind of a goofy lunkhead, and thankfully does not jump up on people while expressing her joie d'vivre! She could use some additional leash training to remember that not everyone on the other end of the leash wants to run after that fluffy squirrel. She listens well and takes gentle corrections happily, remembering them next time, which is a wonderful quality.
+   <p>     
+        Chrissy is somewhat like the sweet, loveable, not-too-intellectual but loved-by-all high school cheerleader stereotype. If you've ever wanted a reason to get up in the morning with a smile, Chrissy will be happy to provide that motivation!
+      <p>  
+        Her geriatric panel showed no major concerns, and she is having a couple of lumpy-bumps removed in January, after which she will be ready to head home with you!
+        <p>
+        She is pretty good with other dogs - can be a little bit bossy at times, but learns the hierarchy pretty fast. She has fostered with one or two other dogs since arriving at the shelter, and all have managed to work out their relationships with each other without too much drama.
+        <p>
+        Chrissy lived with a cat peacefully in the past, so we think she will adapt fine to a dog-savvy cat if given proper introductions and enough time to get to know each other. She loves all sorts of humans and would enjoy having any type of family situation, from one person to a whole family full of kids.
+                    <p>
+        <div class="video"><iframe src="https://www.youtube-nocookie.com/embed/HjVXka6gzV4?rel=0" frameborder="0" allowfullscreen></iframe></div>
+            <p>
+                All pets arrive spayed/neutered, dewormed, microchipped and vaccinated. Adoption fee is a suggested minimum of $50 (more gratefully accepted), or Senior for Senior - adopters over 65 may name their own adoption fee. All pets are placed with a 30-day money-back trial period, to give pet and family enough time to discover any unknown allergies or other conflicts.
+<p>
+                Can't come to Republic? Don't let that stop you! We have monthly transports to both the Seattle area and Spokane, delivering adopted pets to their new owners. If you can add a little to your donation to help us cover our transport expenses, that would be great!
+                <p>
+<form action="/Application" method="POST" class="apply">
+		If you would like to know more about, or think you might like to adopt, Chrissy, <button>Apply Online Now</button><br>
+		or email us at: <a data-email>Adopt Chrissy!</a>
+	</form>
+
+	<p class="big">Can't adopt, but want to help? <strong>Sponsor this pet:</strong>
+	<section class="donate">
+		<form action="https://www.paypal.com/cgi-bin/webscr" method="post" class="paypal">
+			<input type="hidden" name="cmd" value="_s-xclick">
+			<input type="hidden" name="hosted_button_id" value="9649881">
+			<input type="image" src="https://www.paypal.com/en_US/i/btn/btn_donateCC_LG.gif" name="submit" alt="Donate through PayPal">
+			<img border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
+		</form>
+		<a href="https://www.networkforgood.org/donation/ExpressDonation.aspx?ORGID2=91-1996344"><img src="/Cats/networkforgoodlogo.gif" alt="Donate through Network For Good"></a>
+	</section>
