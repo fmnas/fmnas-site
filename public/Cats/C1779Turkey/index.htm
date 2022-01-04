@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+	<title>Turkey - cat for adoption at Forget Me Not Animal Shelter of Ferry County</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<!-- Jquery -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script type="text/javascript">
+		//Email links
+		$(function() {
+			$("a[data-email]").each(function() { //for every email link (with data-email attribute)
+				user = 'adopt'; //default value
+				domain = '@forgetmenotshelter.org';
+				data = $(this).attr('data-email');
+				subject = '';
+				if(!!$.trim(data)) user=data; //if data-email attribute non-empty, use as user part
+				else if ($(this).parent().is('td.inquiry')) { //empty in inquiry link on listing
+					pet = $(this).closest('tr').find('th.name>*').first(); //find name on listing
+					// user = 'adopt+'+pet.attr('id'); //add id to adopt+ for user
+                    user = 'adopt';
+					subject = pet.text();
+					$(this).text('Email to adopt '+subject+'!'); //set link texS
+				}
+				if(user.charAt(0)=='+') user='adopt'/*+user*/; //for adoption links
+				if(!$.trim($(this).text())) $(this).html(user+domain); //make text email address if still blank
+				$(this).attr('href','mailto:'+user+domain+'?subject='+subject); //set href
+			});
+		});
+	</script>
+
+<link rel="stylesheet" href="/listings.css?">
+
+</head>
+<body>
+	<a class="return" href="/Cats" title="Cats">Return to the Cats &amp; Kittens page</a>
+	<h1>Turkey C1779</h1>
+	<a href="./Turkey (1).JPG" class="im"><img src="1.jpg"></a><a href="./Turkey (2).JPG" class="im"><img src="2.jpg"></a><a href="./Turkey (3).JPG" class="im"><img src="3.jpg"></a><a href="./Turkey (4).JPG" class="im"><img src="4.jpg"></a><a href="./Turkey (5).JPG" class="im"><img src="5.jpg"></a><a href="./Turkey (6).JPG" class="im"><img src="6.jpg"></a><a href="./Turkey (7).JPG" class="im"><img src="7.jpg"></a><a href="./Turkey (8).JPG" class="im"><img src="8.jpg"></a>
+	    <p>
+        Poor Turkey arrived as a stray in mid-November, in absolutely terrible condition. He was emaciated; his coat was a scraggly mess; his eyes and nose were crusty and miserable; and he had a terrible ear infection that led to large wounds on his neck from all his scratching. The poor guy was barely hanging on when he finally found a kind person who scooped him up and brought him to Forget Me Not.
+<p>
+No one ever came to claim this now-handsome boy, and he is now strong enough and well enough to be neutered and find his forever home. He is super friendly and affectionate, likes other cats and dogs, enjoys being groomed (and would appreciate a few minutes of brushing every day), and would most likely prefer to be an indoor-only kitty, since the outside world was not very kind to him. He is about 5 years old and looks a bit like a Himalayan/Snowshoe mix. Do you have some warm sun spots and snuggly laps for Turkey? He can't wait to meet you!
+ <p>
+        <div class="video"><iframe src="https://www.youtube-nocookie.com/embed/Eu6oOuKMjyM?rel=0" frameborder="0" allowfullscreen></iframe></div>
+    <p>
+        All pets arrive spayed/neutered, dewormed, microchipped and vaccinated. Adoption fee is a suggested minimum of $40 (more gratefully accepted). All pets are placed with a 30-day money-back trial period, to give pet and family enough time to discover any unknown allergies or other conflicts.
+<p>
+Can't come to Republic? Don't let that stop you! We have monthly transports to both the Seattle area and Spokane, delivering adopted pets to their new owners. If you can add a little to your donation to help us cover our transport expenses, that would be great!
+         <p>
+        <form action="/Application" method="POST" class="apply">
+		If you would like to know more about, or think you might like to adopt, Turkey, <button>Apply Online Now</button><br>
+		or email us at: <a data-email>Adopt Turkey!</a>
+	</form>
+ 
+	<p class="big">Can't adopt, but want to help? <strong>Sponsor this pet:</strong>
+	<section class="donate">
+		<form action="https://www.paypal.com/cgi-bin/webscr" method="post" class="paypal">
+			<input type="hidden" name="cmd" value="_s-xclick">
+			<input type="hidden" name="hosted_button_id" value="9649881">
+			<input type="image" src="https://www.paypal.com/en_US/i/btn/btn_donateCC_LG.gif" name="submit" alt="Donate through PayPal">
+			<img border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
+		</form>
+		<a href="https://www.networkforgood.org/donation/ExpressDonation.aspx?ORGID2=91-1996344"><img src="/Cats/networkforgoodlogo.gif" alt="Donate through Network For Good"></a>
+	</section>
