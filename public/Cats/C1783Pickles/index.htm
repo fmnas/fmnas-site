@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+	<title>Pickles - cat for adoption at Forget Me Not Animal Shelter of Ferry County</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<!-- Jquery -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script type="text/javascript">
+		//Email links
+		$(function() {
+			$("a[data-email]").each(function() { //for every email link (with data-email attribute)
+				user = 'adopt'; //default value
+				domain = '@forgetmenotshelter.org';
+				data = $(this).attr('data-email');
+				subject = '';
+				if(!!$.trim(data)) user=data; //if data-email attribute non-empty, use as user part
+				else if ($(this).parent().is('td.inquiry')) { //empty in inquiry link on listing
+					pet = $(this).closest('tr').find('th.name>*').first(); //find name on listing
+					// user = 'adopt+'+pet.attr('id'); //add id to adopt+ for user
+                    user = 'adopt';
+					subject = pet.text();
+					$(this).text('Email to adopt '+subject+'!'); //set link texS
+				}
+				if(user.charAt(0)=='+') user='adopt'/*+user*/; //for adoption links
+				if(!$.trim($(this).text())) $(this).html(user+domain); //make text email address if still blank
+				$(this).attr('href','mailto:'+user+domain+'?subject='+subject); //set href
+			});
+		});
+	</script>
+
+<link rel="stylesheet" href="/listings.css?">
+
+</head>
+<body>
+	<a class="return" href="/Cats" title="Cats">Return to the Cats &amp; Kittens page</a>
+	<h1>Pickles C1783</h1>
+    <a href="./Pickles (1).JPG" class="im"><img src="1.jpg"></a><a href="./Pickles (10).JPG" class="im"><img src="2.jpg"></a><a href="./Pickles (11).JPG" class="im"><img src="3.jpg"></a><a href="./Pickles (12).JPG" class="im"><img src="4.jpg"></a><a href="./Pickles (13).JPG" class="im"><img src="5.jpg"></a><a href="./Pickles (2).JPG" class="im"><img src="6.jpg"></a><a href="./Pickles (3).JPG" class="im"><img src="7.jpg"></a><a href="./Pickles (4).JPG" class="im"><img src="8.jpg"></a><a href="./Pickles (5).JPG" class="im"><img src="9.jpg"></a><a href="./Pickles (6).JPG" class="im"><img src="10.jpg"></a><a href="./Pickles (7).JPG" class="im"><img src="11.jpg"></a><a href="./Pickles (8).JPG" class="im"><img src="12.jpg"></a><a href="./Pickles (9).JPG" class="im"><img src="13.jpg"></a>
+    <p>
+        Pickles is an affectionate and happy tabby-Siamese mix boy, about 8 years old. He arrived at the shelter as a stray, and no one has claimed him.
+<p>
+        When Pickles arrived, he was fighting a persistent Feline Rhinotracheitis Virus upper respiratory infection which, though no longer causing nasal symptoms or respiratory discomfort, has left his beautiful baby blues a bit sore and red-rimmed. This is a common infection in cats, and generally resolves on its own, with some topical antibiotic support being given to Pickles' eyes to help while he heals. It is not a serious disease in most cases (including Pickles), but is prone to becoming a latent infection that may flare up during times of stress.
+        <p>
+        Pickles says this means he requires daily snuggles and belly rubs, plus a little play time, some excellent sun-spots, and all the love you can spare. He seems tolerant of other cats, and has not yet been tested with dogs. If you have a dog and would like to add Pickles to the family, let us know about your dog in your application, and we will find a similar cat-friendly dog for Pickles to meet before adoption.
+        <p>
+        Pickles may be considered a "senior" at 8, but with a loving and attentive home, he knows he has many more wonderful years to spend with you! He would be happy as an indoor-only or indoor/outdoor cat, and is most definitely going to want to snuggle with you in bed on those dark winter mornings.
+          <p>
+        <div class="video"><iframe src="https://www.youtube-nocookie.com/embed/wIQqFQeCj-A?rel=0" frameborder="0" allowfullscreen></iframe></div>
+    <p>
+        All pets arrive spayed/neutered, dewormed, microchipped and vaccinated. Adoption fee is a suggested minimum of $20 (more gratefully accepted) or Senior for Senior (adopters over 65 can name their own adoption fee). All pets are placed with a 30-day money-back trial period, to give pet and family enough time to discover any unknown allergies or other conflicts.
+<p>
+        Can't come to Republic? Don't let that stop you! We have monthly transports to both the Seattle area and Spokane, delivering adopted pets to their new owners. If you can add a little to your donation to help us cover our transport expenses, that would be great!
+                <p>
+        <form action="/Application" method="POST" class="apply">
+		If you would like to know more about, or think you might like to adopt, Pickles, <button>Apply Online Now</button><br>
+		or email us at: <a data-email>Adopt Pickles!</a>
+	</form>
+ 
+	<p class="big">Can't adopt, but want to help? <strong>Sponsor this pet:</strong>
+	<section class="donate">
+		<form action="https://www.paypal.com/cgi-bin/webscr" method="post" class="paypal">
+			<input type="hidden" name="cmd" value="_s-xclick">
+			<input type="hidden" name="hosted_button_id" value="9649881">
+			<input type="image" src="https://www.paypal.com/en_US/i/btn/btn_donateCC_LG.gif" name="submit" alt="Donate through PayPal">
+			<img border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
+		</form>
+		<a href="https://www.networkforgood.org/donation/ExpressDonation.aspx?ORGID2=91-1996344"><img src="/Cats/networkforgoodlogo.gif" alt="Donate through Network For Good"></a>
+	</section>
