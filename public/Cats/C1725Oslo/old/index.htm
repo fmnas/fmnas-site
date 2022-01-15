@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+	<title>Oslo - cat for adoption at Forget Me Not Animal Shelter of Ferry County</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<!-- Jquery -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script type="text/javascript">
+		//Email links
+		$(function() {
+			$("a[data-email]").each(function() { //for every email link (with data-email attribute)
+				user = 'adopt'; //default value
+				domain = '@forgetmenotshelter.org';
+				data = $(this).attr('data-email');
+				subject = '';
+				if(!!$.trim(data)) user=data; //if data-email attribute non-empty, use as user part
+				else if ($(this).parent().is('td.inquiry')) { //empty in inquiry link on listing
+					pet = $(this).closest('tr').find('th.name>*').first(); //find name on listing
+					// user = 'adopt+'+pet.attr('id'); //add id to adopt+ for user
+                    user = 'adopt';
+					subject = pet.text();
+					$(this).text('Email to adopt '+subject+'!'); //set link texS
+				}
+				if(user.charAt(0)=='+') user='adopt'/*+user*/; //for adoption links
+				if(!$.trim($(this).text())) $(this).html(user+domain); //make text email address if still blank
+				$(this).attr('href','mailto:'+user+domain+'?subject='+subject); //set href
+			});
+		});
+	</script>
+
+<link rel="stylesheet" href="/listings.css?">
+
+</head>
+<body>
+	<a class="return" href="/Cats" title="Cats">Return to the Cats &amp; Kittens page</a>
+	<h1>Oslo C1725</h1>
+	
+    <a href="./Oslo (1).JPG" class="im"><img src="1.jpg"></a><a href="./Oslo (10).JPG" class="im"><img src="2.jpg"></a><a href="./Oslo (11).JPG" class="im"><img src="3.jpg"></a><a href="./Oslo (12).JPG" class="im"><img src="4.jpg"></a><a href="./Oslo (13).JPG" class="im"><img src="5.jpg"></a><a href="./Oslo (14).JPG" class="im"><img src="6.jpg"></a><a href="./Oslo (2).JPG" class="im"><img src="7.jpg"></a><a href="./Oslo (3).JPG" class="im"><img src="8.jpg"></a><a href="./Oslo (4).JPG" class="im"><img src="9.jpg"></a><a href="./Oslo (5).JPG" class="im"><img src="10.jpg"></a><a href="./Oslo (6).JPG" class="im"><img src="11.jpg"></a><a href="./Oslo (7).JPG" class="im"><img src="12.jpg"></a><a href="./Oslo (8).JPG" class="im"><img src="13.jpg"></a><a href="./Oslo (9).JPG" class="im"><img src="14.jpg"></a>
+    <p>
+        Meet Otto and Oslo, a pair of brothers born about 7/10/21. They were surrendered by the same "owner" that surrendered Tweedledee and Tweedledum, another casualty of "I thought I wanted them but I don't" mentality - reminder to NOT adopt pets unless you are SURE you want them, or can return them where you got them if you change your mind.
+<p>
+        C1715 Otto - black shorthair male, playful and outgoing<br>
+        C1725 <strong>Oslo</strong> - grey tabby shorthair male, playful but shy with new people and places
+        <p>
+        Oslo is eligible for our SHY CAT SPECIAL - $35 adoption fee, rather than the normal $65. Want to bring home Otto and Oslo together? Just pay $65 adoption fee for Otto and his brother will tag along at no additional charge! We'd love to see these two stay together, so preference will be given to a home that wants both; however, they do not HAVE to be adopted together.
+        <p>
+        <div class="video"><iframe src="https://www.youtube-nocookie.com/embed/vcz3z6zPLgI?rel=0" frameborder="0" allowfullscreen></iframe></div>
+        <p>
+        We'd love to see all kittens go to homes that have another young, playful kitten, or to send 2 of them out as a pair (which gives you a great pair discount rate), but we do not require pair adoptions. If you prefer to adopt just one, and you don't have a similarly aged kitten at home already, please read our information on
+        <a href="http://forgetmenotshelter.org/blog/single-kitten-syndrome">Single Kitten Syndrome</a>. Then, when you apply for a single kitten, please let us know in the "Comments" field how you plan to deal with the "kitten crazies." 
+            <p>
+
+                All kittens arrive spayed/neutered, dewormed, microchipped and with all age-appropriate vaccinations. Adoption fee is suggested $35 SHY CAT SPECIAL (more gratefully accepted). Adopt a second shy cat as a buddy for no additional fee! All pets are placed with a 30-day money-back trial period, to give pet and family enough time to discover any unknown allergies or other conflicts.
+<p>
+                Can't come to Republic? Don't let that stop you! We have monthly transports to both the Seattle area and Spokane, delivering adopted pets to their new owners. If you can add a little to your donation to help us cover our transport expenses, that would be great! 
+                <form action="/Application" method="POST" class="apply">
+		If you would like to know more about, or think you might like to adopt, Oslo, <button>Apply Online Now</button><br>
+		or email us at: <a data-email>Adopt Oslo!</a>
+	</form>
+ 
+	<p class="big">Can't adopt, but want to help? <strong>Sponsor this pet:</strong>
+	<section class="donate">
+		<form action="https://www.paypal.com/cgi-bin/webscr" method="post" class="paypal">
+			<input type="hidden" name="cmd" value="_s-xclick">
+			<input type="hidden" name="hosted_button_id" value="9649881">
+			<input type="image" src="https://www.paypal.com/en_US/i/btn/btn_donateCC_LG.gif" name="submit" alt="Donate through PayPal">
+			<img border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
+		</form>
+		<a href="https://www.networkforgood.org/donation/ExpressDonation.aspx?ORGID2=91-1996344"><img src="/Cats/networkforgoodlogo.gif" alt="Donate through Network For Good"></a>
+	</section>
