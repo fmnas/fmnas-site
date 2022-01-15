@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+	<title>California - cat for adoption at Forget Me Not Animal Shelter of Ferry County</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<!-- Jquery -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script type="text/javascript">
+		//Email links
+		$(function() {
+			$("a[data-email]").each(function() { //for every email link (with data-email attribute)
+				user = 'adopt'; //default value
+				domain = '@forgetmenotshelter.org';
+				data = $(this).attr('data-email');
+				subject = '';
+				if(!!$.trim(data)) user=data; //if data-email attribute non-empty, use as user part
+				else if ($(this).parent().is('td.inquiry')) { //empty in inquiry link on listing
+					pet = $(this).closest('tr').find('th.name>*').first(); //find name on listing
+					// user = 'adopt+'+pet.attr('id'); //add id to adopt+ for user
+                    user = 'adopt';
+					subject = pet.text();
+					$(this).text('Email to adopt '+subject+'!'); //set link texS
+				}
+				if(user.charAt(0)=='+') user='adopt'/*+user*/; //for adoption links
+				if(!$.trim($(this).text())) $(this).html(user+domain); //make text email address if still blank
+				$(this).attr('href','mailto:'+user+domain+'?subject='+subject); //set href
+			});
+		});
+	</script>
+
+<link rel="stylesheet" href="/listings.css?">
+
+</head>
+<body>
+	<a class="return" href="/Cats" title="Cats">Return to the Cats &amp; Kittens page</a>
+	<h1>California SS38</h1>
+	
+	<a href="./California (1).JPG" class="im"><img src="1.jpg"></a><a href="./California (2).JPG" class="im"><img src="2.jpg"></a><a href="./California (3).JPG" class="im"><img src="3.jpg"></a><a href="./California (4).JPG" class="im"><img src="4.jpg"></a><a href="./California (5).JPG" class="im"><img src="5.jpg"></a><a href="./California (6).JPG" class="im"><img src="6.jpg"></a>
+	<p>
+            Forget Me Not is currently assisting a semi-feral cat colony in crisis in Inchelium. These cats are too friendly to be "just" barn cats, and cannot be returned to their original site after neuter because there are dogs in the neighborhood that have decided the colony is their prey playground. As a result, we have taken in 41 cats and kittens from this colony, kittens ranging in age from 2 1/2 months to 6 months. All of them are seeking a safe place to call home; it can be indoor only, indoor-outdoor, or for some of them, outdoor only with appropriate food, water, shelter, and daily affection.
+<p>
+            California, born 10/1/18, is one of the few adults in this colony who we felt needed to be removed and rehomed as a pet. She came in with a terrible case of allergic dermatitis, generally indicative of an allergy to fleas. She has since been treated for fleas, treated with steroids and antibiotics to clear up her skin, and is now a sleek black beauty who is accustomed to handling and, though she is usually found hiding in a bed or under a chair (or both!), is quite tolerant of being picked up and petted. She will like a calm and relaxed home, and we recommend she be kept indoor only to avoid a repeat of her dermatitis.
+            <p>
+            She gets along fine with other cats, but we do NOT recommend dogs for California.
+            <p>
+            The good news is, Forget Me Not is having a "Shy Cat Special" for the rest of 2021, so a shy cat or kitten has a $35 adoption fee, and you may add a second shy cat as a buddy at no additional cost! 
+                    <p>
+        <div class="video"><iframe src="https://www.youtube-nocookie.com/embed/AvTcHWNxsxY?rel=0" frameborder="0" allowfullscreen></iframe></div>
+    <p>
+      
+All kittens arrive spayed/neutered, dewormed, microchipped and with all age-appropriate vaccinations. Adoption fee is suggested $35 SHY CAT SPECIAL (more gratefully accepted). 2 shy cats for the price of one! All pets are placed with a 30-day money-back trial period, to give pet and family enough time to discover any unknown allergies or other conflicts.
+<p>
+Can't come to Republic? Don't let that stop you! We have monthly transports to both the Seattle area and Spokane, delivering adopted pets to their new owners. If you can add a little to your donation to help us cover our transport expenses, that would be great!
+			<form action="/Application" method="POST" class="apply">
+		If you would like to know more about, or think you might like to adopt, California, <button>Apply Online Now</button><br>
+		or email us at: <a data-email>Adopt California!</a>
+	</form>
+ 
+	<p class="big">Can't adopt, but want to help? <strong>Sponsor this pet:</strong>
+	<section class="donate">
+		<form action="https://www.paypal.com/cgi-bin/webscr" method="post" class="paypal">
+			<input type="hidden" name="cmd" value="_s-xclick">
+			<input type="hidden" name="hosted_button_id" value="9649881">
+			<input type="image" src="https://www.paypal.com/en_US/i/btn/btn_donateCC_LG.gif" name="submit" alt="Donate through PayPal">
+			<img border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
+		</form>
+		<a href="https://www.networkforgood.org/donation/ExpressDonation.aspx?ORGID2=91-1996344"><img src="/Cats/networkforgoodlogo.gif" alt="Donate through Network For Good"></a>
+	</section>
