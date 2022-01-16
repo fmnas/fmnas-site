@@ -80,9 +80,9 @@
  */
 
 use JetBrains\PhpStorm\Pure;
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
 use Masterminds\HTML5;
+use PHPMailer\PHPMailer\Exception;
+use PHPMailer\PHPMailer\PHPMailer;
 
 $phpmailer_path ??= '../lib/PHPMailer';
 $html5_php_path ??= '../lib/html5-php';
@@ -155,6 +155,28 @@ class FormConfig {
  */
 class FormEmailConfig {
     /**
+     * The emails for the Reply-To header.
+     * In most cases, this iterable should be an array.
+     * If it doesn't generate any values, the Reply-To header will be omitted.
+     * @var iterable<EmailAddress>
+     */
+    public iterable $replyTo;
+    /**
+     * The emails for the Cc header.
+     * In most cases, this iterable should be an array.
+     * If it doesn't generate any values, the Cc header will be omitted.
+     * @var iterable<EmailAddress>
+     */
+    public iterable $cc;
+    /**
+     * The emails for the Bcc header.
+     * In most cases, this iterable should be an array.
+     * If it doesn't generate any values, the Bcc header will be omitted.
+     * @var iterable<EmailAddress>
+     */
+    public iterable $bcc;
+
+    /**
      * FormEmailConfig constructor.
      * @param EmailAddress $from The email for the From header.
      * @param iterable<EmailAddress> $to The emails for the To header.
@@ -167,33 +189,9 @@ class FormEmailConfig {
      */
     public function __construct(public EmailAddress $from, public iterable $to, public string $subject, public ?array $values = []) {
         $this->replyTo = [];
-        $this->cc      = [];
-        $this->bcc     = [];
+        $this->cc = [];
+        $this->bcc = [];
     }
-
-    /**
-     * The emails for the Reply-To header.
-     * In most cases, this iterable should be an array.
-     * If it doesn't generate any values, the Reply-To header will be omitted.
-     * @var iterable<EmailAddress>
-     */
-    public iterable $replyTo;
-
-    /**
-     * The emails for the Cc header.
-     * In most cases, this iterable should be an array.
-     * If it doesn't generate any values, the Cc header will be omitted.
-     * @var iterable<EmailAddress>
-     */
-    public iterable $cc;
-
-    /**
-     * The emails for the Bcc header.
-     * In most cases, this iterable should be an array.
-     * If it doesn't generate any values, the Bcc header will be omitted.
-     * @var iterable<EmailAddress>
-     */
-    public iterable $bcc;
 }
 
 class EmailAddress {
@@ -277,16 +275,16 @@ function sendEmail(FormEmailConfig $emailConfig, string $emailBody) {
     global $formConfig;
     $mailer = new PHPMailer(true);
     $mailer->IsSMTP();
-    $mailer->SMTPAuth   = true;
+    $mailer->SMTPAuth = true;
     $mailer->SMTPSecure = $formConfig->smtpSecurity;
-    $mailer->Host       = $formConfig->smtpHost;
-    $mailer->Port       = $formConfig->smtpPort;
-    $mailer->SMTPAuth   = true;
-    $mailer->Username   = $formConfig->smtpUser;
-    $mailer->Password   = $formConfig->smtpPassword;
-    $mailer->From       = $emailConfig->from->address;
-    $mailer->CharSet    = 'UTF-8';
-    $mailer->Encoding   = 'base64';
+    $mailer->Host = $formConfig->smtpHost;
+    $mailer->Port = $formConfig->smtpPort;
+    $mailer->SMTPAuth = true;
+    $mailer->Username = $formConfig->smtpUser;
+    $mailer->Password = $formConfig->smtpPassword;
+    $mailer->From = $emailConfig->from->address;
+    $mailer->CharSet = 'UTF-8';
+    $mailer->Encoding = 'base64';
     if ($emailConfig->from->name) {
         $mailer->FromName = $emailConfig->from->name;
     }
@@ -308,7 +306,7 @@ function sendEmail(FormEmailConfig $emailConfig, string $emailBody) {
     }
     $mailer->IsHTML(true);
     $mailer->Subject = $emailConfig->subject;
-    $mailer->Body    = $emailBody;
+    $mailer->Body = $emailBody;
     $mailer->Send();
 }
 
@@ -337,7 +335,7 @@ function renderForm(array $data, string $html, ?array $values = []): string {
 
 $formConfig = new FormConfig();
 // Default values for $formConfig.
-$formConfig->confirm      = function(array $formData): void {
+$formConfig->confirm = function(array $formData): void {
     ?>
     <!DOCTYPE html>
     <title>Thank you!</title>
@@ -351,7 +349,7 @@ $formConfig->confirm      = function(array $formData): void {
     <?php
     var_dump($formData);
 };
-$formConfig->handler      = function(FormException $e): void {
+$formConfig->handler = function(FormException $e): void {
     http_response_code(500);
     ?>
     <!DOCTYPE html>
@@ -366,15 +364,15 @@ $formConfig->handler      = function(FormException $e): void {
     <?php
     var_dump($e->formData);
 };
-$formConfig->emails       = function(array $formData): array {
-    $email  = new EmailAddress('webmaster@' . $_SERVER['HTTP_HOST']);
+$formConfig->emails = function(array $formData): array {
+    $email = new EmailAddress('webmaster@' . $_SERVER['HTTP_HOST']);
     $config = new FormEmailConfig($email, [$email], 'Form Data');
     return [$config];
 };
-$formConfig->smtpHost     = 'localhost';
+$formConfig->smtpHost = 'localhost';
 $formConfig->smtpSecurity = 'tls';
-$formConfig->smtpPort     = 25;
-$formConfig->smtpUser     = 'root';
+$formConfig->smtpPort = 25;
+$formConfig->smtpUser = 'root';
 $formConfig->smtpPassword = '';
 
 ob_start();

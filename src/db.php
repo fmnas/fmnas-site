@@ -223,46 +223,6 @@ class Database {
         }
     }
 
-    private static function createAsset(array $asset): ?Asset {
-        if (!$asset["id"]) {
-            return null;
-        }
-        $a       = new Asset();
-        $a->key  = $asset["id"];
-        $a->path = $asset["path"];
-        $a->setType($asset["type"]);
-        $a->data = unserialize($asset["data"]) ?: [];
-        return $a;
-    }
-
-    private static function createPet(array $pet, array $photos = []): Pet {
-        $p              = new Pet();
-        $p->id          = $pet["id"];
-        $p->name        = $pet["name"];
-        $p->species     = _G_species()[$pet["species"]];
-        $p->path        = $pet["path"];
-        $p->sex         = $pet["sex"] ? _G_sexes()[$pet["sex"]] : null;
-        $p->fee         = $pet["fee"];
-        $p->photo       = self::createAsset([
-            "id"   => $pet["pic_id"],
-            "data" => $pet["pic_data"],
-            "path" => $pet["pic_path"],
-            "type" => $pet["pic_type"],
-        ]);
-        $p->description = self::createAsset([
-            "id"   => $pet["dsc_id"],
-            "data" => $pet["dsc_data"],
-            "path" => $pet["dsc_path"],
-            "type" => $pet["dsc_type"],
-        ]);
-        $p->photos      = array_map("self::createAsset", $photos);
-        $p->status      = _G_statuses()[$pet["status"]];
-        $p->breed       = $pet["breed"];
-        $p->dob         = $pet["dob"];
-        $p->plural      = (bool) $pet["plural"];
-        return $p;
-    }
-
     private static function createSpecies(array $species): Species {
         $s = new Species();
         $s->setAll($species);
@@ -283,6 +243,18 @@ class Database {
             return null;
         }
         return self::createAsset($result->fetch_assoc());
+    }
+
+    private static function createAsset(array $asset): ?Asset {
+        if (!$asset["id"]) {
+            return null;
+        }
+        $a = new Asset();
+        $a->key = $asset["id"];
+        $a->path = $asset["path"];
+        $a->setType($asset["type"]);
+        $a->data = unserialize($asset["data"]) ?: [];
+        return $a;
     }
 
     public function getAssetByPath(string $path): ?Asset {
@@ -356,6 +328,34 @@ class Database {
         );
     }
 
+    private static function createPet(array $pet, array $photos = []): Pet {
+        $p = new Pet();
+        $p->id = $pet["id"];
+        $p->name = $pet["name"];
+        $p->species = _G_species()[$pet["species"]];
+        $p->path = $pet["path"];
+        $p->sex = $pet["sex"] ? _G_sexes()[$pet["sex"]] : null;
+        $p->fee = $pet["fee"];
+        $p->photo = self::createAsset([
+            "id" => $pet["pic_id"],
+            "data" => $pet["pic_data"],
+            "path" => $pet["pic_path"],
+            "type" => $pet["pic_type"],
+        ]);
+        $p->description = self::createAsset([
+            "id" => $pet["dsc_id"],
+            "data" => $pet["dsc_data"],
+            "path" => $pet["dsc_path"],
+            "type" => $pet["dsc_type"],
+        ]);
+        $p->photos = array_map("self::createAsset", $photos);
+        $p->status = _G_statuses()[$pet["status"]];
+        $p->breed = $pet["breed"];
+        $p->dob = $pet["dob"];
+        $p->plural = (bool) $pet["plural"];
+        return $p;
+    }
+
     public function getPetByPath(string $path): ?Pet {
         if (urldecode($path) !== $path) {
             return $this->getPetByPath(urldecode($path));
@@ -367,7 +367,7 @@ class Database {
             /* @var $species Species */
             $prefix = $species->plural() . "/";
             if (startsWith(strtolower($path), strtolower($prefix))) {
-                $path             = substr($path, strlen($prefix));
+                $path = substr($path, strlen($prefix));
                 $expected_species = $species;
                 break;
             }

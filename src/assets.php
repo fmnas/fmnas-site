@@ -10,25 +10,6 @@ class Asset {
     private ?string $contents;
     private ?array $size; // intrinsic size of image
 
-    private static function createCacheDirectory(): void {
-        @mkdir(root() . "/public/assets/cache", 0755, true);
-    }
-
-    public function absolutePath(): string {
-        return stored_assets() . "/" . $this->key;
-    }
-
-    public function fetch(): ?string {
-        if (!isset($this->contents) || !trim($this->contents)) {
-            if (!file_exists($this->absolutePath())) {
-                log_err("Did not find stored asset with key $this->key at {$this->absolutePath()}");
-                return null;
-            }
-            $this->contents = file_get_contents($this->absolutePath());
-        }
-        return $this->contents;
-    }
-
     /**
      * Parse handlebars/markdown into HTML and cache, or retrieve from cache
      * @return string HTML code
@@ -57,6 +38,10 @@ class Asset {
         }
 
         return $parsed;
+    }
+
+    private static function createCacheDirectory(): void {
+        @mkdir(root() . "/public/assets/cache", 0755, true);
     }
 
     public function getType(): string {
@@ -95,90 +80,19 @@ class Asset {
         $this->type = $type;
     }
 
-    private function size(): array {
-        $this->size ??= getimagesize($this->absolutePath());
-        return $this->size;
+    public function absolutePath(): string {
+        return stored_assets() . "/" . $this->key;
     }
 
-    /**
-     * Cache an image at the specified width if not already done
-     * @param int $height desired height or 0 for no scaling
-     * @return string The path to the image, relative to root/public (e.g. "/assets/cache/1_0.jpg")
-     */
-    private function cachedImage(int $height): string {
-        if (!file_exists($this->absolutePath())) {
-            log_err("Did not find stored image with key $this->key at {$this->absolutePath()}");
-            return "";
-        }
-
-        $intrinsicHeight = $this->size()[1];
-        $ratio           = $this->size()[0] / $this->size()[1];
-
-        if ($height === 0 || $height >= $intrinsicHeight) {
-            $height = $intrinsicHeight;
-        }
-
-        $filename = "/assets/cache/" . $this->key . "_" . $height;
-        switch ($this->getType()) {
-            case "image/jpeg":
-                $filename .= ".jpg";
-                break;
-            case "image/png":
-                $filename .= ".png";
-                break;
-            case "image/gif":
-                $filename .= ".gif";
-                break;
-        }
-        $absoluteTarget = root() . "/public$filename";
-        if (file_exists($absoluteTarget)) {
-            return $filename;
-        }
-
-        if ($height === $intrinsicHeight) {
-            if (!copy($this->absolutePath(), $absoluteTarget)) {
-                log_err("Failed to copy {$this->absolutePath()} to $absoluteTarget");
-                return "/assets/stored/$this->key";
+    public function fetch(): ?string {
+        if (!isset($this->contents) || !trim($this->contents)) {
+            if (!file_exists($this->absolutePath())) {
+                log_err("Did not find stored asset with key $this->key at {$this->absolutePath()}");
+                return null;
             }
-            return $filename;
+            $this->contents = file_get_contents($this->absolutePath());
         }
-
-        switch ($this->getType()) {
-            case "image/jpeg":
-                $image = imagecreatefromjpeg($this->absolutePath());
-                break;
-            case "image/png":
-                $image = imagecreatefrompng($this->absolutePath());
-                break;
-            case "image/gif":
-                $image = imagecreatefromgif($this->absolutePath());
-                break;
-            default:
-                log_err("Don't know how to resize {$this->getType()}");
-                return "/assets/stored/$this->key";
-        }
-
-        $scaled = imagescale($image, round($height * $ratio), $height, IMG_BICUBIC);
-
-        self::createCacheDirectory();
-        $success = false;
-        switch ($this->getType()) {
-            case "image/jpeg":
-                $success = imagejpeg($scaled, $absoluteTarget, 80);
-                break;
-            case "image/png":
-                $success = imagepng($scaled, $absoluteTarget, 9);
-                break;
-            case "image/gif":
-                $success = imagegif($scaled, $absoluteTarget);
-                break;
-        }
-        if (!$success) {
-            log_err("Failed to save image at $absoluteTarget");
-            return "/assets/stored/$this->key";
-        }
-
-        return $filename;
+        return $this->contents;
     }
 
     /**
@@ -201,15 +115,15 @@ class Asset {
         }
         $tag .= '<img';
         if ($height !== 0 && $height < $this->size()[1]) {
-            $intrinsicWidth  = $this->size()[0];
+            $intrinsicWidth = $this->size()[0];
             $intrinsicHeight = $this->size()[1];
-            $ratio           = $this->size()[0] / $this->size()[1];
-            $newWidth        = round($ratio * $height);
-            $tag             .= ' srcset="';
-            $currentScale    = 1;
+            $ratio = $this->size()[0] / $this->size()[1];
+            $newWidth = round($ratio * $height);
+            $tag .= ' srcset="';
+            $currentScale = 1;
             while ($currentScale * $height < $intrinsicHeight) {
-                $tag          .= $this->cachedImage($currentScale * $height);
-                $tag          .= " {$currentScale}x, ";
+                $tag .= $this->cachedImage($currentScale * $height);
+                $tag .= " {$currentScale}x, ";
                 $currentScale += 0.5;
             }
             $tag .= "$path " . $intrinsicHeight / $height . "x\"";
@@ -223,5 +137,91 @@ class Asset {
             $tag .= '</a>';
         }
         return $tag;
+    }
+
+    private function size(): array {
+        $this->size ??= getimagesize($this->absolutePath());
+        return $this->size;
+    }
+
+    /**
+     * Cache an image at the specified width if not already done
+     * @param int $height desired height or 0 for no scaling
+     * @return string The path to the image, relative to root/public (e.g. "/assets/cache/1_0.jpg")
+     */
+    private function cachedImage(int $height): string {
+        if (!file_exists($this->absolutePath())) {
+            log_err("Did not find stored image with key $this->key at {$this->absolutePath()}");
+            return "";
+        }
+
+        $intrinsicHeight = $this->size()[1];
+        $ratio = $this->size()[0] / $this->size()[1];
+
+        if ($height === 0 || $height >= $intrinsicHeight) {
+            $height = $intrinsicHeight;
+        }
+
+        $filename = "/assets/cache/" . $this->key . "_" . $height;
+        switch ($this->getType()) {
+        case "image/jpeg":
+            $filename .= ".jpg";
+            break;
+        case "image/png":
+            $filename .= ".png";
+            break;
+        case "image/gif":
+            $filename .= ".gif";
+            break;
+        }
+        $absoluteTarget = root() . "/public$filename";
+        if (file_exists($absoluteTarget)) {
+            return $filename;
+        }
+
+        if ($height === $intrinsicHeight) {
+            if (!copy($this->absolutePath(), $absoluteTarget)) {
+                log_err("Failed to copy {$this->absolutePath()} to $absoluteTarget");
+                return "/assets/stored/$this->key";
+            }
+            return $filename;
+        }
+
+        switch ($this->getType()) {
+        case "image/jpeg":
+            $image = imagecreatefromjpeg($this->absolutePath());
+            break;
+        case "image/png":
+            $image = imagecreatefrompng($this->absolutePath());
+            break;
+        case "image/gif":
+            $image = imagecreatefromgif($this->absolutePath());
+            break;
+        default:
+            log_err("Don't know how to resize {$this->getType()}");
+            return "/assets/stored/$this->key";
+        }
+
+        $scaled = imagescale($image, round($height * $ratio), $height, IMG_BICUBIC);
+
+        self::createCacheDirectory();
+        $success = false;
+        switch ($this->getType()) {
+        case "image/jpeg":
+            $success = imagejpeg($scaled, $absoluteTarget, 80);
+            break;
+        case "image/png":
+            $success = imagepng($scaled, $absoluteTarget, 9);
+            break;
+        case "image/gif":
+            $success = imagegif($scaled, $absoluteTarget);
+            break;
+        }
+        if (!$success) {
+            log_err("Failed to save image at $absoluteTarget");
+            return "/assets/stored/$this->key";
+        }
+
+        return $filename;
     }
 }

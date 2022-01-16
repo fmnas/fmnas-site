@@ -5,7 +5,7 @@ require_once "$t/footer.php";
 require_once "$src/db.php";
 require_once "$src/pet.php";
 $transportDate = strtotime(_G_transport_date());
-$db            ??= new Database();
+$db ??= new Database();
 ?>
     <!DOCTYPE html>
     <title><?=_G_longname()?></title>

@@ -45,8 +45,8 @@ function contains(string $haystack, $needle): bool {
 
 function validateIdentifier(string $id): bool {
     return strlen($id) > 0 &&
-           ctype_alnum(str_replace("_", "", $id)) &&
-           (ctype_alnum($id[0]) || $id[0] === "_");
+        ctype_alnum(str_replace("_", "", $id)) &&
+        (ctype_alnum($id[0]) || $id[0] === "_");
 }
 
 /**
@@ -82,8 +82,8 @@ function secrets(): string {
  *     page)
  */
 function assets(): string {
-    $cwd            = getcwd();
-    $host           = $_SERVER["HTTP_HOST"];
+    $cwd = getcwd();
+    $host = $_SERVER["HTTP_HOST"];
     $adminSubdomain = "admin.";
     if (startsWith($host, $adminSubdomain)) {
         return "//" . substr($host, strlen($adminSubdomain)) . "/assets";
@@ -101,18 +101,18 @@ function stored_assets(): string {
 /**
  * Global variables from the above functions
  */
-$assets  = assets();
-$t       = t();
-$src     = src();
-$root    = root();
+$assets = assets();
+$t = t();
+$src = src();
+$root = root();
 $secrets = secrets();
 
 /**
  * Dummy definitions for use by PhpStorm
  */
-$root    ??= "..";
-$src     ??= "$root/src";
-$t       ??= "$src/templates";
+$root ??= "..";
+$src ??= "$root/src";
+$t ??= "$src/templates";
 $secrets ??= "$root/secrets";
 
 /**

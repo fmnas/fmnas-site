@@ -13,7 +13,7 @@ function generate() {
     global $db;
     $db ??= new Database();
 
-    $values = array();
+    $values = [];
 
     foreach ($db->query("SELECT * FROM config") as $item) {
         if (!preg_match("/^[a-z0-9][a-z0-9_]*[a-z0-9]$/i", $item["config_key"])) {
@@ -27,26 +27,26 @@ function generate() {
     $values["species"] = [];
     foreach ($db->getAllSpecies() as $s) {
         /* @var $s Species */
-        $s->species_count          = null;
+        $s->species_count = null;
         $values["species"][$s->id] = $s;
     }
 
     $values["sexes"] = [];
     foreach ($db->query("SELECT * FROM sexes") as $item) {
-        $sex                        = new Sex();
-        $sex->name                  = $item["name"];
-        $sex->key                   = $item["id"];
+        $sex = new Sex();
+        $sex->name = $item["name"];
+        $sex->key = $item["id"];
         $values["sexes"][$sex->key] = $sex;
     }
 
     $values["statuses"] = [];
     foreach ($db->query("SELECT * FROM statuses") as $item) {
-        $status                           = new Status();
-        $status->key                      = $item["id"];
-        $status->description              = $item["description"];
-        $status->displayStatus            = $item["display"];
-        $status->listed                   = $item["listed"];
-        $status->name                     = htmlspecialchars($item["name"]);
+        $status = new Status();
+        $status->key = $item["id"];
+        $status->description = $item["description"];
+        $status->displayStatus = $item["display"];
+        $status->listed = $item["listed"];
+        $status->name = htmlspecialchars($item["name"]);
         $values["statuses"][$status->key] = $status;
     }
 
@@ -65,12 +65,12 @@ function generate() {
 
     // Generate some CSS for the adoptable page
     ob_start();
-    $displayedStatusSelectors = array();
-    $hoverStatusSelectors     = array();
+    $displayedStatusSelectors = [];
+    $hoverStatusSelectors = [];
     foreach ($values["statuses"] as $status) {
         /* @var $status Status */
         if (isset($status->displayStatus) && $status->displayStatus) {
-            $sel                        = "tr.st_{$status->key}";
+            $sel = "tr.st_{$status->key}";
             $displayedStatusSelectors[] = $sel;
             echo $sel . '>td.fee>*::before{content:"';
             echo cssspecialchars($status->name);

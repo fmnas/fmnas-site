@@ -29,8 +29,8 @@ $formConfig->confirm = function(array $formData): void {
     var_dump($e->formData);
     };
     $formConfig->emails = function(array $formData): array {
-        $shelterEmail     = new EmailAddress('admin@forgetmenotshelter.org');
-        $applicantEmail   = new EmailAddress($formData['applicant_email'], $formData['applicant_name']);
+        $shelterEmail = new EmailAddress('admin@forgetmenotshelter.org');
+        $applicantEmail = new EmailAddress($formData['applicant_email'], $formData['applicant_name']);
 
         $primaryEmail = new FormEmailConfig(
             $applicantEmail,
