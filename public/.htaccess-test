@@ -1,0 +1,5 @@
+# Authentication for test site
+AuthName "Test Site"
+AuthType Basic
+AuthUserFile /home/kimgil5/newsite/secrets/.htpasswd
+Require valid-user

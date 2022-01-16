@@ -33,9 +33,4 @@ AddOutputFilterByType DEFLATE application/rss+xml
 AddOutputFilterByType DEFLATE application/javascript
 AddOutputFilterByType DEFLATE application/x-javascript
 
-# @todo remove authentication from public site
-# Temporary password protection for development
-AuthName "Public Site"
-AuthType Basic
-AuthUserFile /home/kimgil5/newsite/secrets/.htpasswd
-Require valid-user
+# Authentication for test site is taken from .htaccess-test at deployment.

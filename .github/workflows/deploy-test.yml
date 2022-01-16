@@ -13,10 +13,12 @@ jobs:
         uses: actions/checkout@main
         with:
           ref: test
+      - name: Restrict access to test site
+        run: cat public/.htaccess-test >> public/.htaccess
       - name: SFTP upload
         uses: SamKirkland/FTP-Deploy-Action@3.0.0
         with:
-          ftp-server: ${{ secrets.TEST_SFTP_PATH }}
+          ftp-server: sftp://${{ secrets.TEST_SFTP_HOST }}${{ secrets.TEST_SITE_ROOT }}/
           ftp-username: ${{ secrets.TEST_SFTP_USER }}
           ftp-password: ${{ secrets.TEST_SFTP_PASS }}
           git-ftp-args: --insecure
