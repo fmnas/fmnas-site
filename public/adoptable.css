@@ -17,6 +17,7 @@
 }
 
 /* Listings table */
+/* @todo Use CSS Grid */
 table.listings {
     width: 100%;
     display: block;
