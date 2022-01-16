@@ -11,6 +11,7 @@ $db ??= new Database();
 <html lang="en-US">
     <title><?=_G_longname()?></title>
     <meta charset="utf-8">
+    <script src="/email.js.php"></script>
 <?php
 style();
 pageHeader(true);

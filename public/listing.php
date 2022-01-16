@@ -22,6 +22,7 @@ if (!($pet = $db->getPetByPath($path))) {
     </title>
     <meta charset="utf-8">
     <meta name="robots" content="<?=$pet->status->listed ? "index" : "noindex"?>">
+    <script src="/email.js.php"></script>
     <?php
     style();
     style("listing");

@@ -39,10 +39,7 @@ style("adoptable");
 style("adoptable.generated"); // I hate this
 emailLinks();
 ?>
-<style type="text/css">
-    <?php
-    ?>
-</style>
+<script src="/email.js.php"></script>
 <?php
 pageHeader();
 ?>
