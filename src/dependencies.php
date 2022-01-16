@@ -12,7 +12,7 @@ class Dependencies {
     }
 
     private static function checkLightncandy(): bool {
-        return file_exists(__DIR__ . "/lightncandy");
+        return file_exists(__DIR__ . "/lightncandy/src/loader.php");
     }
 
     private static function fetchLightncandy(): void {
