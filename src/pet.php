@@ -134,7 +134,7 @@ class Pet implements JsonSerializable {
     public string $id;
     public string $name;
     public string $path;
-    public Species $species;
+    public ?Species $species;
     public ?string $breed; // breed or other description
     public ?string $dob; // date of birth
     public ?Sex $sex;
@@ -146,9 +146,8 @@ class Pet implements JsonSerializable {
     public ?bool $plural; // @todo Two animals in one listing?
 
     public function listed(): bool {
-        return !($this->description !== null && startsWith($this->description->fetch(), "{{>coming_soon}}")) &&
-            (($this->description !== null && strlen(trim($this->description->fetch())) > 0) ||
-                ($this->photos !== null && count($this->photos) > 0));
+        $description = $this->description?->fetch();
+        return $description && !startsWith(trim($description), "{{>coming_soon}}");
     }
 
     public function __toString(): string {

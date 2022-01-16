@@ -12,7 +12,7 @@ function startsWith(string $haystack, $needle): bool {
         }
         return false;
     }
-    return substr_compare($haystack, $needle, 0, strlen($needle)) === 0;
+    return str_starts_with($haystack, $needle);
 }
 
 function endsWith(string $haystack, $needle): bool {
@@ -24,7 +24,7 @@ function endsWith(string $haystack, $needle): bool {
         }
         return false;
     }
-    return substr_compare($haystack, $needle, -strlen($needle)) === 0;
+    return str_ends_with($haystack, $needle);
 }
 
 function contains(string $haystack, $needle): bool {
@@ -36,7 +36,7 @@ function contains(string $haystack, $needle): bool {
         }
         return false;
     }
-    return strpos($haystack, $needle) !== false;
+    return str_contains($haystack, $needle);
 }
 
 function validateIdentifier(string $id): bool {
