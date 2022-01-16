@@ -332,6 +332,10 @@ function renderForm(array $data, string $html, ?array $values = []): string {
     return $dom->saveHTML($form);
 }
 
+/** @noinspection PhpObjectFieldsAreOnlyWrittenInspection
+ * Seems PHPStorm isn't smart enough to deal with this being read only from a registered shutdown function.
+ * (Can't really blame it)
+ */
 $formConfig = new FormConfig();
 // Default values for $formConfig.
 $formConfig->confirm = function(array $formData): void {
