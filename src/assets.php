@@ -140,7 +140,7 @@ class Asset {
     }
 
     private function size(): array {
-        $this->size ??= getimagesize($this->absolutePath());
+        $this->size ??= @getimagesize($this->absolutePath()) ?: [0, 0];
         return $this->size;
     }
 
