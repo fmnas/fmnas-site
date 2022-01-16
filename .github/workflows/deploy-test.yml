@@ -1,0 +1,20 @@
+# Deploy test branch to fmnas.org on push
+name: Deploy test site
+on:
+  push:
+    branches:
+      - test
+jobs:
+  upload:
+    name: Upload website
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout test
+        uses: actions/checkout@test
+      - name: SFTP upload
+        uses: SamKirkland/FTP-Deploy-Action@3.0.0
+        with:
+          ftp-server: ${{ secrets.TEST_SFTP_PATH }}
+          ftp-username: ${{ secrets.TEST_SFTP_USER }}
+          ftp-password: ${{ secrets.TEST_SFTP_PASS }}
+          git-ftp-args: --insecure
