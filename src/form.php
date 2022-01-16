@@ -275,11 +275,10 @@ function sendEmail(FormEmailConfig $emailConfig, string $emailBody) {
     global $formConfig;
     $mailer = new PHPMailer(true);
     $mailer->IsSMTP();
-    $mailer->SMTPAuth = true;
-    $mailer->SMTPSecure = $formConfig->smtpSecurity;
     $mailer->Host = $formConfig->smtpHost;
     $mailer->Port = $formConfig->smtpPort;
     $mailer->SMTPAuth = true;
+    $mailer->SMTPSecure = $formConfig->smtpSecurity;
     $mailer->Username = $formConfig->smtpUser;
     $mailer->Password = $formConfig->smtpPassword;
     $mailer->From = $emailConfig->from->address;
