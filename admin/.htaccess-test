@@ -1,0 +1,6 @@
+# @todo OAuth authentication for admin site
+# Temporary password protection for development
+AuthName "Development Site"
+AuthType Basic
+AuthUserFile /home/kimgil5/newsite/secrets/.htpasswd # @todo Use GitHub secret for htpasswd path
+Require valid-user

@@ -31,9 +31,4 @@ RewriteRule ^api/([^/]+)/(.+)$ /api/$1.php?v=$2 [L,QSA]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^.*$ /index.html [L]
 
-# @todo OAuth authentication for admin site
-# Temporary password protection for development
-AuthName "Development Site"
-AuthType Basic
-AuthUserFile /home/kimgil5/newsite/secrets/.htpasswd
-Require valid-user
+# Authentication for test site is taken from .htaccess-test at deployment.
