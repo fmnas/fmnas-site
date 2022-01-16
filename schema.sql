@@ -27,11 +27,17 @@ CREATE TABLE config
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci COMMENT ='Global configuration values; these are cached by the backend';
 
-# @todo Update config values in schema.sql
 INSERT INTO config
-VALUES ('longname', 'Forget Me Not Animal Shelter of Ferry County'),
+VALUES ('address', '49&nbsp;W&nbsp;Curlew&nbsp;Lake&nbsp;Rd\nRepublic&nbsp;WA&nbsp;99166‑8742'),
+       ('admin_domain', 'admin.fmnas.org'),
+       ('default_email_user', 'adopt'),
+       ('fax', '208-410-8200'),
+       ('longname', 'Forget Me Not Animal Shelter of Ferry County'),
+       ('phone', '(509)&nbsp;775-2308'),
+       ('phone_intl', '+15097752308'),
+       ('public_domain', 'fmnas.org'),
        ('shortname', 'Forget Me Not Animal Shelter'),
-       ('transport_date', '2020-05-02');
+       ('transport_date', '2021-12-06');
 
 CREATE TABLE pets
 (
