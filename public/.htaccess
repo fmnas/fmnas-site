@@ -7,12 +7,12 @@ RewriteEngine On
 
 # @todo why is this commented
 # allow access to directories without trailing slash
-#Options -Indexes
-#DirectorySlash Off
-#RewriteCond %{REQUEST_FILENAME} -d
-#RewriteCond %{REQUEST_URI} !/$
-#RewriteCond %{REQUEST_FILENAME}/index.php -f
-#RewriteRule (.*) $1/index.php [L]
+Options -Indexes
+DirectorySlash Off
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteCond %{REQUEST_URI} !/$
+RewriteCond %{REQUEST_FILENAME}/index.php -f
+RewriteRule (.*) $1/index.php [L]
 
 # redirect old /Application to /application
 Redirect 301 /Application /application
