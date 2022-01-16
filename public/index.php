@@ -8,6 +8,7 @@ $transportDate = strtotime(_G_transport_date());
 $db ??= new Database();
 ?>
     <!DOCTYPE html>
+<html lang="en-US">
     <title><?=_G_longname()?></title>
     <meta charset="utf-8">
 <?php
@@ -43,3 +44,4 @@ pageHeader(true);
         <p>frequent, flexible
     </section>
 <?php footer(); ?>
+</html>
