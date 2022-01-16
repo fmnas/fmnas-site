@@ -31,6 +31,8 @@ jobs:
         run: git checkout -b test_deployment
       - name: Restrict access to test site
         run: cat public/.htaccess-test >> public/.htaccess
+      - name: Restrict access to test admin site
+        run: cat admin/.htaccess-test >> admin/.htaccess
       - name: Commit changes to local branch
         run: |
           git config user.email "admin+automation@forgetmenotshelter.org"
