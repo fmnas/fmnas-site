@@ -13,8 +13,12 @@ jobs:
         uses: actions/checkout@main
         with:
           ref: test
+      - name: Create local branch
+        run: git checkout -b test_deployment
       - name: Restrict access to test site
         run: cat public/.htaccess-test >> public/.htaccess
+      - name: Commit changes to local branch
+        run: git commit -am "Changes for deployment"
       - name: SFTP upload
         uses: SamKirkland/FTP-Deploy-Action@3.0.0
         with:
