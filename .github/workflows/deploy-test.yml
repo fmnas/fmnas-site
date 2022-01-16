@@ -10,7 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout test
-        uses: actions/checkout@test
+        uses: actions/checkout@main
+        with:
+          ref: test
       - name: SFTP upload
         uses: SamKirkland/FTP-Deploy-Action@3.0.0
         with:
