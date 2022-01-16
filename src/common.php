@@ -3,10 +3,6 @@ declare(strict_types = 1);
 @header("Content-Encoding: UTF-8");
 ini_set("pcre.jit", "0");
 
-// @todo Restrict verbose errors to dev site.
-error_reporting(-1);
-ini_set('display_errors', 'On');
-
 function startsWith(string $haystack, $needle): bool {
     if (is_array($needle)) {
         foreach ($needle as $item) {
@@ -115,6 +111,8 @@ $src ??= "$root/src";
 $t ??= "$src/templates";
 $secrets ??= "$root/secrets";
 
+require_once "$secrets/config.php";
+
 /**
  * Generate and load the generated source with constants from database.
  * This can't be moved to a function because it uses the globals and PHP is PHP.
@@ -154,6 +152,5 @@ function emailLinks(): void {
     echo '<script src="/email.js.php"></script>';
 }
 
-require_once "$secrets/config.php";
 $phpmailer_path = Config::$phpmailer_path;
 $html5_php_path = Config::$html5_php_path;
