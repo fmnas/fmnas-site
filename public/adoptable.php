@@ -29,106 +29,108 @@ function relativePath(string $basePath): string {
 }
 
 ?>
-    <!DOCTYPE html>
-    <title><?=htmlspecialchars(ucfirst($species->plural()))?> for adoption at <?=_G_longname()?></title>
-    <meta charset="utf-8">
+<!DOCTYPE html>
+<html lang="en-US">
+<title><?=htmlspecialchars(ucfirst($species->plural()))?> for adoption at <?=_G_longname()?></title>
+<meta charset="utf-8">
 <?php
 style();
 style("adoptable");
 style("adoptable.generated"); // I hate this
 emailLinks();
 ?>
-    <style type="text/css">
-        <?php
-        ?>
-    </style>
+<style type="text/css">
+    <?php
+    ?>
+</style>
 <?php
 pageHeader();
 ?>
-    <h2>Adoptable <?=$species->plural()?></h2>
-    <table class="listings">
-        <thead>
-        <tr>
-            <th>Name</th>
-            <th>Sex</th>
-            <th>Age</th>
-            <th>Adoption fee</th>
-            <th>Image</th>
-            <th>Email inquiry</th>
-        </tr>
-        </thead>
-        <tbody>
+<h2>Adoptable <?=$species->plural()?></h2>
+<table class="listings">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Sex</th>
+        <th>Age</th>
+        <th>Adoption fee</th>
+        <th>Image</th>
+        <th>Email inquiry</th>
+    </tr>
+    </thead>
+    <tbody>
+    <?php
+    $db ??= new Database();
+    $pets = $db->getAdoptablePetsBySpecies($species);
+    foreach ($pets as $pet) {
+        /* @var $pet Pet */
+        $listed = $pet->listed();
+
+        $href = "";
+        if ($listed) {
+            $href .= " href=\"/$path/";
+            $href .= htmlspecialchars($pet->id);
+            $href .= htmlspecialchars(str_replace(" ", "", $pet->name));
+            $href .= '"';
+        }
+
+        echo '<tr class="st_';
+        echo $pet->status->key;
+        if (!$listed) {
+            echo ' soon';
+        }
+        echo '">';
+
+        echo '<th class="name"><a';
+        echo $href;
+        echo ' id="' . htmlspecialchars($pet->id) . '">';
+        echo htmlspecialchars($pet->name);
+        echo '</a></th>';
+
+        echo '<td class="sex">';
+        echo ucfirst(@($pet->sex->name) ?? "");
+        echo " " . $pet->breed;
+        echo '</td>';
+
+        echo '<td class="age">';
+        echo "<time datetime=\"{$pet->dob}\">";
+        echo $pet->age();
+        echo '</time></td>';
+
+        echo '<td class="fee"><div></div><span>';
+        echo $pet->fee;
+        echo '</span></td>';
+
+        echo '<td class="img"><a';
+        echo $href;
+        echo '>';
+        echo $pet->photo->imgTag(htmlspecialchars($pet->name), false, false, 300);
+        echo '</a></td>';
+
+        echo '<td class="inquiry"><a data-email></a></td>';
+    }
+    ?>
+    </tbody>
+</table>
+<section>
+    <p><strong>Adoption Fees</strong> include Vaccinations and Spay/Neuter!
         <?php
-        $db ??= new Database();
-        $pets = $db->getAdoptablePetsBySpecies($species);
-        foreach ($pets as $pet) {
-            /* @var $pet Pet */
-            $listed = $pet->listed();
-
-            $href = "";
-            if ($listed) {
-                $href .= " href=\"/$path/";
-                $href .= htmlspecialchars($pet->id);
-                $href .= htmlspecialchars(str_replace(" ", "", $pet->name));
-                $href .= '"';
+        foreach (_G_statuses() as $status) {
+            /* @var $status Status */
+            $description = (isset($status->description) && $status->description !== null) ? $status->description :
+                "";
+            if (isset($status->displayStatus) && $status->displayStatus && strlen(trim($description)) > 0) {
+                echo "<p><strong>{$status->name}:</strong><br>";
+                echo nl2br(htmlspecialchars($description), false);
             }
-
-            echo '<tr class="st_';
-            echo $pet->status->key;
-            if (!$listed) {
-                echo ' soon';
-            }
-            echo '">';
-
-            echo '<th class="name"><a';
-            echo $href;
-            echo ' id="' . htmlspecialchars($pet->id) . '">';
-            echo htmlspecialchars($pet->name);
-            echo '</a></th>';
-
-            echo '<td class="sex">';
-            echo ucfirst(@($pet->sex->name) ?? "");
-            echo " " . $pet->breed;
-            echo '</td>';
-
-            echo '<td class="age">';
-            echo "<time datetime=\"{$pet->dob}\">";
-            echo $pet->age();
-            echo '</time></td>';
-
-            echo '<td class="fee"><div></div><span>';
-            echo $pet->fee;
-            echo '</span></td>';
-
-            echo '<td class="img"><a';
-            echo $href;
-            echo '>';
-            echo $pet->photo->imgTag(htmlspecialchars($pet->name), false, false, 300);
-            echo '</a></td>';
-
-            echo '<td class="inquiry"><a data-email></a></td>';
         }
         ?>
-        </tbody>
-    </table>
-    <section>
-        <p><strong>Adoption Fees</strong> include Vaccinations and Spay/Neuter!
-            <?php
-            foreach (_G_statuses() as $status) {
-                /* @var $status Status */
-                $description = (isset($status->description) && $status->description !== null) ? $status->description :
-                    "";
-                if (isset($status->displayStatus) && $status->displayStatus && strlen(trim($description)) > 0) {
-                    echo "<p><strong>{$status->name}:</strong><br>";
-                    echo nl2br(htmlspecialchars($description), false);
-                }
-            }
-            ?>
-    </section>
-    <hr>
-    <section>
-        <p>We always need <b>LOVE LOVE LOVE</b> for the fuzzballs! Want to brush a cat or walk a dog? We need you! You
-            can volunteer as little as 3 hours a month. Call <a href="tel:+15097752308">775-2308</a> or email <a
-                data-email></a>
-    </section>
+</section>
+<hr>
+<section>
+    <p>We always need <b>LOVE LOVE LOVE</b> for the fuzzballs! Want to brush a cat or walk a dog? We need you! You
+        can volunteer as little as 3 hours a month. Call <a href="tel:+15097752308">775-2308</a> or email <a
+            data-email></a>
+</section>
 <?php footer(); ?>
+</html>
