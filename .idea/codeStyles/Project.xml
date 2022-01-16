@@ -7,6 +7,7 @@
       <option name="ENFORCE_QUOTES_ON_FORMAT" value="true" />
     </CssCodeStyleSettings>
     <HTMLCodeStyleSettings>
+      <option name="HTML_ALIGN_ATTRIBUTES" value="false" />
       <option name="HTML_ELEMENTS_TO_REMOVE_NEW_LINE_BEFORE" value="" />
       <option name="HTML_ENFORCE_QUOTES" value="true" />
     </HTMLCodeStyleSettings>
@@ -15,10 +16,8 @@
       <option name="IMPORTS_WRAP" value="1" />
     </JSCodeStyleSettings>
     <PHPCodeStyleSettings>
-      <option name="ALIGN_KEY_VALUE_PAIRS" value="true" />
       <option name="COMMA_AFTER_LAST_ARRAY_ELEMENT" value="true" />
       <option name="PHPDOC_WRAP_LONG_LINES" value="true" />
-      <option name="IMPORT_SORTING" value="DONT_SORT" />
       <option name="GROUP_USE_WRAP" value="1" />
       <option name="LOWER_CASE_BOOLEAN_CONST" value="true" />
       <option name="LOWER_CASE_NULL_CONST" value="true" />
@@ -27,6 +26,7 @@
       <option name="KEEP_RPAREN_AND_LBRACE_ON_ONE_LINE" value="true" />
       <option name="SPACES_WITHIN_SHORT_ECHO_TAGS" value="false" />
       <option name="SPACE_BEFORE_CLOSURE_LEFT_PARENTHESIS" value="false" />
+      <option name="FORCE_SHORT_DECLARATION_ARRAY_STYLE" value="true" />
       <option name="SPACE_AROUND_ASSIGNMENT_IN_DECLARE" value="true" />
     </PHPCodeStyleSettings>
     <TypeScriptCodeStyleSettings version="0">
@@ -34,6 +34,9 @@
       <option name="IMPORTS_WRAP" value="1" />
       <option name="UNION_TYPES_WRAP" value="1" />
     </TypeScriptCodeStyleSettings>
+    <VueCodeStyleSettings>
+      <option name="UNIFORM_INDENT" value="false" />
+    </VueCodeStyleSettings>
     <codeStyleSettings language="HTML">
       <indentOptions>
         <option name="CONTINUATION_INDENT_SIZE" value="4" />
@@ -61,8 +64,9 @@
       <option name="KEEP_CONTROL_STATEMENT_IN_ONE_LINE" value="false" />
       <option name="CLASS_BRACE_STYLE" value="1" />
       <option name="METHOD_BRACE_STYLE" value="1" />
-      <option name="ALIGN_MULTILINE_BINARY_OPERATION" value="true" />
-      <option name="ALIGN_MULTILINE_TERNARY_OPERATION" value="true" />
+      <option name="INDENT_CASE_FROM_SWITCH" value="false" />
+      <option name="ALIGN_MULTILINE_PARAMETERS" value="false" />
+      <option name="ALIGN_MULTILINE_FOR" value="false" />
       <option name="SPACE_AFTER_TYPE_CAST" value="true" />
       <option name="TERNARY_OPERATION_WRAP" value="1" />
       <option name="ARRAY_INITIALIZER_WRAP" value="1" />
