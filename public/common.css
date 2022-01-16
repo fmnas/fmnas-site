@@ -1,18 +1,18 @@
 :root {
     --background-color: #fff;
-    --text-color:       #000;
+    --text-color: #000;
 
-    --link-color:       #066;
-    --visited-color:    #39f;
-    --active-color:     #f60;
+    --link-color: #066;
+    --visited-color: #39f;
+    --active-color: #f60;
 }
 
 body {
-    color:       var(--text-color);
-    background:  var(--background-color);
+    color: var(--text-color);
+    background: var(--background-color);
     font-family: sans-serif;
-    font-size:   12pt;
-    text-align:  justify;
+    font-size: 12pt;
+    text-align: justify;
 }
 
 a {
@@ -37,37 +37,37 @@ a:hover {
 
 p > strong:first-child {
     font-weight: bold;
-    color:       red;
-    display:     inline;
+    color: red;
+    display: inline;
 }
 
 section, footer {
-    display:    block;
-    width:      100%;
+    display: block;
+    width: 100%;
     box-sizing: border-box;
 }
 
 section > h2 {
-    text-align:    center;
-    color:         #069;
-    font-size:     14pt;
+    text-align: center;
+    color: #069;
+    font-size: 14pt;
     margin-bottom: 0;
 }
 
 p {
-    margin-top:    0;
+    margin-top: 0;
     margin-bottom: 1em;
 }
 
 /*Header*/
 header {
-    display:         flex;
+    display: flex;
     justify-content: space-between;
-    flex-wrap:       wrap;
-    width:           100%;
-    padding:         0 3% 0 3%;
-    box-sizing:      border-box;
-    align-items:     flex-start;
+    flex-wrap: wrap;
+    width: 100%;
+    padding: 0 3% 0 3%;
+    box-sizing: border-box;
+    align-items: flex-start;
 }
 
 @media print {
@@ -77,7 +77,7 @@ header {
 }
 
 header * {
-    display:        inline-block;
+    display: inline-block;
     vertical-align: middle;
 }
 
@@ -87,19 +87,19 @@ header > * {
 
 img#logo {
     max-width: 100%;
-    height:    150px;
+    height: 150px;
 }
 
 a.return {
-    width:         100%;
-    text-align:    right;
-    font-size:     10pt;
+    width: 100%;
+    text-align: right;
+    font-size: 10pt;
     margin-bottom: 0.25in;
 }
 
 aside.adopted, aside.adopted figure {
     text-align: right;
-    margin:     0;
+    margin: 0;
 }
 
 aside.adopted > * {
@@ -116,8 +116,8 @@ aside.adopted img {
 }
 
 header section, header > div, header > aside {
-    display:         flex;
-    flex-wrap:       wrap;
+    display: flex;
+    flex-wrap: wrap;
     justify-content: space-evenly;
 }
 
@@ -132,18 +132,18 @@ header * {
 }
 
 header > div {
-    flex-grow:      5;
+    flex-grow: 5;
     flex-direction: column;
 }
 
 .apply button {
     font-size: 18pt;
-    padding:   5pt;
+    padding: 5pt;
 }
 
 /*Footer*/
 footer {
-    text-align:      justify;
+    text-align: justify;
     text-align-last: center;
 }
 
@@ -152,9 +152,9 @@ address {
 }
 
 .hours {
-    font-size:      16pt;
+    font-size: 16pt;
     text-transform: uppercase;
-    color:          #f00;
+    color: #f00;
 }
 
 .big, footer > address {
@@ -169,16 +169,16 @@ address {
     }
 
     a[href]::after {
-        content: ' <' attr(href) '>';
+        content: " <" attr(href) ">";
     }
 
     form[action]::after {
-        content: ' <' attr(action) '>';
+        content: " <" attr(action) ">";
     }
 }
 
 h2 {
     text-align: center;
-    font-size:  24pt;
-    margin:     0;
+    font-size: 24pt;
+    margin: 0;
 }

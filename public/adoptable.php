@@ -59,7 +59,7 @@ pageHeader();
         </thead>
         <tbody>
         <?php
-        $db   ??= new Database();
+        $db ??= new Database();
         $pets = $db->getAdoptablePetsBySpecies($species);
         foreach ($pets as $pet) {
             /* @var $pet Pet */
@@ -116,7 +116,8 @@ pageHeader();
             <?php
             foreach (_G_statuses() as $status) {
                 /* @var $status Status */
-                $description = (isset($status->description) && $status->description !== null) ? $status->description : "";
+                $description = (isset($status->description) && $status->description !== null) ? $status->description :
+                    "";
                 if (isset($status->displayStatus) && $status->displayStatus && strlen(trim($description)) > 0) {
                     echo "<p><strong>{$status->name}:</strong><br>";
                     echo nl2br(htmlspecialchars($description), false);

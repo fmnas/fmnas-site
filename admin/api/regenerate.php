@@ -3,7 +3,7 @@ require_once 'api.php';
 require_once "$src/generator.php";
 
 endpoint(...[
-    'get'          => function() use ($db): Result {
+    'get' => function() use ($db): Result {
         generate();
         return new Result(200);
     },

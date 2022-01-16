@@ -11,25 +11,12 @@ class Dependencies {
         require_once __DIR__ . "/lightncandy/src/loader.php";
     }
 
-    public static function parsedown(): void {
-        // Require parsedown
-        if (!self::checkParsedown()) {
-            self::fetchParsedown();
-        }
-        require_once __DIR__ . "/parsedown/Parsedown.php";
-    }
-
-    public static function update(): void {
-        self::fetchLightncandy();
-        self::fetchParsedown();
-    }
-
     private static function checkLightncandy(): bool {
         return file_exists(__DIR__ . "/lightncandy");
     }
 
-    private static function checkParsedown(): bool {
-        return file_exists(__DIR__ . "/parsedown");
+    private static function fetchLightncandy(): void {
+        self::fetch("zordius", "lightncandy", [self::class, "checkLightncandy"]);
     }
 
     private static function fetch(string $owner, string $repository, callable $checker): void {
@@ -46,12 +33,25 @@ class Dependencies {
         }
     }
 
-    private static function fetchLightncandy(): void {
-        self::fetch("zordius", "lightncandy", [self::class, "checkLightncandy"]);
+    public static function parsedown(): void {
+        // Require parsedown
+        if (!self::checkParsedown()) {
+            self::fetchParsedown();
+        }
+        require_once __DIR__ . "/parsedown/Parsedown.php";
+    }
+
+    private static function checkParsedown(): bool {
+        return file_exists(__DIR__ . "/parsedown");
     }
 
     private static function fetchParsedown(): void {
         self::fetch("erusev", "parsedown", [self::class, "checkParsedown"]);
+    }
+
+    public static function update(): void {
+        self::fetchLightncandy();
+        self::fetchParsedown();
     }
 
     private static function rrmdir(string $src): void {

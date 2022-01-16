@@ -4,8 +4,8 @@ require_once 'api.php';
 // This endpoint is for raw asset data. For metadata, use the assets endpoint.
 // @todo implement the assets endpoint
 endpoint(...[
-    'get'          => $reject,
-    'get_value'    => function($value) use ($db): Result {
+    'get' => $reject,
+    'get_value' => function($value) use ($db): Result {
         if (startsWith($value, "cached/")) {
             // @todo Handle cached images in raw api and use in listing editor
             return new Result(501, "Can't read cache");
@@ -29,6 +29,6 @@ endpoint(...[
         readfile($asset->absolutePath());
         exit(); // Exit here to avoid outputting JSON
     },
-    'delete'       => $reject,
+    'delete' => $reject,
     'delete_value' => $reject,
 ]);

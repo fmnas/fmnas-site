@@ -15,7 +15,8 @@ if (!($pet = $db->getPetByPath($path))) {
     <!DOCTYPE html>
     <title>
         <?=htmlspecialchars($pet->name)?>, <?=$pet->species()?>
-        <?=$pet->status->listed ? "for adoption at" : ($pet->status->name == _G_statuses()[1]->name ? "adopted from" : "-")?>
+        <?=$pet->status->listed ? "for adoption at" :
+            ($pet->status->name == _G_statuses()[1]->name ? "adopted from" : "-")?>
         <?=_G_longname()?>
     </title>
     <meta charset="utf-8">
@@ -32,16 +33,16 @@ pageHeader();
     <article>
     <h2><?=$pet?></h2>
     <p class="subtitle"><?php
-echo $pet->age();
-echo '&nbsp;&middot;&nbsp;';
-if (!$pet->status->listed || $pet->status->displayStatus) {
-    echo $pet->status->name;
-} else {
-    echo $pet->status->name;
-    echo '&nbsp;&middot;&nbsp;';
-    echo $pet->fee;
-}
-?>
+        echo $pet->age();
+        echo '&nbsp;&middot;&nbsp;';
+        if (!$pet->status->listed || $pet->status->displayStatus) {
+            echo $pet->status->name;
+        } else {
+            echo $pet->status->name;
+            echo '&nbsp;&middot;&nbsp;';
+            echo $pet->fee;
+        }
+        ?>
     <aside class="images">
 <?php foreach ($pet->photos as $photo) {
     if ($photo === null) {
@@ -54,9 +55,9 @@ echo '</aside>';
 if ($pet->description !== null) {
     echo '<section id="description">';
     echo $pet->description->parse([
-        "pet"  => $pet->toArray(),
+        "pet" => $pet->toArray(),
         "name" => $pet->name,
-        "fee"  => $pet->fee,
+        "fee" => $pet->fee,
     ]);
     echo '</section>';
 }

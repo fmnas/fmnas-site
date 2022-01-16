@@ -17,7 +17,7 @@ require_once "assets.php";
  * @property int|null old_cutoff // Above this number of months, inclusive, use "old name"
  */
 class Species implements JsonSerializable {
-    private array $values = array();
+    private array $values = [];
 
     /**
      * Get an appropriate name for this species depending on age and plurality
@@ -31,7 +31,7 @@ class Species implements JsonSerializable {
         if ($dob != null) {
             try {
                 $diff = (new DateTime())->diff(new DateTime($dob));
-                $age  = $diff->y * 12 + $diff->m;
+                $age = $diff->y * 12 + $diff->m;
             } catch (Exception $e) {
                 log_err("Exception when converting $dob to DateTime: " . $e->getMessage());
             }
@@ -57,7 +57,7 @@ class Species implements JsonSerializable {
         }
         try {
             $interval = (new DateTime())->diff(new DateTime($dob));
-            $months   = $interval->y * 12 + $interval->m;
+            $months = $interval->y * 12 + $interval->m;
             if ($months < 4) {
                 return "DOB " . (new DateTime($dob))->format("n/j/y");
             }
@@ -91,16 +91,16 @@ class Species implements JsonSerializable {
         return strval($this->values["name"]);
     }
 
-    public function plural(): string {
-        return $this->plural ?: $this->name . 's';
-    }
-
     public function pluralWithYoung(): string {
         return ucfirst($this->plural()) . (
             (($this->young ?: $this->name) === $this->name) ?
                 "" :
                 " &amp; " . ucfirst($this->young_plural ?: $this->young . 's')
             );
+    }
+
+    public function plural(): string {
+        return $this->plural ?: $this->name . 's';
     }
 
     public function jsonSerialize(): array {
@@ -145,14 +145,30 @@ class Pet implements JsonSerializable {
     public Status $status;
     public ?bool $plural; // @todo Two animals in one listing?
 
-    public function age(): string {
-        return $this->species->age($this->dob);
-    }
-
     public function listed(): bool {
         return !($this->description !== null && startsWith($this->description->fetch(), "{{>coming_soon}}")) &&
-               (($this->description !== null && strlen(trim($this->description->fetch())) > 0) ||
+            (($this->description !== null && strlen(trim($this->description->fetch())) > 0) ||
                 ($this->photos !== null && count($this->photos) > 0));
+    }
+
+    public function __toString(): string {
+        return htmlspecialchars("$this->name $this->id");
+    }
+
+    public function toArray(): array {
+        return [
+            "id" => $this->id,
+            "name" => $this->name,
+            "species" => $this->species(),
+            "breed" => $this->breed,
+            "dob" => $this->dob,
+            "age" => $this->age(),
+            "sex" => $this->sex->name,
+            "fee" => $this->fee,
+            "status" => $this->status->name,
+            "path" => $this->path,
+            "plural" => $this->plural,
+        ];
     }
 
     public function species(): string {
@@ -162,42 +178,28 @@ class Pet implements JsonSerializable {
         return $this->species->nameGivenDob($this->dob, $this->plural);
     }
 
-    public function __toString(): string {
-        return htmlspecialchars("$this->name $this->id");
-    }
-
     // Strings provided to listing description parser.
-    public function toArray(): array {
-        return [
-            "id"      => $this->id,
-            "name"    => $this->name,
-            "species" => $this->species(),
-            "breed"   => $this->breed,
-            "dob"     => $this->dob,
-            "age"     => $this->age(),
-            "sex"     => $this->sex->name,
-            "fee"     => $this->fee,
-            "status"  => $this->status->name,
-            "path"    => $this->path,
-            "plural"  => $this->plural,
-        ];
+
+    public function age(): string {
+        return $this->species->age($this->dob);
     }
 
     // Data provided to listing editor.
+
     public function jsonSerialize(): array {
         return [
-            "id"          => $this->id,
-            "name"        => $this->name,
-            "species"     => $this->species->id,
-            "breed"       => $this->breed,
-            "dob"         => $this->dob,
-            "sex"         => $this->sex->key,
-            "fee"         => $this->fee,
-            "status"      => $this->status->key,
-            "path"        => $this->path,
-            "plural"      => $this->plural,
-            "photo"       => $this->photo,
-            "photos"      => $this->photos,
+            "id" => $this->id,
+            "name" => $this->name,
+            "species" => $this->species->id,
+            "breed" => $this->breed,
+            "dob" => $this->dob,
+            "sex" => $this->sex->key,
+            "fee" => $this->fee,
+            "status" => $this->status->key,
+            "path" => $this->path,
+            "plural" => $this->plural,
+            "photo" => $this->photo,
+            "photos" => $this->photos,
             "description" => $this->description,
         ];
     }

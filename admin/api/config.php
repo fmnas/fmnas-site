@@ -2,7 +2,7 @@
 require_once 'api.php';
 
 endpoint(...[
-    'get'       => function() use ($db): Result {
+    'get' => function() use ($db): Result {
         global $_G;
         return new Result(200, $_G);
     },
@@ -13,7 +13,7 @@ endpoint(...[
         }
         return new Result(404, error: "Config key $key not found");
     },
-    'put'       => $reject,
+    'put' => $reject,
     'put_value' => function($key, $value) use ($db): Result {
         global $src;
         if (!is_string($value)) {
@@ -26,5 +26,5 @@ endpoint(...[
         require_once '$src/generator.php';
         return new Result(200);
     },
-    'delete'    => $reject,
+    'delete' => $reject,
 ]);

@@ -41,7 +41,7 @@ style();
     <label for="date">
         Transport date:
         <input type="date" name="set_date" value="<?=date("Y-m-d", $transportDate)?>"
-               min="<?=date("Y-m-d", strtotime("2 days ago"))?>">
+            min="<?=date("Y-m-d", strtotime("2 days ago"))?>">
     </label>
     <br>
     <input type="submit" value="Update">

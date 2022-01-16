@@ -3,9 +3,9 @@ require_once 'api.php';
 
 endpoint(...[
     // @todo API to get non-adoptable pets
-    'get'       => function() use ($db): Result {
+    'get' => function() use ($db): Result {
         if (isset($_GET['species'])) {
-            foreach(_G_species() as $species) {
+            foreach (_G_species() as $species) {
                 if (strtolower($species->plural) === $_GET['species']) {
                     return new Result(200, $db->getAdoptablePetsBySpecies($species));
                 }
