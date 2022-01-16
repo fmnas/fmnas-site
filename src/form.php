@@ -373,7 +373,7 @@ $formConfig->emails = function(array $formData): array {
     return [$config];
 };
 $formConfig->smtpHost = 'localhost';
-$formConfig->smtpSecurity = 'tls';
+$formConfig->smtpSecurity = '';
 $formConfig->smtpPort = 25;
 $formConfig->smtpUser = 'root';
 $formConfig->smtpPassword = '';
