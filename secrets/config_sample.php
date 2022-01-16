@@ -8,7 +8,7 @@ class Config {
     static string $phpmailer_path = "/home/php/PHPMailer";
     static string $html5_php_path = "/home/php/html5-php";
     static string $smtp_host = "smtp.gmail.com";
-    static string $smtp_security = "tls";
+    static string $smtp_security = "tls"; // valid values are "", "tls", "ssl"
     static int $smtp_port = 587;
     static string $smtp_username = "example@gmail.com";
     static string $smtp_password = "password";
