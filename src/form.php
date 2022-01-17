@@ -168,7 +168,8 @@ class FormEmailConfig {
      * For example, <input type="hidden" data-value="foo"> will be rendered as
      * <span>{{$values['foo']}}</span>
      */
-    public function __construct(public EmailAddress $from, public iterable $to, public string $subject, public ?array $values = []) {
+    public function __construct(public EmailAddress $from, public iterable $to, public string $subject,
+        public ?array $values = []) {
         $this->replyTo = [];
         $this->cc = [];
         $this->bcc = [];

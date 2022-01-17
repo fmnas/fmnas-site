@@ -18,7 +18,8 @@ class Asset {
         self::createCacheDirectory();
 
         if (!$this->getType() != "text/x-handlebars-template") {
-            log_err("Warning: attempting to parse something with mime-type " . $this->getType() . " (not text/x-handlebars-template)");
+            log_err("Warning: attempting to parse something with mime-type " . $this->getType() .
+                " (not text/x-handlebars-template)");
         }
 
         $filename = root() . "/public/assets/cache/$this->key.html";
