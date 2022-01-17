@@ -105,12 +105,15 @@ Application
                 <option>Deinonychus</option>
             </optgroup>
             <optgroup label="Sauropods">
-                <option>Diplodocus</option>
+                <option value="diplo">Diplodocus</option>
                 <option>Saltasaurus</option>
                 <option>Apatosaurus</option>
+                <option value="BLANK"></option>
             </optgroup>
         </select>
         <label for="selector">Label for the selector</label>
+        <h1 data-if="selection" data-rhs="diplo">WUB WUB</h1>
+        <h1 data-if="selection" data-rhs="Saltasaurus">salty boi</h1>
     </fieldset>
     <button type="submit">Submit Application</button>
 </form>

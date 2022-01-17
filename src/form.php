@@ -543,8 +543,9 @@ function renderForm(array $data, string $html, ?array $values = []): string {
         copyAttributes($select, $span, "value", "required");
         $selected = $data[$inputName] ?? "";
         foreach (collectElements($select, "option") as $option) {
-            if ($option->getAttribute("value") === $selected) {
-                $span->nodeValue = htmlspecialchars($selected);
+            /** @var $option DOMElement */
+            if (($option->getAttribute("value") ?: $option->nodeValue) === $selected) {
+                $span->nodeValue = htmlspecialchars($option->nodeValue ?: $selected);
                 break;
             }
         }
@@ -681,6 +682,13 @@ function renderForm(array $data, string $html, ?array $values = []): string {
             $script->setAttribute("data-remove", "1");
             break;
         }
+    }
+
+    var_dump($data);
+    // Process data-if elements.
+    foreach (collectElements($dom, "*", has("data-if")) as $element) {
+        /** @var $element DOMElement */
+
     }
 
     // Remove all elements marked with data-remove.
