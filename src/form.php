@@ -9,6 +9,7 @@
  * All <input> and <select> elements will be replaced with <span> elements, except:
  *   input[type="button"], input[type="submit"], input[type="reset"], input[type="password"], input[type="hidden"],
  *   and input[type="image"] will be removed unless they have an explicit falsy data-remove attribute.
+ *   See below for special considerations for input[type="file"].
  * All <textarea> elements will be replaced with <pre> elements.
  * All <fieldset> elements will be replaced with <section> elements containing <h3> headers.
  * All <button> elements will be removed unless they have an explicit falsy data-remove attribute, in which case they
@@ -38,6 +39,10 @@
  *
  * data-foreach may also be used with data-as, in which case the value will be accessible through data-value:
  *   <li data-foreach="cats" data-as="cat">Cat named <span data-value="cat"></span>
+ *
+ * @todo implement data-href
+ * The value can also be applied to an element's href attribute using data-href:
+ *   <a data-href="customer_website">Visit the customer website</a>
  *
  * To add output only used in the rendered email, use the data-hidden attribute. Elements with this attribute will be
  * hidden on the form page by injected CSS:
@@ -85,6 +90,65 @@
  * data-if-config
  * data-value
  * data-value-config
+ *
+ * When processing a file input with data-foreach, data-value, etc., the file metadata array is passed through a file
+ * transformer to compute the output value. The file transformers are closures in $formConfig->fileTransformers.
+ * The default file transformers are:
+ *   - name: the filename (default if no data-file-transformer is given)
+ *   - size: the file size in bytes
+ *   - type: the file MIME type
+ *   - path: the path to the file on the server
+ *   - dump: a dump of the file metadata
+ *   - thumbnail: an image thumbnail with width 64 @todo implement thumbnail
+ * To output the files to a directory on the server, set FormEmailConfig::fileDir to a directory.
+ * To prevent the files from being attached to the email, set FormEmailConfig::attachFiles to false, or a closure
+ * that takes the file metadata array.
+ * If this directory is served by a web server, you may want to create a link to the file. Since the script is unaware
+ * of where the directory can be found, you will have to write your own file transformer to do this:
+ *   $formConfig->fileTransformers["file-link"] = function(array $metadata): string {
+ *     return "https://example.com/uploads/" . $metadata["name"];
+ *   }
+ *
+ * You may want to prevent files from being attached only if they exceed a certain size.
+ * This can be accomplished by setting FormEmailConfig::attachFiles to a closure:
+ *   $formEmailConfig->attachFiles = function(array $metadata): bool {
+ *      if ($metadata["size"] > 1048576) {
+ *        // Don't attach any files over 1MB.
+ *        return false;
+ *      }
+ *      $remaining_size = 0;
+ *      for ($_FILES as $file_input) {
+ *        if (is_array($file_input["size"])) {
+ *          foreach($file_input["size"] as $size) {
+ *            if ($size < 1048576) {
+ *              $remaining_size += $size;
+ *            }
+ *          }
+ *        } else if ($file_input["size"] < 1048576) {
+ *          $remaining_size += $file_input["size"];
+ *        }
+ *      }
+ *      // Don't attach any files if the combined size of all files under 1MB is over 5MB.
+ *      if ($remaining_size > 5 * 1048576) {
+ *        return false;
+ *      }
+ *      return true;
+ *   }
+ *
+ * To convert files to another type or otherwise transform the files themselves, use a file converter.
+ * File converters are closures FormEmailConfig::fileConverter that take a reference to the metadata array.
+ * Note that this conversion takes place *before* FormEmailConfig::hashFilenames.
+ *
+ * To validate files server-side before saving or attaching them, set $formConfig->fileValidator to a closure.
+ * Any files that return false will be ignored.
+ *   $formConfig->fileValidator = function(array $metadata): bool {
+ *     if ($metadata["error"]) {
+ *       return false;
+ *     }
+ *     $finfo = new finfo(FILEINFO_MIME_TYPE);
+ *     return str_starts_with($finfo->file($metadata["tmp_name"]), "image/");
+ *   }
+ * The default fileValidator simply returns !$metadata["error"].
  *
  * @todo Add unit tests for the form processor and maybe split it into a separate repo.
  */
@@ -159,6 +223,22 @@ class FormConfig {
      */
     public array $transformers;
 
+    /**
+     * Closures to transform provided file metadata arrays into output values for the email.
+     * @param array
+     * @return string
+     * @var array<Closure> $fileTransformers
+     */
+    public array $fileTransformers;
+
+    /**
+     * Closure to validate files using their metadata arrays.
+     * @param array
+     * @return bool
+     * @var Closure $fileValidator
+     */
+    public Closure $fileValidator;
+
     public string $smtpHost;
     public string $smtpSecurity;
     public int $smtpPort;
@@ -194,6 +274,41 @@ class FormEmailConfig {
     public iterable $bcc;
 
     /**
+     * If non-empty, a directory on the server to which to output uploaded files.
+     */
+    public string $fileDir;
+
+    /**
+     * Whether to attach uploaded files to the email.
+     * Can also be a closure that takes the file metadata array.
+     * @param array file metadata array
+     * @return bool
+     */
+    public bool|Closure $attachFiles;
+
+    /**
+     * If true, uploaded filenames will be replaced with the md5 hash of the file.
+     * (This is desirable for security if $fileDir is a publicly accessible directory.)
+     */
+    // @todo Implement filename hashing.
+    public bool $hashFilenames;
+
+    /**
+     * Converter applied to files before hashFilenames.
+     * @var Closure $fileConverter
+     * @param array &$metadata file metadata array
+     * @return void
+     */
+    public Closure $fileConverter;
+
+    /**
+     * If non-empty, a path on the server to which to save the rendered form as an HTML file in lieu of
+     * emailing it.
+     */
+    // @todo Implement form saving.
+    public string $saveFile;
+
+    /**
      * FormEmailConfig constructor.
      * @param EmailAddress|null $from The email for the From header, or null to dump HTML and exit rather than emailing.
      * @param iterable<EmailAddress> $to The emails for the To header.
@@ -209,6 +324,11 @@ class FormEmailConfig {
         $this->replyTo = [];
         $this->cc = [];
         $this->bcc = [];
+        $this->fileDir = "";
+        $this->attachFiles = true;
+        $this->hashFilenames = false;
+        $this->saveFile = "";
+        $this->fileConverter = function(array &$metadata): void {};
     }
 }
 
@@ -537,11 +657,15 @@ function renderForm(array $data, string $html, ?array $values = []): string {
         $span = $dom->createElement("span");
         $span->setAttribute("data-type", "input");
         $inputName = $input->getAttribute("name");
-        copyAttributes($input, $span, "value", "required", "type");
+        copyAttributes($input, $span, "value", "required", "type", "accept", "capture", "multiple");
         $inputType = $input->getAttribute("type");
         $span->setAttribute("data-input-type", $inputType);
         switch ($inputType) {
-            // @todo Support input[type="file"]
+        case 'file':
+            var_dump($dom->saveHTML($input));
+            var_dump($_FILES);
+
+            break;
         case 'button':
         case 'submit':
         case 'reset':
@@ -895,6 +1019,26 @@ $formConfig->transformers = [
         return "<a href=\"$url\">$url</a>";
     },
 ];
+$formConfig->fileTransformers = [
+    "name" => function(array $metadata): string {
+        return $metadata["name"];
+    },
+    "type" => function(array $metadata): string {
+        return $metadata["type"];
+    },
+    "size" => function(array $metadata): string {
+        return "" . $metadata["size"];
+    },
+    "path" => function(array $metadata): string {
+        return $metadata["path"] ?? $metadata["tmp_name"];
+    },
+    "dump" => function(array $metadata): string {
+        return print_r($metadata, true);
+    },
+];
+$formConfig->fileValidator = function(array $metadata): bool {
+    return !$metadata["error"];
+};
 
 ob_start();
 register_shutdown_function('collectForm');
