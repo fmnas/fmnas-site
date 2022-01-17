@@ -53,7 +53,14 @@
  * To use values from the arrays provided by the callbacks in $formConfig, append -config to the attribute where a form
  * value would otherwise be provided:
  *   <p data-if-config="user-email">Thanks for submitting the form!
- *   <p data-if-config="operator-email"><span data-value="name"></span> submitted the following form:
+ *   <p data-if-config="operator-email"><span data-value="name"></span> submitted the following form.
+ *
+ * To transform the inner HTML of an element after all other processing is complete, add a data-transformer attribute:
+ *   <input type="text" name="email" value="example@example.com" data-transformer="email-link">
+ * This must correspond to an entry in the $formConfig->transformers associative array, which is a closure that
+ * transforms one HTML string into another HTML string.
+ * The default $formConfig includes the following transformers:
+ *   - email-link: wraps an email address in a mailto link
  *
  * All elements with the following attributes will be hidden on the form page by injected CSS, unless a falsy value
  * is explicitly given for data-hidden:
@@ -64,6 +71,8 @@
  * data-if-config
  * data-value
  * data-value-config
+ *
+ * @todo Add unit tests for the form processor and maybe split it into a separate repo.
  */
 
 use JetBrains\PhpStorm\Pure;
@@ -105,7 +114,7 @@ require_once("$html5_php_path/src/HTML5/Parser/CharacterReference.php");
 class FormConfig {
     /**
      * Callback for when the form is submitted. This should be used to output
-     * a thank you message, etc.
+     * a thank-you message, etc.
      * @param array form data ($_POST or $_GET)
      * @return void
      */
@@ -125,6 +134,14 @@ class FormConfig {
      * @return iterable<FormEmailConfig>
      */
     public Closure $emails;
+
+    /**
+     * Closures to transform provided values into output values for the email.
+     * @param string
+     * @return string
+     * @var array<Closure> $transformers
+     */
+    public array $transformers;
 
     public string $smtpHost;
     public string $smtpSecurity;
@@ -260,6 +277,7 @@ function processForm(array $data, string $html) {
  */
 function sendEmail(FormEmailConfig $emailConfig, string $emailBody) {
     global $formConfig;
+
     $mailer = new PHPMailer(true);
     $mailer->IsSMTP();
     $mailer->Host = $formConfig->smtpHost;
@@ -323,6 +341,8 @@ function moveChildren(DOMElement &$from, DOMElement &$to): void {
  * @throws DOMException
  */
 function renderForm(array $data, string $html, ?array $values = []): string {
+    global $formConfig;
+
     $values ??= [];
     $html5 = new HTML5(["xmlNamespaces" => false]);
     $dom = $html5->loadHTML($html);
@@ -392,7 +412,7 @@ function renderForm(array $data, string $html, ?array $values = []): string {
 
     // @todo Deal with label elements.
 
-    // Mark all script elements with data-remove
+    // Mark all script elements with data-remove.
     foreach ($dom->getElementsByTagName("script") as $script) {
         if (!$script->hasAttribute("data-remove")) {
             $script->setAttribute("data-remove", "1");
@@ -411,6 +431,32 @@ function renderForm(array $data, string $html, ?array $values = []): string {
     foreach ($elementsToRemove as $element) {
         /** @var $element DOMElement */
         $element->parentNode?->removeChild($element);
+    }
+
+    // Apply transformers.
+    $elementsToTransform = [];
+    foreach ($dom->getElementsByTagName("*") as $element) {
+        /** @var $element DOMElement */
+        if ($element->hasAttribute("data-transformer")) {
+            $elementsToTransform[] = $element;
+        }
+    }
+    foreach ($elementsToTransform as $element) {
+        /** @var $element DOMElement */
+        $transformer = $element->getAttribute("data-transformer");
+        if (isset($formConfig->transformers[$transformer])) {
+            $innerHTML = "";
+            while ($element->hasChildNodes()) {
+                $innerHTML .= $dom->saveHTML($element->firstChild);
+                $element->removeChild($element->firstChild);
+            }
+            $transformed = $formConfig->transformers[$transformer]($innerHTML);
+            $fragment = $element->ownerDocument->createDocumentFragment();
+            $fragment->appendXML($transformed);
+            $element->appendChild($fragment);
+        } else {
+            echo "Warning: transformer $transformer not found; leaving value untransformed.";
+        }
     }
 
     return $dom->saveHTML();
@@ -468,6 +514,11 @@ $formConfig->smtpSecurity = '';
 $formConfig->smtpPort = 25;
 $formConfig->smtpUser = 'root';
 $formConfig->smtpPassword = '';
+$formConfig->transformers = [
+    "email-link" => function(string $email): string {
+        return "<a href=\"mailto:$email\">$email</a>";
+    },
+];
 
 ob_start();
 register_shutdown_function('collectForm');

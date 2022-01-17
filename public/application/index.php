@@ -79,7 +79,7 @@ Application
         <input type="text" name="applicant_name" required>
     </label>
     <label for="applicant_email">Email</label>
-    <input type="text" name="applicant_email" required>
+    <input id="applicant_email" type="text" name="applicant_email" data-transformer="email-link" required>
     <button type="submit">Submit Application</button>
 </form>
 </html>
