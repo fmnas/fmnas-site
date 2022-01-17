@@ -367,7 +367,7 @@ class FormEmailConfig {
 
     /**
      * FormEmailConfig constructor.
-     * @param EmailAddress|null $from The email for the From header, or null to dump HTML and exit rather than emailing.
+     * @param EmailAddress|null $from The email for the From header, or null to dump HTML rather than emailing.
      * @param iterable<EmailAddress> $to The emails for the To header.
      * @param string $subject The value for the Subject header.
      * @param array|null $values An optional array of arbitrary data accessible
@@ -510,7 +510,6 @@ function sendEmail(FormEmailConfig $emailConfig, RenderedEmail $renderedEmail): 
         foreach ($attachments as $attachment) {
             echo "\n<!-- attach $attachment->path as $attachment->filename with type $attachment->type -->";
         }
-        exit;
     }
 
     $mailer = new PHPMailer(true);
