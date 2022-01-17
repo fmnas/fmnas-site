@@ -84,6 +84,10 @@ Application
     <label>Name
         <input type="text" name="applicant_name" required>
     </label>
+    <h1 data-if-config="main">Main email</h1>
+    <h1 data-if-config="main" data-operator="eq" data-rhs="false">Secondary email</h1>
+    <h1 data-if="applicant_email" data-operator="eq" data-rhs-value="applicant_email">Always true.</h1>
+    <h1 data-if="applicant_email" data-operator="ne" data-rhs-value="applicant_email">Never true.</h1>
     <label for="applicant_email">Email</label>
     <input id="applicant_email" type="email" name="applicant_email" data-transformer="email-link" required>
     <br><input type="text" name="list_input[]" value="value 1">
