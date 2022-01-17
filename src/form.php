@@ -143,6 +143,7 @@ class FormConfig {
     public string $smtpHost;
     public string $smtpSecurity;
     public int $smtpPort;
+    public bool $smtpAuth;
     public string $smtpUser;
     public string $smtpPassword;
 }
@@ -274,7 +275,7 @@ function sendEmail(FormEmailConfig $emailConfig, string $emailBody) {
     $mailer->IsSMTP();
     $mailer->Host = $formConfig->smtpHost;
     $mailer->Port = $formConfig->smtpPort;
-    $mailer->SMTPAuth = true;
+    $mailer->SMTPAuth = $formConfig->smtpAuth;
     $mailer->SMTPSecure = $formConfig->smtpSecurity;
     $mailer->Username = $formConfig->smtpUser;
     $mailer->Password = $formConfig->smtpPassword;
@@ -370,6 +371,7 @@ $formConfig->emails = function(array $formData): array {
     return [$config];
 };
 $formConfig->smtpHost = 'localhost';
+$formConfig->smtpAuth = true;
 $formConfig->smtpSecurity = '';
 $formConfig->smtpPort = 25;
 $formConfig->smtpUser = 'root';

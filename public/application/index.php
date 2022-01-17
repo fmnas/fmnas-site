@@ -64,6 +64,7 @@ $formConfig->smtpSecurity = Config::$smtp_security;
 $formConfig->smtpPort = Config::$smtp_port;
 $formConfig->smtpUser = Config::$smtp_username;
 $formConfig->smtpPassword = Config::$smtp_password;
+$formConfig->smtpAuth = Config::$smtp_auth;
 ?>
 <!DOCTYPE html>
 <html lang="en-US">
