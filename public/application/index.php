@@ -16,22 +16,26 @@ $formConfig->confirm = function(array $formData): void {
     <?php
 };
 $formConfig->handler = function(FormException $e): void {
-http_response_code(500);
-?>
+    http_response_code(500);
+    ?>
     <!DOCTYPE html>
-<html lang="en-US">
-<title>Adoption Application - <?=_G_longname()?></title>
-<meta charset="UTF-8">
-<meta name="robots" content="noindex,nofollow">
-<h1>Error <?=$e->getCode()?></h1>
-<p>Something went wrong submitting the form: <?=$e->getMessage()?>
-<p><a href="/">Back to homepage</a>
-<p>The submitted form data was:
-<pre>
+    <html lang="en-US">
+    <title>Adoption Application - <?=_G_longname()?></title>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex,nofollow">
+    <h1>Error <?=$e->getCode()?></h1>
+    <p>Something went wrong submitting the form: <?=$e->getMessage()?>
+    <p><a href="/">Back to homepage</a>
+        <!--
+<?php
+        var_dump($e)
+        ?>
+    -->
+    </html>
     <?php
-    var_dump($e->formData);
-    };
-    $formConfig->emails = function(array $formData): array {
+};
+
+$formConfig->emails = function(array $formData): array {
     $shelterEmail = new EmailAddress(_G_default_email_user() . '@' . _G_public_domain(), _G_shortname());
     $applicantEmail = new EmailAddress($formData['applicant_email'], $formData['applicant_name']);
 
@@ -54,10 +58,6 @@ http_response_code(500);
     }
 
     return [$primaryEmail, $secondaryEmail];
-    ?>
-</pre>
-</html>
-<?php
 };
 $formConfig->smtpHost = Config::$smtp_host;
 $formConfig->smtpSecurity = Config::$smtp_security;
@@ -71,15 +71,15 @@ $formConfig->smtpAuth = Config::$smtp_auth;
 <title>Adoption Application - <?=_G_longname()?></title>
 <meta charset="UTF-8">
 <meta name="robots" content="nofollow">
+<script src="/email.js.php"></script>
 <?php style(); ?>
 Application
 <form method="POST" enctype="multipart/form-data">
     <label>Name
         <input type="text" name="applicant_name" required>
     </label>
-    <label>Email
-        <input type="text" name="applicant_email" required>
-    </label>
+    <label for="applicant_email">Email</label>
+    <input type="text" name="applicant_email" required>
     <button type="submit">Submit Application</button>
 </form>
 </html>
