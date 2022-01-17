@@ -13,8 +13,8 @@
  * All <fieldset> elements will be replaced with <section> elements containing <h3> headers.
  * All <button> elements will be removed unless they have an explicit falsy data-remove attribute, in which case they
  * will be replaced with <span> elements.
- * All <label> elements will be replaced with span elements. The inner text will itself be in a span element with the
- * class label-value.
+ * All <label> elements will be replaced with span elements. Any inner text will itself be in a span element with a
+ * data-type="label-text" attribute as well.
  * All <datalist> elements will be removed unless they have an explicit falsy data-remove attribute, in which case they
  * will be replaced with <ul> elements. <option> elements therein will be replaced with <li> elements, and any contained
  * within an <optgroup> element will have a data-optgroup attribute with the optgroup label (the outgroup is removed).
@@ -574,7 +574,24 @@ function renderForm(array $data, string $html, ?array $values = []): string {
         $fieldset->parentNode?->replaceChild($section, $fieldset);
     }
 
-    // @todo Replace label elements with span elements.
+    // Replace label elements with span elements.
+    foreach (collectElements($roots, "label") as $label) {
+        /** @var $label DOMElement */
+        foreach ($label->childNodes as $childNode) {
+            if ($childNode instanceof DOMText) {
+                // Wrap plain text in an inner span.
+                $innerSpan = $dom->createElement("span");
+                $innerSpan->setAttribute("data-type", "label-text");
+                $innerSpan->nodeValue = trim($childNode->nodeValue);
+                $childNode->parentNode?->replaceChild($innerSpan, $childNode);
+            }
+        }
+        $span = $dom->createElement("span");
+        $span->setAttribute("data-type", "label");
+        copyAttributes($label, $span, "for");
+        moveChildren($label, $span);
+        $label->parentNode?->replaceChild($span, $label);
+    }
 
     // Replace button elements with span elements (hidden by default).
     foreach (collectElements($roots, "button") as $button) {
