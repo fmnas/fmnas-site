@@ -80,7 +80,7 @@ style("application", true);
 </head>
 <body>
 Application
-<form method="POST" enctype="multipart/form-data">
+<form method="POST" enctype="multipart/form-data" id="application">
     <label>Name
         <input type="text" name="applicant_name" required>
     </label>
@@ -90,7 +90,44 @@ Application
     <br><input type="text" name="list_input[]" value="value 2">
     <br><input type="text" name="list_input[]" value="value 3" data-remove="false">
     <br><input type="text" name="list_input[]" value="value 4" data-ignore="true">
+    <p>
+        <fieldset form="application">
+        <legend>Some additional fields</legend>
+        <textarea name="information">
+            This is the textarea.
+        </textarea>
+    </fieldset>
+    <fieldset>
+        <select name="selection" id="selector">
+            <optgroup label="Theropods">
+                <option>Tyrannosaurus</option>
+                <option>Velociraptor</option>
+                <option>Deinonychus</option>
+            </optgroup>
+            <optgroup label="Sauropods">
+                <option>Diplodocus</option>
+                <option>Saltasaurus</option>
+                <option>Apatosaurus</option>
+            </optgroup>
+        </select>
+        <label for="selector">Label for the selector</label>
+    </fieldset>
+    </p>
     <button type="submit">Submit Application</button>
 </form>
+<fieldset form="application">
+    <legend>Choose your favorite monster</legend>
+
+    <input type="radio" id="kraken" name="monster" value="krak">
+    <label for="kraken">Kraken</label><br/>
+
+    <input type="radio" id="sasquatch" name="monster" value="sasq">
+    <label for="sasquatch">Sasquatch</label><br/>
+
+    <legend>An extraneous legend</legend>
+
+    <input type="radio" id="mothman" name="monster" value="moth">
+    <label for="mothman">Mothman</label>
+</fieldset>
 </body>
 </html>
