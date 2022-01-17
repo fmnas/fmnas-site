@@ -53,8 +53,6 @@
  *   <li data-foreach="cats">
  *   </ul>
  *
- * (Note: the output elements will all be inside a div with the data-foreach attribute.)
- *
  * data-foreach may also be used with data-as, in which case the value will be accessible through data-value:
  *   <li data-foreach="cats" data-as="cat">Cat named <span data-value="cat"></span>
  *
@@ -458,6 +456,16 @@ function attr(string $attribute, string $value): Closure {
 }
 
 /**
+ * Applies data-value and data-value-config attributes to a DOM tree.
+ * @param DOMElement|DOMDocument &$root The root element in which to apply the values
+ * @param array $data Values to use for elements with the data-value attribute
+ * @param array $values Values to use for elements with the data-value-config attribute
+ */
+function applyDataValues(DOMElement|DOMDocument &$root, array $data, array $values): void {
+    // @todo Apply data-value
+}
+
+/**
  * Render the HTML to send in an email.
  * @param array $data The submitted form data.
  * @param array|null $values Additional values to use when rendering data-value.
@@ -470,7 +478,7 @@ function renderForm(array $data, string $html, ?array $values = []): string {
     global $formConfig, $pwd;
 
     $values ??= [];
-    $html5 = new HTML5(["xmlNamespaces" => false]);
+    $html5 = new HTML5(["disable_html_ns" => true]);
     $dom = $html5->loadHTML($html);
     $forms = $dom->getElementsByTagName('form');
     if ($forms->length === 0) {
@@ -690,6 +698,30 @@ function renderForm(array $data, string $html, ?array $values = []): string {
         }
     }
 
+    // Process data-foreach elements.
+    foreach (collectElements($dom, "*", has("data-foreach", "data-foreach-config")) as $element) {
+        /** @var $element DOMElement */
+
+        $arr = $data[$element->getAttribute("data-foreach")] ?? $values[$element->getAttribute("data-foreach-config")] ?? null;
+        if (!is_array($arr)) {
+            $arr = [$arr];
+        }
+
+        $newNodes = [];
+
+        foreach ($arr as $value) {
+            $clone = $element->cloneNode(true);
+            if ($element->hasAttribute("data-as")) {
+                applyDataValues($clone, [...$values, $element->hasAttribute("data-as") => $value], $values);
+            } else {
+                $clone->nodeValue = $value;
+            }
+            $newNodes[] = ($clone);
+        }
+
+        $element->replaceWith(...$newNodes);
+    }
+
     // Process data-if elements.
     foreach (collectElements($dom, "*", has("data-if", "data-if-config")) as $element) {
         /** @var $element DOMElement */
@@ -719,8 +751,6 @@ function renderForm(array $data, string $html, ?array $values = []): string {
             default => $lhs == $rhs,
         };
 
-        var_dump($lhs, $rhs, $result);
-
         if (!$result) {
             $element->setAttribute("data-remove", "1");
         }
@@ -732,9 +762,9 @@ function renderForm(array $data, string $html, ?array $values = []): string {
         $element->parentNode?->removeChild($element);
     }
 
-    // @todo Apply data-values, etc.
+    applyDataValues($dom, $data, $values);
 
-    // Apply transformers.
+    // Apply data transformations.
     foreach (collectElements($dom, "*", has("data-transformer")) as $element) {
         /** @var $element DOMElement */
         $transformer = $element->getAttribute("data-transformer");
