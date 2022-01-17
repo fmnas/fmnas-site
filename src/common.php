@@ -126,9 +126,10 @@ require_once "$src/generated.php";
 /**
  * Import a stylesheet
  * @param string $name The relative path to the stylesheet file, optionally including .css or .php
+ * @param bool $relative Do not output a leading slash in the href.
  */
-function style(string $name = "/common"): void {
-    if (!startsWith($name, "/")) {
+function style(string $name = "/common", bool $relative = false): void {
+    if (!startsWith($name, "/") && !$relative) {
         $name = "/" . $name;
     }
     if (!endsWith($name, ".css") && !endsWith($name, ".php")) {

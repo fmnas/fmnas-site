@@ -1,12 +1,11 @@
 <?php
-
 /**
  * Include this file at the top of a form page, then set values of $formConfig.
  *
  * The <form> element will be replaced with an <article> element.
  * All <input> and <select> elements will be replaced with <span> elements, except:
- *   input[type="button"], input[type="submit"], input[type="reset"], input[type="password"] will be removed unless
- *   they have an explicit falsy data-remove attribute, in which case they will be replaced with <span> elements.
+ *   input[type="button"], input[type="submit"], input[type="reset"], input[type="password"], input[type="hidden"],
+ *   and input[type="image"] will be removed unless they have an explicit falsy data-remove attribute.
  * All <textarea> elements will be replaced with <pre> elements.
  * All <fieldset> elements will be replaced with <section> elements containing <h3> headers.
  * All <button> elements will be removed unless they have an explicit falsy data-remove attribute, in which case they
@@ -57,11 +56,15 @@
  *   <p data-if-config="operator-email"><span data-value="name"></span> submitted the following form.
  *
  * To transform the inner HTML of an element after all other processing is complete, add a data-transformer attribute:
- *   <input type="text" name="email" value="example@example.com" data-transformer="email-link">
+ *   <input type="email" name="email" value="example@example.com" data-transformer="email-link">
  * This must correspond to an entry in the $formConfig->transformers associative array, which is a closure that
  * transforms one HTML string into another HTML string.
  * The default $formConfig includes the following transformers:
- *   - email-link: wraps an email address in a mailto link
+ *   - email-link: wraps an email address in a mailto link (useful with input[type="email"])
+ *   - tel-link: wraps a phone number in a tel link (useful with input[type="tel"])
+ *   - link: wraps a URL in a link (useful with input[type="url"])
+ *
+ * data-transformer-if and data-transformer-if-config do what you expect.
  *
  * All elements with the following attributes will be hidden on the form page by injected CSS, unless a falsy value
  * is explicitly given for data-hidden:
@@ -80,8 +83,10 @@ use JetBrains\PhpStorm\Pure;
 use Masterminds\HTML5;
 use PHPMailer\PHPMailer\PHPMailer;
 
-$phpmailer_path ??= '../lib/PHPMailer';
-$html5_php_path ??= '../lib/html5-php';
+$pwd = getcwd();
+
+$phpmailer_path ??= '../src/PHPMailer';
+$html5_php_path ??= '../src/html5-php';
 require "$phpmailer_path/src/Exception.php";
 require "$phpmailer_path/src/PHPMailer.php";
 require "$phpmailer_path/src/SMTP.php";
@@ -320,10 +325,10 @@ function sendEmail(FormEmailConfig $emailConfig, string $emailBody) {
  * Copy all attributes from one DOMElement to another.
  * @param DOMElement $from The element that has the attributes.
  * @param DOMElement $to The element that wants the attributes.
- * @param array $exclude A list of attributes not to copy.
+ * @param string ...$exclude A list of attributes not to copy.
  * @return void
  */
-function copyAttributes(DOMElement &$from, DOMElement &$to, array $exclude = []): void {
+function copyAttributes(DOMElement &$from, DOMElement &$to, string ...$exclude): void {
     if ($from->hasAttributes()) {
         foreach ($from->attributes as $attribute) {
             if (!in_array($attribute->nodeName, $exclude)) {
@@ -402,6 +407,18 @@ function truthy(string $attribute): Closure {
 }
 
 /**
+ * Generates a closure that returns true if the given attribute on the given element equals the given value.
+ * @param string $attribute An attribute to check
+ * @param string $value A value against which to compare the attribute
+ * @return Closure to be passed to collectElements
+ */
+function attr(string $attribute, string $value): Closure {
+    return function(DOMElement $element) use ($attribute, $value): bool {
+        return $element->getAttribute($attribute) === $value;
+    };
+}
+
+/**
  * Render the HTML to send in an email.
  * @param array $data The submitted form data.
  * @param array|null $values Additional values to use when rendering data-value.
@@ -411,7 +428,7 @@ function truthy(string $attribute): Closure {
  * @throws DOMException
  */
 function renderForm(array $data, string $html, ?array $values = []): string {
-    global $formConfig;
+    global $formConfig, $pwd;
 
     $values ??= [];
     $html5 = new HTML5(["xmlNamespaces" => false]);
@@ -429,7 +446,7 @@ function renderForm(array $data, string $html, ?array $values = []): string {
     // Replace form element with article element.
     $form = $dom->createElement("article");
     moveChildren($originalForm, $form);
-    copyAttributes($originalForm, $form, ["method", "enctype"]);
+    copyAttributes($originalForm, $form, "method", "enctype");
     $form->setAttribute("data-type", "form");
     $originalForm->parentNode?->replaceChild($form, $originalForm);
 
@@ -439,20 +456,35 @@ function renderForm(array $data, string $html, ?array $values = []): string {
         $span = $dom->createElement("span");
         $span->setAttribute("data-type", "span");
         $inputName = $input->getAttribute("name");
-        copyAttributes($input, $span, ["value", "required"]);
+        copyAttributes($input, $span, "value", "required");
         switch ($input->getAttribute("type")) {
-            // @todo Deal with other input types.
+            // @todo Support input[type="color"]
+            // @todo Support input[type="file"]
         case 'button':
         case 'submit':
         case 'reset':
-            /** @noinspection PhpMissingBreakStatementInspection */
         case 'password':
+        case 'image':
+            /** @noinspection PhpMissingBreakStatementInspection */
+        case 'hidden':
             if (!$input->hasAttribute("data-remove")) {
                 $span->setAttribute("data-remove", "1");
                 break;
             }
             // Fall through to standard input handler in case it isn't to be removed.
         case 'text':
+        case 'checkbox': // @todo Consider handling checkboxes differently.
+        case 'radio': // @todo Consider handling radio buttons differently.
+        case 'date':
+        case 'datetime-local':
+        case 'email':
+        case 'month':
+        case 'number':
+        case 'range':
+        case 'tel':
+        case 'time':
+        case 'url':
+        case 'week':
         default:
             if (endsWith($inputName, "[]") && !$input->hasAttribute("data-remove")) {
                 // Remove repeated inputs by default.
@@ -474,10 +506,43 @@ function renderForm(array $data, string $html, ?array $values = []): string {
 
     // @todo Deal with label elements.
 
-    // @todo Merge linked style sheets into the output HTML?
+    // Merge linked style sheets into the output HTML.
+    foreach (collectElements($dom, "link", attr("rel", "stylesheet")) as $link) {
+        /** @var $link DOMElement */
+        $href = $link->getAttribute("href");
+        if (is_file("$pwd/$href")) {
+            ob_start();
+            include "$pwd/$href";
+            $styles = ob_get_clean();
+        } else {
+            if (!ini_get('allow_url_fopen')) {
+                // Can't get the file :(
+                continue;
+            }
+            if (startsWith($href, "/")) {
+                /** @noinspection HttpUrlsUsage */
+                $protocol = isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] === "on" ? "https://" : "http://";
+                $path = startsWith($href, "//") ? $protocol . $href :
+                    $protocol . $_SERVER["HTTP_HOST"] . $href;
+                $styles = file_get_contents($path);
+            } else {
+                $styles = file_get_contents($href);
+            }
+        }
+        if ($styles === false) {
+            // Failed to get styles; delegate responsibility to the email client.
+            continue;
+        }
+        $style = $dom->createElement("style");
+        $style->setAttribute("type", "text/css");
+        copyAttributes($link, $style, "rel", "href");
+        $style->nodeValue = $styles;
+        $link->parentNode?->replaceChild($style, $link);
+    }
 
     // Mark all script elements with data-remove.
-    foreach (collectElements($dom,"script") as $script) {
+    foreach (collectElements($dom, "script") as $script) {
+        /** @var $script DOMElement */
         if (!$script->hasAttribute("data-remove")) {
             $script->setAttribute("data-remove", "1");
             break;
@@ -567,6 +632,12 @@ $formConfig->smtpPassword = '';
 $formConfig->transformers = [
     "email-link" => function(string $email): string {
         return "<a href=\"mailto:$email\">$email</a>";
+    },
+    "tel-link" => function(string $tel): string {
+        return "<a href=\"tel:$tel\">$tel</a>";
+    },
+    "link" => function(string $url): string {
+        return "<a href=\"$url\">$url</a>";
     },
 ];
 
