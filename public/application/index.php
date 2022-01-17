@@ -5,6 +5,8 @@ ini_set('upload_max_filesize', '10M');
 ini_set('max_file_uploads', '20');
 ini_set('file_uploads', true);
 ini_set('post_max_size', '200M');
+setlocale(LC_ALL, 'en_US.UTF-8');
+set_time_limit(300);
 $formConfig->confirm = function(array $formData): void {
     ?>
     <!DOCTYPE html>
@@ -27,16 +29,25 @@ $formConfig->handler = function(FormException $e): void {
     <title>Adoption Application - <?=_G_longname()?></title>
     <meta charset="UTF-8">
     <meta name="robots" content="noindex,nofollow">
+    <script src="/email.js.php"></script>
     <h1>Error <?=$e->getCode()?></h1>
     <p>Something went wrong submitting the form: <?=$e->getMessage()?>
-    <p><a href="/">Back to homepage</a>
-        <!--
-<?php
+    <p>Please contact Sean at <a data-email="sean"></a> with the following information:
+    <pre><?php
         var_dump($e)
-        ?>
-    -->
+        ?></pre>
+    <p><a href="/">Back to homepage</a>
     </html>
     <?php
+    // Attempt to email the PHP context to Sean so he can fix it.
+    @sendEmail(
+        new FormEmailConfig(
+            new EmailAddress("admin@forgetmenotshelter.org"),
+            new EmailAddress("sean@forgetmenotshelter.org"),
+            "Application Error Context"),
+        new RenderedEmail(
+            '<pre>' . print_r(get_defined_vars(), true) . '</pre>',
+            []));
 };
 
 $cwd = getcwd();
@@ -51,8 +62,11 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
         ['main' => true]
     );
 
-    $dump->fileDir = "$cwd/received";
+    $dump->fileDir = function(array $file) use ($cwd): string {
+        return $file["type"] === "image/jpeg" ? "$cwd/received" : "";
+    };
     $dump->saveFile = "$cwd/received/last.html";
+    $dump->hashFilenames = HashOptions::YES;
 
     $primaryEmail = new FormEmailConfig(
         $applicantEmail,
@@ -86,18 +100,21 @@ $formConfig->smtpPort = Config::$smtp_port;
 $formConfig->smtpUser = Config::$smtp_username;
 $formConfig->smtpPassword = Config::$smtp_password;
 $formConfig->smtpAuth = Config::$smtp_auth;
+$formConfig->fileValidator = function (array $file): bool {
+    return startsWith($file["type"], "image/");
+}
 ?>
 <!DOCTYPE html>
 <html lang="en-US">
 <head>
-<title>Adoption Application - <?=_G_longname()?></title>
-<meta charset="UTF-8">
-<meta name="robots" content="nofollow">
-<script src="/email.js.php"></script>
-<?php
-style();
-style("application", true);
-?>
+    <title>Adoption Application - <?=_G_longname()?></title>
+    <meta charset="UTF-8">
+    <meta name="robots" content="nofollow">
+    <script src="/email.js.php"></script>
+    <?php
+    style();
+    style("application", true);
+    ?>
 </head>
 <body>
 Application
@@ -111,7 +128,8 @@ Application
     <h1 data-if="applicant_email" data-operator="ne" data-rhs-value="applicant_email">Never true.</h1>
     <label for="applicant_email">Email</label>
     <h1 data-value="applicant_email" data-transformer="email-link" data-transformer-if-config="main"></h1>
-    <h1 data-value="applicant_email" data-transformer="email-link" data-transformer-if="applicant_email" data-transformer-operator="ne" data-transformer-rhs="tortoise@panray.seangillen.net"></h1>
+    <h1 data-value="applicant_email" data-transformer="email-link" data-transformer-if="applicant_email"
+        data-transformer-operator="ne" data-transformer-rhs="tortoise@panray.seangillen.net"></h1>
     <input id="applicant_email" type="email" name="applicant_email" data-transformer="email-link" required>
     <br><input type="text" name="list_input[]" value="value 1">
     <br><input type="text" name="list_input[]" value="value 2">
@@ -126,7 +144,7 @@ Application
         <li data-foreach="list_input">
     </ul>
     <p>
-        <fieldset form="application">
+    <fieldset form="application">
         <legend>Some additional fields</legend>
         <textarea name="information">
             This is the textarea.
