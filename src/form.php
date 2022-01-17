@@ -229,7 +229,7 @@ class FormException extends Exception {
  * and used to generate and send the email.
  * Otherwise, the rendered HTML is output to the browser.
  */
-function collectForm() {
+function collectForm(): void {
     global $formConfig;
 
     // Get the server-rendered form HTML from the page output.
@@ -264,7 +264,7 @@ function collectForm() {
  * @throws \PHPMailer\PHPMailer\Exception
  * @throws DOMException
  */
-function processForm(array $data, string $html) {
+function processForm(array $data, string $html): void {
     global $formConfig;
 
     foreach (($formConfig->emails)($data) as $emailConfig) {
@@ -281,7 +281,7 @@ function processForm(array $data, string $html) {
  * @param string $emailBody The HTML email body.
  * @throws \PHPMailer\PHPMailer\Exception
  */
-function sendEmail(FormEmailConfig $emailConfig, string $emailBody) {
+function sendEmail(FormEmailConfig $emailConfig, string $emailBody): void {
     global $formConfig;
 
     $mailer = new PHPMailer(true);
@@ -355,7 +355,7 @@ function moveChildren(DOMElement &$from, DOMElement &$to): void {
  * @param string $str A string
  * @return bool Whether the string is truthy.
  */
-function checkString(string $str): bool {
+#[Pure] function checkString(string $str): bool {
     return $str && $str !== "false";
 }
 
@@ -510,24 +510,39 @@ function renderForm(array $data, string $html, ?array $values = []): string {
     foreach (collectElements($dom, "link", attr("rel", "stylesheet")) as $link) {
         /** @var $link DOMElement */
         $href = $link->getAttribute("href");
-        if (is_file("$pwd/$href")) {
+        $url = parse_url($href);
+        // @todo Consider solutions for $url["query"] === $_SERVER["HTTP_HOST"]
+        // @todo Consider solutions for startsWith($url["path"], "/")
+        if (!isset($url["host"]) && !startsWith($url["path"], "/")) {
+            // Relative path
             ob_start();
-            include "$pwd/$href";
+            if (isset($url["query"])) {
+                parse_str($url["query"], $_GET);
+            }
+            $file = $pwd . "/" . $url["path"];
+            if (!is_file($file)) {
+                // Ignore this one
+                continue;
+            }
+            include $file;
             $styles = ob_get_clean();
         } else {
+            // Absolute path
             if (!ini_get('allow_url_fopen')) {
                 // Can't get the file :(
                 continue;
             }
-            if (startsWith($href, "/")) {
-                /** @noinspection HttpUrlsUsage */
-                $protocol = isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] === "on" ? "https://" : "http://";
-                $path = startsWith($href, "//") ? $protocol . $href :
-                    $protocol . $_SERVER["HTTP_HOST"] . $href;
-                $styles = file_get_contents($path);
-            } else {
-                $styles = file_get_contents($href);
+            /** @noinspection HttpUrlsUsage */
+            $path = $url["scheme"] ?? (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] === "on" ? "https://" : "http://");
+            $path .= $url["host"] ?? $_SERVER["HTTP_HOST"];
+            if (isset($url["port"])) {
+                $path .= ":" . $url["port"];
             }
+            $path .= $url["path"];
+            if (isset($url["query"])) {
+                $path .= "?" . $url["query"];
+            }
+            $styles = file_get_contents($path);
         }
         if ($styles === false) {
             // Failed to get styles; delegate responsibility to the email client.
