@@ -445,7 +445,20 @@ function attr(string $attribute, string $value): Closure {
  * @param array $values Values to use for elements with the data-value-config attribute
  */
 function applyDataValues(DOMElement|DOMDocument &$root, array $data, array $values): void {
-    // @todo Apply data-value
+    foreach(collectElements($root, "*", has("data-value-config")) as $element) {
+        /** @var $element DOMElement */
+        if (isset($values[$element->getAttribute("data-value-config")])) {
+            $element->nodeValue = $values[$element->getAttribute("data-value-config")];
+            $element->removeAttribute("data-value-config");
+        }
+    }
+    foreach(collectElements($root, "*", has("data-value")) as $element) {
+        /** @var $element DOMElement */
+        if (isset($data[$element->getAttribute("data-value")])) {
+            $element->nodeValue = $data[$element->getAttribute("data-value")];
+            $element->removeAttribute("data-value");
+        }
+    }
 }
 
 /**
@@ -695,7 +708,7 @@ function renderForm(array $data, string $html, ?array $values = []): string {
         foreach ($arr as $value) {
             $clone = $element->cloneNode(true);
             if ($element->hasAttribute("data-as")) {
-                applyDataValues($clone, [...$values, $element->hasAttribute("data-as") => $value], $values);
+                applyDataValues($clone, [...$values, $element->getAttribute("data-as") => $value], $values);
             } else {
                 $clone->nodeValue = $value;
             }
