@@ -94,6 +94,14 @@ Application
     <br><input type="text" name="list_input[]" value="value 2">
     <br><input type="text" name="list_input[]" value="value 3" data-remove="false">
     <br><input type="text" name="list_input[]" value="value 4" data-ignore="true">
+    <ul style="color: blue">
+        <li data-foreach="list_input" data-as="list_input_value">
+            The value is <span data-value="list_input_value">???</span>
+        </li>
+    </ul>
+    <ul style="color: green">
+        <li data-foreach="list_input">
+    </ul>
     <p>
         <fieldset form="application">
         <legend>Some additional fields</legend>
