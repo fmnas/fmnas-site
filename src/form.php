@@ -672,7 +672,7 @@ function renderForm(array $data, string $html, ?array $values = []): string {
     // @todo Replace datalist elements with ul elements (hidden by default).
 
     // Merge linked style sheets into the output HTML.
-    foreach (collectElements($roots, "link", attr("rel", "stylesheet")) as $link) {
+    foreach (collectElements($dom, "link", attr("rel", "stylesheet")) as $link) {
         /** @var $link DOMElement */
         $href = $link->getAttribute("href");
         $url = parse_url($href);
