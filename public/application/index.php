@@ -68,22 +68,29 @@ $formConfig->smtpAuth = Config::$smtp_auth;
 ?>
 <!DOCTYPE html>
 <html lang="en-US">
+<head>
 <title>Adoption Application - <?=_G_longname()?></title>
 <meta charset="UTF-8">
 <meta name="robots" content="nofollow">
 <script src="/email.js.php"></script>
-<?php style(); ?>
+<?php
+style();
+style("application", true);
+?>
+</head>
+<body>
 Application
 <form method="POST" enctype="multipart/form-data">
     <label>Name
         <input type="text" name="applicant_name" required>
     </label>
     <label for="applicant_email">Email</label>
-    <input id="applicant_email" type="text" name="applicant_email" data-transformer="email-link" required>
+    <input id="applicant_email" type="email" name="applicant_email" data-transformer="email-link" required>
     <br><input type="text" name="list_input[]" value="value 1">
     <br><input type="text" name="list_input[]" value="value 2">
     <br><input type="text" name="list_input[]" value="value 3" data-remove="false">
     <br><input type="text" name="list_input[]" value="value 4" data-ignore="true">
     <button type="submit">Submit Application</button>
 </form>
+</body>
 </html>
