@@ -55,28 +55,49 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
     $shelterEmail = new EmailAddress(_G_default_email_user() . '@' . _G_public_domain(), _G_shortname());
     $applicantEmail = new EmailAddress($formData['applicant_email'], $formData['applicant_name']);
 
+    $hash = sha1(print_r($formData, true));
+    $path = "https://" . _G_public_domain() . "/application/received/$hash.html";
+
     $dump = new FormEmailConfig(
         null,
         [],
         '',
-        ['main' => true]
+        ['main' => true, 'path' => $path, 'thumbnails' => true]
     );
 
     $dump->fileDir = function(array $file) use ($cwd): string {
         return $file["type"] === "image/jpeg" ? "$cwd/received" : "";
     };
-    $dump->saveFile = "$cwd/received/last.html";
-    $dump->hashFilenames = function(array $file): HashOptions {
-        return startsWith($file["type"], "image/") ? HashOptions::NO : HashOptions::YES;
-    };
+    $dump->hashFilenames = HashOptions::SAVED_ONLY;
     $dump->globalConversion = true;
+
+    $save = new FormEmailConfig(
+        null,
+        [],
+        '',
+        ['main' => true, 'path' => $path, 'thumbnails' => true]
+    );
+    $save->saveFile = "$cwd/received/$hash.html";
 
     $primaryEmail = new FormEmailConfig(
         $applicantEmail,
         [$shelterEmail],
         'Adoption Application from ' . $formData['applicant_name'],
-        ['main' => true]
+        ['main' => true, 'path' => $path]
     );
+    $primaryEmail->attachFiles = function(array $metadata): bool {
+        $total_size = 0;
+        foreach ($_FILES as $file_input) {
+            if (is_array($file_input["size"])) {
+                foreach($file_input["size"] as $size) {
+                    $total_size += $size;
+                }
+            } else {
+                $total_size += $file_input["size"];
+            }
+        }
+        return $total_size < 20 * 1048576;
+    };
 
     $secondaryEmail = new FormEmailConfig(
         $shelterEmail,
@@ -84,15 +105,16 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
         'Your ' . _G_longname() . ' Adoption Application',
         ['main' => false]
     );
+    $secondaryEmail->attachFiles = false;
 
     if (isset($formData['coapplicant_email'])) {
         $secondaryEmail->cc = [new EmailAddress($formData['coapplicant_email'], $formData['applicant_name'])];
     }
 
-    return [$dump, $primaryEmail, $secondaryEmail];
+    return [$dump, $save, $primaryEmail, $secondaryEmail];
 };
 $formConfig->fileTransformers["url"] = function(array $metadata): string {
-    return "https://" . _G_public_domain() . "/application/received/" . $metadata["name"];
+    return "https://" . _G_public_domain() . "/application/received/" . $metadata["hash"];
 };
 $formConfig->transformers["mailto"] = function(string $email): string {
     return "mailto:$email";
@@ -118,6 +140,7 @@ $formConfig->smtpAuth = Config::$smtp_auth;
 </head>
 <body>
 Application
+<a data-href-config="path" data-if-config="main">View application on the web</a>
 <form method="POST" enctype="multipart/form-data" id="application">
     <label>Name
         <input type="text" name="applicant_name" required>
@@ -175,13 +198,20 @@ Application
     <label for="file">Upload another file</label>
     <input type="file" id="file" name="file">
     <pre data-foreach="images" data-file-transformer="dump"></pre>
-    <ul>
+    <ul class="thumbnails" data-if-config="thumbnails">
         <li data-foreach="images" data-as="image">
             <a data-href="image" data-file-transformer="url">
-                <span data-value="image"></span>
-                <span data-value="image" data-file-transformer="thumbnail"></span>
+                <span data-value="image" data-file-transformer="thumbnail" ></span>
             </a>
         </li>
+    </ul>
+    <ul data-if-config="thumbnails" data-rhs="false">
+        <li data-foreach="images" data-as="image" data-if-config="main">
+            <a data-href="image" data-file-transformer="url">
+                <span data-value="image" data-if-config="thumbnails" data-rhs="false"></span>
+            </a>
+        </li>
+        <li data-foreach="images" data-if-config="main" data-rhs="false"></li>
     </ul>
     <button type="submit">Submit Application</button>
 </form>
