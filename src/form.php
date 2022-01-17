@@ -351,7 +351,6 @@ class FormEmailConfig {
      * If non-empty, a path on the server to which to save the rendered form as an HTML file in lieu of
      * emailing it.
      */
-    // @todo Implement form saving.
     public string $saveFile;
 
     /**
@@ -494,11 +493,16 @@ function sendEmail(FormEmailConfig $emailConfig, RenderedEmail $renderedEmail): 
     $emailBody = $renderedEmail->html;
     $attachments = $renderedEmail->attachments;
 
-    if ($emailConfig->from === null) {
-        echo $emailBody;
+    if ($emailConfig->from === null || $emailConfig->saveFile) {
+        $html = $emailBody;
         foreach ($attachments as $attachment) {
-            echo "\n<!-- attach $attachment->path as $attachment->filename with type $attachment->type -->";
+            $html .= "\n<!-- attach $attachment->path as $attachment->filename with type $attachment->type -->";
         }
+        if ($emailConfig->saveFile) {
+            file_put_contents($emailConfig->saveFile, $html);
+            return;
+        }
+        echo $html;
         return;
     }
 
