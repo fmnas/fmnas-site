@@ -57,9 +57,9 @@
  * data-foreach may also be used with data-as, in which case the value will be accessible through data-value:
  *   <li data-foreach="cats" data-as="cat">Cat named <span data-value="cat"></span>
  *
- * @todo implement data-href
  * The value can also be applied to an element's href attribute using data-href:
  *   <a data-href="customer_website">Visit the customer website</a>
+ * Note that data-value and data-href are mutually exclusive.
  *
  * To add output only used in the rendered email, use the data-hidden attribute. Elements with this attribute will be
  * hidden on the form page by injected CSS:
@@ -109,6 +109,8 @@
  * data-if-config
  * data-value
  * data-value-config
+ * data-href
+ * data-href-config
  *
  * When processing a file input with data-foreach, data-value, etc., the file metadata array is passed through a file
  * transformer to compute the output value. The file transformers are closures in $formConfig->fileTransformers.
@@ -462,7 +464,7 @@ function collectForm(): void {
 
         // Build and echo the injected CSS.
         $attributes = ["data-hidden", "data-foreach", "data-foreach-config", "data-if", "data-if-config", "data-value",
-            "data-value-config"];
+            "data-value-config", "data-href", "data-href-config"];
         $selectors = [];
         foreach ($attributes as $attribute) {
             $selectors[] =
@@ -671,8 +673,9 @@ function collectElements(DOMElement|DOMDocument|array &$root, string $tag = "*",
  * Applies a file transformation to an element.
  * @param DOMElement &$element The element whose inner HTML should be the transformed file.
  * @param array|null $file File metadata
+ * @param bool $href Apply to the href attribute instead of the inner HTML.
  */
-function applyFileTransformation(DOMElement &$element, ?array $file): void {
+function applyFileTransformation(DOMElement &$element, ?array $file, bool $href = false): void {
     global $formConfig;
     if ($file === null) {
         echo "Warning: got null file to apply transformation";
@@ -680,23 +683,27 @@ function applyFileTransformation(DOMElement &$element, ?array $file): void {
         return;
     }
     $transformer = $formConfig->fileTransformers[$element->getAttribute("data-file-transformer") ?: array_key_first($formConfig->fileTransformers)];
+    $value = $transformer($file);
+    if ($href) {
+        $element->setAttribute("href", $value);
+        return;
+    }
     while ($element->hasChildNodes()) {
         $element->removeChild($element->firstChild);
     }
     $fragment = $element->ownerDocument->createDocumentFragment();
-    $fragment->appendXML($transformer($file));
+    $fragment->appendXML($value);
     $element->appendChild($fragment);
 }
 
 /**
- * Applies data-value and data-value-config attributes to a DOM tree.
+ * Applies data-value, data-value-config, data-href, and data-href-config attributes to a DOM tree.
  * @param DOMElement|DOMDocument &$root The root element in which to apply the values
- * @param array $data Values to use for elements with the data-value attribute
- * @param array $values Values to use for elements with the data-value-config attribute
+ * @param array $data Values to use for elements with the data-value or data-href attribute
+ * @param array $values Values to use for elements with the data-value-config or data-href-config attribute
  * @param array $files Uploaded file metadata (in $_FILES format)
  */
 function applyDataValues(DOMElement|DOMDocument &$root, array $data, array $values, array $files): void {
-    global $formConfig;
     foreach (collectElements($root, "*", has("data-value-config")) as $element) {
         /** @var $element DOMElement */
         if (isset($values[$element->getAttribute("data-value-config")])) {
@@ -713,10 +720,30 @@ function applyDataValues(DOMElement|DOMDocument &$root, array $data, array $valu
             } else {
                 $element->nodeValue = strval($value);
             }
+            $element->removeAttribute("data-value");
         } else if (isset($files[$element->getAttribute("data-value")])) {
             applyFileTransformation($element, $files[$element->getAttribute("data-value")] ?? null);
+            $element->removeAttribute("data-value");
         }
-        $element->removeAttribute("data-value");
+    }
+    foreach (collectElements($root, "*", has("data-href-config")) as $element) {
+        /** @var $element DOMElement */
+        if (isset($values[$element->getAttribute("data-href-config")])) {
+            $element->setAttribute("href", strval($values[$element->getAttribute("data-href-config")]));
+        }
+    }
+    foreach (collectElements($root, "*", has("data-href")) as $element) {
+        /** @var $element DOMElement */
+        if (isset($data[$element->getAttribute("data-href")])) {
+            $value = $data[$element->getAttribute("data-href")];
+            if (isset($value["size"])) {
+                applyFileTransformation($element, $value, true);
+            } else {
+                $element->setAttribute("href", strval($value));
+            }
+        } else if (isset($files[$element->getAttribute("data-href")])) {
+            applyFileTransformation($element, $files[$element->getAttribute("data-href")] ?? null);
+        }
     }
 }
 
@@ -1263,15 +1290,19 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
         }
         $transformer = $element->getAttribute("data-transformer");
         if (isset($formConfig->transformers[$transformer])) {
-            $innerHTML = "";
-            while ($element->hasChildNodes()) {
-                $innerHTML .= $dom->saveHTML($element->firstChild);
-                $element->removeChild($element->firstChild);
+            if ($element->hasAttribute("data-href") || $element->hasAttribute("data-href-config")) {
+                $element->setAttribute("href", $formConfig->transformers[$transformer]($element->getAttribute("href")));
+            } else {
+                $innerHTML = "";
+                while ($element->hasChildNodes()) {
+                    $innerHTML .= $dom->saveHTML($element->firstChild);
+                    $element->removeChild($element->firstChild);
+                }
+                $transformed = $formConfig->transformers[$transformer]($innerHTML);
+                $fragment = $element->ownerDocument->createDocumentFragment();
+                $fragment->appendXML($transformed);
+                $element->appendChild($fragment);
             }
-            $transformed = $formConfig->transformers[$transformer]($innerHTML);
-            $fragment = $element->ownerDocument->createDocumentFragment();
-            $fragment->appendXML($transformed);
-            $element->appendChild($fragment);
         } else {
             echo "Warning: transformer $transformer not found; leaving value untransformed.";
         }

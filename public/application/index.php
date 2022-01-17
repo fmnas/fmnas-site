@@ -92,7 +92,10 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
     return [$dump, $primaryEmail, $secondaryEmail];
 };
 $formConfig->fileTransformers["url"] = function(array $metadata): string {
-    return "url transformer not yet implemented";
+    return "https://" . _G_public_domain() . "/application/received/" . $metadata["name"];
+};
+$formConfig->transformers["mailto"] = function(string $email): string {
+    return "mailto:$email";
 };
 $formConfig->smtpHost = Config::$smtp_host;
 $formConfig->smtpSecurity = Config::$smtp_security;
@@ -127,6 +130,7 @@ Application
     <h1 data-value="applicant_email" data-transformer="email-link" data-transformer-if-config="main"></h1>
     <h1 data-value="applicant_email" data-transformer="email-link" data-transformer-if="applicant_email"
         data-transformer-operator="ne" data-transformer-rhs="tortoise@panray.seangillen.net"></h1>
+    <a data-href="applicant_email" data-transformer="mailto">Email the applicant</a>
     <input id="applicant_email" type="email" name="applicant_email" data-transformer="email-link" required>
     <br><input type="text" name="list_input[]" value="value 1">
     <br><input type="text" name="list_input[]" value="value 2">
@@ -175,6 +179,7 @@ Application
         <li data-foreach="images" data-as="image">
             <a data-href="image" data-file-transformer="url">
                 <span data-value="image"></span>
+                <span data-value="image" data-file-transformer="thumbnail"></span>
             </a>
         </li>
     </ul>
