@@ -26,8 +26,12 @@
  *   they have an explicit falsy data-remove attribute, in which case they will be replaced with <span> elements.
  * All <textarea> elements will be replaced with <pre> elements.
  * All <fieldset> elements will be replaced with <section> elements containing <h3> headers.
- * All <button> elements will be hidden unless they have an explicit falsy data-remove attribute, in which case they
- * will be replaced with <div> elements.
+ * All <button> elements will be removed unless they have an explicit falsy data-remove attribute, in which case they
+ * will be replaced with <span> elements.
+ * All <script> elements will be removed unless they have an explicit falsy data-remove attribute.
+ * All <label> elements will be replaced with span elements. The inner text will itself be in a span element with the
+ * class label-value.
+ * All generated elements will have a data-type attribute with the original tag ("form", "input", etc.)
  *
  * Elements with a truthy data-ignore attribute will not be modified.
  * Elements with a truthy data-remove attribute will be removed from the rendered email.
@@ -81,7 +85,6 @@
 
 use JetBrains\PhpStorm\Pure;
 use Masterminds\HTML5;
-use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
 
 $phpmailer_path ??= '../lib/PHPMailer';
@@ -240,6 +243,7 @@ function collectForm() {
     } else {
         // Display the form.
         echo $html;
+        // @todo Move injected styles to head.
         ?>
         <style>
             /* Injected styles */
@@ -251,7 +255,8 @@ function collectForm() {
 /**
  * Send emails containing the submitted form data.
  * @param array $data Raw form data ($_GET or $_POST).
- * @throws Exception
+ * @throws \PHPMailer\PHPMailer\Exception
+ * @throws DOMException
  */
 function processForm(array $data, string $html) {
     global $formConfig;
@@ -268,7 +273,7 @@ function processForm(array $data, string $html) {
  * Send an email.
  * @param FormEmailConfig $emailConfig
  * @param string $emailBody The HTML email body.
- * @throws Exception
+ * @throws \PHPMailer\PHPMailer\Exception
  */
 function sendEmail(FormEmailConfig $emailConfig, string $emailBody) {
     global $formConfig;
@@ -305,7 +310,24 @@ function sendEmail(FormEmailConfig $emailConfig, string $emailBody) {
     $mailer->IsHTML(true);
     $mailer->Subject = $emailConfig->subject;
     $mailer->Body = $emailBody;
+    var_dump($mailer); // @todo Remove mailer dump
     $mailer->Send();
+}
+
+function copyAttributes(DOMElement &$from, DOMElement &$to, array $exclude = []): void {
+    if ($from->hasAttributes()) {
+        foreach ($from->attributes as $attribute) {
+            if (!in_array($attribute->nodeName, $exclude)) {
+                $to->setAttribute($attribute->nodeName, $attribute->nodeValue);
+            }
+        }
+    }
+}
+
+function moveChildren(DOMElement &$from, DOMElement &$to): void {
+    while ($from->firstChild) {
+        $to->appendChild($from->firstChild);
+    }
 }
 
 /**
@@ -315,10 +337,11 @@ function sendEmail(FormEmailConfig $emailConfig, string $emailBody) {
  * @param string $html The server-rendered HTML of the empty form.
  * @return string Rendered HTML containing the form values.
  * @throws Exception
+ * @throws DOMException
  */
 function renderForm(array $data, string $html, ?array $values = []): string {
     $values ??= [];
-    $html5 = new HTML5();
+    $html5 = new HTML5(["xmlNamespaces" => false]);
     $dom = $html5->loadHTML($html);
     $forms = $dom->getElementsByTagName('form');
     if ($forms->length === 0) {
@@ -327,8 +350,87 @@ function renderForm(array $data, string $html, ?array $values = []): string {
     if ($forms->length > 1) {
         throw new Exception('Multiple form elements were found in the rendered HTML.');
     }
-    $form = $forms[0];
-    return $dom->saveHTML($form);
+    $originalForm = $forms[0];
+    /** @var $originalForm DOMElement */
+
+    // Replace form element with article element.
+    $form = $dom->createElement("article");
+    moveChildren($originalForm, $form);
+    copyAttributes($originalForm, $form, ["method", "enctype"]);
+    $form->setAttribute("data-type", "form");
+    $originalForm->parentNode?->replaceChild($form, $originalForm);
+
+    // Collect input elements.
+    // Using getElementsByTagName in the below foreach loop doesn't work as the internal iterator gets messed up
+    // when removing the input elements
+    $inputElements = [];
+    foreach ($form->getElementsByTagName("input") as $input) {
+        $inputElements[] = $input;
+    }
+
+    // Replace input elements with span elements.
+    foreach ($inputElements as $input) {
+        /** @var $input DOMElement */
+        $span = $dom->createElement("span");
+        $span->setAttribute("data-type", "span");
+        $inputName = $input->getAttribute("name");
+        copyAttributes($input, $span, ["value", "required"]);
+        switch ($input->getAttribute("type")) {
+            // @todo Deal with other input types.
+        case 'button':
+        case 'submit':
+        case 'reset':
+            /** @noinspection PhpMissingBreakStatementInspection */
+        case 'password':
+            if (!$input->hasAttribute("data-remove")) {
+                $span->setAttribute("data-remove", "1");
+                break;
+            }
+            // fall through to standard input handler in case it isn't to be removed
+        case 'text':
+        default:
+            if (endsWith($inputName, "[]")) {
+                // @todo Handle repeated inputs.
+            }
+            $span->nodeValue = htmlspecialchars($data[$inputName] ?? $input->getAttribute('value'));
+        }
+        $input->parentNode?->replaceChild($span, $input);
+    }
+
+    // @todo Replace select elements with span elements.
+
+    // @todo Replace textarea elements with pre elements.
+
+    // @todo Replace fieldset elements with section elements with h3 headers.
+
+    // @todo Replace button elements with span elements (hidden by default).
+
+    // @todo Merge linked style sheets into the output HTML?
+
+    // @todo Deal with label elements.
+
+    // Mark all script elements with data-remove
+    foreach ($dom->getElementsByTagName("script") as $script) {
+        if (!$script->hasAttribute("data-remove")) {
+            $script->setAttribute("data-remove", "1");
+            break;
+        }
+    }
+
+    // Remove all elements marked with data-remove.
+    $elementsToRemove = [];
+    foreach ($dom->getElementsByTagName("*") as $element) {
+        /** @var $element DOMElement */
+        if ($element->getAttribute("data-remove")) {
+            $elementsToRemove[] = $element;
+        }
+    }
+    foreach ($elementsToRemove as $element) {
+        /** @var $element DOMElement */
+        $element->parentNode?->removeChild($element);
+    }
+
+    return $dom->saveHTML();
 }
 
 /** @noinspection PhpObjectFieldsAreOnlyWrittenInspection
@@ -346,10 +448,12 @@ $formConfig->confirm = function(array $formData): void {
     <h1>Thank You</h1>
     <p>We have received your form submission.
     <p><a href="/">Back to homepage</a>
-    <p>The received form data was:
-    <pre>
-    <?php
+    <!--
+<?php
     var_dump($formData);
+    ?>
+    -->
+    <?php
 };
 $formConfig->handler = function(FormException $e): void {
     http_response_code(500);
@@ -361,11 +465,15 @@ $formConfig->handler = function(FormException $e): void {
     <h1>Error <?=$e->getCode()?></h1>
     <p>Something went wrong submitting the form: <?=$e->getMessage()?>
     <p><a href="/">Back to homepage</a>
-    <p>The submitted form data was:
-    <pre>
+    <!--
+<?php
+    var_dump($e);
+    ?>
+    -->
     <?php
-    var_dump($e->formData);
 };
+
+// Default values that should be overridden by setting $formConfig after including this file.
 $formConfig->emails = function(array $formData): array {
     $email = new EmailAddress('webmaster@' . $_SERVER['HTTP_HOST']);
     $config = new FormEmailConfig($email, [$email], 'Form Data');
