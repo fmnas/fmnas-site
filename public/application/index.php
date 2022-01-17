@@ -66,7 +66,10 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
         return $file["type"] === "image/jpeg" ? "$cwd/received" : "";
     };
     $dump->saveFile = "$cwd/received/last.html";
-    $dump->hashFilenames = HashOptions::YES;
+    $dump->hashFilenames = function(array $file): HashOptions {
+        return startsWith($file["type"], "image/") ? HashOptions::NO : HashOptions::YES;
+    };
+    $dump->globalConversion = true;
 
     $primaryEmail = new FormEmailConfig(
         $applicantEmail,
@@ -88,11 +91,8 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 
     return [$dump, $primaryEmail, $secondaryEmail];
 };
-$formConfig->fileTransformers["link"] = function(array $metadata): string {
-    return "Link transformer not yet implemented";
-};
-$formConfig->fileTransformers["thumbnail"] = function(array $metadata): string {
-    return "Thumbnail transformer not yet implemented";
+$formConfig->fileTransformers["url"] = function(array $metadata): string {
+    return "url transformer not yet implemented";
 };
 $formConfig->smtpHost = Config::$smtp_host;
 $formConfig->smtpSecurity = Config::$smtp_security;
@@ -100,9 +100,6 @@ $formConfig->smtpPort = Config::$smtp_port;
 $formConfig->smtpUser = Config::$smtp_username;
 $formConfig->smtpPassword = Config::$smtp_password;
 $formConfig->smtpAuth = Config::$smtp_auth;
-$formConfig->fileValidator = function (array $file): bool {
-    return startsWith($file["type"], "image/");
-}
 ?>
 <!DOCTYPE html>
 <html lang="en-US">
@@ -176,8 +173,8 @@ Application
     <pre data-foreach="images" data-file-transformer="dump"></pre>
     <ul>
         <li data-foreach="images" data-as="image">
-            <a data-href="image" data-file-transformer="link">
-                <span data-href="image" data-file-transformer="thumbnail"></span>
+            <a data-href="image" data-file-transformer="url">
+                <span data-value="image"></span>
             </a>
         </li>
     </ul>

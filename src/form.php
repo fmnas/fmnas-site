@@ -93,6 +93,8 @@
  *   - email-link: wraps an email address in a mailto link (useful with input[type="email"])
  *   - tel-link: wraps a phone number in a tel link (useful with input[type="tel"])
  *   - link: wraps a URL in a link (useful with input[type="url"])
+ * Note that the output of a data transformer must be valid in the text/xml serialization of HTML5 (XHTML5), not just
+ * as text/html. In practice, this generally just means you must close tags: <br /> rather than <br>.
  *
  * data-transformer-if, data-transformer-if-config, data-transformer-operator, data-transformer-rhs,
  * data-transformer-rhs-value, and data-transformer-rhs-config may be used to conditionally apply the transformer
@@ -116,8 +118,8 @@
  *   - type: the file MIME type
  *   - path: the path to the file on the server
  *   - dump: a dump of the file metadata
- *   - image: an inline image, unmodified @todo implement inline image
- *   - thumbnail: an image thumbnail with width 64 @todo implement thumbnail
+ *   - image: an inline image (unsupported by many mail clients)
+ *   - thumbnail: an inline thumbnail with height 64 (unsupported by many mail clients)
  *
  * To replace filenames with a hash of the file, set FormEmailConfig::hashFilenames to HashOptions::NO (default),
  * HashOptions::SAVED_ONLY, HashOptions::EMAIL_ONLY, or HashOptions::YES.
@@ -131,9 +133,11 @@
  * that takes the file metadata array.
  * If this directory is served by a web server, you may want to create a link to the file. Since the script is unaware
  * of where the directory can be found, you will have to write your own file transformer to do this:
- *   $formConfig->fileTransformers["file-link"] = function(array $metadata): string {
+ *   $formConfig->fileTransformers["url"] = function(array $metadata): string {
  *     return "https://example.com/uploads/" . $metadata["name"];
  *   }
+ * Note that the output of a file transformer must be valid in the text/xml serialization of HTML5 (XHTML5), not just
+ * as text/html. In practice, this generally just means you must close tags: <br /> rather than <br>.
  *
  * The file metadata array has the standard $_FILES fields, plus "input" (the input name) and sometimes "original",
  * "hash", "path", and "attached".
@@ -664,6 +668,27 @@ function collectElements(DOMElement|DOMDocument|array &$root, string $tag = "*",
 }
 
 /**
+ * Applies a file transformation to an element.
+ * @param DOMElement &$element The element whose inner HTML should be the transformed file.
+ * @param array|null $file File metadata
+ */
+function applyFileTransformation(DOMElement &$element, ?array $file): void {
+    global $formConfig;
+    if ($file === null) {
+        echo "Warning: got null file to apply transformation";
+        var_dump($element);
+        return;
+    }
+    $transformer = $formConfig->fileTransformers[$element->getAttribute("data-file-transformer") ?: array_key_first($formConfig->fileTransformers)];
+    while ($element->hasChildNodes()) {
+        $element->removeChild($element->firstChild);
+    }
+    $fragment = $element->ownerDocument->createDocumentFragment();
+    $fragment->appendXML($transformer($file));
+    $element->appendChild($fragment);
+}
+
+/**
  * Applies data-value and data-value-config attributes to a DOM tree.
  * @param DOMElement|DOMDocument &$root The root element in which to apply the values
  * @param array $data Values to use for elements with the data-value attribute
@@ -675,20 +700,23 @@ function applyDataValues(DOMElement|DOMDocument &$root, array $data, array $valu
     foreach (collectElements($root, "*", has("data-value-config")) as $element) {
         /** @var $element DOMElement */
         if (isset($values[$element->getAttribute("data-value-config")])) {
-            $element->nodeValue = htmlspecialchars(strval($values[$element->getAttribute("data-value-config")]));
+            $element->nodeValue = strval($values[$element->getAttribute("data-value-config")]);
             $element->removeAttribute("data-value-config");
         }
     }
     foreach (collectElements($root, "*", has("data-value")) as $element) {
         /** @var $element DOMElement */
         if (isset($data[$element->getAttribute("data-value")])) {
-            $element->nodeValue = htmlspecialchars(strval($data[$element->getAttribute("data-value")]));
-            $element->removeAttribute("data-value");
+            $value = $data[$element->getAttribute("data-value")];
+            if (isset($value["size"])) {
+                applyFileTransformation($element, $value);
+            } else {
+                $element->nodeValue = strval($value);
+            }
         } else if (isset($files[$element->getAttribute("data-value")])) {
-            $transformer = $formConfig->fileTransformers[$element->getAttribute("data-file-transformer") ?: "name"];
-            $element->nodeValue = htmlspecialchars(strval($transformer($files[$element->getAttribute("data-value")])));
-            $element->removeAttribute("data-value");
+            applyFileTransformation($element, $files[$element->getAttribute("data-value")] ?? null);
         }
+        $element->removeAttribute("data-value");
     }
 }
 
@@ -968,7 +996,7 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
                 // Remove repeated inputs by default.
                 $span->setAttribute("data-remove", "1");
             }
-            $span->nodeValue = htmlspecialchars(strval($data[$inputName] ?? $input->getAttribute('value')));
+            $span->nodeValue = strval($data[$inputName] ?? $input->getAttribute('value'));
         }
         $input->parentNode?->replaceChild($span, $input);
     }
@@ -984,7 +1012,7 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
         foreach (collectElements($select, "option") as $option) {
             /** @var $option DOMElement */
             if (($option->getAttribute("value") ?: $option->nodeValue) === $selected) {
-                $span->nodeValue = htmlspecialchars(strval($option->nodeValue ?: $selected));
+                $span->nodeValue = strval($option->nodeValue ?: $selected);
                 break;
             }
         }
@@ -998,7 +1026,7 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
         $pre->setAttribute("data-type", "textarea");
         $inputName = $textarea->getAttribute("name");
         copyAttributes($textarea, $pre, "value", "required");
-        $pre->nodeValue = htmlspecialchars(strval($data[$inputName] ?? $textarea->nodeValue));
+        $pre->nodeValue = strval($data[$inputName] ?? $textarea->nodeValue);
         $textarea->parentNode?->replaceChild($pre, $textarea);
     }
 
@@ -1143,13 +1171,13 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
         foreach ($arr as $value) {
             $clone = $element->cloneNode(true);
             if ($element->hasAttribute("data-as")) {
-                applyDataValues($clone, [...$values, $element->getAttribute("data-as") => $value], $values, $files);
+                applyDataValues($clone, [...$data, $element->getAttribute("data-as") => $value], $values, $files);
             } else {
                 if ($fileInput) {
                     $transformer = $formConfig->fileTransformers[$element->getAttribute("data-file-transformer") ?: "name"];
-                    $clone->nodeValue = htmlspecialchars(strval($transformer($value)));
+                    $clone->nodeValue = strval($transformer($value));
                 } else {
-                    $clone->nodeValue = htmlspecialchars(strval($value));
+                    $clone->nodeValue = strval($value);
                 }
             }
             $newNodes[] = ($clone);
@@ -1330,6 +1358,22 @@ $formConfig->fileTransformers = [
     },
     "dump" => function(array $metadata): string {
         return print_r($metadata, true);
+    },
+    "image" => function(array $metadata): string {
+        return '<img src="data:image/jpeg;base64,' . base64_encode(file_get_contents($metadata["tmp_name"])) . '" alt="' . htmlspecialchars($metadata["name"]) . '"/>';
+    },
+    "thumbnail" => function(array $metadata): string {
+        $image = imagecreatefromstring(file_get_contents($metadata["tmp_name"]));
+        $width = imagesx($image);
+        $height = imagesy($image);
+        $newHeight = 64;
+        $newWidth = floor($width / $height * $newHeight);
+        $thumb = imagecreatetruecolor($newWidth, $newHeight);
+        imagecopyresampled($thumb, $image, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+        ob_start();
+        imagejpeg($thumb);
+        $data = ob_get_clean();
+        return '<img src="data:image/jpeg;base64,' . base64_encode($data) . '" alt="' . htmlspecialchars($metadata["name"]) . '"/>';
     },
 ];
 $formConfig->fileValidator = function(array $metadata): bool {
