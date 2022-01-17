@@ -116,8 +116,17 @@
  *   - type: the file MIME type
  *   - path: the path to the file on the server
  *   - dump: a dump of the file metadata
+ *   - image: an inline image, unmodified @todo implement inline image
  *   - thumbnail: an image thumbnail with width 64 @todo implement thumbnail
- * To output the files to a directory on the server, set FormEmailConfig::fileDir to a directory.
+ *
+ * To replace filenames with a hash of the file, set FormEmailConfig::hashFilenames to HashOptions::NO (default),
+ * HashOptions::SAVED_ONLY, HashOptions::EMAIL_ONLY, or HashOptions::YES.
+ * If not NO, $metadata["original"] will be the original filename and $metadata["hash"] will be the hash filename.
+ * If EMAIL_ONLY or YES, $metadata["name"] will be changed to the hashed name.
+ *
+ * To output the files to a directory on the server, set FormEmailConfig::fileDir to a directory, or a closure that
+ * takes the file metadata array. This will create $metadata["path"] for the file.
+ *
  * To prevent the files from being attached to the email, set FormEmailConfig::attachFiles to false, or a closure
  * that takes the file metadata array.
  * If this directory is served by a web server, you may want to create a link to the file. Since the script is unaware
@@ -126,7 +135,11 @@
  *     return "https://example.com/uploads/" . $metadata["name"];
  *   }
  *
- * You may want to prevent files from being attached only if they exceed a certain size.
+ * The file metadata array has the standard $_FILES fields, plus "input" (the input name) and sometimes "original",
+ * "hash", "path", and "attached".
+ *
+ * You may want to prevent files from being attached only if they exceed a certain size, or have some other
+ * characteristic.
  * This can be accomplished by setting FormEmailConfig::attachFiles to a closure:
  *   $formEmailConfig->attachFiles = function(array $metadata): bool {
  *      if ($metadata["size"] > 1048576) {
@@ -136,7 +149,7 @@
  *      $remaining_size = 0;
  *      for ($_FILES as $file_input) {
  *        if (is_array($file_input["size"])) {
- *          foreach($file_input["size"] as $size) {
+ *          foreach ($file_input["size"] as $size) {
  *            if ($size < 1048576) {
  *              $remaining_size += $size;
  *            }
@@ -151,10 +164,21 @@
  *      }
  *      return true;
  *   }
+ * The same applies to FormEmailConfig::fileDir. If this returns a truthy string for a file, it is used as the fileDir.
+ * FormEmailConfig::hashFilenames may also be a closure that returns a HashOptions value.
+ *
+ * Note that the attachFiles closure is the last to be calculated, so it has access to the hash and path values
+ * if needed. For example, you could attach all files that were not saved to the server with:
+ *   $formEmailConfig->attachFiles = function(array $metadata): bool {
+ *     return !($file["path"] ?? false);
+ *   }
  *
  * To convert files to another type or otherwise transform the files themselves, use a file converter.
  * File converters are closures FormEmailConfig::fileConverter that take a reference to the metadata array.
  * Note that this conversion takes place *before* FormEmailConfig::hashFilenames.
+ * By default, this conversion is scoped to a single email. To use the converted files as the input files for subsequent
+ * emails, set FormEmailConfig::globalConversion to true.
+ * This should update $file["tmp_name"] if a new file is created.
  *
  * To validate files server-side before saving or attaching them, set $formConfig->fileValidator to a closure.
  * Any files that return false will be ignored.
@@ -168,6 +192,7 @@
  * The default fileValidator simply returns !$metadata["error"].
  *
  * @todo Add unit tests for the form processor and maybe split it into a separate repo.
+ * @noinspection GrazieInspection
  */
 
 use JetBrains\PhpStorm\Pure;
@@ -252,7 +277,6 @@ class FormConfig {
      * Closure to validate files using their metadata arrays.
      * @param array
      * @return bool
-     * @var Closure $fileValidator
      */
     public Closure $fileValidator;
 
@@ -262,6 +286,13 @@ class FormConfig {
     public bool $smtpAuth;
     public string $smtpUser;
     public string $smtpPassword;
+}
+
+enum HashOptions {
+    case NO;
+    case SAVED_ONLY;
+    case EMAIL_ONLY;
+    case YES;
 }
 
 /**
@@ -292,8 +323,11 @@ class FormEmailConfig {
 
     /**
      * If non-empty, a directory on the server to which to output uploaded files.
+     * Can also be a closure that takes the file metadata array.
+     * @param array file metadata array
+     * @return string
      */
-    public string $fileDir;
+    public string|Closure $fileDir;
 
     /**
      * Whether to attach uploaded files to the email.
@@ -304,19 +338,25 @@ class FormEmailConfig {
     public bool|Closure $attachFiles;
 
     /**
-     * If true, uploaded filenames will be replaced with the md5 hash of the file.
+     * Uploaded filenames can be replaced with a hash of the file.
      * (This is desirable for security if $fileDir is a publicly accessible directory.)
+     * Can also be a closure that takes the file metadata array
+     * @param array file metadata array
+     * @return HashOptions
      */
-    // @todo Implement filename hashing.
-    public bool $hashFilenames;
+    public HashOptions|Closure $hashFilenames;
 
     /**
      * Converter applied to files before hashFilenames.
-     * @var Closure $fileConverter
      * @param array &$metadata file metadata array
      * @return void
      */
-    public Closure $fileConverter;
+    public ?Closure $fileConverter;
+
+    /**
+     * Whether to apply $fileConverter to $_FILES instead of $files.
+     */
+    public bool $globalConversion;
 
     /**
      * If non-empty, a path on the server to which to save the rendered form as an HTML file in lieu of
@@ -343,9 +383,10 @@ class FormEmailConfig {
         $this->bcc = [];
         $this->fileDir = "";
         $this->attachFiles = true;
-        $this->hashFilenames = false;
+        $this->hashFilenames = HashOptions::NO;
+        $this->fileConverter = null;
+        $this->globalConversion = false;
         $this->saveFile = "";
-        $this->fileConverter = function(array &$metadata): void {};
     }
 }
 
@@ -442,9 +483,11 @@ function collectForm(): void {
 function processForm(array $data, string $html): void {
     global $formConfig;
 
+    validateFiles();
+
     foreach (($formConfig->emails)($data) as $emailConfig) {
         /** @var $emailConfig FormEmailConfig */
-        $renderedForm = renderForm($data, $html, $emailConfig->values);
+        $renderedForm = renderForm($data, $html, $emailConfig);
 
         sendEmail($emailConfig, $renderedForm);
     }
@@ -453,14 +496,20 @@ function processForm(array $data, string $html): void {
 /**
  * Send an email.
  * @param FormEmailConfig $emailConfig
- * @param string $emailBody The HTML email body.
+ * @param RenderedEmail $renderedEmail The rendered email.
  * @throws \PHPMailer\PHPMailer\Exception
  */
-function sendEmail(FormEmailConfig $emailConfig, string $emailBody): void {
+function sendEmail(FormEmailConfig $emailConfig, RenderedEmail $renderedEmail): void {
     global $formConfig;
+
+    $emailBody = $renderedEmail->html;
+    $attachments = $renderedEmail->attachments;
 
     if ($emailConfig->from === null) {
         echo $emailBody;
+        foreach ($attachments as $attachment) {
+            echo "\n<!-- attach $attachment->path as $attachment->filename with type $attachment->type -->";
+        }
         exit;
     }
 
@@ -493,6 +542,11 @@ function sendEmail(FormEmailConfig $emailConfig, string $emailBody): void {
     foreach ($emailConfig->bcc as $bcc) {
         /** @var $bcc EmailAddress */
         $mailer->AddBcc($bcc->address, $bcc->name ?: '');
+    }
+    foreach ($attachments as $attachment) {
+        /** @var $attachment AttachmentInfo */
+        $mailer->addAttachment($attachment->path, $attachment->filename,
+            startsWith($attachment->type, "text/") ? "quoted-printable" : "base64", $attachment->type);
     }
     $mailer->IsHTML(true);
     $mailer->Subject = $emailConfig->subject;
@@ -575,7 +629,7 @@ function collectElements(DOMElement|DOMDocument|array &$root, string $tag = "*",
  * @param string ...$attributes Attributes to check
  * @return Closure to be passed to collectElements
  */
-function has(string ...$attributes): Closure {
+#[Pure] function has(string ...$attributes): Closure {
     return function(DOMElement $element) use ($attributes): bool {
         foreach ($attributes as $attribute) {
             if ($element->hasAttribute($attribute)) {
@@ -591,7 +645,7 @@ function has(string ...$attributes): Closure {
  * @param string $attribute An attribute to check
  * @return Closure to be passed to collectElements
  */
-function truthy(string $attribute): Closure {
+#[Pure] function truthy(string $attribute): Closure {
     return function(DOMElement $element) use ($attribute): bool {
         return checkString($element->getAttribute($attribute));
     };
@@ -603,7 +657,7 @@ function truthy(string $attribute): Closure {
  * @param string $value A value against which to compare the attribute
  * @return Closure to be passed to collectElements
  */
-function attr(string $attribute, string $value): Closure {
+#[Pure] function attr(string $attribute, string $value): Closure {
     return function(DOMElement $element) use ($attribute, $value): bool {
         return $element->getAttribute($attribute) === $value;
     };
@@ -614,37 +668,250 @@ function attr(string $attribute, string $value): Closure {
  * @param DOMElement|DOMDocument &$root The root element in which to apply the values
  * @param array $data Values to use for elements with the data-value attribute
  * @param array $values Values to use for elements with the data-value-config attribute
+ * @param array $files Uploaded file metadata (in $_FILES format)
  */
-function applyDataValues(DOMElement|DOMDocument &$root, array $data, array $values): void {
+function applyDataValues(DOMElement|DOMDocument &$root, array $data, array $values, array $files): void {
+    global $formConfig;
     foreach (collectElements($root, "*", has("data-value-config")) as $element) {
         /** @var $element DOMElement */
         if (isset($values[$element->getAttribute("data-value-config")])) {
-            $element->nodeValue = $values[$element->getAttribute("data-value-config")];
+            $element->nodeValue = htmlspecialchars(strval($values[$element->getAttribute("data-value-config")]));
             $element->removeAttribute("data-value-config");
         }
     }
     foreach (collectElements($root, "*", has("data-value")) as $element) {
         /** @var $element DOMElement */
         if (isset($data[$element->getAttribute("data-value")])) {
-            $element->nodeValue = $data[$element->getAttribute("data-value")];
+            $element->nodeValue = htmlspecialchars(strval($data[$element->getAttribute("data-value")]));
+            $element->removeAttribute("data-value");
+        } else if (isset($files[$element->getAttribute("data-value")])) {
+            $transformer = $formConfig->fileTransformers[$element->getAttribute("data-file-transformer") ?: "name"];
+            $element->nodeValue = htmlspecialchars(strval($transformer($files[$element->getAttribute("data-value")])));
             $element->removeAttribute("data-value");
         }
     }
 }
 
 /**
+ * Convert a file array with multiple files to an array of file arrays.
+ * @param array $metadata A PHP-style file metadata array (like $_FILES["something"])
+ * @return array A sane file metadata array
+ */
+#[Pure] function transformFileArray(array $metadata): array {
+    if (!isset($metadata["size"])) {
+        return [];
+    }
+    if (!is_array($metadata["size"])) {
+        return [$metadata];
+    }
+    $files = [];
+    for ($i = 0; $i < count($metadata["size"]); $i++) {
+        $file = [];
+        foreach ($metadata as $key => $values) {
+            $file[$key] = $values[$i] ?? null;
+        }
+        $files[] = $file;
+    }
+    return $files;
+}
+
+/**
+ * Propagate changes to a file from a transformed files array back to the original files array.
+ * @param array $files A PHP-style file metadata array like ($_FILES["something"])
+ * @param int $index The index of the file to update
+ * @param array $file The file (in transformFileArray) to put in $files
+ * @return void
+ */
+function updateFile(array &$files, int $index, array $file) {
+    if (!isset($files["size"])) {
+        echo "Warning: got a bogus file array!";
+        var_dump($files);
+        return;
+    }
+    $multiple = is_array($files["size"]);
+    if (!$multiple && $index !== 0) {
+        echo "Warning: got index $index for a non-multiple file array!";
+        var_dump($files);
+        return;
+    }
+    if ($multiple && $index > count($files["size"]) - 1) {
+        echo "Warning: key $index out of range in file array!";
+        var_dump($files);
+        return;
+    }
+    if (!$multiple) {
+        $files = $file;
+        return;
+    }
+    foreach ($file as $key => $value) {
+        $files[$key][$index] = $value;
+    }
+}
+
+/**
+ * Apply the fileConverter, hashFilenames, and fileDir conversions to files, and add "input" and "attached" to files.
+ * @param FormEmailConfig $emailConfig
+ * @return array The updated file metadata array
+ */
+function applyFileConversions(FormEmailConfig $emailConfig): array {
+    if ($emailConfig->globalConversion) {
+        $files = &$_FILES;
+    } else {
+        $files = $_FILES;
+    }
+
+    foreach ($files as $inputName => &$fileArray) {
+        $transformed = transformFileArray($fileArray);
+        foreach ($transformed as $index => &$file) {
+            $file["input"] = $inputName;
+
+            // Apply fileConverter.
+            if ($emailConfig->fileConverter !== null) {
+                ($emailConfig->fileConverter)($file);
+            }
+
+            // Apply hashFilenames.
+            $hash = is_callable($emailConfig->hashFilenames) ? ($emailConfig->hashFilenames)($file) :
+                $emailConfig->hashFilenames;
+            /** @var $hash HashOptions */
+            if ($hash !== HashOptions::NO) {
+                $ext = pathinfo($file["name"], PATHINFO_EXTENSION);
+                $file["hash"] = sha1_file($file["tmp_name"]);
+                if ($ext) {
+                    $file["hash"] .= ".$ext";
+                }
+                $file["original"] = $file["name"];
+            }
+            if ($hash === HashOptions::EMAIL_ONLY || $hash === HashOptions::YES) {
+                $file["name"] = $file["hash"];
+            }
+
+            // Apply fileDir.
+            $path = is_callable($emailConfig->fileDir) ? ($emailConfig->fileDir)($file) : $emailConfig->fileDir;
+            if (!is_string($path)) {
+                echo "Warning: got non-string path for file; ignoring.";
+                var_dump($path, $file);
+                $path = "";
+            }
+            if ($path) {
+                if (!endsWith($path, "/")) {
+                    $path .= "/";
+                }
+                if ($hash === HashOptions::SAVED_ONLY || $hash === HashOptions::YES) {
+                    $path .= $file["hash"];
+                } else if ($hash === HashOptions::EMAIL_ONLY) {
+                    $path .= $file["original"];
+                } else if ($hash === HashOptions::NO) {
+                    $path .= $file["name"];
+                }
+                if (copy($file["tmp_name"], $path)) {
+                    $file["path"] = $path;
+                } else {
+                    echo "Warning: Failed to copy ${file["tmp_name"]} to $path.";
+                }
+            }
+
+            // Apply attachFiles.
+            $attach =
+                is_callable($emailConfig->attachFiles) ? ($emailConfig->attachFiles)($file) : $emailConfig->attachFiles;
+            $file["attached"] = !!$attach;
+
+            updateFile($fileArray, $index, $file);
+        }
+    }
+
+    // If $files is a reference, this still returns a copy because PHP. https://3v4l.org/T5cKC
+    return $files;
+}
+
+/**
+ * Remove invalid files from $_FILES.
+ */
+function validateFiles(): void {
+    global $formConfig;
+    $removeInputs = [];
+    foreach ($_FILES as $inputName => &$fileArray) {
+        if (!isset($fileArray["size"])) {
+            echo "Warning: got a bogus file array!";
+            var_dump($fileArray);
+            continue;
+        }
+        $multiple = is_array($fileArray["size"]);
+        $transformed = transformFileArray($fileArray);
+        $invalidFiles = [];
+        foreach ($transformed as $index => $file) {
+            if (!($formConfig->fileValidator)($file)) {
+                $invalidFiles[] = $index;
+            }
+        }
+        if (count($invalidFiles)) {
+            if (!$multiple) {
+                $removeInputs[] = $inputName;
+            } else {
+                foreach ($fileArray as &$fileValuesArray) {
+                    $newValues = [];
+                    foreach ($fileValuesArray as $index => $value) {
+                        if (!in_array($index, $invalidFiles)) {
+                            $newValues[] = $value;
+                        }
+                    }
+                    $fileValuesArray = $newValues;
+                }
+            }
+        }
+    }
+    foreach ($removeInputs as $input) {
+        unset($_FILES[$input]);
+    }
+}
+
+class AttachmentInfo {
+    public function __construct(public string $path, public string $filename, public string $type) {
+    }
+}
+
+/**
+ * @param array<array> $fileArray A PHP-style file array like $_FILES
+ * @return array<AttachmentInfo> Files to attach
+ */
+#[Pure] function collectAttachments(array $fileArray): array {
+    $attachments = [];
+    foreach ($fileArray as $metadata) {
+        $files = transformFileArray($metadata);
+        foreach ($files as $file) {
+            if ($file["attached"] ?? false) {
+                $attachments[] = new AttachmentInfo($file["tmp_name"], $file["name"], $file["type"]);
+            }
+        }
+    }
+    return $attachments;
+}
+
+class RenderedEmail {
+    /**
+     * @param string $html
+     * @param array<AttachmentInfo> $attachments
+     */
+    public function __construct(public string $html, public array $attachments) {
+    }
+}
+
+/**
  * Render the HTML to send in an email.
  * @param array $data The submitted form data.
- * @param array|null $values Additional values to use when rendering data-value.
+ * @param FormEmailConfig $emailConfig A config with additional context for rendering.
  * @param string $html The server-rendered HTML of the empty form.
- * @return string Rendered HTML containing the form values.
+ * @return RenderedEmail Rendered email containing the form values.
  * @throws Exception
  * @throws DOMException
  */
-function renderForm(array $data, string $html, ?array $values = []): string {
+function renderForm(array $data, string $html, FormEmailConfig $emailConfig): RenderedEmail {
     global $formConfig, $pwd;
 
-    $values ??= [];
+    $files = applyFileConversions($emailConfig);
+    $attachments = collectAttachments($files);
+
+    $values = $emailConfig->values ?? [];
     $html5 = new HTML5(["disable_html_ns" => true]);
     $dom = $html5->loadHTML($html);
     $forms = $dom->getElementsByTagName('form');
@@ -679,9 +946,7 @@ function renderForm(array $data, string $html, ?array $values = []): string {
         $span->setAttribute("data-input-type", $inputType);
         switch ($inputType) {
         case 'file':
-            var_dump($dom->saveHTML($input));
-            var_dump($_FILES);
-
+            $span->setAttribute("data-value", $inputName);
             break;
         case 'button':
         case 'submit':
@@ -703,7 +968,7 @@ function renderForm(array $data, string $html, ?array $values = []): string {
                 // Remove repeated inputs by default.
                 $span->setAttribute("data-remove", "1");
             }
-            $span->nodeValue = htmlspecialchars($data[$inputName] ?? $input->getAttribute('value'));
+            $span->nodeValue = htmlspecialchars(strval($data[$inputName] ?? $input->getAttribute('value')));
         }
         $input->parentNode?->replaceChild($span, $input);
     }
@@ -719,7 +984,7 @@ function renderForm(array $data, string $html, ?array $values = []): string {
         foreach (collectElements($select, "option") as $option) {
             /** @var $option DOMElement */
             if (($option->getAttribute("value") ?: $option->nodeValue) === $selected) {
-                $span->nodeValue = htmlspecialchars($option->nodeValue ?: $selected);
+                $span->nodeValue = htmlspecialchars(strval($option->nodeValue ?: $selected));
                 break;
             }
         }
@@ -733,7 +998,7 @@ function renderForm(array $data, string $html, ?array $values = []): string {
         $pre->setAttribute("data-type", "textarea");
         $inputName = $textarea->getAttribute("name");
         copyAttributes($textarea, $pre, "value", "required");
-        $pre->nodeValue = $data[$inputName] ?? $textarea->nodeValue;
+        $pre->nodeValue = htmlspecialchars(strval($data[$inputName] ?? $textarea->nodeValue));
         $textarea->parentNode?->replaceChild($pre, $textarea);
     }
 
@@ -864,6 +1129,11 @@ function renderForm(array $data, string $html, ?array $values = []): string {
 
         $arr = $data[$element->getAttribute("data-foreach")] ??
             $values[$element->getAttribute("data-foreach-config")] ?? null;
+        $fileInput = false;
+        if ($arr === null) {
+            $fileInput = true;
+            $arr = transformFileArray($files[$element->getAttribute("data-foreach")]);
+        }
         if (!is_array($arr)) {
             $arr = [$arr];
         }
@@ -873,14 +1143,23 @@ function renderForm(array $data, string $html, ?array $values = []): string {
         foreach ($arr as $value) {
             $clone = $element->cloneNode(true);
             if ($element->hasAttribute("data-as")) {
-                applyDataValues($clone, [...$values, $element->getAttribute("data-as") => $value], $values);
+                applyDataValues($clone, [...$values, $element->getAttribute("data-as") => $value], $values, $files);
             } else {
-                $clone->nodeValue = $value;
+                if ($fileInput) {
+                    $transformer = $formConfig->fileTransformers[$element->getAttribute("data-file-transformer") ?: "name"];
+                    $clone->nodeValue = htmlspecialchars(strval($transformer($value)));
+                } else {
+                    $clone->nodeValue = htmlspecialchars(strval($value));
+                }
             }
             $newNodes[] = ($clone);
         }
 
-        $element->replaceWith(...$newNodes);
+        if (count($newNodes)) {
+            $element->replaceWith(...$newNodes);
+        } else {
+            $element->remove();
+        }
     }
 
     // Process data-if elements.
@@ -923,7 +1202,7 @@ function renderForm(array $data, string $html, ?array $values = []): string {
         $element->parentNode?->removeChild($element);
     }
 
-    applyDataValues($dom, $data, $values);
+    applyDataValues($dom, $data, $values, $files);
 
     // Apply data transformations.
     foreach (collectElements($dom, "*", has("data-transformer")) as $element) {
@@ -970,7 +1249,7 @@ function renderForm(array $data, string $html, ?array $values = []): string {
         }
     }
 
-    return $dom->saveHTML();
+    return new RenderedEmail($dom->saveHTML(), $attachments);
 }
 
 /** @noinspection PhpObjectFieldsAreOnlyWrittenInspection
@@ -1044,7 +1323,7 @@ $formConfig->fileTransformers = [
         return $metadata["type"];
     },
     "size" => function(array $metadata): string {
-        return "" . $metadata["size"];
+        return strval($metadata["size"]);
     },
     "path" => function(array $metadata): string {
         return $metadata["path"] ?? $metadata["tmp_name"];
