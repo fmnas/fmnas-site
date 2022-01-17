@@ -355,7 +355,6 @@ function sendEmail(FormEmailConfig $emailConfig, string $emailBody): void {
     $mailer->IsHTML(true);
     $mailer->Subject = $emailConfig->subject;
     $mailer->Body = $emailBody;
-    var_dump($mailer); // @todo Remove mailer dump
     $mailer->Send();
 }
 
