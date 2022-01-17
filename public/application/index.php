@@ -89,7 +89,8 @@ Application
     <h1 data-if="applicant_email" data-operator="eq" data-rhs-value="applicant_email">Always true.</h1>
     <h1 data-if="applicant_email" data-operator="ne" data-rhs-value="applicant_email">Never true.</h1>
     <label for="applicant_email">Email</label>
-    <h1 data-value="applicant_email"></h1>
+    <h1 data-value="applicant_email" data-transformer="email-link" data-transformer-if-config="main"></h1>
+    <h1 data-value="applicant_email" data-transformer="email-link" data-transformer-if="applicant_email" data-transformer-operator="ne" data-transformer-rhs="tortoise@panray.seangillen.net"></h1>
     <input id="applicant_email" type="email" name="applicant_email" data-transformer="email-link" required>
     <br><input type="text" name="list_input[]" value="value 1">
     <br><input type="text" name="list_input[]" value="value 2">
