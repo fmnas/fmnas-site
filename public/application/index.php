@@ -129,5 +129,19 @@ Application
     <input type="radio" id="mothman" name="monster" value="moth">
     <label for="mothman">Mothman</label>
 </fieldset>
+<fieldset form="applicatin">
+    <legend>Choose your favorite monster</legend>
+
+    <input type="radio" id="kraken" name="monster" value="krak">
+    <label for="kraken">Kraken</label><br/>
+
+    <input type="radio" id="sasquatch" name="monster" value="sasq">
+    <label for="sasquatch">Sasquatch</label><br/>
+
+    <legend>An extraneous legend</legend>
+
+    <input type="radio" id="mothman" name="monster" value="moth">
+    <label for="mothman">Mothman</label>
+</fieldset>
 </body>
 </html>

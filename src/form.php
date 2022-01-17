@@ -36,6 +36,8 @@
  *   <li data-foreach="cats">
  *   </ul>
  *
+ * (Note: the output elements will all be inside a div with the data-foreach attribute.)
+ *
  * data-foreach may also be used with data-as, in which case the value will be accessible through data-value:
  *   <li data-foreach="cats" data-as="cat">Cat named <span data-value="cat"></span>
  *
@@ -372,12 +374,19 @@ function moveChildren(DOMElement &$from, DOMElement &$to): void {
  * Elements with a truthy data-ignore are never returned.
  * Using getElementsByTagName directly in a foreach loop means you can't remove elements, since this messes up the
  * internal iterator. This way you can remove elements while iterating.
- * @param DOMElement|DOMDocument $root The root element to search.
+ * @param DOMElement|DOMDocument|array<DOMElement|DOMDocument> $root The root element(s) to search.
  * @param string $tag The tag to match.
  * @param Closure|null $filter A filter (DOMElement -> bool) to apply to elements before adding them to the array.
  * @return array An array containing elements.
  */
-function collectElements(DOMElement|DOMDocument &$root, string $tag = "*", ?Closure $filter = null): array {
+function collectElements(DOMElement|DOMDocument|array &$root, string $tag = "*", ?Closure $filter = null): array {
+    if (is_array($root)) {
+        $elements = [];
+        foreach ($root as $rootElement) {
+            array_push($elements, ...collectElements($rootElement, $tag, $filter));
+        }
+        return $elements;
+    }
     $filter ??= function(DOMElement $element): bool {
         return true;
     };
@@ -457,8 +466,12 @@ function renderForm(array $data, string $html, ?array $values = []): string {
     $form->setAttribute("data-type", "form");
     $originalForm->parentNode?->replaceChild($form, $originalForm);
 
+    // Find fieldsets associated with the form.
+    $fieldsets = collectElements($dom, "fieldset", attr("form", $form->getAttribute("id")));
+    $roots = [$form, ...$fieldsets];
+
     // Replace input elements with span elements.
-    foreach (collectElements($form, "input") as $input) {
+    foreach (collectElements($roots, "input") as $input) {
         /** @var $input DOMElement */
         $span = $dom->createElement("span");
         $span->setAttribute("data-type", "input");
@@ -505,7 +518,7 @@ function renderForm(array $data, string $html, ?array $values = []): string {
     }
 
     // Replace select elements with span elements.
-    foreach (collectElements($form, "select") as $select) {
+    foreach (collectElements($roots, "select") as $select) {
         /** @var $select DOMElement */
         $span = $dom->createElement("span");
         $span->setAttribute("data-type", "select");
@@ -522,7 +535,7 @@ function renderForm(array $data, string $html, ?array $values = []): string {
     }
 
     // Replace textarea elements with pre elements.
-    foreach (collectElements($form, "textarea") as $textarea) {
+    foreach (collectElements($roots, "textarea") as $textarea) {
         /** @var $textarea DOMElement */
         $pre = $dom->createElement("pre");
         $pre->setAttribute("data-type", "textarea");
@@ -533,9 +546,7 @@ function renderForm(array $data, string $html, ?array $values = []): string {
     }
 
     // Replace fieldset elements with section elements with h3 headers.
-    foreach (array_merge(collectElements($form, "fieldset"),
-        // Fieldsets can be associated with a form that isn't an ancestor!
-        collectElements($dom, "fieldset", attr("form", $form->getAttribute("id")))) as $fieldset) {
+    foreach (array_merge(collectElements($form, "fieldset"), $fieldsets) as $fieldset) {
         /** @var $fieldset DOMElement */
 
         // Ideally a fieldset should contain exactly one legend, but you never know.
@@ -557,7 +568,7 @@ function renderForm(array $data, string $html, ?array $values = []): string {
         }
 
         $section = $dom->createElement("section");
-        copyAttributes($fieldset, $section);
+        copyAttributes($fieldset, $section, "form");
         $section->setAttribute("data-type", "fieldset");
         moveChildren($fieldset, $section);
         $fieldset->parentNode?->replaceChild($section, $fieldset);
@@ -566,7 +577,7 @@ function renderForm(array $data, string $html, ?array $values = []): string {
     // @todo Replace label elements with span elements.
 
     // Replace button elements with span elements (hidden by default).
-    foreach (collectElements($form, "button") as $button) {
+    foreach (collectElements($roots, "button") as $button) {
         /** @var $button DOMElement */
         $span = $dom->createElement("span");
         $span->setAttribute("data-type", "button");
@@ -580,7 +591,7 @@ function renderForm(array $data, string $html, ?array $values = []): string {
     // @todo Replace datalist elements with ul elements (hidden by default).
 
     // Merge linked style sheets into the output HTML.
-    foreach (collectElements($dom, "link", attr("rel", "stylesheet")) as $link) {
+    foreach (collectElements($roots, "link", attr("rel", "stylesheet")) as $link) {
         /** @var $link DOMElement */
         $href = $link->getAttribute("href");
         $url = parse_url($href);
