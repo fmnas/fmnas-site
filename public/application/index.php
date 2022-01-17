@@ -1,6 +1,10 @@
 <?php
 require_once "../../src/common.php";
 require_once "../../src/form.php";
+ini_set('upload_max_filesize', '10M');
+ini_set('max_file_uploads', '20');
+ini_set('file_uploads', true);
+ini_set('post_max_size', '200M');
 $formConfig->confirm = function(array $formData): void {
     ?>
     <!DOCTYPE html>
@@ -35,7 +39,8 @@ $formConfig->handler = function(FormException $e): void {
     <?php
 };
 
-$formConfig->emails = function(array $formData): array {
+$cwd = getcwd();
+$formConfig->emails = function(array $formData) use ($cwd): array {
     $shelterEmail = new EmailAddress(_G_default_email_user() . '@' . _G_public_domain(), _G_shortname());
     $applicantEmail = new EmailAddress($formData['applicant_email'], $formData['applicant_name']);
 
@@ -45,6 +50,9 @@ $formConfig->emails = function(array $formData): array {
         '',
         ['main' => true]
     );
+
+    $dump->fileDir = "$cwd/received";
+    $dump->saveFile = "$cwd/received/last.html";
 
     $primaryEmail = new FormEmailConfig(
         $applicantEmail,
@@ -65,6 +73,12 @@ $formConfig->emails = function(array $formData): array {
     }
 
     return [$dump, $primaryEmail, $secondaryEmail];
+};
+$formConfig->fileTransformers["link"] = function(array $metadata): string {
+    return "Link transformer not yet implemented";
+};
+$formConfig->fileTransformers["thumbnail"] = function(array $metadata): string {
+    return "Thumbnail transformer not yet implemented";
 };
 $formConfig->smtpHost = Config::$smtp_host;
 $formConfig->smtpSecurity = Config::$smtp_security;
@@ -136,6 +150,19 @@ Application
         <h1 data-if="selection" data-rhs="diplo">WUB WUB</h1>
         <h1 data-if="selection" data-rhs="Saltasaurus">salty boi</h1>
     </fieldset>
+    <label for="images">Upload some images
+        <input type="file" id="images" name="images[]" accept="image/*" capture="environment" multiple>
+    </label>
+    <label for="file">Upload another file</label>
+    <input type="file" id="file" name="file">
+    <pre data-foreach="images" data-file-transformer="dump"></pre>
+    <ul>
+        <li data-foreach="images" data-as="image">
+            <a data-href="image" data-file-transformer="link">
+                <span data-href="image" data-file-transformer="thumbnail"></span>
+            </a>
+        </li>
+    </ul>
     <button type="submit">Submit Application</button>
 </form>
 <fieldset form="application">
@@ -151,6 +178,19 @@ Application
 
     <input type="radio" id="mothman" name="monster" value="moth">
     <label for="mothman">Mothman</label>
+
+    <p>Choose your monster's features:</p>
+
+    <div>
+        <input type="checkbox" id="scales" name="scales"
+            checked>
+        <label for="scales">Scales</label>
+    </div>
+
+    <div>
+        <input type="checkbox" id="horns" name="horns">
+        <label for="horns">Horns</label>
+    </div>
 </fieldset>
 </body>
 </html>
