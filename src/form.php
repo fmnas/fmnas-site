@@ -274,14 +274,42 @@ function collectForm(): void {
             ($formConfig->handler)(new FormException($e, $receivedData));
         }
     } else {
-        // Display the form.
-        echo $html;
-        // @todo Move injected styles to head.
-        ?>
-        <style>
-            /* Injected styles */
-        </style>
-        <?php
+        // Look for a good place to put the injected CSS.
+        $separator = "";
+        $after = false; // Whether to place the CSS after the separator instead of before.
+        $halves = [$html, ""];
+        /** @noinspection HtmlRequiredLangAttribute */
+        foreach ([["</head>", false], ["<body", false], ["<head", true], ["</title>", true], ["<!DOCTYPE html>", true],
+            ["<html>", true]] as $candidate) {
+            if (contains($html, $candidate[0])) {
+                $separator = $candidate[0];
+                $after = $candidate[1];
+                $halves = explode($candidate[0], $html, 2);
+                break;
+            }
+        }
+
+        // Stuff before the injected CSS.
+        echo $halves[0];
+        if ($after) {
+            echo $separator;
+        }
+
+        // Build and echo the injected CSS.
+        $attributes = ["data-hidden", "data-foreach", "data-foreach-config", "data-if", "data-if-config", "data-value",
+            "data-value-config"];
+        $selectors = [];
+        foreach ($attributes as $attribute) {
+            $selectors[] =
+                "*[$attribute]:not([data-hidden='0']):not([data-hidden='false']):not([data-hidden='false' i])";
+        }
+        echo "<style>" . implode(",", $selectors) . "{display: none;}</style>";
+
+        // Stuff after the injected CSS.
+        if (!$after) {
+            echo $separator;
+        }
+        echo $halves[1];
     }
 }
 
@@ -526,7 +554,6 @@ function renderForm(array $data, string $html, ?array $values = []): string {
         $inputType = $input->getAttribute("type");
         $span->setAttribute("data-input-type", $inputType);
         switch ($inputType) {
-            // @todo Support input[type="color"]
             // @todo Support input[type="file"]
         case 'button':
         case 'submit':
@@ -543,16 +570,6 @@ function renderForm(array $data, string $html, ?array $values = []): string {
         case 'text':
         case 'checkbox': // @todo Consider handling checkboxes differently.
         case 'radio': // @todo Consider handling radio buttons differently.
-        case 'date':
-        case 'datetime-local':
-        case 'email':
-        case 'month':
-        case 'number':
-        case 'range':
-        case 'tel':
-        case 'time':
-        case 'url':
-        case 'week':
         default:
             if (endsWith($inputName, "[]") && !$input->hasAttribute("data-remove")) {
                 // Remove repeated inputs by default.
