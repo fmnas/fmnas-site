@@ -32,7 +32,7 @@ http_response_code(500);
     var_dump($e->formData);
     };
     $formConfig->emails = function(array $formData): array {
-    $shelterEmail = new EmailAddress(_G_default_email_user() . '@' . _G_public_domain());
+    $shelterEmail = new EmailAddress(_G_default_email_user() . '@' . _G_public_domain(), _G_shortname());
     $applicantEmail = new EmailAddress($formData['applicant_email'], $formData['applicant_name']);
 
     $primaryEmail = new FormEmailConfig(
