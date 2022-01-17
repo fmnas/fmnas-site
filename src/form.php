@@ -212,7 +212,7 @@ class FormEmailConfig {
 
     /**
      * FormEmailConfig constructor.
-     * @param EmailAddress $from The email for the From header.
+     * @param EmailAddress|null $from The email for the From header, or null to dump HTML and exit rather than emailing.
      * @param iterable<EmailAddress> $to The emails for the To header.
      * @param string $subject The value for the Subject header.
      * @param array|null $values An optional array of arbitrary data accessible
@@ -221,7 +221,7 @@ class FormEmailConfig {
      * For example, <input type="hidden" data-value="foo"> will be rendered as
      * <span>{{$values['foo']}}</span>
      */
-    public function __construct(public EmailAddress $from, public iterable $to, public string $subject,
+    public function __construct(public ?EmailAddress $from, public iterable $to, public string $subject,
         public ?array $values = []) {
         $this->replyTo = [];
         $this->cc = [];
@@ -338,6 +338,11 @@ function processForm(array $data, string $html): void {
  */
 function sendEmail(FormEmailConfig $emailConfig, string $emailBody): void {
     global $formConfig;
+
+    if ($emailConfig->from === null) {
+        echo $emailBody;
+        exit;
+    }
 
     $mailer = new PHPMailer(true);
     $mailer->IsSMTP();
