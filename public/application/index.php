@@ -39,6 +39,13 @@ $formConfig->emails = function(array $formData): array {
     $shelterEmail = new EmailAddress(_G_default_email_user() . '@' . _G_public_domain(), _G_shortname());
     $applicantEmail = new EmailAddress($formData['applicant_email'], $formData['applicant_name']);
 
+    $dump = new FormEmailConfig(
+        null,
+        [],
+        '',
+        ['main' => true]
+    );
+
     $primaryEmail = new FormEmailConfig(
         $applicantEmail,
         [$shelterEmail],
@@ -57,7 +64,7 @@ $formConfig->emails = function(array $formData): array {
         $secondaryEmail->cc = [new EmailAddress($formData['coapplicant_email'], $formData['applicant_name'])];
     }
 
-    return [$primaryEmail, $secondaryEmail];
+    return [$dump, $primaryEmail, $secondaryEmail];
 };
 $formConfig->smtpHost = Config::$smtp_host;
 $formConfig->smtpSecurity = Config::$smtp_security;
