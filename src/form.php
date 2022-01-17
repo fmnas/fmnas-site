@@ -368,7 +368,10 @@ function renderForm(array $data, string $html, ?array $values = []): string {
     // when removing the input elements
     $inputElements = [];
     foreach ($form->getElementsByTagName("input") as $input) {
-        $inputElements[] = $input;
+        /** @var $input DOMElement */
+        if (!$input->getAttribute("data-ignore")) {
+            $inputElements[] = $input;
+        }
     }
 
     // Replace input elements with span elements.
@@ -392,11 +395,13 @@ function renderForm(array $data, string $html, ?array $values = []): string {
             // fall through to standard input handler in case it isn't to be removed
         case 'text':
         default:
-            if (endsWith($inputName, "[]")) {
-                // @todo Handle repeated inputs.
+            if (endsWith($inputName, "[]") && !$input->hasAttribute("data-remove")) {
+                // Remove repeated inputs by default.
+                $span->setAttribute("data-remove", "1");
             }
             $span->nodeValue = htmlspecialchars($data[$inputName] ?? $input->getAttribute('value'));
         }
+        var_dump($dom->saveHTML($span));
         $input->parentNode?->replaceChild($span, $input);
     }
 
@@ -424,7 +429,11 @@ function renderForm(array $data, string $html, ?array $values = []): string {
     $elementsToRemove = [];
     foreach ($dom->getElementsByTagName("*") as $element) {
         /** @var $element DOMElement */
-        if ($element->getAttribute("data-remove")) {
+        // Replace "false" with "0" so it is falsy.
+        if ($element->getAttribute("data-remove") === "false") {
+            $element->setAttribute("data-remove", "0");
+        }
+        if ($element->getAttribute("data-remove") && !$element->getAttribute("data-ignore")) {
             $elementsToRemove[] = $element;
         }
     }
@@ -437,7 +446,7 @@ function renderForm(array $data, string $html, ?array $values = []): string {
     $elementsToTransform = [];
     foreach ($dom->getElementsByTagName("*") as $element) {
         /** @var $element DOMElement */
-        if ($element->hasAttribute("data-transformer")) {
+        if ($element->hasAttribute("data-transformer") && !$element->getAttribute("data-ignore")) {
             $elementsToTransform[] = $element;
         }
     }

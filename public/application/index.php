@@ -80,6 +80,10 @@ Application
     </label>
     <label for="applicant_email">Email</label>
     <input id="applicant_email" type="text" name="applicant_email" data-transformer="email-link" required>
+    <br><input type="text" name="list_input[]" value="value 1">
+    <br><input type="text" name="list_input[]" value="value 2">
+    <br><input type="text" name="list_input[]" value="value 3" data-remove="false">
+    <br><input type="text" name="list_input[]" value="value 4" data-ignore="true">
     <button type="submit">Submit Application</button>
 </form>
 </html>
