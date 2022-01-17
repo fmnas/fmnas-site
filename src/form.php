@@ -510,6 +510,7 @@ function sendEmail(FormEmailConfig $emailConfig, RenderedEmail $renderedEmail): 
         foreach ($attachments as $attachment) {
             echo "\n<!-- attach $attachment->path as $attachment->filename with type $attachment->type -->";
         }
+        return;
     }
 
     $mailer = new PHPMailer(true);
