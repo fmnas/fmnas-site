@@ -33,8 +33,9 @@
  * class label-value.
  * All generated elements will have a data-type attribute with the original tag ("form", "input", etc.)
  *
- * Elements with a truthy data-ignore attribute will not be modified.
  * Elements with a truthy data-remove attribute will be removed from the rendered email.
+ * Elements with a truthy data-ignore attribute will not be modified, though they will still be removed if an ancestor
+ * has a truthy data-remove.
  *
  * Inputs with a name ending in [] will be removed in the rendered email unless they have an explicit falsy data-remove
  * attribute. To handle such repeated inputs, add an element with a data-foreach attribute.
@@ -332,6 +333,13 @@ function sendEmail(FormEmailConfig $emailConfig, string $emailBody) {
     $mailer->Send();
 }
 
+/**
+ * Copy all attributes from one DOMElement to another.
+ * @param DOMElement $from The element that has the attributes.
+ * @param DOMElement $to The element that wants the attributes.
+ * @param array $exclude A list of attributes not to copy.
+ * @return void
+ */
 function copyAttributes(DOMElement &$from, DOMElement &$to, array $exclude = []): void {
     if ($from->hasAttributes()) {
         foreach ($from->attributes as $attribute) {
@@ -342,10 +350,72 @@ function copyAttributes(DOMElement &$from, DOMElement &$to, array $exclude = [])
     }
 }
 
+/**
+ * Move all children from one DOMElement to another.
+ * @param DOMElement $from The element that has the children.
+ * @param DOMElement $to The element that wants the children.
+ * @return void
+ */
 function moveChildren(DOMElement &$from, DOMElement &$to): void {
     while ($from->firstChild) {
         $to->appendChild($from->firstChild);
     }
+}
+
+/**
+ * Check truthiness of a string. Defined the same as in PHP, except "false" is falsy.
+ * @param string $str A string
+ * @return bool Whether the string is truthy.
+ */
+function checkString(string $str): bool {
+    return $str && $str !== "false";
+}
+
+/**
+ * Build an array of elements within a DOMElement or DOMDocument with the given tag that match the filter.
+ * By default, all tags are matched and no filter is applied.
+ * Elements with a truthy data-ignore are never returned.
+ * Using getElementsByTagName directly in a foreach loop means you can't remove elements, since this messes up the
+ * internal iterator. This way you can remove elements while iterating.
+ * @param DOMElement|DOMDocument $root The root element to search.
+ * @param string $tag The tag to match.
+ * @param Closure|null $filter A filter (DOMElement -> bool) to apply to elements before adding them to the array.
+ * @return array An array containing elements.
+ */
+function collectElements(DOMElement|DOMDocument &$root, string $tag = "*", ?Closure $filter = null): array {
+    $filter ??= function(DOMElement $element): bool {
+        return true;
+    };
+    $elements = [];
+    foreach ($root->getElementsByTagName($tag) as $element) {
+        /** @var $element DOMElement */
+        if ($filter($element) && !checkString($element->getAttribute("data-ignore"))) {
+            $elements[] = $element;
+        }
+    }
+    return $elements;
+}
+
+/**
+ * Generates a closure that returns true if the given element has the given attribute.
+ * @param string $attribute An attribute to check
+ * @return Closure to be passed to collectElements
+ */
+function has(string $attribute): Closure {
+    return function(DOMElement $element) use ($attribute): bool {
+        return $element->hasAttribute($attribute);
+    };
+}
+
+/**
+ * Generates a closure that returns true if the given attribute on the given element is truthy.
+ * @param string $attribute An attribute to check
+ * @return Closure to be passed to collectElements
+ */
+function truthy(string $attribute): Closure {
+    return function(DOMElement $element) use ($attribute): bool {
+        return checkString($element->getAttribute($attribute));
+    };
 }
 
 /**
@@ -380,19 +450,8 @@ function renderForm(array $data, string $html, ?array $values = []): string {
     $form->setAttribute("data-type", "form");
     $originalForm->parentNode?->replaceChild($form, $originalForm);
 
-    // Collect input elements.
-    // Using getElementsByTagName in the below foreach loop doesn't work as the internal iterator gets messed up
-    // when removing the input elements
-    $inputElements = [];
-    foreach ($form->getElementsByTagName("input") as $input) {
-        /** @var $input DOMElement */
-        if (!$input->getAttribute("data-ignore")) {
-            $inputElements[] = $input;
-        }
-    }
-
     // Replace input elements with span elements.
-    foreach ($inputElements as $input) {
+    foreach (collectElements($form, "input") as $input) {
         /** @var $input DOMElement */
         $span = $dom->createElement("span");
         $span->setAttribute("data-type", "span");
@@ -409,7 +468,7 @@ function renderForm(array $data, string $html, ?array $values = []): string {
                 $span->setAttribute("data-remove", "1");
                 break;
             }
-            // fall through to standard input handler in case it isn't to be removed
+            // Fall through to standard input handler in case it isn't to be removed.
         case 'text':
         default:
             if (endsWith($inputName, "[]") && !$input->hasAttribute("data-remove")) {
@@ -430,12 +489,12 @@ function renderForm(array $data, string $html, ?array $values = []): string {
 
     // @todo Replace button elements with span elements (hidden by default).
 
-    // @todo Merge linked style sheets into the output HTML?
-
     // @todo Deal with label elements.
 
+    // @todo Merge linked style sheets into the output HTML?
+
     // Mark all script elements with data-remove.
-    foreach ($dom->getElementsByTagName("script") as $script) {
+    foreach (collectElements($dom,"script") as $script) {
         if (!$script->hasAttribute("data-remove")) {
             $script->setAttribute("data-remove", "1");
             break;
@@ -443,31 +502,13 @@ function renderForm(array $data, string $html, ?array $values = []): string {
     }
 
     // Remove all elements marked with data-remove.
-    $elementsToRemove = [];
-    foreach ($dom->getElementsByTagName("*") as $element) {
-        /** @var $element DOMElement */
-        // Replace "false" with "0" so it is falsy.
-        if ($element->getAttribute("data-remove") === "false") {
-            $element->setAttribute("data-remove", "0");
-        }
-        if ($element->getAttribute("data-remove") && !$element->getAttribute("data-ignore")) {
-            $elementsToRemove[] = $element;
-        }
-    }
-    foreach ($elementsToRemove as $element) {
+    foreach (collectElements($dom, "*", truthy("data-remove")) as $element) {
         /** @var $element DOMElement */
         $element->parentNode?->removeChild($element);
     }
 
     // Apply transformers.
-    $elementsToTransform = [];
-    foreach ($dom->getElementsByTagName("*") as $element) {
-        /** @var $element DOMElement */
-        if ($element->hasAttribute("data-transformer") && !$element->getAttribute("data-ignore")) {
-            $elementsToTransform[] = $element;
-        }
-    }
-    foreach ($elementsToTransform as $element) {
+    foreach (collectElements($dom, "*", has("data-transformer")) as $element) {
         /** @var $element DOMElement */
         $transformer = $element->getAttribute("data-transformer");
         if (isset($formConfig->transformers[$transformer])) {
