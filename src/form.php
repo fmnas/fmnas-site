@@ -3,6 +3,9 @@
  * Include this file at the top of a form page, then set values of $formConfig.
  *
  * The <form> element will be replaced with an <article> element.
+ * All <script> elements will be removed unless they have an explicit falsy data-remove attribute.
+ *
+ * Within the <form> element:
  * All <input> and <select> elements will be replaced with <span> elements, except:
  *   input[type="button"], input[type="submit"], input[type="reset"], input[type="password"], input[type="hidden"],
  *   and input[type="image"] will be removed unless they have an explicit falsy data-remove attribute.
@@ -10,10 +13,14 @@
  * All <fieldset> elements will be replaced with <section> elements containing <h3> headers.
  * All <button> elements will be removed unless they have an explicit falsy data-remove attribute, in which case they
  * will be replaced with <span> elements.
- * All <script> elements will be removed unless they have an explicit falsy data-remove attribute.
  * All <label> elements will be replaced with span elements. The inner text will itself be in a span element with the
  * class label-value.
- * All generated elements will have a data-type attribute with the original tag ("form", "input", etc.)
+ * All <datalist> elements will be removed unless they have an explicit falsy data-remove attribute, in which case they
+ * will be replaced with <ul> elements. <option> elements therein will be replaced with <li> elements, and any contained
+ * within an <optgroup> element will have a data-optgroup attribute with the optgroup label (the outgroup is removed).
+ *
+ * All generated elements will have a data-type attribute with the original tag ("form", "input", etc.).
+ * For elements generated from an <input> element, the data-input-type attribute will be set with the original type.
  *
  * Elements with a truthy data-remove attribute will be removed from the rendered email.
  * Elements with a truthy data-ignore attribute will not be modified, though they will still be removed if an ancestor
@@ -36,7 +43,7 @@
  * hidden on the form page by injected CSS:
  *   <p data-hidden>Thank you for submitting the form! A copy of the received data is below.
  *
- * To use values from the form to generate output:
+ * To use values from the form to generate output, use data-value, data-if, data-operator, data-rhs, and data-rhs-value:
  *
  *   <input type="checkbox" name="display_message" value="1">
  *   <p data-if="display_message">This text will be displayed if the checkbox is checked.
@@ -64,7 +71,7 @@
  *   - tel-link: wraps a phone number in a tel link (useful with input[type="tel"])
  *   - link: wraps a URL in a link (useful with input[type="url"])
  *
- * data-transformer-if and data-transformer-if-config do what you expect.
+ * data-transformer-if and data-transformer-if-config may be used to conditionally apply transformers.
  *
  * All elements with the following attributes will be hidden on the form page by injected CSS, unless a falsy value
  * is explicitly given for data-hidden:
@@ -454,10 +461,12 @@ function renderForm(array $data, string $html, ?array $values = []): string {
     foreach (collectElements($form, "input") as $input) {
         /** @var $input DOMElement */
         $span = $dom->createElement("span");
-        $span->setAttribute("data-type", "span");
+        $span->setAttribute("data-type", "input");
         $inputName = $input->getAttribute("name");
-        copyAttributes($input, $span, "value", "required");
-        switch ($input->getAttribute("type")) {
+        copyAttributes($input, $span, "value", "required", "type");
+        $inputType = $input->getAttribute("type");
+        $span->setAttribute("data-input-type", $inputType);
+        switch ($inputType) {
             // @todo Support input[type="color"]
             // @todo Support input[type="file"]
         case 'button':
@@ -492,19 +501,83 @@ function renderForm(array $data, string $html, ?array $values = []): string {
             }
             $span->nodeValue = htmlspecialchars($data[$inputName] ?? $input->getAttribute('value'));
         }
-        var_dump($dom->saveHTML($span));
         $input->parentNode?->replaceChild($span, $input);
     }
 
-    // @todo Replace select elements with span elements.
+    // Replace select elements with span elements.
+    foreach (collectElements($form, "select") as $select) {
+        /** @var $select DOMElement */
+        $span = $dom->createElement("span");
+        $span->setAttribute("data-type", "select");
+        $inputName = $select->getAttribute("name");
+        copyAttributes($select, $span, "value", "required");
+        $selected = $data[$inputName] ?? "";
+        foreach (collectElements($select, "option") as $option) {
+            if ($option->getAttribute("value") === $selected) {
+                $span->nodeValue = htmlspecialchars($selected);
+                break;
+            }
+        }
+        $select->parentNode?->replaceChild($span, $select);
+    }
 
-    // @todo Replace textarea elements with pre elements.
+    // Replace textarea elements with pre elements.
+    foreach (collectElements($form, "textarea") as $textarea) {
+        /** @var $textarea DOMElement */
+        $pre = $dom->createElement("pre");
+        $pre->setAttribute("data-type", "textarea");
+        $inputName = $textarea->getAttribute("name");
+        copyAttributes($textarea, $pre, "value", "required");
+        $pre->nodeValue = $data[$inputName] ?? $textarea->nodeValue;
+        $textarea->parentNode?->replaceChild($pre, $textarea);
+    }
 
-    // @todo Replace fieldset elements with section elements with h3 headers.
+    // Replace fieldset elements with section elements with h3 headers.
+    foreach (array_merge(collectElements($form, "fieldset"),
+        // Fieldsets can be associated with a form that isn't an ancestor!
+        collectElements($dom, "fieldset", attr("form", $form->getAttribute("id")))) as $fieldset) {
+        /** @var $fieldset DOMElement */
 
-    // @todo Replace button elements with span elements (hidden by default).
+        // Ideally a fieldset should contain exactly one legend, but you never know.
+        $legends = collectElements($fieldset, "legend");
+        if (count($legends)) {
+            /** @var $legend DOMElement */
+            $legend = $legends[0];
+            $h3 = $dom->createElement("h3");
+            copyAttributes($legend, $h3);
+            $h3->setAttribute("data-type", "legend");
+            $h3->nodeValue = $legend->nodeValue;
+            $legend->parentNode?->replaceChild($h3, $legend);
+        }
+        foreach ($legends as $legend) {
+            // Mark all legends for removal.
+            if (!$legend->hasAttribute("data-remove")) {
+                $legend->setAttribute("data-remove", "1");
+            }
+        }
 
-    // @todo Deal with label elements.
+        $section = $dom->createElement("section");
+        copyAttributes($fieldset, $section);
+        $section->setAttribute("data-type", "fieldset");
+        moveChildren($fieldset, $section);
+        $fieldset->parentNode?->replaceChild($section, $fieldset);
+    }
+
+    // @todo Replace label elements with span elements.
+
+    // Replace button elements with span elements (hidden by default).
+    foreach (collectElements($form, "button") as $button) {
+        /** @var $button DOMElement */
+        $span = $dom->createElement("span");
+        $span->setAttribute("data-type", "button");
+        copyAttributes($button, $span, "value", "required", "type");
+        if (!$span->hasAttribute("data-remove")) {
+            $span->setAttribute("data-remove", "1");
+        }
+        $button->parentNode?->replaceChild($span, $button);
+    }
+
+    // @todo Replace datalist elements with ul elements (hidden by default).
 
     // Merge linked style sheets into the output HTML.
     foreach (collectElements($dom, "link", attr("rel", "stylesheet")) as $link) {
@@ -550,6 +623,7 @@ function renderForm(array $data, string $html, ?array $values = []): string {
         }
         $style = $dom->createElement("style");
         $style->setAttribute("type", "text/css");
+        $style->setAttribute("data-type", "link");
         copyAttributes($link, $style, "rel", "href");
         $style->nodeValue = $styles;
         $link->parentNode?->replaceChild($style, $link);
@@ -569,6 +643,8 @@ function renderForm(array $data, string $html, ?array $values = []): string {
         /** @var $element DOMElement */
         $element->parentNode?->removeChild($element);
     }
+
+    // @todo Apply data-values, etc.
 
     // Apply transformers.
     foreach (collectElements($dom, "*", has("data-transformer")) as $element) {
