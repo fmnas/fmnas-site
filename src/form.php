@@ -60,9 +60,10 @@
  * Valid values for data-operator are: gt, lt, eq, ge, le, ne
  *
  * To use values from the arrays provided by the callbacks in $formConfig, append -config to the attribute where a form
- * value would otherwise be provided:
+ * value or plain text value would otherwise be provided:
  *   <p data-if-config="user-email">Thanks for submitting the form!
  *   <p data-if-config="operator-email"><span data-value="name"></span> submitted the following form.
+ *   <p data-if-config="user-email" data-operator="eq" data-rhs-config="operator-email">Hey, that's me!
  *
  * To transform the inner HTML of an element after all other processing is complete, add a data-transformer attribute:
  *   <input type="email" name="email" value="example@example.com" data-transformer="email-link">
@@ -401,13 +402,18 @@ function collectElements(DOMElement|DOMDocument|array &$root, string $tag = "*",
 }
 
 /**
- * Generates a closure that returns true if the given element has the given attribute.
- * @param string $attribute An attribute to check
+ * Generates a closure that returns true if the given element has any of the given attributes.
+ * @param string ...$attributes Attributes to check
  * @return Closure to be passed to collectElements
  */
-function has(string $attribute): Closure {
-    return function(DOMElement $element) use ($attribute): bool {
-        return $element->hasAttribute($attribute);
+function has(string ...$attributes): Closure {
+    return function(DOMElement $element) use ($attributes): bool {
+        foreach ($attributes as $attribute) {
+            if ($element->hasAttribute($attribute)) {
+                return true;
+            }
+        }
+        return false;
     };
 }
 
@@ -667,11 +673,40 @@ function renderForm(array $data, string $html, ?array $values = []): string {
         }
     }
 
-    var_dump($data);
     // Process data-if elements.
-    foreach (collectElements($dom, "*", has("data-if")) as $element) {
+    foreach (collectElements($dom, "*", has("data-if", "data-if-config")) as $element) {
         /** @var $element DOMElement */
 
+        $lhs = $data[$element->getAttribute("data-if")] ?? $values[$element->getAttribute("data-if-config")] ?? null;
+
+        $rhs = true;
+        if ($element->hasAttribute("data-rhs")) {
+            $rhs = $element->getAttribute("data-rhs");
+        } else if ($element->hasAttribute("data-rhs-config")) {
+            $rhs = $values[$element->getAttribute("data-rhs-config")] ?? null;
+        } else if ($element->hasAttribute("data-rhs-value")) {
+            $rhs = $data[$element->getAttribute("data-rhs-value")] ?? null;
+        } else if ($element->hasAttribute("data-rhs-value-config")) {
+            $rhs = $values[$element->getAttribute("data-rhs-value-config")] ?? null;
+        }
+        if ($rhs === "false") {
+            $rhs = false;
+        }
+
+        $result = match ($element->getAttribute("data-operator")) {
+            "lt" => $lhs < $rhs,
+            "gt" => $lhs > $rhs,
+            "le" => $lhs <= $rhs,
+            "ge" => $lhs >= $rhs,
+            "ne" => $lhs != $rhs,
+            default => $lhs == $rhs,
+        };
+
+        var_dump($lhs, $rhs, $result);
+
+        if (!$result) {
+            $element->setAttribute("data-remove", "1");
+        }
     }
 
     // Remove all elements marked with data-remove.
