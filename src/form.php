@@ -89,7 +89,9 @@
  *   - tel-link: wraps a phone number in a tel link (useful with input[type="tel"])
  *   - link: wraps a URL in a link (useful with input[type="url"])
  *
- * data-transformer-if and data-transformer-if-config may be used to conditionally apply transformers.
+ * data-transformer-if, data-transformer-if-config, data-transformer-operator, data-transformer-rhs,
+ * data-transformer-rhs-value, and data-transformer-rhs-config may be used to conditionally apply the transformer
+ * specified by data-transformer.
  *
  * All elements with the following attributes will be hidden on the form page by injected CSS, unless a falsy value
  * is explicitly given for data-hidden:
@@ -462,14 +464,14 @@ function attr(string $attribute, string $value): Closure {
  * @param array $values Values to use for elements with the data-value-config attribute
  */
 function applyDataValues(DOMElement|DOMDocument &$root, array $data, array $values): void {
-    foreach(collectElements($root, "*", has("data-value-config")) as $element) {
+    foreach (collectElements($root, "*", has("data-value-config")) as $element) {
         /** @var $element DOMElement */
         if (isset($values[$element->getAttribute("data-value-config")])) {
             $element->nodeValue = $values[$element->getAttribute("data-value-config")];
             $element->removeAttribute("data-value-config");
         }
     }
-    foreach(collectElements($root, "*", has("data-value")) as $element) {
+    foreach (collectElements($root, "*", has("data-value")) as $element) {
         /** @var $element DOMElement */
         if (isset($data[$element->getAttribute("data-value")])) {
             $element->nodeValue = $data[$element->getAttribute("data-value")];
@@ -715,7 +717,8 @@ function renderForm(array $data, string $html, ?array $values = []): string {
     foreach (collectElements($dom, "*", has("data-foreach", "data-foreach-config")) as $element) {
         /** @var $element DOMElement */
 
-        $arr = $data[$element->getAttribute("data-foreach")] ?? $values[$element->getAttribute("data-foreach-config")] ?? null;
+        $arr = $data[$element->getAttribute("data-foreach")] ??
+            $values[$element->getAttribute("data-foreach-config")] ?? null;
         if (!is_array($arr)) {
             $arr = [$arr];
         }
@@ -780,6 +783,32 @@ function renderForm(array $data, string $html, ?array $values = []): string {
     // Apply data transformations.
     foreach (collectElements($dom, "*", has("data-transformer")) as $element) {
         /** @var $element DOMElement */
+        if ($element->hasAttribute("data-transformer-if") || $element->hasAttribute("data-transformer-if-config")) {
+            $lhs = $data[$element->getAttribute("data-transformer-if")] ??
+                $values[$element->getAttribute("data-transformer-if-config")] ?? null;
+
+            $rhs = true;
+            if ($element->hasAttribute("data-transformer-rhs")) {
+                $rhs = $element->getAttribute("data-transformer-rhs");
+            } else if ($element->hasAttribute("data-transformer-rhs-value")) {
+                $rhs = $data[$element->getAttribute("data-transformer-rhs-value")] ?? null;
+            } else if ($element->hasAttribute("data-transformer-rhs-config")) {
+                $rhs = $values[$element->getAttribute("data-transformer-rhs-config")] ?? null;
+            }
+
+            $result = match ($element->getAttribute("data-transformer-operator")) {
+                "lt" => $lhs < $rhs,
+                "gt" => $lhs > $rhs,
+                "le" => $lhs <= $rhs,
+                "ge" => $lhs >= $rhs,
+                "ne" => $lhs != $rhs,
+                default => $lhs == $rhs,
+            };
+
+            if (!$result) {
+                continue; // Don't apply the transformation to this element.
+            }
+        }
         $transformer = $element->getAttribute("data-transformer");
         if (isset($formConfig->transformers[$transformer])) {
             $innerHTML = "";
