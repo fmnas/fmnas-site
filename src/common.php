@@ -3,7 +3,9 @@ declare(strict_types = 1);
 @header("Content-Encoding: UTF-8");
 ini_set("pcre.jit", "0");
 
-function startsWith(string $haystack, $needle): bool {
+use JetBrains\PhpStorm\Pure;
+
+#[Pure] function startsWith(string $haystack, $needle): bool {
     if (is_array($needle)) {
         foreach ($needle as $item) {
             if (startsWith($haystack, $item)) {
@@ -15,7 +17,7 @@ function startsWith(string $haystack, $needle): bool {
     return str_starts_with($haystack, $needle);
 }
 
-function endsWith(string $haystack, $needle): bool {
+#[Pure] function endsWith(string $haystack, $needle): bool {
     if (is_array($needle)) {
         foreach ($needle as $item) {
             if (endsWith($haystack, $item)) {
@@ -27,7 +29,7 @@ function endsWith(string $haystack, $needle): bool {
     return str_ends_with($haystack, $needle);
 }
 
-function contains(string $haystack, $needle): bool {
+#[Pure] function contains(string $haystack, $needle): bool {
     if (is_array($needle)) {
         foreach ($needle as $item) {
             if (contains($haystack, $item)) {
@@ -39,7 +41,7 @@ function contains(string $haystack, $needle): bool {
     return str_contains($haystack, $needle);
 }
 
-function validateIdentifier(string $id): bool {
+#[Pure] function validateIdentifier(string $id): bool {
     return strlen($id) > 0 &&
         ctype_alnum(str_replace("_", "", $id)) &&
         (ctype_alnum($id[0]) || $id[0] === "_");
@@ -55,21 +57,21 @@ function src(): string {
 /**
  * @return string The absolute path to the site root directory (containing admin/, public/, secrets/, src/)
  */
-function root(): string {
+#[Pure] function root(): string {
     return dirname(src(), 1);
 }
 
 /**
  * @return string The absolute path to the templates directory
  */
-function t(): string {
+#[Pure] function t(): string {
     return src() . "/templates";
 }
 
 /**
  * @return string The absolute path to the secrets directory
  */
-function secrets(): string {
+#[Pure] function secrets(): string {
     return root() . "/secrets";
 }
 
@@ -77,8 +79,7 @@ function secrets(): string {
  * @return string The relative path to the assets directory (from the file where execution started, i.e. the current
  *     page)
  */
-function assets(): string {
-    $cwd = getcwd();
+#[Pure] function assets(): string {
     $host = $_SERVER["HTTP_HOST"];
     $adminSubdomain = "admin.";
     if (startsWith($host, $adminSubdomain)) {
@@ -90,7 +91,7 @@ function assets(): string {
 /**
  * @return string The absolute path to the stored assets directory
  */
-function stored_assets(): string {
+#[Pure] function stored_assets(): string {
     return root() . "/public/assets/stored";
 }
 
