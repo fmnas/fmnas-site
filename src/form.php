@@ -1098,7 +1098,7 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
     }
 
     // Replace label elements with span elements.
-    foreach (collectElements($form, "label") as $label) {
+    foreach (collectElements($dom, "label") as $label) {
         /** @var $label DOMElement */
         $type = null;
         $selected = "0";
