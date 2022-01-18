@@ -1,6 +1,8 @@
 <?php
 require_once "../../src/common.php";
 require_once "../../src/form.php";
+require_once "$t/header.php";
+require_once "$t/application_response.php";
 ini_set('upload_max_filesize', '10M');
 ini_set('max_file_uploads', '20');
 ini_set('file_uploads', true);
@@ -15,8 +17,11 @@ $formConfig->confirm = function(array $formData): void {
     <title>Adoption Application - <?=_G_longname()?></title>
     <meta charset="UTF-8">
     <meta name="robots" content="noindex,nofollow">
-    <?php style(); ?>
-    <h1>Adoption Application</h1>
+    <?php
+    style();
+    pageHeader();
+    ?>
+    <h2>Adoption Application</h2>
     <p>Thank you! We have received your application and you will hear back from us soon.
     <p><a href="/">Return to the shelter homepage</a>
     </html>
@@ -31,20 +36,26 @@ $formConfig->handler = function(FormException $e): void {
     <meta charset="UTF-8">
     <meta name="robots" content="noindex,nofollow">
     <script src="/email.js.php"></script>
-    <h1>Error <?=$e->getCode()?></h1>
+    <?php
+    style();
+    pageHeader();
+    ?>
+    <h2>Error <?=$e->getCode() ?: 500?></h2>
     <p>Something went wrong submitting the form: <?=$e->getMessage()?>
+    <p><img src="//http.cat/500" alt="">
     <p>Please contact Sean at <a data-email="sean"></a> with the following information:
     <pre><?php
         var_dump($e)
-        ?></pre>
-    <p><a href="/">Back to homepage</a>
+        ?>
+    </pre>
+    <p><a href="/">Return to the shelter homepage</a>
     </html>
     <?php
     // Attempt to email the PHP context to Sean so he can fix it.
     @sendEmail(
         new FormEmailConfig(
             new EmailAddress("admin@forgetmenotshelter.org"),
-            new EmailAddress("sean@forgetmenotshelter.org"),
+            [new EmailAddress("sean@forgetmenotshelter.org")],
             "Application Error Context"),
         new RenderedEmail(
             '<pre>' . print_r(get_defined_vars(), true) . '</pre>',
@@ -84,13 +95,13 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
         $applicantEmail,
         [$shelterEmail],
         'Adoption Application from ' . $formData['applicant_name'],
-        ['main' => true, 'path' => $path]
+        ['main' => true, 'path' => $path, 'weblink' => true]
     );
     $primaryEmail->attachFiles = function(array $metadata): bool {
         $total_size = 0;
         foreach ($_FILES as $file_input) {
             if (is_array($file_input["size"])) {
-                foreach($file_input["size"] as $size) {
+                foreach ($file_input["size"] as $size) {
                     $total_size += $size;
                 }
             } else {
@@ -140,9 +151,21 @@ $formConfig->smtpAuth = Config::$smtp_auth;
     ?>
 </head>
 <body>
-Application
-<a data-href-config="path" data-if-config="main">View application on the web</a>
+<?php
+ob_start();
+pageHeader();
+echo str_replace("<header>", "<header data-remove='1'>", ob_get_clean());
+?>
+<section id="thanks" data-if-config="main" data-rhs="false">
+    <?php
+    application_reponse()
+    ?>
+</section>
+<h2 data-if-config="main" data-rhs="false" data-hidden="false">Adoption Application</h2>
+<p data-if-config="weblink"><a data-href-config="path">View application on the web</a>
+<p data-remove="true">Please read the <a href="faq.htm">application FAQ</a> before filling this out.
 <form method="POST" enctype="multipart/form-data" id="application">
+    <input type="hidden" name="form_id" value="application">
     <label>Name
         <input type="text" name="applicant_name" required>
     </label>
@@ -202,7 +225,7 @@ Application
     <ul class="thumbnails" data-if-config="thumbnails">
         <li data-foreach="images" data-as="image">
             <a data-href="image" data-file-transformer="url">
-                <span data-value="image" data-file-transformer="thumbnail" ></span>
+                <span data-value="image" data-file-transformer="thumbnail"></span>
             </a>
         </li>
     </ul>
@@ -234,8 +257,8 @@ Application
 
     <div>
         <label>Scales
-        <input type="checkbox" id="scales" name="scales" form="application"
-            checked>
+            <input type="checkbox" id="scales" name="scales" form="application"
+                checked>
         </label>
     </div>
 
@@ -247,7 +270,7 @@ Application
     <div>
         <label>MANY SCALES
             <input type="checkbox" id="scales" name="scales" value="many" form="application"
-                >
+            >
         </label>
     </div>
 
