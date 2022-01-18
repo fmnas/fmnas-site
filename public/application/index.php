@@ -218,27 +218,27 @@ Application
 <fieldset form="application">
     <legend>Choose your favorite monster</legend>
 
-    <input type="radio" id="kraken" name="monster" value="krak">
+    <input type="radio" id="kraken" name="monster" value="krak" form="application">
     <label for="kraken">Kraken</label><br/>
 
-    <input type="radio" id="sasquatch" name="monster" value="sasq">
+    <input type="radio" id="sasquatch" name="monster" value="sasq" form="application">
     <label for="sasquatch">Sasquatch</label><br/>
 
     <legend>An extraneous legend</legend>
 
-    <input type="radio" id="mothman" name="monster" value="moth">
+    <input type="radio" id="mothman" name="monster" value="moth" form="application">
     <label for="mothman">Mothman</label>
 
     <p>Choose your monster's features:</p>
 
     <div>
-        <input type="checkbox" id="scales" name="scales"
+        <input type="checkbox" id="scales" name="scales" form="application"
             checked>
         <label for="scales">Scales</label>
     </div>
 
     <div>
-        <input type="checkbox" id="horns" name="horns">
+        <input type="checkbox" id="horns" name="horns" form="application">
         <label for="horns">Horns</label>
     </div>
 </fieldset>
