@@ -26,13 +26,14 @@
  * All <input> and <select> elements will be replaced with <span> elements, except:
  *   input[type="button"], input[type="submit"], input[type="reset"], input[type="password"], input[type="hidden"],
  *   and input[type="image"] will be removed unless they have an explicit falsy data-remove attribute.
- *   See below for special considerations for input[type="file"].
+ *   See below for special considerations for input[type="file"], input[type="radio"], and input[type="checkbox"].
  * All <textarea> elements will be replaced with <pre> elements.
  * All <fieldset> elements will be replaced with <section> elements containing <h3> headers.
  * All <button> elements will be removed unless they have an explicit falsy data-remove attribute, in which case they
  * will be replaced with <span> elements.
  * All <label> elements will be replaced with span elements. Any inner text will itself be in a span element with a
- * data-type="label-text" attribute as well.
+ * data-type="label-text" attribute as well, and the outer span element will have a data-input-type attribute with the
+ * type of the corresponding input element if found.
  * All <datalist> elements will be removed unless they have an explicit falsy data-remove attribute, in which case they
  * will be replaced with <ul> elements. <option> elements therein will be replaced with <li> elements, and any contained
  * within an <optgroup> element will have a data-optgroup attribute with the optgroup label (the outgroup is removed).
@@ -196,6 +197,12 @@
  *     return str_starts_with($finfo->file($metadata["tmp_name"]), "image/");
  *   }
  * The default fileValidator simply returns !$metadata["error"].
+ *
+ * For radio buttons and checkboxes, the output span for each button will contain the submitted value and have
+ * data-selected="1" or data-selected="0". Additionally, the output span for any associated labels will have the
+ * data-selected attribute as well.
+ * These conditions should be handled by a stylesheet so the rendered email is coherent. Some suggested CSS rules:
+ *
  *
  * @todo Add unit tests for the form processor and maybe split it into a separate repo.
  * @noinspection GrazieInspection
@@ -608,19 +615,12 @@ function moveChildren(DOMElement &$from, DOMElement &$to): void {
  * Elements with a truthy data-ignore are never returned.
  * Using getElementsByTagName directly in a foreach loop means you can't remove elements, since this messes up the
  * internal iterator. This way you can remove elements while iterating.
- * @param DOMElement|DOMDocument|array<DOMElement|DOMDocument> $root The root element(s) to search.
+ * @param DOMElement|DOMDocument $root The root element to search.
  * @param string $tag The tag to match.
  * @param Closure|null $filter A filter (DOMElement -> bool) to apply to elements before adding them to the array.
  * @return array An array containing elements.
  */
-function collectElements(DOMElement|DOMDocument|array &$root, string $tag = "*", ?Closure $filter = null): array {
-    if (is_array($root)) {
-        $elements = [];
-        foreach ($root as $rootElement) {
-            array_push($elements, ...collectElements($rootElement, $tag, $filter));
-        }
-        return $elements;
-    }
+function collectElements(DOMElement|DOMDocument $root, string $tag = "*", ?Closure $filter = null): array {
     $filter ??= function(DOMElement $element): bool {
         return true;
     };
@@ -630,6 +630,15 @@ function collectElements(DOMElement|DOMDocument|array &$root, string $tag = "*",
         if ($filter($element) && !checkString($element->getAttribute("data-ignore"))) {
             $elements[] = $element;
         }
+    }
+    if ($root instanceof DOMElement &&
+        ($root->tagName === "form" || ($root->tagName === "article" && $root->getAttribute("data-type") === "form")) &&
+        $root->getAttribute("id")) {
+        $elementsOutsideForm =
+            collectElements($root->ownerDocument, $tag, function(DOMElement $element) use ($root, $filter): bool {
+                return $element->getAttribute("form") === $root->getAttribute("id") && $filter($element);
+            });
+        array_push($elements, ...$elementsOutsideForm);
     }
     return $elements;
 }
@@ -686,7 +695,8 @@ function applyFileTransformation(DOMElement &$element, ?array $file, bool $href 
         var_dump($element);
         return;
     }
-    $transformer = $formConfig->fileTransformers[$element->getAttribute("data-file-transformer") ?: array_key_first($formConfig->fileTransformers)];
+    $transformer = $formConfig->fileTransformers[$element->getAttribute("data-file-transformer") ?:
+        array_key_first($formConfig->fileTransformers)];
     $value = $transformer($file);
     if ($href) {
         $element->setAttribute("href", $value);
@@ -711,7 +721,7 @@ function applyDataValues(DOMElement|DOMDocument &$root, array $data, array $valu
     foreach (collectElements($root, "*", has("data-value-config")) as $element) {
         /** @var $element DOMElement */
         if (isset($values[$element->getAttribute("data-value-config")])) {
-            $element->nodeValue = strval($values[$element->getAttribute("data-value-config")]);
+            $element->nodeValue = htmlspecialchars(strval($values[$element->getAttribute("data-value-config")]));
             $element->removeAttribute("data-value-config");
         }
     }
@@ -722,7 +732,7 @@ function applyDataValues(DOMElement|DOMDocument &$root, array $data, array $valu
             if (isset($value["size"])) {
                 applyFileTransformation($element, $value);
             } else {
-                $element->nodeValue = strval($value);
+                $element->nodeValue = htmlspecialchars(strval($value));
             }
             $element->removeAttribute("data-value");
         } else if (isset($files[$element->getAttribute("data-value")])) {
@@ -963,6 +973,7 @@ class RenderedEmail {
  * @return RenderedEmail Rendered email containing the form values.
  * @throws Exception
  * @throws DOMException
+ * @noinspection PhpMissingBreakStatementInspection
  */
 function renderForm(array $data, string $html, FormEmailConfig $emailConfig): RenderedEmail {
     global $formConfig, $pwd;
@@ -990,17 +1001,13 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
     $form->setAttribute("data-type", "form");
     $originalForm->parentNode?->replaceChild($form, $originalForm);
 
-    // Find fieldsets associated with the form.
-    $fieldsets = collectElements($dom, "fieldset", attr("form", $form->getAttribute("id")));
-    $roots = [$form, ...$fieldsets];
-
     // Replace input elements with span elements.
-    foreach (collectElements($roots, "input") as $input) {
+    foreach (collectElements($form, "input") as $input) {
         /** @var $input DOMElement */
         $span = $dom->createElement("span");
         $span->setAttribute("data-type", "input");
         $inputName = $input->getAttribute("name");
-        copyAttributes($input, $span, "value", "required", "type", "accept", "capture", "multiple");
+        copyAttributes($input, $span, "value", "required", "type", "accept", "capture", "multiple", "form");
         $inputType = $input->getAttribute("type");
         $span->setAttribute("data-input-type", $inputType);
         switch ($inputType) {
@@ -1012,38 +1019,38 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
         case 'reset':
         case 'password':
         case 'image':
-            /** @noinspection PhpMissingBreakStatementInspection */
         case 'hidden':
             if (!$input->hasAttribute("data-remove")) {
                 $span->setAttribute("data-remove", "1");
                 break;
             }
             // Fall through to standard input handler in case it isn't to be removed.
-        case 'text':
-        case 'checkbox': // @todo Consider handling checkboxes differently.
-        case 'radio': // @todo Consider handling radio buttons differently.
+        case 'checkbox':
+        case 'radio':
+            $span->setAttribute("data-selected", $input->getAttribute("value") === ($data[$inputName] ?? false) ? "1" : "0");
+            // Fall through to standard input handler.
         default:
             if (endsWith($inputName, "[]") && !$input->hasAttribute("data-remove")) {
                 // Remove repeated inputs by default.
                 $span->setAttribute("data-remove", "1");
             }
-            $span->nodeValue = strval($data[$inputName] ?? $input->getAttribute('value'));
+            $span->nodeValue = htmlspecialchars(strval($data[$inputName] ?? $input->getAttribute("value")));
         }
         $input->parentNode?->replaceChild($span, $input);
     }
 
     // Replace select elements with span elements.
-    foreach (collectElements($roots, "select") as $select) {
+    foreach (collectElements($form, "select") as $select) {
         /** @var $select DOMElement */
         $span = $dom->createElement("span");
         $span->setAttribute("data-type", "select");
         $inputName = $select->getAttribute("name");
-        copyAttributes($select, $span, "value", "required");
+        copyAttributes($select, $span, "value", "required", "form");
         $selected = $data[$inputName] ?? "";
         foreach (collectElements($select, "option") as $option) {
             /** @var $option DOMElement */
             if (($option->getAttribute("value") ?: $option->nodeValue) === $selected) {
-                $span->nodeValue = strval($option->nodeValue ?: $selected);
+                $span->nodeValue = htmlspecialchars(strval($option->nodeValue ?: $selected));
                 break;
             }
         }
@@ -1051,18 +1058,18 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
     }
 
     // Replace textarea elements with pre elements.
-    foreach (collectElements($roots, "textarea") as $textarea) {
+    foreach (collectElements($form, "textarea") as $textarea) {
         /** @var $textarea DOMElement */
         $pre = $dom->createElement("pre");
         $pre->setAttribute("data-type", "textarea");
         $inputName = $textarea->getAttribute("name");
-        copyAttributes($textarea, $pre, "value", "required");
-        $pre->nodeValue = strval($data[$inputName] ?? $textarea->nodeValue);
+        copyAttributes($textarea, $pre, "value", "required", "form");
+        $pre->nodeValue = htmlspecialchars(strval($data[$inputName] ?? $textarea->nodeValue));
         $textarea->parentNode?->replaceChild($pre, $textarea);
     }
 
     // Replace fieldset elements with section elements with h3 headers.
-    foreach (array_merge(collectElements($form, "fieldset"), $fieldsets) as $fieldset) {
+    foreach (collectElements($form, "fieldset") as $fieldset) {
         /** @var $fieldset DOMElement */
 
         // Ideally a fieldset should contain exactly one legend, but you never know.
@@ -1091,8 +1098,10 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
     }
 
     // Replace label elements with span elements.
-    foreach (collectElements($roots, "label") as $label) {
+    foreach (collectElements($form, "label") as $label) {
         /** @var $label DOMElement */
+        $type = null;
+        $selected = "0";
         foreach ($label->childNodes as $childNode) {
             if ($childNode instanceof DOMText) {
                 // Wrap plain text in an inner span.
@@ -1100,17 +1109,32 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
                 $innerSpan->setAttribute("data-type", "label-text");
                 $innerSpan->nodeValue = trim($childNode->nodeValue);
                 $childNode->parentNode?->replaceChild($innerSpan, $childNode);
+            } else if (!$type && $childNode instanceof DOMElement) {
+                $elementType = $childNode->getAttribute("data-type");
+                $type =
+                    $childNode->getAttribute("data-type") === "input" ? $childNode->getAttribute("data-input-type") :
+                        $childNode->getAttribute("data-type") ?? $childNode->tagName;
+                $selected = $childNode->getAttribute("data-selected");
             }
+        }
+        if (!$type && $label->getAttribute("for")) {
+            $input = $dom->getElementById($label->getAttribute("for"));
+            $type = $input?->getAttribute("data-type") === "input" ? $input->getAttribute("data-input-type") :
+                $input?->getAttribute("data-type") ?? $input?->tagName;
+            $selected = $input?->getAttribute("data-selected");
         }
         $span = $dom->createElement("span");
         $span->setAttribute("data-type", "label");
+        if ($type) {
+            $span->setAttribute("data-input-type", $type);
+        }
         copyAttributes($label, $span, "for");
         moveChildren($label, $span);
-        $label->parentNode?->replaceChild($span, $label);
+        $label->replaceWith($span);
     }
 
     // Replace button elements with span elements (hidden by default).
-    foreach (collectElements($roots, "button") as $button) {
+    foreach (collectElements($form, "button") as $button) {
         /** @var $button DOMElement */
         $span = $dom->createElement("span");
         $span->setAttribute("data-type", "button");
@@ -1205,7 +1229,8 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
                 applyDataValues($clone, [...$data, $element->getAttribute("data-as") => $value], $values, $files);
             } else {
                 if ($fileInput) {
-                    $transformer = $formConfig->fileTransformers[$element->getAttribute("data-file-transformer") ?: "name"];
+                    $transformer =
+                        $formConfig->fileTransformers[$element->getAttribute("data-file-transformer") ?: "name"];
                     $clone->nodeValue = strval($transformer($value));
                 } else {
                     $clone->nodeValue = strval($value);
@@ -1395,7 +1420,8 @@ $formConfig->fileTransformers = [
         return print_r($metadata, true);
     },
     "image" => function(array $metadata): string {
-        return '<img src="data:image/jpeg;base64,' . base64_encode(file_get_contents($metadata["tmp_name"])) . '" alt="' . htmlspecialchars($metadata["name"]) . '"/>';
+        return '<img src="data:image/jpeg;base64,' . base64_encode(file_get_contents($metadata["tmp_name"])) .
+            '" alt="' . htmlspecialchars($metadata["name"]) . '"/>';
     },
     "thumbnail" => function(array $metadata): string {
         $image = imagecreatefromstring(file_get_contents($metadata["tmp_name"]));
@@ -1408,7 +1434,8 @@ $formConfig->fileTransformers = [
         ob_start();
         imagejpeg($thumb);
         $data = ob_get_clean();
-        return '<img src="data:image/jpeg;base64,' . base64_encode($data) . '" alt="' . htmlspecialchars($metadata["name"]) . '"/>';
+        return '<img src="data:image/jpeg;base64,' . base64_encode($data) . '" alt="' .
+            htmlspecialchars($metadata["name"]) . '"/>';
     },
 ];
 $formConfig->fileValidator = function(array $metadata): bool {

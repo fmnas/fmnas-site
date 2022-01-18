@@ -16,3 +16,16 @@
  */
 
 /* CSS for application here */
+span[data-type="input"][data-input-type="radio"],
+span[data-type="input"][data-input-type="checkbox"],
+span[data-type="label"][data-input-type="radio"][data-selected="0"]{
+    display: none;
+}
+
+span[data-type="label"][data-input-type="checkbox"][data-selected="0"]::before {
+    content: '☐ ';
+}
+
+span[data-type="label"][data-input-type="checkbox"][data-selected="0"]::before {
+    content: '☑ ';
+}
