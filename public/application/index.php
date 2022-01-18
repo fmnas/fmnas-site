@@ -5,6 +5,7 @@ ini_set('upload_max_filesize', '10M');
 ini_set('max_file_uploads', '20');
 ini_set('file_uploads', true);
 ini_set('post_max_size', '200M');
+ini_set('memory_limit', '2048M');
 setlocale(LC_ALL, 'en_US.UTF-8');
 set_time_limit(300);
 $formConfig->confirm = function(array $formData): void {
