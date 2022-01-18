@@ -185,7 +185,17 @@
  * data-selected="1" or data-selected="0". Additionally, the output span for any associated labels will have the
  * data-selected attribute as well.
  * These conditions should be handled by a stylesheet so the rendered email is coherent. Some suggested CSS rules:
- *
+ *  span[data-type="input"][data-input-type="radio"],
+ *  span[data-type="input"][data-input-type="checkbox"],
+ *  span[data-type="label"][data-input-type="radio"][data-selected="0"] {
+ *    display: none;
+ *  }
+ *  span[data-type="label"][data-input-type="checkbox"][data-selected="0"]::before {
+ *    content: "☐ ";
+ *  }
+ *  span[data-type="label"][data-input-type="checkbox"][data-selected="1"]::before {
+ *    content: "☑ ";
+ *  }
  *
  * @todo Add unit tests for the form processor and maybe split it into a separate repo.
  * @noinspection GrazieInspection
@@ -990,7 +1000,7 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
         $span = $dom->createElement("span");
         $span->setAttribute("data-type", "input");
         $inputName = $input->getAttribute("name");
-        copyAttributes($input, $span, "value", "required", "type", "accept", "capture", "multiple", "form");
+        copyAttributes($input, $span, "value", "required", "type", "accept", "capture", "multiple", "form", "checked");
         $inputType = $input->getAttribute("type");
         $span->setAttribute("data-input-type", $inputType);
         switch ($inputType) {
@@ -1010,7 +1020,8 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
             // Fall through to standard input handler in case it isn't to be removed.
         case 'checkbox':
         case 'radio':
-            $span->setAttribute("data-selected", $input->getAttribute("value") === ($data[$inputName] ?? false) ? "1" : "0");
+            $span->setAttribute("data-selected",
+                ($input->getAttribute("value") ?: "on") === ($data[$inputName] ?? false) ? "1" : "0");
             // Fall through to standard input handler.
         default:
             if (endsWith($inputName, "[]") && !$input->hasAttribute("data-remove")) {
@@ -1084,32 +1095,36 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
     foreach (collectElements($dom, "label") as $label) {
         /** @var $label DOMElement */
         $type = null;
-        $selected = "0";
-        foreach ($label->childNodes as $childNode) {
-            if ($childNode instanceof DOMText) {
-                // Wrap plain text in an inner span.
-                $innerSpan = $dom->createElement("span");
-                $innerSpan->setAttribute("data-type", "label-text");
-                $innerSpan->nodeValue = trim($childNode->nodeValue);
-                $childNode->parentNode?->replaceChild($innerSpan, $childNode);
-            } else if (!$type && $childNode instanceof DOMElement) {
-                $elementType = $childNode->getAttribute("data-type");
-                $type =
-                    $childNode->getAttribute("data-type") === "input" ? $childNode->getAttribute("data-input-type") :
-                        $childNode->getAttribute("data-type") ?? $childNode->tagName;
-                $selected = $childNode->getAttribute("data-selected");
-            }
+        $selected = null;
+        // Look for input elements within the label to determine type and selected.
+        if ($childInput = collectElements($label, "*", has("data-type"))[0] ?? false) {
+            $elementType = $childInput->getAttribute("data-type");
+            $type = $elementType === "input" ? $childInput->getAttribute("data-input-type") : $elementType;
+            $selected = $childInput->getAttribute("data-selected");
         }
         if (!$type && $label->getAttribute("for")) {
-            $input = $dom->getElementById($label->getAttribute("for"));
+            $input = collectElements($dom, "*", attr("id", $label->getAttribute("for")))[0] ?? null;
             $type = $input?->getAttribute("data-type") === "input" ? $input->getAttribute("data-input-type") :
                 $input?->getAttribute("data-type") ?? $input?->tagName;
             $selected = $input?->getAttribute("data-selected");
+        }
+        // Wrap plain text in an inner span.
+        foreach ($label->childNodes as $childNode) {
+            if ($childNode instanceof DOMText) {
+                $innerSpan = $dom->createElement("span");
+                $innerSpan->setAttribute("data-type", "label-text");
+                $innerSpan->nodeValue = trim($childNode->nodeValue);
+                $childNode->replaceWith($innerSpan);
+                break;
+            }
         }
         $span = $dom->createElement("span");
         $span->setAttribute("data-type", "label");
         if ($type) {
             $span->setAttribute("data-input-type", $type);
+        }
+        if ($selected !== null && $selected !== "") {
+            $span->setAttribute("data-selected", $selected);
         }
         copyAttributes($label, $span, "for");
         moveChildren($label, $span);
@@ -1131,6 +1146,7 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
     // @todo Replace datalist elements with ul elements (hidden by default).
 
     // Merge linked style sheets into the output HTML.
+    $stylesToInject = [];
     foreach (collectElements($dom, "link", attr("rel", "stylesheet")) as $link) {
         /** @var $link DOMElement */
         $href = $link->getAttribute("href");
@@ -1176,7 +1192,9 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
         $style->setAttribute("type", "text/css");
         $style->setAttribute("data-type", "link");
         copyAttributes($link, $style, "rel", "href");
-        $style->nodeValue = $styles;
+        $locator = "/* INJECT STYLE HERE: " . sha1($styles) . " */";
+        $stylesToInject[$locator] = $styles;
+        $style->nodeValue = $locator; // Can't inject right now because we would end up with HTML entities, etc.
         $link->parentNode?->replaceChild($style, $link);
     }
 
@@ -1320,7 +1338,8 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
         }
     }
 
-    return new RenderedEmail($dom->saveHTML(), $attachments);
+    return new RenderedEmail(str_replace(array_keys($stylesToInject), array_values($stylesToInject), $dom->saveHTML()),
+        $attachments);
 }
 
 /** @noinspection PhpObjectFieldsAreOnlyWrittenInspection
