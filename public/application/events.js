@@ -23,6 +23,20 @@ document.addEventListener("DOMContentLoaded", () => {
     };
     window.addEventListener("beforeunload", verifyUnload);
     form.addEventListener("submit", () => window.removeEventListener("beforeunload", verifyUnload));
+
+    let will_live_listener = () => {
+        let selected = document.querySelector('input[name="will_live"]:checked')?.value;
+        if (selected === undefined || selected === "inside") {
+            document.getElementById("outside").classList.add("hidden");
+        } else {
+            document.getElementById("will_live_tracker").value = "1";
+            document.getElementById("outside").classList.remove("hidden");
+        }
+    }
+    document.querySelectorAll('input[name="will_live"]').forEach((e) => {
+        e.addEventListener("change", will_live_listener);
+    });
+    will_live_listener(); // Set initial class.
 });
 
 window.addEventListener("keypress", (e) => {

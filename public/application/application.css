@@ -15,7 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* CSS for application here */
+section.adopt {
+    display: none;
+}
+
+/* Styles for email */
 span[data-type="input"][data-input-type="radio"],
 span[data-type="input"][data-input-type="checkbox"],
 span[data-type="label"][data-input-type="radio"][data-selected="0"] {
