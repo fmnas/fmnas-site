@@ -1,0 +1,22 @@
+# Deploy main branch to forgetmenotshelter.org on push
+name: Deploy prod site
+on:
+  push:
+    branches:
+      - main
+jobs:
+  upload:
+    name: Upload website
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@main
+        with:
+          ref: main
+      - name: SFTP upload
+        uses: SamKirkland/FTP-Deploy-Action@3.0.0
+        with:
+          ftp-server: sftp://${{ secrets.PROD_SFTP_HOST }}${{ secrets.PROD_SITE_ROOT }}/
+          ftp-username: ${{ secrets.PROD_SFTP_USER }}
+          ftp-password: ${{ secrets.PROD_SFTP_PASS }}
+          git-ftp-args: --insecure
