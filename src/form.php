@@ -431,7 +431,6 @@ function collectForm(): void {
     // Get the submitted POST or GET data.
     $receivedData = $_POST ?: $_GET;
 
-    // @todo Devise a way to allow multiple forms on a page.
     if ($receivedData || $_FILES) {
         try {
             processForm($receivedData, $html);
@@ -978,13 +977,25 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
     $html5 = new HTML5(["disable_html_ns" => true]);
     $dom = $html5->loadHTML($html);
     $forms = $dom->getElementsByTagName('form');
+    $originalForm = null;
     if ($forms->length === 0) {
         throw new Exception('No form elements were found in the rendered HTML.');
     }
     if ($forms->length > 1) {
-        throw new Exception('Multiple form elements were found in the rendered HTML.');
+        foreach ($forms as $form) {
+            /** @var $form DOMElement */
+            if ($form->getAttribute("id") === $data["form_id"]) {
+                $originalForm = $form;
+                break;
+            }
+        }
+        if (!$originalForm) {
+            throw new Exception('Multiple form elements were found in the rendered HTML. ' .
+                'Please add a hidden input with name="form_id" matching the id of submitted form.');
+        }
+    } else {
+        $originalForm = $forms[0];
     }
-    $originalForm = $forms[0];
     /** @var $originalForm DOMElement */
 
     // Replace form element with article element.
