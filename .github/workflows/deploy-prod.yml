@@ -1,0 +1,36 @@
+# Copyright 2022 Google LLC
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# Deploy main branch to forgetmenotshelter.org on push
+name: Deploy prod site
+on:
+  push:
+    branches:
+      - main
+jobs:
+  upload:
+    name: Upload website
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@main
+        with:
+          ref: main
+      - name: SFTP upload
+        uses: SamKirkland/FTP-Deploy-Action@3.0.0
+        with:
+          ftp-server: sftp://${{ secrets.PROD_SFTP_HOST }}${{ secrets.PROD_SITE_ROOT }}/
+          ftp-username: ${{ secrets.PROD_SFTP_USER }}
+          ftp-password: ${{ secrets.PROD_SFTP_PASS }}
+          git-ftp-args: --insecure
