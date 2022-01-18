@@ -232,15 +232,24 @@ Application
     <p>Choose your monster's features:</p>
 
     <div>
+        <label>Scales
         <input type="checkbox" id="scales" name="scales" form="application"
             checked>
-        <label for="scales">Scales</label>
+        </label>
     </div>
 
     <div>
         <input type="checkbox" id="horns" name="horns" form="application">
         <label for="horns">Horns</label>
     </div>
+
+    <div>
+        <label>MANY SCALES
+            <input type="checkbox" id="scales" name="scales" value="many" form="application"
+                >
+        </label>
+    </div>
+
 </fieldset>
 </body>
 </html>
