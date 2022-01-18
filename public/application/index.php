@@ -45,7 +45,7 @@ $formConfig->handler = function(FormException $e): void {
     <p><img src="//http.cat/500" alt="">
     <p>Please contact Sean at <a data-email="sean"></a> with the following information:
     <pre><?php
-        var_dump($e)
+        var_dump($e);
         ?>
     </pre>
     <p><a href="/">Return to the shelter homepage</a>
@@ -65,7 +65,7 @@ $formConfig->handler = function(FormException $e): void {
 $cwd = getcwd();
 $formConfig->emails = function(array $formData) use ($cwd): array {
     $shelterEmail = new EmailAddress(_G_default_email_user() . '@' . _G_public_domain(), _G_shortname());
-    $applicantEmail = new EmailAddress($formData['applicant_email'], $formData['applicant_name']);
+    $applicantEmail = new EmailAddress($formData['AEmail'], $formData['AName']);
 
     $hash = sha1(print_r($formData, true));
     $path = "https://" . _G_public_domain() . "/application/received/$hash.html";
@@ -95,7 +95,10 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
         $applicantEmail,
         [$shelterEmail],
         'Adoption Application from ' . $formData['applicant_name'],
-        ['main' => true, 'path' => $path, 'weblink' => true]
+        ['main' => true, 'path' => $path, 'weblink' => true,
+            'outside_warn' => $formData['will_live'] === 'inside' && $formData['will_live_tracker'],
+            'outside_message' => 'Warning: This applicant checked then unchecked "pet will live outside."',
+        ]
     );
     $primaryEmail->attachFiles = function(array $metadata): bool {
         $total_size = 0;
@@ -118,9 +121,8 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
         ['main' => false]
     );
     $secondaryEmail->attachFiles = false;
-
-    if (isset($formData['coapplicant_email'])) {
-        $secondaryEmail->cc = [new EmailAddress($formData['coapplicant_email'], $formData['applicant_name'])];
+    if ($formData['CEmail']) {
+        $secondaryEmail->cc = [new EmailAddress($formData['CEmail'], $formData['CName'])];
     }
 
     return [$dump, $save, $primaryEmail, $secondaryEmail];
@@ -157,124 +159,92 @@ ob_start();
 pageHeader();
 echo str_replace("<header>", "<header data-remove='1'>", ob_get_clean());
 ?>
-<section id="thanks" data-if-config="main" data-rhs="false">
-    <?php
-    application_reponse()
-    ?>
-</section>
-<h2 data-if-config="main" data-rhs="false" data-hidden="false">Adoption Application</h2>
-<p data-if-config="weblink"><a data-href-config="path">View application on the web</a>
-<p data-remove="true">Please read the <a href="faq.htm">application FAQ</a> before filling this out.
-<form method="POST" enctype="multipart/form-data" id="application">
-    <input type="hidden" name="form_id" value="application">
-    <label>Name
-        <input type="text" name="applicant_name" required>
-    </label>
-    <h1 data-if-config="main">Main email</h1>
-    <h1 data-if-config="main" data-operator="eq" data-rhs="false">Secondary email</h1>
-    <h1 data-if="applicant_email" data-operator="eq" data-rhs-value="applicant_email">Always true.</h1>
-    <h1 data-if="applicant_email" data-operator="ne" data-rhs-value="applicant_email">Never true.</h1>
-    <label for="applicant_email">Email</label>
-    <h1 data-value="applicant_email" data-transformer="email-link" data-transformer-if-config="main"></h1>
-    <h1 data-value="applicant_email" data-transformer="email-link" data-transformer-if="applicant_email"
-        data-transformer-operator="ne" data-transformer-rhs="tortoise@panray.seangillen.net"></h1>
-    <a data-href="applicant_email" data-transformer="mailto">Email the applicant</a>
-    <input id="applicant_email" type="email" name="applicant_email" data-transformer="email-link" required>
-    <br><input type="text" name="list_input[]" value="value 1">
-    <br><input type="text" name="list_input[]" value="value 2">
-    <br><input type="text" name="list_input[]" value="value 3" data-remove="false">
-    <br><input type="text" name="list_input[]" value="value 4" data-ignore="true">
-    <ul style="color: blue">
-        <li data-foreach="list_input" data-as="list_input_value">
-            The value is <span data-value="list_input_value">???</span>
-        </li>
-    </ul>
-    <ul style="color: green">
-        <li data-foreach="list_input">
-    </ul>
-    <p>
-    <fieldset form="application">
-        <legend>Some additional fields</legend>
-        <textarea name="information">
-            This is the textarea.
-        </textarea>
-    </fieldset>
-    <fieldset>
-        <select name="selection" id="selector">
-            <optgroup label="Theropods">
-                <option>Tyrannosaurus</option>
-                <option>Velociraptor</option>
-                <option>Deinonychus</option>
-            </optgroup>
-            <optgroup label="Sauropods">
-                <option value="diplo">Diplodocus</option>
-                <option>Saltasaurus</option>
-                <option>Apatosaurus</option>
-                <option value="BLANK"></option>
-            </optgroup>
-        </select>
-        <label for="selector">Label for the selector</label>
-        <h1 data-if="selection" data-rhs="diplo">WUB WUB</h1>
-        <h1 data-if="selection" data-rhs="Saltasaurus">salty boi</h1>
-    </fieldset>
-    <label for="images">Upload some images
-        <input type="file" id="images" name="images[]" accept="image/*" capture="environment" multiple>
-    </label>
-    <label for="file">Upload another file</label>
-    <input type="file" id="file" name="file">
-    <pre data-foreach="images" data-file-transformer="dump"></pre>
-    <ul class="thumbnails" data-if-config="thumbnails">
-        <li data-foreach="images" data-as="image">
-            <a data-href="image" data-file-transformer="url">
-                <span data-value="image" data-file-transformer="thumbnail"></span>
-            </a>
-        </li>
-    </ul>
-    <ul data-if-config="thumbnails" data-rhs="false">
-        <li data-foreach="images" data-as="image" data-if-config="main">
-            <a data-href="image" data-file-transformer="url">
-                <span data-value="image" data-if-config="thumbnails" data-rhs="false"></span>
-            </a>
-        </li>
-        <li data-foreach="images" data-if-config="main" data-rhs="false"></li>
-    </ul>
-    <button type="submit">Submit Application</button>
-</form>
-<fieldset form="application">
-    <legend>Choose your favorite monster</legend>
-
-    <input type="radio" id="kraken" name="monster" value="krak" form="application">
-    <label for="kraken">Kraken</label><br/>
-
-    <input type="radio" id="sasquatch" name="monster" value="sasq" form="application">
-    <label for="sasquatch">Sasquatch</label><br/>
-
-    <legend>An extraneous legend</legend>
-
-    <input type="radio" id="mothman" name="monster" value="moth" form="application">
-    <label for="mothman">Mothman</label>
-
-    <p>Choose your monster's features:</p>
-
-    <div>
-        <label>Scales
-            <input type="checkbox" id="scales" name="scales" form="application"
-                checked>
-        </label>
-    </div>
-
-    <div>
-        <input type="checkbox" id="horns" name="horns" form="application">
-        <label for="horns">Horns</label>
-    </div>
-
-    <div>
-        <label>MANY SCALES
-            <input type="checkbox" id="scales" name="scales" value="many" form="application"
-            >
-        </label>
-    </div>
-
-</fieldset>
+<article>
+    <section id="thanks" data-if-config="main" data-rhs="false">
+        <?php
+        application_reponse()
+        ?>
+    </section>
+    <h2 data-if-config="main" data-rhs="false" data-hidden="false">Adoption Application</h2>
+    <p data-if-config="weblink"><a data-href-config="path">View application on the web</a>
+    <p data-remove="true">Please read the <a href="faq.htm">application FAQ</a> before filling this out.
+    <form method="POST" enctype="multipart/form-data" id="application">
+        <input type="hidden" name="form_id" value="application">
+        <section id="basic_information">
+            <h3>Basic information</h3>
+        </section>
+        <section id="household_information">
+            <h3>Household information</h3>
+            <section id="other_people">
+                <h4>Other people in the household</h4>
+            </section>
+            <section id="animals_current">
+                <h4>Animals you currently own</h4>
+            </section>
+            <section id="animals_past">
+                <h4>Animals you have owned in the past</h4>
+            </section>
+        </section>
+        <section id="adoption_information">
+            <h3>Adoption information</h3>
+        </section>
+        <section id="about_home">
+            <h3>About your home</h3>
+            <section id="residence">
+                <input type="hidden" id="will_live_tracker" name="will_live_tracker" value="0">
+                <input type="radio" id="live_inside" name="will_live" value="inside">
+                <label for="live_inside">Inside</label>
+                <input type="radio" id="live_outside" name="will_live" value="outside">
+                <label for="live_outside">Outside</label>
+                <input type="radio" id="live_both" name="will_live" value="both">
+                <label for="live_both">Both</label>
+            </section>
+            <section id="outside">
+                <p data-if-config="outside_warn" data-value-config="outside_message"></p>
+                outside
+            </section>
+        </section>
+        <section id="references">
+            <h3>References</h3>
+        </section>
+        <section id="attachments">
+            <h3>Attachments</h3>
+            <div data-remove="true">
+                <p>Add any attachments below, or email them to <a data-email></a> after submitting your application.</p>
+                <p>If you live outside the Republic/Curlew area, please add photos of your home.</p>
+            </div>
+            <?php
+            // @todo Better image upload interface
+            // @todo Enforce image size limit on client side
+            ?>
+            <input type="file" id="images" name="images[]" accept="image/*,application/pdf" capture="environment"
+                multiple>
+            <span class="limits" data-remove="true">
+            (max. 10 MB each, 200 MB total)
+        </span>
+            <ul class="thumbnails" data-if-config="thumbnails">
+                <li data-foreach="images" data-as="image">
+                    <a data-href="image" data-file-transformer="url">
+                        <span data-value="image" data-file-transformer="thumbnail"></span>
+                    </a>
+                </li>
+            </ul>
+            <ul data-if-config="thumbnails" data-rhs="false">
+                <li data-foreach="images" data-as="image" data-if-config="main">
+                    <a data-href="image" data-file-transformer="url">
+                        <span data-value="image" data-if-config="thumbnails" data-rhs="false"></span>
+                    </a>
+                </li>
+                <li data-foreach="images" data-if-config="main" data-rhs="false"></li>
+            </ul>
+        </section>
+        <section id="comments">
+            <h3>Comments</h3>
+        </section>
+        <section id="submit">
+            <button type="submit">Submit Application</button>
+        </section>
+    </form>
+</article>
 </body>
 </html>
