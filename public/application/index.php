@@ -149,6 +149,7 @@ $formConfig->smtpAuth = Config::$smtp_auth;
     style();
     style("application", true);
     ?>
+    <script src="events.js"></script>
 </head>
 <body>
 <?php
