@@ -25,15 +25,15 @@ The repository includes configs for PHPStorm/IntelliJ.
 To get a local server running, you will need:
 
 * Apache (or Litespeed, etc.)
-	* Debian packages: `apache2 libapache2-mod-php`
+  * Debian packages: `apache2 libapache2-mod-php`
 * PHP 8.1 and dependencies noted below
-	* Debian packages: `php php-gd php-mbstring php-mysql php-xml`
-* [Sass](https://sass-lang.com/install)
-	* Suggest installing the [Dart SDK](https://dart.dev/get-dart) and using the Dart version
-	  with `dart pub global activate sass`.
-	* Homebrew: `brew install sass/sass/sass`
-	* NPM: `npm install -g sass` (note this installs the slower JS version rather than the Dart version)
+  * Debian packages: `php php-gd php-mbstring php-mysql php-xml`
 * curl
+* Node 16 LTS
+  * Suggest using NVM: `nvm install 16`
+* You may want to install the faster Dart version of [Sass](https://sass-lang.com/install):
+  * install the [Dart SDK](https://dart.dev/get-dart) and run `dart pub global activate sass`
+  * Or with Homebrew: `brew install sass/sass/sass`
 
 ### Watch and build
 
@@ -53,7 +53,7 @@ TODO: Set up automatic deployment
 
 <!-- @todo Add requirements for vue build server --> 
 
-* Sass
+* Node & NPM (see development requirements above)
 
 #### Requirements (web server)
 
@@ -75,10 +75,11 @@ TODO: Set up automatic deployment
 
 On the build machine:
 
+* Install NPM build dependencies: `npm install --only=dev`
 * Build the stylesheets for the public site: `sass --style=compressed public:public`
 * Copy `secrets/config_sample.php` to `secrets/config.php` and update the configuration values
 * Update the public web templates in the `src/templates` and `src/errors` directories as desired
-	* The current templates rely on the presence of `/assets/adopted.jpg` and `/assets/logo.png` in the public site
+  * The current templates rely on the presence of `/assets/adopted.jpg` and `/assets/logo.png` in the public site
 
 <!-- @todo Minify JS and HTML -->
 
