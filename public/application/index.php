@@ -65,7 +65,7 @@ $formConfig->handler = function(FormException $e): void {
 $cwd = getcwd();
 $formConfig->emails = function(array $formData) use ($cwd): array {
 	$shelterEmail = new EmailAddress(_G_default_email_user() . '@' . _G_public_domain(), _G_shortname());
-	$applicantEmail = new EmailAddress($formData['AEmail'], $formData['AName']);
+	$applicantEmail = new EmailAddress(trim($formData['AEmail']), trim($formData['AName']));
 
 	$hash = sha1(print_r($formData, true));
 	$path = "https://" . _G_public_domain() . "/application/received/$hash.html";
@@ -91,10 +91,15 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 	);
 	$save->saveFile = "$cwd/received/$hash.html";
 
+	$primarySubject = 'Adoption Application from ' . trim($formData['AName']);
+	if (trim($formData['CName'] ?? '')) {
+		$primarySubject .= ' and ' . $formData['CName'];
+	}
+
 	$primaryEmail = new FormEmailConfig(
 			$applicantEmail,
 			[$shelterEmail],
-			'Adoption Application from ' . $formData['applicant_name'],
+			$primarySubject,
 			['main' => true, 'path' => $path, 'weblink' => true,
 					'outside_warn' => $formData['will_live'] === 'inside' && $formData['will_live_tracker'],
 					'outside_message' => 'Warning: This applicant checked then unchecked "pet will live outside."',
@@ -122,7 +127,7 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 	);
 	$secondaryEmail->attachFiles = false;
 	if ($formData['CEmail']) {
-		$secondaryEmail->cc = [new EmailAddress($formData['CEmail'], $formData['CName'])];
+		$secondaryEmail->cc = [new EmailAddress(trim($formData['CEmail']), trim($formData['CName']))];
 	}
 
 	return [$dump, $save, $primaryEmail, $secondaryEmail];
@@ -139,6 +144,123 @@ $formConfig->smtpPort = Config::$smtp_port;
 $formConfig->smtpUser = Config::$smtp_username;
 $formConfig->smtpPassword = Config::$smtp_password;
 $formConfig->smtpAuth = Config::$smtp_auth;
+
+function options(array $opts): string {
+	$options = "";
+	foreach ($opts as $key => $value) {
+		$options .= "<option value=\"$key\" aria-label=\"$value\" title=\"$value\">$key</option>";
+	}
+	return $options;
+}
+
+
+function addressInput(string $label, string $prefix, bool $required = false): string {
+	ob_start();
+	$priorityStates = [
+			'WA' => 'Washington',
+			'ID' => 'Idaho',
+			'BC' => 'British Columbia',
+	];
+	$states = [
+			'AL' => 'Alabama',
+			'AK' => 'Alaska',
+			'AS' => 'American Samoa',
+			'AZ' => 'Arizona',
+			'AR' => 'Arkansas',
+			'CA' => 'California',
+			'CO' => 'Colorado',
+			'CT' => 'Connecticut',
+			'DE' => 'Delaware',
+			'DC' => 'District of Columbia',
+			'FL' => 'Florida',
+			'GA' => 'Georgia',
+			'GU' => 'Guam',
+			'HI' => 'Hawaii',
+			'ID' => 'Idaho',
+			'IL' => 'Illinois',
+			'IN' => 'Indiana',
+			'IA' => 'Iowa',
+			'KS' => 'Kansas',
+			'KY' => 'Kentucky',
+			'LA' => 'Louisiana',
+			'ME' => 'Maine',
+			'MD' => 'Maryland',
+			'MA' => 'Massachusetts',
+			'MI' => 'Michigan',
+			'MN' => 'Minnesota',
+			'MS' => 'Mississippi',
+			'MO' => 'Missouri',
+			'MT' => 'Montana',
+			'NE' => 'Nebraska',
+			'NV' => 'Nevada',
+			'NH' => 'New Hampshire',
+			'NJ' => 'New Jersey',
+			'NM' => 'New Mexico',
+			'NY' => 'New York',
+			'NC' => 'North Carolina',
+			'ND' => 'North Dakota',
+			'MP' => 'Northern Mariana Islands',
+			'OH' => 'Ohio',
+			'OK' => 'Oklahoma',
+			'OR' => 'Oregon',
+			'PA' => 'Pennsylvania',
+			'PR' => 'Puerto Rico',
+			'RI' => 'Rhode Island',
+			'SC' => 'South Carolina',
+			'SD' => 'South Dakota',
+			'TN' => 'Tennessee',
+			'TX' => 'Texas',
+			'VI' => 'U.S. Virgin Islands',
+			'UT' => 'Utah',
+			'VT' => 'Virginia',
+			'WA' => 'Washington',
+			'WV' => 'West Virginia',
+			'WI' => 'Wisconsin',
+			'WY' => 'Wyoming',
+	];
+	$provinces = [
+			'AB' => 'Alberta',
+			'BC' => 'British Columbia',
+			'MB' => 'Manitoba',
+			'NB' => 'New Brunswick',
+			'NL' => 'Newfoundland and Labrador',
+			'NT' => 'Northwest Territories',
+			'NS' => 'Nova Scotia',
+			'NU' => 'Nunavut',
+			'ON' => 'Ontario',
+			'PE' => 'Prince Edward Island',
+			'QC' => 'Quebec',
+			'SK' => 'Saskatchewan',
+			'YT' => 'Yukon',
+	];
+	?>
+	<label for="<?=$prefix?>Address" class="span-2<?=$required ? " required" : ""?>"><?=$label?></label>
+	<input type="text" name="<?=$prefix?>Address" id="<?=$prefix?>Address"<?=$required ? " required" : ""?>
+			title="Address">
+	<div class="label hidden"></div>
+	<div class="city-st-zip">
+		<label for="<?=$prefix?>City">City</label>
+		<input type="text" name="<?=$prefix?>City" id="<?=$prefix?>City"<?=$required ? " required" : ""?> title="City">
+		<label for="<?=$prefix?>State">State</label>
+		<select id="<?=$prefix?>State" name="<?=$prefix?>State"<?=$required ? " required" : ""?> title="State">
+			<option selected aria-label="Please select"></option>
+			<?=options($priorityStates)?>
+			<option class="spacer" disabled></option>
+			<?=options($states)?>
+			<option class="spacer" disabled></option>
+			<?=options($provinces)?>
+			<option class="spacer" disabled></option>
+			<option value="NA" aria-label="Not applicable">N/A</option>
+		</select>
+		<label for="<?=$prefix?>Zip">Zip/Postal code</label>
+		<input type="text" name="<?=$prefix?>Zip" id="<?=$prefix?>Zip"
+				pattern=" *(([0-9]{5}(-?[0-9]{4})?)|([A-Za-z][0-9][A-Za-z] ?[0-9][A-Za-z][0-9]))? *"
+				title="US ZIP code (00000 or 00000-0000) or Canadian postal code (A0A 0A0)">
+	</div>
+	<?php
+	return ob_get_clean();
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en-US">
@@ -166,53 +288,50 @@ echo str_replace("<header>", "<header data-remove='1'>", ob_get_clean());
 		application_reponse();
 		?>
 	</section>
-	<h2 data-if-config="main" data-rhs="false" data-hidden="false">Adoption Application</h2>
-	<p data-if-config="weblink"><a data-href-config="path">View application on the web</a>
-	<p data-remove="true">Please read the <a href="faq.htm">application FAQ</a> before filling this out.
 	<form method="POST" enctype="multipart/form-data" id="application">
-		<input type="hidden" name="form_id" value="application">
+		<h2 data-if-config="main" data-rhs="false" data-hidden="false">Adoption Application</h2>
+		<p data-if-config="weblink"><a data-href-config="path">View application on the web</a>
+		<p data-remove="true">Please read the <a href="faq.htm">application FAQ</a> before filling this out.
+			<input type="hidden" name="form_id" value="application">
 		<section id="basic_information">
 			<h3>Basic information</h3>
-			<table class="test_table">
-				<colgroup>
-					<col class="info_headers">
-					<col class="applicant">
-					<col class="coapplicant">
-				</colgroup>
-				<thead>
-				<tr>
-					<td></td>
-					<th>Applicant</th>
-					<th>Coapplicant</th>
-				</tr>
-				</thead>
-				<tbody>
-				<tr>
-					<th>Name</th>
-					<td><input type="text" placeholder="Applicant name"></td>
-					<td><input type="text" placeholder="Coapplicant name"></td>
-				</tr>
-				<tr>
-					<th>Address</th>
-					<td><input type="text" placeholder="Applicant address"></td>
-					<td><input type="text" placeholder="Coapplicant address"></td>
-				</tr>
-				</tbody>
-			</table>
-			<div class="test_div">
+			<div class="info_grid">
+				<div class="spacer"></div>
 				<section class="applicant">
 					<h4>Applicant</h4>
-					<label for="AName">Name</label>
-					<input type="text" placeholder="Applicant name" id="AName">
-					<label for="AAddress">Address</label>
-					<input type="text" placeholder="Applicant address" id="AAddress">
+					<label for="AName" class="required">Name</label>
+					<input type="text" name="AName" id="AName" required>
+					<?php
+					echo addressInput("Mailing address", "A", true);
+					echo addressInput('Physical address <span class="explanatory">(if different)</span>', "AP");
+					?>
+					<label for="APhone" class="required">Phone</label>
+					<input type="tel" name="APhone" id="APhone" required>
+					<label for="AEmail" class="required">Email</label>
+					<input type="email" name="AEmail" id="AEmail" required>
+					<label for="ADOB" class="required">Date of birth</label>
+					<input type="date" name="ADOB" id="ADOB" required>
+					<label for="AEmployer" class="required">Employer</label>
+					<input type="text" name="AEmployer" id="AEmployer" required>
 				</section>
 				<section class="coapplicant">
-					<h4>Coapplicant</h4>
+					<h4>Co-applicant
+						<span class="explanatory">(if different)</span>
+					</h4>
 					<label for="CName">Name</label>
-					<input type="text" placeholder="Coapplicant name" id="CName">
-					<label for="CAddress">Address</label>
-					<input type="text" placeholder="Coapplicant address" id="CAddress">
+					<input type="text" name="CName" id="CName">
+					<?php
+					echo addressInput("Mailing address", "C");
+					echo addressInput('Physical address <span class="explanatory">(if different)</span>', "CP");
+					?>
+					<label for="CPhone">Phone</label>
+					<input type="tel" name="CPhone" id="CPhone">
+					<label for="CEmail">Email</label>
+					<input type="email" name="CEmail" id="CEmail">
+					<label for="CDOB">Date of birth</label>
+					<input type="date" name="CDOB" id="CDOB">
+					<label for="CEmployer">Employer</label>
+					<input type="text" name="CEmployer" id="CEmployer">
 				</section>
 			</div>
 		</section>
@@ -222,10 +341,10 @@ echo str_replace("<header>", "<header data-remove='1'>", ob_get_clean());
 				<h4>Other people in the household</h4>
 			</section>
 			<section id="animals_current">
-				<h4>Animals you currently own</h4>
+				<h4>Animals currently residing with you</h4>
 			</section>
 			<section id="animals_past">
-				<h4>Animals you have owned in the past</h4>
+				<h4>Animals no longer residing with you</h4>
 			</section>
 		</section>
 		<section id="adoption_information">
@@ -235,14 +354,14 @@ echo str_replace("<header>", "<header data-remove='1'>", ob_get_clean());
 			<h3>About your home</h3>
 			<section id="residence">
 				<input type="hidden" id="will_live_tracker" name="will_live_tracker" value="0">
-				<input type="radio" id="live_inside" name="will_live" value="inside">
+				<input type="radio" id="live_inside" name="will_live" value="inside" required>
 				<label for="live_inside">Inside</label>
-				<input type="radio" id="live_outside" name="will_live" value="outside">
+				<input type="radio" id="live_outside" name="will_live" value="outside" required>
 				<label for="live_outside">Outside</label>
-				<input type="radio" id="live_both" name="will_live" value="both">
+				<input type="radio" id="live_both" name="will_live" value="both" required>
 				<label for="live_both">Both</label>
 			</section>
-			<section id="outside">
+			<section id="outside" data-if="will_live" data-operator="ne" data-rhs="inside" data-hidden="false">
 				<p data-if-config="outside_warn" data-value-config="outside_message"></p>
 				outside
 			</section>
@@ -264,7 +383,7 @@ echo str_replace("<header>", "<header data-remove='1'>", ob_get_clean());
 					multiple>
 			<span class="limits" data-remove="true">
             (max. 10 MB each, 200 MB total)
-        </span>
+			</span>
 			<ul class="thumbnails" data-if-config="thumbnails">
 				<li data-foreach="images" data-as="image">
 					<a data-href="image" data-file-transformer="url">
