@@ -111,6 +111,24 @@ body > article {
 			margin: $input-margin;
 			font: inherit;
 			box-shadow: -1px 1px 2px $border-color inset;
+			background-color: var(--background-color);
+
+			@media print {
+				&:not([type='radio']):not([type='checkbox']) {
+					border: none;
+					border-radius: 0;
+					border-bottom: 1pt solid black;
+					box-shadow: none;
+					appearance: none;
+					-moz-appearance: none;
+					-webkit-appearance: none;
+				}
+
+				&[type='date']:not(.filled) {
+					// In conjunction with an event listener, hide the "mm/dd/yyyy" placeholder.
+					color: var(--background-color);
+				}
+			}
 		}
 	}
 
