@@ -1,3 +1,3 @@
 <?php
 header('Content-Type: text/css');
-readfile("../public/common.scss");
+readfile("../public/common.css");
