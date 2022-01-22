@@ -142,7 +142,6 @@ body > article {
 				white-space: nowrap;
 				grid-column: 1;
 				cursor: inherit;
-				padding-left: 4px;
 
 				&:not(article#application *).required::after {
 					content: '*';
@@ -263,5 +262,3 @@ body > article {
 		border-bottom: 1pt solid $border-color;
 	}
 }
-
-
