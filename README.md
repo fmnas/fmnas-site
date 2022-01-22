@@ -42,7 +42,7 @@ unstable [test site](http://fmnas.org).
 
 When making changes, first create a development branch from the test branch: `git checkout -b dev test`
 
-Then either merge this branch into `test` and push (`git fetch; git checkout test; git merge dev; git push`), or push
+Then either merge this branch into `test` and push (`git checkout test; git pull; git merge dev; git push`), or push
 your dev branch (`git push --set-upstream origin dev`) and create a pull request on GitHub to merge this branch
 into `test`.
 
