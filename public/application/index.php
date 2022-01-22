@@ -146,6 +146,7 @@ $formConfig->smtpAuth = Config::$smtp_auth;
     <title>Adoption Application - <?=_G_longname()?></title>
     <meta charset="UTF-8">
     <meta name="robots" content="nofollow">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="/email.js.php"></script>
     <?php
     style();
@@ -162,7 +163,7 @@ echo str_replace("<header>", "<header data-remove='1'>", ob_get_clean());
 <article>
     <section id="thanks" data-if-config="main" data-rhs="false">
         <?php
-        application_reponse()
+        application_reponse();
         ?>
     </section>
     <h2 data-if-config="main" data-rhs="false" data-hidden="false">Adoption Application</h2>
