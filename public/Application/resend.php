@@ -1,4 +1,5 @@
 <?php
+    require_once __DIR__ . "/../../secrets/config.php";
     use PHPMailer\PHPMailer\PHPMailer;
     use PHPMailer\PHPMailer\Exception;
 	if(!isset($_GET['id'])) die();
@@ -7,17 +8,16 @@
     require '/home/kimgil5/PHPMailer/src/PHPMailer.php';
     require '/home/kimgil5/PHPMailer/src/SMTP.php';
 
-    var_dump(unserialize(file_get_contents()))
+    var_dump(unserialize(file_get_contents("applications/".$_GET['id'].".html")));
 
 	$application = new PHPMailer();
 	$application->IsSMTP();
-	$application->SMTPAuth = true;
-	$application->SMTPSecure = 'tls';
-	$application->Host = "smtp.gmail.com";
-	$application->Port = 587;
-	$application->SMTPAuth = true;
-	$application->Username = "apps@forgetmenotshelter.org";
-	$application->Password = "xxsP3cPQU42KExM9cIZB";
+	$application->SMTPSecure = Config::$smtp_security;
+	$application->Host = Config::$smtp_host;
+	$application->Port = Config::$smtp_port;
+	$application->SMTPAuth = Config::$smtp_auth;
+	$application->Username = Config::$smtp_username;
+	$application->Password = Config::$smtp_password;
 	$application->From = "adopt@forgetmenotshelter.org";
 	$application->FromName = "Application System";
 	$application->AddReplyTo($_POST["AEmail"],$_POST["AName"]);
