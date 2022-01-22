@@ -9,11 +9,11 @@
  * @return string A selector combining the selectors
  */
 function buildSelector(array $selectors, string $append = "", string $prepend = ""): string {
-    return implode(",",
-        array_map(function($sel) use ($prepend, $append) {
-            return $prepend . $sel . $append;
-        }, $selectors)
-    );
+	return implode(",",
+			array_map(function($sel) use ($prepend, $append) {
+				return $prepend . $sel . $append;
+			}, $selectors)
+	);
 }
 
 /**
@@ -22,20 +22,20 @@ function buildSelector(array $selectors, string $append = "", string $prepend = 
  * @return string Value to put in CSS string
  */
 function cssspecialchars(string $content): string {
-    $output = "";
-    foreach (str_split($content) as $char) {
-        if (ctype_alnum($char) || in_array($char, str_split("!@#$%^&*()-_=+[]{}|;:,<.>/?~` "))) {
-            // Pass character
-            $output .= $char;
-        } else {
-            if (in_array($char, str_split("\r\t"))) {
-                // Discard character
-                continue;
-            } else {
-                // Escape character (hex sequence is terminated by space)
-                $output .= "\\" . strtoupper(dechex(mb_ord($char, "UTF-8"))) . ' ';
-            }
-        }
-    }
-    return $output;
+	$output = "";
+	foreach (str_split($content) as $char) {
+		if (ctype_alnum($char) || in_array($char, str_split("!@#$%^&*()-_=+[]{}|;:,<.>/?~` "))) {
+			// Pass character
+			$output .= $char;
+		} else {
+			if (in_array($char, str_split("\r\t"))) {
+				// Discard character
+				continue;
+			} else {
+				// Escape character (hex sequence is terminated by space)
+				$output .= "\\" . strtoupper(dechex(mb_ord($char, "UTF-8"))) . ' ';
+			}
+		}
+	}
+	return $output;
 }
