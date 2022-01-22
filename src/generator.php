@@ -166,5 +166,6 @@ function generate() {
 		echo "{overflow:visible;position:relative;}";
 	}
 	$output = ob_get_clean();
+	// @todo Minify adoptable.generated.css
 	file_put_contents(root() . "/public/adoptable.generated.css", $output);
 }

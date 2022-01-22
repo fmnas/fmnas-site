@@ -1,5 +1,26 @@
+/* Hide the link to the application in the header - we are already here! */
 section.adopt {
 	display: none;
+}
+
+/* Application styles */
+.applicant {
+	background-color: #ffc;
+}
+
+.coapplicant {
+	background-color: #cff;
+}
+
+.test_div .coapplicant {
+
+}
+
+/* Mobile application styles */
+@media screen and (max-width: 700px) {
+	.test_div .coapplicant {
+
+	}
 }
 
 /* Styles for email */
