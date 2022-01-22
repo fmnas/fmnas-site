@@ -15,6 +15,7 @@
 </script>
 
 <?php
+require_once __DIR__ . '/../../secrets/config.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 	//these two functions adapted from http://programanddesign.com/php/base62-encode/
@@ -212,13 +213,12 @@ use PHPMailer\PHPMailer\Exception;
 
 		$confirmation = new PHPMailer();
 		$confirmation->IsSMTP();
-		$confirmation->SMTPAuth = true;
-		$confirmation->SMTPSecure = 'tls';
-		$confirmation->Host = "smtp.gmail.com";
-		$confirmation->Port = 587;
-		$confirmation->SMTPAuth = true;
-		$confirmation->Username = "apps@forgetmenotshelter.org";
-		$confirmation->Password = "xxsP3cPQU42KExM9cIZB";
+        $application->SMTPSecure = Config::$smtp_security;
+        $application->Host = Config::$smtp_host;
+        $application->Port = Config::$smtp_port;
+        $application->SMTPAuth = Config::$smtp_auth;
+        $application->Username = Config::$smtp_username;
+        $application->Password = Config::$smtp_password;
 		$confirmation->From = "adopt@forgetmenotshelter.org";
 		$confirmation->FromName = "Forget Me Not Animal Shelter";
 		$confirmation->AddReplyTo("adopt@forgetmenotshelter.org","Forget Me Not Animal Shelter");
@@ -231,13 +231,12 @@ use PHPMailer\PHPMailer\Exception;
 
 		$application = new PHPMailer();
 		$application->IsSMTP();
-		$application->SMTPAuth = true;
-		$application->SMTPSecure = 'tls';
-		$application->Host = "smtp.gmail.com";
-		$application->Port = 587;
-		$application->SMTPAuth = true;
-		$application->Username = "apps@forgetmenotshelter.org";
-		$application->Password = "xxsP3cPQU42KExM9cIZB";
+        $application->SMTPSecure = Config::$smtp_security;
+        $application->Host = Config::$smtp_host;
+        $application->Port = Config::$smtp_port;
+        $application->SMTPAuth = Config::$smtp_auth;
+        $application->Username = Config::$smtp_username;
+        $application->Password = Config::$smtp_password;
 		$application->From = "adopt@forgetmenotshelter.org";
 		$application->FromName = "Application System";
 		$application->AddReplyTo($_POST["AEmail"],$_POST["AName"]);
@@ -258,14 +257,6 @@ use PHPMailer\PHPMailer\Exception;
 			//Add error info to application save file
 			file_put_contents("applications/".$appID.".html",$application->ErrorInfo,FILE_APPEND);
 		}
-
-
-		//OLD EMAIL SYSTEM (HostGator)
-		/*if(@mail("adopt@forgetmenotshelter.org","Adoption Application".((@$_POST["Particular"])?" for ".$_POST["Particular"]:""),$html,"MIME-Version: 1.0\r\nContent-type: text/html; charset=utf-8\r\nBcc: sean+adopt@forgetmenotshelter.org\r\nFrom: ".((@$_POST["AName"])?addslashes(htmlspecialchars($_POST["AName"])):"Applicant")." <".((@$_POST["AEmail"])?addslashes(htmlspecialchars($_POST["AEmail"])):"adopt@forgetmenotshelter.org").">\r\nX-Mailer: PHP/".phpversion())&&@mail(((@$_POST["AName"])?addslashes(htmlspecialchars($_POST["AName"])):"Applicant")." <".((@$_POST["AEmail"])?addslashes(htmlspecialchars($_POST["AEmail"])):"adopt@forgetmenotshelter.org").">","Your Forget Me Not Animal Shelter Adoption Application".((@$_POST["Particular"])?" for ".$_POST["Particular"]:""),"We have received your application, and will be reviewing it shortly.\r\nIf you need to attach photographs or landlord permission, please reply to this email with them attached.","From: adopt@forgetmenotshelter.org\r\nReply-To: ".$appID." <adopt@forgetmenotshelter.org>\r\nX-Mailer: PHP/".phpversion()."\r\nBcc: sean+adopt@forgetmenotshelter.org"))
-			echo 'Thank you. We have received your application; you will be hearing back from us soon.<br><a href="http://forgetmenotshelter.org">Return to the shelter homepage</a><!--'.$appID.'-->';
-		else
-			echo 'Sorry; an error occurred. If you inform us of this error by emailing <a href="mailto:adopt@forgetmenotshelter.org">adopt@forgetmenotshelter.org</a> or calling (509) 775-2308 and reporting the error code <span style="font-size:xx-large;font-weight:bold;font-family:monospace;">'.$appID.'</span>, we may be able to retrieve your application.';
-		*/
 
 		echo '</body></html>';
 	}
