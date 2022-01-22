@@ -15,6 +15,13 @@ jobs:
           ref: test
       - name: Create local branch
         run: git checkout -b test_deployment
+      - name: Set up Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+        run: npm install --only=dev
+      - name: Compile public site stylesheets
+        run: sass --style=compressed public:public
       - name: Restrict access to test site
         run: cat public/.htaccess-test >> public/.htaccess
       - name: Restrict access to test admin site
