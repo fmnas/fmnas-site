@@ -1,0 +1,76 @@
+p > strong {
+	font-weight: bold;
+	color: #5021da;
+	display: inline;
+}
+
+.big {
+	font-size: 20pt;
+}
+
+h1 {
+	font-size: 24pt;
+}
+
+p.big > strong {
+	text-transform: uppercase;
+}
+
+.apply button {
+	font-size: 18pt;
+	padding: 5pt;
+}
+
+a.return {
+	display: block;
+	width: 100%;
+	text-align: right;
+	font-size: 10pt;
+	margin-bottom: 0.25in;
+	@media print {
+		display: none;
+	}
+}
+
+img, iframe {
+	max-height: 640px;
+	max-width: 100%;
+}
+
+form.paypal {
+	display: inline-block;
+}
+
+a.im > img {
+	vertical-align: bottom;
+}
+
+header a.return {
+	display: none;
+}
+
+section#description iframe {
+	margin: 0 auto 1em;
+	display: block;
+	max-height: calc((100vw - 1em) * 9 / 16);
+}
+
+aside.images {
+	width: 100%;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-around;
+	align-items: center;
+	margin-top: 1.5em;
+}
+
+section#description {
+	max-width: 14in;
+	margin: 1em auto;
+}
+
+p.subtitle {
+	text-align: center;
+	font-size: 18pt;
+	margin: 0.2em;
+}

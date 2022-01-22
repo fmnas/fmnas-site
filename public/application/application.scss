@@ -1,0 +1,250 @@
+$border-color: #ccc;
+$line-height: 1.2em;
+$input-border: 1px;
+$input-padding: 7px;
+$input-margin: 5px;
+$cutoff-width: 700px;
+$row-gap: 5px;
+$column-gap: 3px;
+
+// Hide the link to the application in the header - we are already here!
+section.adopt {
+	display: none;
+}
+
+body {
+	min-width: 480px;
+}
+
+.hidden {
+	display: none;
+}
+
+body > article {
+	text-align: center;
+}
+
+#application {
+	display: inline-block;
+	max-width: 10in;
+
+	@media screen and (min-width: calc(#{$cutoff-width} + 1px)) {
+		// Excludes emailed and mobile forms
+		&:not(article) {
+			background-color: whitesmoke;
+			box-shadow: -2px 2px 3px $border-color;
+			border: 1px solid $border-color;
+			border-radius: 10px;
+			margin: 1em;
+		}
+	}
+
+	input:not([type='file']), select, textarea, button,
+	span[data-type='input']:not([data-input-type='file']), span[data-type='select'],
+	span[data-type='textarea'], span[data-type='button'] {
+		width: 20em;
+		max-width: 100%;
+
+		&:not(span) {
+			// Excludes emailed inputs
+			border-radius: 5px;
+			border: $input-border solid $border-color;
+			padding: $input-padding;
+			margin: $input-margin;
+			font: inherit;
+			box-shadow: -1px 1px 2px $border-color inset;
+		}
+	}
+
+	.explanatory {
+		display: block;
+		font-size: 70%;
+		font-style: italic;
+	}
+
+	h2 {
+		margin-top: 1em;
+	}
+
+	h3 {
+		font-size: 18pt;
+		font-variant: small-caps;
+		margin-bottom: 0;
+	}
+
+	#basic_information {
+		display: inline-block;
+		max-width: 8.5in;
+	}
+
+	div.info_grid {
+		display: grid;
+		grid-template-columns: min-content 1fr 1fr;
+		grid-auto-flow: column;
+		column-gap: $column-gap;
+		row-gap: $row-gap;
+		margin: 8px;
+		@media screen and (max-width: $cutoff-width) {
+			display: block;
+			margin: 0;
+		}
+
+		// Spacer occupying the top-left cell of the "table"
+		> div.spacer {
+			grid-column-start: 1;
+			grid-row-start: 1;
+		}
+
+		> section {
+			display: contents;
+			@media screen and (max-width: $cutoff-width) {
+				display: grid;
+				grid-template-columns: min-content 20em;
+				grid-auto-flow: column;
+				column-gap: $column-gap;
+				row-gap: $row-gap;
+				justify-content: center;
+			}
+			counter-reset: info-row;
+
+			h4 {
+				margin: 0;
+				font-weight: inherit;
+				@media screen and (max-width: $cutoff-width) {
+					grid-column: 1/span 2 !important;
+					font-weight: bold;
+				}
+			}
+
+			> label, > div.label, > span[type='label'] {
+				align-self: start;
+				line-height: calc(#{$line-height} + #{$input-border} + #{$input-border}
+				+ #{$input-margin} + #{$input-margin} + #{$input-padding} + #{$input-padding});
+				vertical-align: middle;
+				justify-self: end;
+				white-space: nowrap;
+				grid-column: 1;
+				cursor: inherit;
+				padding-left: 4px;
+
+				&:not(article#application *).required::after {
+					content: '*';
+					color: red;
+					margin-left: 1px;
+					font-size: 90%;
+				}
+
+				> * {
+					line-height: $line-height;
+					text-align: right;
+					margin-top: -1em;
+				}
+
+				& + * {
+					justify-self: stretch;
+					width: auto;
+					grid-column: 2;
+				}
+
+				&.span-2 {
+					grid-row-end: span 2;
+				}
+			}
+
+			&.applicant {
+				> h4 {
+					grid-column: 2;
+					grid-row: 1;
+				}
+			}
+
+			&.coapplicant {
+				> h4 {
+					grid-column: 3;
+					grid-row: 1;
+				}
+
+				@media screen and (max-width: $cutoff-width) {
+					margin-top: 1em;
+				}
+
+				> h4 + label + *, > h4 + div.label + *, > h4 + span[type='label'] + * {
+					// Reset to row 2 when inserting the first coapplicant input
+					grid-row: 2;
+				}
+
+				> label, > div.label, > span[type='label'] {
+					display: none;
+					@media screen and (max-width: $cutoff-width) {
+						display: inline-block;
+					}
+
+					& + * {
+						grid-column: 3;
+						@media screen and (max-width: $cutoff-width) {
+							grid-column: 2;
+						}
+					}
+				}
+			}
+		}
+
+	}
+
+	.city-st-zip {
+		margin-top: -$row-gap;
+		white-space: nowrap;
+		width: 100%;
+		display: inline-flex;
+		justify-content: space-between;
+
+		label {
+			display: none;
+		}
+
+		input, select {
+			width: 0;
+		}
+
+		input:first-of-type {
+			flex-grow: 2;
+		}
+
+		// State
+		select {
+			width: 4em;
+			font-size: 85%;
+		}
+
+		// ZIP
+		input:nth-of-type(2) {
+			flex-grow: 1;
+		}
+	}
+
+	/* Styles for email */
+	span[data-type='input'][data-input-type='radio'],
+	span[data-type='label'][data-input-type='radio'][data-selected='0'] {
+		display: none;
+	}
+
+	span[data-type='label'][data-input-type='checkbox'] {
+		display: none;
+
+		&[data-selected='0']::before {
+			content: '☐ ';
+		}
+
+		&[data-selected='1']::before {
+			content: '☑ ';
+		}
+	}
+
+	section.thanks {
+		padding-bottom: 1em;
+		margin-bottom: 1em;
+		border-bottom: 1pt solid $border-color;
+	}
+}
+
+
