@@ -1,0 +1,28 @@
+{
+  "dependencies": {
+    "node": "^17.4.0",
+    "npm": "^8.3.2"
+  },
+  "name": "fmnas-site",
+  "description": "This repository contains source code for the website of the [Forget Me Not Animal Shelter](https://forgetmenotshelter.org) in Republic, WA.",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": {
+    "handlebars-cmd": "^0.1.4",
+    "sass": "^1.49.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fmnas/fmnas-site.git"
+  },
+  "keywords": [],
+  "author": "Forget Me Not Animal Shelter",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/fmnas/fmnas-site/issues"
+  },
+  "homepage": "https://github.com/fmnas/fmnas-site#readme"
+}
