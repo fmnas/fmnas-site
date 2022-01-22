@@ -1,3 +1,19 @@
+/**
+ * Get a function that adds 'filled' to an element if its value is truthy and removes it otherwise.
+ * Useful as a listener on input elements to add a filled class.
+ * @param element An element
+ * @returns {(function(Event): void)|*}
+ */
+function get_filled_listener(element) {
+	return function(event) {
+		if (element.value) {
+			element.classList.add('filled');
+		} else {
+			element.classList.remove('filled');
+		}
+	}
+}
+
 document.addEventListener('DOMContentLoaded', () => {
 	let form = document.getElementById('application');
 	let verifyUnload = (e) => {
@@ -31,6 +47,11 @@ document.addEventListener('DOMContentLoaded', () => {
 		e.addEventListener('change', will_live_listener);
 	});
 	will_live_listener(); // Set initial class.
+
+	document.querySelectorAll('input[type="date"]').forEach((e) => {
+		get_filled_listener(e)(); // Set initial class
+		e.addEventListener('change', get_filled_listener(e));
+	});
 });
 
 window.addEventListener('keypress', (e) => {
