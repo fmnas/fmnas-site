@@ -159,11 +159,11 @@ footer {
 
 .printonly {
 	@media not print {
-		display: none;
+		display: none !important;
 	}
 }
 .noprint {
 	@media print {
-		display: none;
+		display: none !important;
 	}
 }

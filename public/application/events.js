@@ -34,8 +34,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 window.addEventListener('keypress', (e) => {
-	if (e.key === 'Enter' && e.target.nodeName === 'INPUT' && e.target.type !== 'textarea' && e.target.type !==
-			'submit' && e.target.type !== 'button' && e.target.type !== 'file') {
+	if (e.key === 'Enter' && e.target instanceof Node && e.target.nodeName === 'INPUT' && e.target.type !== 'textarea' &&
+			e.target.type !== 'submit' && e.target.type !== 'button' && e.target.type !== 'file') {
 		e.preventDefault();
 	}
 });
