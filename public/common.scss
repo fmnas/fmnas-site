@@ -163,14 +163,3 @@ footer {
 		color: #f00;
 	}
 }
-
-/*Print links*/
-@media print {
-	a[href]::after {
-		content: ' <' attr(href) '>';
-	}
-
-	form[action]::after {
-		content: ' <' attr(action) '>';
-	}
-}
