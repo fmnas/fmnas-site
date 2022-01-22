@@ -23,15 +23,15 @@ see <https://www.gnu.org/licenses/>.
 To get a local server running, you will need:
 
 * Apache (or Litespeed, etc.)
-  * Debian packages: `apache2 libapache2-mod-php`
+	* Debian packages: `apache2 libapache2-mod-php`
 * PHP 8.1 and dependencies noted below
-  * Debian packages: `php php-gd php-mbstring php-mysql php-xml`
+	* Debian packages: `php php-gd php-mbstring php-mysql php-xml`
 * curl
 * Node
-  * Suggest using NVM: `nvm install` (this will install and use the Node version specified in .nvmrc)
+	* Suggest using NVM: `nvm install` (this will install and use the Node version specified in .nvmrc)
 * You may want to install the faster Dart version of [Sass](https://sass-lang.com/install):
-  * install the [Dart SDK](https://dart.dev/get-dart) and run `dart pub global activate sass`
-  * Or with Homebrew: `brew install sass/sass/sass`
+	* install the [Dart SDK](https://dart.dev/get-dart) and run `dart pub global activate sass`
+	* Or with Homebrew: `brew install sass/sass/sass`
 
 ### Workflow
 
@@ -89,10 +89,19 @@ TODO: Set up automatic deployment
 On the build machine:
 
 * Install NPM build dependencies: `npm install --only=dev`
-* Build the stylesheets for the public site: `npm run sass --style=compressed public:public`
-* Copy `secrets/config_sample.php` to `secrets/config.php` and update the configuration values
-* Update the public web templates in the `src/templates` and `src/errors` directories as desired
-  * The current templates rely on the presence of `/assets/adopted.jpg` and `/assets/logo.png` in the public site
+* Build the stylesheets for the public site: `npx sass --style=compressed public:public`
+* Set the config values in config.php.
+  * Run, for instance:
+    ```shell
+    npx ts-node handleparse.ts secrets/config.php.hbs --db_name=database --db_username=username --db_pass=password \
+    --db_host=localhost --phpmailer_path="/path/to/PHPMailer" --html5_php_path="/path/to/html5-php" \
+    --smtp_host=smtp.gmail.com --smtp_auth=true --smtp_security=tls --smtp_port=587 --smtp_username=me@gmail.com \
+    --smtp_password=password
+    ```
+  * Alternatively, copy `secrets/config_sample.php` to `secrets/config.php` and update the configuration values
+    manually.
+* Update the public web templates in the `src/templates` and `src/errors` directories as desired.
+  * The current templates rely on the presence of `/assets/adopted.jpg` and `/assets/logo.png` in the public site.
 
 <!-- @todo Minify JS and HTML -->
 
