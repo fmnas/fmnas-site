@@ -123,9 +123,6 @@ header {
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: space-evenly;
-		@media print {
-			display: block;
-		}
 	}
 
 	> div {
@@ -139,11 +136,7 @@ header {
 	}
 
 	@media print {
-		display: block;
-
-		aside, a.return {
-			display: none;
-		}
+		display: none;
 	}
 }
 
