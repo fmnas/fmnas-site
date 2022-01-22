@@ -113,7 +113,6 @@ body > article {
   white-space: nowrap;
   grid-column: 1;
   cursor: inherit;
-  padding-left: 4px;
 }
 #application div.info_grid > section > label:not(article#application *).required::after, #application div.info_grid > section > div.label:not(article#application *).required::after, #application div.info_grid > section > span[type=label]:not(article#application *).required::after {
   content: "*";
