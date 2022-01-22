@@ -89,7 +89,7 @@ TODO: Set up automatic deployment
 On the build machine:
 
 * Install NPM build dependencies: `npm install --only=dev`
-* Build the stylesheets for the public site: `sass --style=compressed public:public`
+* Build the stylesheets for the public site: `npm run sass --style=compressed public:public`
 * Copy `secrets/config_sample.php` to `secrets/config.php` and update the configuration values
 * Update the public web templates in the `src/templates` and `src/errors` directories as desired
   * The current templates rely on the presence of `/assets/adopted.jpg` and `/assets/logo.png` in the public site
