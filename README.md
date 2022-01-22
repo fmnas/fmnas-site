@@ -29,8 +29,8 @@ To get a local server running, you will need:
 * PHP 8.1 and dependencies noted below
   * Debian packages: `php php-gd php-mbstring php-mysql php-xml`
 * curl
-* Node 16 LTS
-  * Suggest using NVM: `nvm install 16`
+* Node
+  * Suggest using NVM: `nvm install` (this will install and use the Node version specified in .nvmrc)
 * You may want to install the faster Dart version of [Sass](https://sass-lang.com/install):
   * install the [Dart SDK](https://dart.dev/get-dart) and run `dart pub global activate sass`
   * Or with Homebrew: `brew install sass/sass/sass`
