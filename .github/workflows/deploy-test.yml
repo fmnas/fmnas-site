@@ -18,9 +18,10 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v2
         with:
-          node-version: '16'
+          node-version-file: '.nvmrc'
+          cache: 'npm'
       - name: Install dev dependencies
-        run: npm install --only=dev
+        run: npm install
       - name: Compile public site stylesheets
         run: sass --style=compressed public:public
       - name: Restrict access to test site
