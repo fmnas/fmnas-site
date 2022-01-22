@@ -1,5 +1,5 @@
 secrets/*
-!secrets/*_sample.*
+!secrets/*.hbs
 
 /log
 /lib
