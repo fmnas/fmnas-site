@@ -257,164 +257,164 @@ require_once("$html5_php_path/src/HTML5/Parser/CharacterReference.php");
  * Update these values to control the behavior of the form processor.
  */
 class FormConfig {
-    /**
-     * Callback for when the form is submitted. This should be used to output
-     * a thank-you message, etc.
-     * @param array form data ($_POST or $_GET)
-     * @return void
-     */
-    public Closure $confirm;
+	/**
+	 * Callback for when the form is submitted. This should be used to output
+	 * a thank-you message, etc.
+	 * @param array form data ($_POST or $_GET)
+	 * @return void
+	 */
+	public Closure $confirm;
 
-    /**
-     * Callback for when the form encounters an error during submission.
-     * @param FormException
-     * @return void
-     */
-    public Closure $handler;
+	/**
+	 * Callback for when the form encounters an error during submission.
+	 * @param FormException
+	 * @return void
+	 */
+	public Closure $handler;
 
-    /**
-     * Closure that shall return configs for each copy of the form to email.
-     * In most cases, the returned iterable should be an array.
-     * @param array form data ($_POST or $_GET)
-     * @return iterable<FormEmailConfig>
-     */
-    public Closure $emails;
+	/**
+	 * Closure that shall return configs for each copy of the form to email.
+	 * In most cases, the returned iterable should be an array.
+	 * @param array form data ($_POST or $_GET)
+	 * @return iterable<FormEmailConfig>
+	 */
+	public Closure $emails;
 
-    /**
-     * Closures to transform provided values into output values for the email.
-     * @param string
-     * @return string
-     * @var array<Closure> $transformers
-     */
-    public array $transformers;
+	/**
+	 * Closures to transform provided values into output values for the email.
+	 * @param string
+	 * @return string
+	 * @var array<Closure> $transformers
+	 */
+	public array $transformers;
 
-    /**
-     * Closures to transform provided file metadata arrays into output values for the email.
-     * @param array
-     * @return string
-     * @var array<Closure> $fileTransformers
-     */
-    public array $fileTransformers;
+	/**
+	 * Closures to transform provided file metadata arrays into output values for the email.
+	 * @param array
+	 * @return string
+	 * @var array<Closure> $fileTransformers
+	 */
+	public array $fileTransformers;
 
-    /**
-     * Closure to validate files using their metadata arrays.
-     * @param array
-     * @return bool
-     */
-    public Closure $fileValidator;
+	/**
+	 * Closure to validate files using their metadata arrays.
+	 * @param array
+	 * @return bool
+	 */
+	public Closure $fileValidator;
 
-    public string $smtpHost;
-    public string $smtpSecurity;
-    public int $smtpPort;
-    public bool $smtpAuth;
-    public string $smtpUser;
-    public string $smtpPassword;
+	public string $smtpHost;
+	public string $smtpSecurity;
+	public int $smtpPort;
+	public bool $smtpAuth;
+	public string $smtpUser;
+	public string $smtpPassword;
 }
 
 enum HashOptions {
-    case NO;
-    case SAVED_ONLY;
-    case EMAIL_ONLY;
-    case YES;
+	case NO;
+	case SAVED_ONLY;
+	case EMAIL_ONLY;
+	case YES;
 }
 
 /**
  * The configuration for a single email sent after form processing.
  */
 class FormEmailConfig {
-    /**
-     * The emails for the Reply-To header.
-     * In most cases, this iterable should be an array.
-     * If it doesn't generate any values, the Reply-To header will be omitted.
-     * @var iterable<EmailAddress>
-     */
-    public iterable $replyTo;
-    /**
-     * The emails for the Cc header.
-     * In most cases, this iterable should be an array.
-     * If it doesn't generate any values, the Cc header will be omitted.
-     * @var iterable<EmailAddress>
-     */
-    public iterable $cc;
-    /**
-     * The emails for the Bcc header.
-     * In most cases, this iterable should be an array.
-     * If it doesn't generate any values, the Bcc header will be omitted.
-     * @var iterable<EmailAddress>
-     */
-    public iterable $bcc;
+	/**
+	 * The emails for the Reply-To header.
+	 * In most cases, this iterable should be an array.
+	 * If it doesn't generate any values, the Reply-To header will be omitted.
+	 * @var iterable<EmailAddress>
+	 */
+	public iterable $replyTo;
+	/**
+	 * The emails for the Cc header.
+	 * In most cases, this iterable should be an array.
+	 * If it doesn't generate any values, the Cc header will be omitted.
+	 * @var iterable<EmailAddress>
+	 */
+	public iterable $cc;
+	/**
+	 * The emails for the Bcc header.
+	 * In most cases, this iterable should be an array.
+	 * If it doesn't generate any values, the Bcc header will be omitted.
+	 * @var iterable<EmailAddress>
+	 */
+	public iterable $bcc;
 
-    /**
-     * If non-empty, a directory on the server to which to output uploaded files.
-     * Can also be a closure that takes the file metadata array.
-     * @param array file metadata array
-     * @return string
-     */
-    public string|Closure $fileDir;
+	/**
+	 * If non-empty, a directory on the server to which to output uploaded files.
+	 * Can also be a closure that takes the file metadata array.
+	 * @param array file metadata array
+	 * @return string
+	 */
+	public string|Closure $fileDir;
 
-    /**
-     * Whether to attach uploaded files to the email.
-     * Can also be a closure that takes the file metadata array.
-     * @param array file metadata array
-     * @return bool
-     */
-    public bool|Closure $attachFiles;
+	/**
+	 * Whether to attach uploaded files to the email.
+	 * Can also be a closure that takes the file metadata array.
+	 * @param array file metadata array
+	 * @return bool
+	 */
+	public bool|Closure $attachFiles;
 
-    /**
-     * Uploaded filenames can be replaced with a hash of the file.
-     * (This is desirable for security if $fileDir is a publicly accessible directory.)
-     * Can also be a closure that takes the file metadata array
-     * @param array file metadata array
-     * @return HashOptions
-     */
-    public HashOptions|Closure $hashFilenames;
+	/**
+	 * Uploaded filenames can be replaced with a hash of the file.
+	 * (This is desirable for security if $fileDir is a publicly accessible directory.)
+	 * Can also be a closure that takes the file metadata array
+	 * @param array file metadata array
+	 * @return HashOptions
+	 */
+	public HashOptions|Closure $hashFilenames;
 
-    /**
-     * Converter applied to files before hashFilenames.
-     * @param array &$metadata file metadata array
-     * @return void
-     */
-    public ?Closure $fileConverter;
+	/**
+	 * Converter applied to files before hashFilenames.
+	 * @param array &$metadata file metadata array
+	 * @return void
+	 */
+	public ?Closure $fileConverter;
 
-    /**
-     * Whether to apply $fileConverter to $_FILES instead of $files.
-     */
-    public bool $globalConversion;
+	/**
+	 * Whether to apply $fileConverter to $_FILES instead of $files.
+	 */
+	public bool $globalConversion;
 
-    /**
-     * If non-empty, a path on the server to which to save the rendered form as an HTML file in lieu of
-     * emailing it.
-     */
-    public string $saveFile;
+	/**
+	 * If non-empty, a path on the server to which to save the rendered form as an HTML file in lieu of
+	 * emailing it.
+	 */
+	public string $saveFile;
 
-    /**
-     * FormEmailConfig constructor.
-     * @param EmailAddress|null $from The email for the From header, or null to dump HTML rather than emailing.
-     * @param iterable<EmailAddress> $to The emails for the To header.
-     * @param string $subject The value for the Subject header.
-     * @param array|null $values An optional array of arbitrary data accessible
-     * when rendering the email. If an element in the form has a data-value
-     * attribute, its value will be used as a key when accessing this array.
-     * For example, <input type="hidden" data-value="foo"> will be rendered as
-     * <span>{{$values['foo']}}</span>
-     */
-    public function __construct(public ?EmailAddress $from, public iterable $to, public string $subject,
-        public ?array $values = []) {
-        $this->replyTo = [];
-        $this->cc = [];
-        $this->bcc = [];
-        $this->fileDir = "";
-        $this->attachFiles = true;
-        $this->hashFilenames = HashOptions::NO;
-        $this->fileConverter = null;
-        $this->globalConversion = false;
-        $this->saveFile = "";
-    }
+	/**
+	 * FormEmailConfig constructor.
+	 * @param EmailAddress|null $from The email for the From header, or null to dump HTML rather than emailing.
+	 * @param iterable<EmailAddress> $to The emails for the To header.
+	 * @param string $subject The value for the Subject header.
+	 * @param array|null $values An optional array of arbitrary data accessible
+	 * when rendering the email. If an element in the form has a data-value
+	 * attribute, its value will be used as a key when accessing this array.
+	 * For example, <input type="hidden" data-value="foo"> will be rendered as
+	 * <span>{{$values['foo']}}</span>
+	 */
+	public function __construct(public ?EmailAddress $from, public iterable $to, public string $subject,
+			public ?array $values = []) {
+		$this->replyTo = [];
+		$this->cc = [];
+		$this->bcc = [];
+		$this->fileDir = "";
+		$this->attachFiles = true;
+		$this->hashFilenames = HashOptions::NO;
+		$this->fileConverter = null;
+		$this->globalConversion = false;
+		$this->saveFile = "";
+	}
 }
 
 class EmailAddress {
-    public function __construct(public string $address, public ?string $name = null) {
-    }
+	public function __construct(public string $address, public ?string $name = null) {
+	}
 }
 
 /**
@@ -422,15 +422,15 @@ class EmailAddress {
  * event of an error during submission.
  */
 class FormException extends Exception {
-    /**
-     * The form data array ($_POST or $_GET).
-     */
-    public array $formData;
+	/**
+	 * The form data array ($_POST or $_GET).
+	 */
+	public array $formData;
 
-    #[Pure] public function __construct(Exception $e, ?array $data = []) {
-        parent::__construct($e->getMessage(), $e->getCode(), $e);
-        $this->formData = $data ?? [];
-    }
+	#[Pure] public function __construct(Exception $e, ?array $data = []) {
+		parent::__construct($e->getMessage(), $e->getCode(), $e);
+		$this->formData = $data ?? [];
+	}
 }
 
 /**
@@ -440,60 +440,59 @@ class FormException extends Exception {
  * Otherwise, the rendered HTML is output to the browser.
  */
 function collectForm(): void {
-    global $formConfig;
+	global $formConfig;
 
-    // Get the server-rendered form HTML from the page output.
-    $html = ob_get_clean();
+	// Get the server-rendered form HTML from the page output.
+	$html = ob_get_clean();
 
-    // Get the submitted POST or GET data.
-    $receivedData = $_POST ?: $_GET;
+	// Get the submitted POST or GET data.
+	$receivedData = $_POST ?: $_GET;
 
-    // @todo Devise a way to allow multiple forms on a page.
-    if ($receivedData || $_FILES) {
-        try {
-            processForm($receivedData, $html);
-            ($formConfig->confirm)($receivedData);
-        } catch (Exception $e) {
-            ($formConfig->handler)(new FormException($e, $receivedData));
-        }
-    } else {
-        // Look for a good place to put the injected CSS.
-        $separator = "";
-        $after = false; // Whether to place the CSS after the separator instead of before.
-        $halves = [$html, ""];
-        /** @noinspection HtmlRequiredLangAttribute */
-        foreach ([["</head>", false], ["<body", false], ["<head", true], ["</title>", true], ["<!DOCTYPE html>", true],
-            ["<html>", true]] as $candidate) {
-            if (contains($html, $candidate[0])) {
-                $separator = $candidate[0];
-                $after = $candidate[1];
-                $halves = explode($candidate[0], $html, 2);
-                break;
-            }
-        }
+	if ($receivedData || $_FILES) {
+		try {
+			processForm($receivedData, $html);
+			($formConfig->confirm)($receivedData);
+		} catch (Exception $e) {
+			($formConfig->handler)(new FormException($e, $receivedData));
+		}
+	} else {
+		// Look for a good place to put the injected CSS.
+		$separator = "";
+		$after = false; // Whether to place the CSS after the separator instead of before.
+		$halves = [$html, ""];
+		/** @noinspection HtmlRequiredLangAttribute */
+		foreach ([["</head>", false], ["<body", false], ["<head", true], ["</title>", true], ["<!DOCTYPE html>", true],
+				["<html>", true]] as $candidate) {
+			if (contains($html, $candidate[0])) {
+				$separator = $candidate[0];
+				$after = $candidate[1];
+				$halves = explode($candidate[0], $html, 2);
+				break;
+			}
+		}
 
-        // Stuff before the injected CSS.
-        echo $halves[0];
-        if ($after) {
-            echo $separator;
-        }
+		// Stuff before the injected CSS.
+		echo $halves[0];
+		if ($after) {
+			echo $separator;
+		}
 
-        // Build and echo the injected CSS.
-        $attributes = ["data-hidden", "data-foreach", "data-foreach-config", "data-if", "data-if-config", "data-value",
-            "data-value-config", "data-href", "data-href-config"];
-        $selectors = [];
-        foreach ($attributes as $attribute) {
-            $selectors[] =
-                "*[$attribute]:not([data-hidden='0']):not([data-hidden='false']):not([data-hidden='false' i])";
-        }
-        echo "<style>" . implode(",", $selectors) . "{display: none;}</style>";
+		// Build and echo the injected CSS.
+		$attributes = ["data-hidden", "data-foreach", "data-foreach-config", "data-if", "data-if-config", "data-value",
+				"data-value-config", "data-href", "data-href-config"];
+		$selectors = [];
+		foreach ($attributes as $attribute) {
+			$selectors[] =
+					"*[$attribute]:not([data-hidden='0']):not([data-hidden='false']):not([data-hidden='false' i])";
+		}
+		echo "<style>" . implode(",", $selectors) . "{display: none;}</style>";
 
-        // Stuff after the injected CSS.
-        if (!$after) {
-            echo $separator;
-        }
-        echo $halves[1];
-    }
+		// Stuff after the injected CSS.
+		if (!$after) {
+			echo $separator;
+		}
+		echo $halves[1];
+	}
 }
 
 /**
@@ -503,16 +502,16 @@ function collectForm(): void {
  * @throws DOMException
  */
 function processForm(array $data, string $html): void {
-    global $formConfig;
+	global $formConfig;
 
-    validateFiles();
+	validateFiles();
 
-    foreach (($formConfig->emails)($data) as $emailConfig) {
-        /** @var $emailConfig FormEmailConfig */
-        $renderedForm = renderForm($data, $html, $emailConfig);
+	foreach (($formConfig->emails)($data) as $emailConfig) {
+		/** @var $emailConfig FormEmailConfig */
+		$renderedForm = renderForm($data, $html, $emailConfig);
 
-        sendEmail($emailConfig, $renderedForm);
-    }
+		sendEmail($emailConfig, $renderedForm);
+	}
 }
 
 /**
@@ -522,63 +521,63 @@ function processForm(array $data, string $html): void {
  * @throws \PHPMailer\PHPMailer\Exception
  */
 function sendEmail(FormEmailConfig $emailConfig, RenderedEmail $renderedEmail): void {
-    global $formConfig;
+	global $formConfig;
 
-    $emailBody = $renderedEmail->html;
-    $attachments = $renderedEmail->attachments;
+	$emailBody = $renderedEmail->html;
+	$attachments = $renderedEmail->attachments;
 
-    if ($emailConfig->from === null || $emailConfig->saveFile) {
-        $html = $emailBody;
-        foreach ($attachments as $attachment) {
-            $html .= "\n<!-- attach $attachment->path as $attachment->filename with type $attachment->type -->";
-        }
-        if ($emailConfig->saveFile) {
-            file_put_contents($emailConfig->saveFile, $html);
-            return;
-        }
-        echo $html;
-        return;
-    }
+	if ($emailConfig->from === null || $emailConfig->saveFile) {
+		$html = $emailBody;
+		foreach ($attachments as $attachment) {
+			$html .= "\n<!-- attach $attachment->path as $attachment->filename with type $attachment->type -->";
+		}
+		if ($emailConfig->saveFile) {
+			file_put_contents($emailConfig->saveFile, $html);
+			return;
+		}
+		echo $html;
+		return;
+	}
 
-    $mailer = new PHPMailer(true);
-    $mailer->IsSMTP();
-    $mailer->Host = $formConfig->smtpHost;
-    $mailer->Port = $formConfig->smtpPort;
-    $mailer->SMTPAuth = $formConfig->smtpAuth;
-    $mailer->SMTPSecure = $formConfig->smtpSecurity;
-    $mailer->Username = $formConfig->smtpUser;
-    $mailer->Password = $formConfig->smtpPassword;
-    $mailer->From = $emailConfig->from->address;
-    $mailer->CharSet = 'UTF-8';
-    $mailer->Encoding = 'base64';
-    if ($emailConfig->from->name) {
-        $mailer->FromName = $emailConfig->from->name;
-    }
-    foreach ($emailConfig->to as $to) {
-        /** @var $to EmailAddress */
-        $mailer->AddAddress($to->address, $to->name ?: '');
-    }
-    foreach ($emailConfig->replyTo as $replyTo) {
-        /** @var $replyTo EmailAddress */
-        $mailer->AddReplyTo($replyTo->address, $replyTo->name ?: '');
-    }
-    foreach ($emailConfig->cc as $cc) {
-        /** @var $cc EmailAddress */
-        $mailer->AddCc($cc->address, $cc->name ?: '');
-    }
-    foreach ($emailConfig->bcc as $bcc) {
-        /** @var $bcc EmailAddress */
-        $mailer->AddBcc($bcc->address, $bcc->name ?: '');
-    }
-    foreach ($attachments as $attachment) {
-        /** @var $attachment AttachmentInfo */
-        $mailer->addAttachment($attachment->path, $attachment->filename,
-            startsWith($attachment->type, "text/") ? "quoted-printable" : "base64", $attachment->type);
-    }
-    $mailer->IsHTML(true);
-    $mailer->Subject = $emailConfig->subject;
-    $mailer->Body = $emailBody;
-    $mailer->Send();
+	$mailer = new PHPMailer(true);
+	$mailer->IsSMTP();
+	$mailer->Host = $formConfig->smtpHost;
+	$mailer->Port = $formConfig->smtpPort;
+	$mailer->SMTPAuth = $formConfig->smtpAuth;
+	$mailer->SMTPSecure = $formConfig->smtpSecurity;
+	$mailer->Username = $formConfig->smtpUser;
+	$mailer->Password = $formConfig->smtpPassword;
+	$mailer->From = $emailConfig->from->address;
+	$mailer->CharSet = 'UTF-8';
+	$mailer->Encoding = 'base64';
+	if ($emailConfig->from->name) {
+		$mailer->FromName = $emailConfig->from->name;
+	}
+	foreach ($emailConfig->to as $to) {
+		/** @var $to EmailAddress */
+		$mailer->AddAddress($to->address, $to->name ?: '');
+	}
+	foreach ($emailConfig->replyTo as $replyTo) {
+		/** @var $replyTo EmailAddress */
+		$mailer->AddReplyTo($replyTo->address, $replyTo->name ?: '');
+	}
+	foreach ($emailConfig->cc as $cc) {
+		/** @var $cc EmailAddress */
+		$mailer->AddCc($cc->address, $cc->name ?: '');
+	}
+	foreach ($emailConfig->bcc as $bcc) {
+		/** @var $bcc EmailAddress */
+		$mailer->AddBcc($bcc->address, $bcc->name ?: '');
+	}
+	foreach ($attachments as $attachment) {
+		/** @var $attachment AttachmentInfo */
+		$mailer->addAttachment($attachment->path, $attachment->filename,
+				startsWith($attachment->type, "text/") ? "quoted-printable" : "base64", $attachment->type);
+	}
+	$mailer->IsHTML(true);
+	$mailer->Subject = $emailConfig->subject;
+	$mailer->Body = $emailBody;
+	$mailer->Send();
 }
 
 /**
@@ -589,13 +588,13 @@ function sendEmail(FormEmailConfig $emailConfig, RenderedEmail $renderedEmail): 
  * @return void
  */
 function copyAttributes(DOMElement &$from, DOMElement &$to, string ...$exclude): void {
-    if ($from->hasAttributes()) {
-        foreach ($from->attributes as $attribute) {
-            if (!in_array($attribute->nodeName, $exclude)) {
-                $to->setAttribute($attribute->nodeName, $attribute->nodeValue);
-            }
-        }
-    }
+	if ($from->hasAttributes()) {
+		foreach ($from->attributes as $attribute) {
+			if (!in_array($attribute->nodeName, $exclude)) {
+				$to->setAttribute($attribute->nodeName, $attribute->nodeValue);
+			}
+		}
+	}
 }
 
 /**
@@ -605,9 +604,9 @@ function copyAttributes(DOMElement &$from, DOMElement &$to, string ...$exclude):
  * @return void
  */
 function moveChildren(DOMElement &$from, DOMElement &$to): void {
-    while ($from->firstChild) {
-        $to->appendChild($from->firstChild);
-    }
+	while ($from->firstChild) {
+		$to->appendChild($from->firstChild);
+	}
 }
 
 /**
@@ -616,7 +615,7 @@ function moveChildren(DOMElement &$from, DOMElement &$to): void {
  * @return bool Whether the string is truthy.
  */
 #[Pure] function checkString(string $str): bool {
-    return $str && $str !== "false";
+	return $str && $str !== "false";
 }
 
 /**
@@ -631,26 +630,26 @@ function moveChildren(DOMElement &$from, DOMElement &$to): void {
  * @return array An array containing elements.
  */
 function collectElements(DOMElement|DOMDocument $root, string $tag = "*", ?Closure $filter = null): array {
-    $filter ??= function(DOMElement $element): bool {
-        return true;
-    };
-    $elements = [];
-    foreach ($root->getElementsByTagName($tag) as $element) {
-        /** @var $element DOMElement */
-        if ($filter($element) && !checkString($element->getAttribute("data-ignore"))) {
-            $elements[] = $element;
-        }
-    }
-    if ($root instanceof DOMElement &&
-        ($root->tagName === "form" || ($root->tagName === "article" && $root->getAttribute("data-type") === "form")) &&
-        $root->getAttribute("id")) {
-        $elementsOutsideForm =
-            collectElements($root->ownerDocument, $tag, function(DOMElement $element) use ($root, $filter): bool {
-                return $element->getAttribute("form") === $root->getAttribute("id") && $filter($element);
-            });
-        array_push($elements, ...$elementsOutsideForm);
-    }
-    return $elements;
+	$filter ??= function(DOMElement $element): bool {
+		return true;
+	};
+	$elements = [];
+	foreach ($root->getElementsByTagName($tag) as $element) {
+		/** @var $element DOMElement */
+		if ($filter($element) && !checkString($element->getAttribute("data-ignore"))) {
+			$elements[] = $element;
+		}
+	}
+	if ($root instanceof DOMElement &&
+			($root->tagName === "form" || ($root->tagName === "article" && $root->getAttribute("data-type") === "form")) &&
+			$root->getAttribute("id")) {
+		$elementsOutsideForm =
+				collectElements($root->ownerDocument, $tag, function(DOMElement $element) use ($root, $filter): bool {
+					return $element->getAttribute("form") === $root->getAttribute("id") && $filter($element);
+				});
+		array_push($elements, ...$elementsOutsideForm);
+	}
+	return $elements;
 }
 
 /**
@@ -659,14 +658,14 @@ function collectElements(DOMElement|DOMDocument $root, string $tag = "*", ?Closu
  * @return Closure to be passed to collectElements
  */
 #[Pure] function has(string ...$attributes): Closure {
-    return function(DOMElement $element) use ($attributes): bool {
-        foreach ($attributes as $attribute) {
-            if ($element->hasAttribute($attribute)) {
-                return true;
-            }
-        }
-        return false;
-    };
+	return function(DOMElement $element) use ($attributes): bool {
+		foreach ($attributes as $attribute) {
+			if ($element->hasAttribute($attribute)) {
+				return true;
+			}
+		}
+		return false;
+	};
 }
 
 /**
@@ -675,9 +674,9 @@ function collectElements(DOMElement|DOMDocument $root, string $tag = "*", ?Closu
  * @return Closure to be passed to collectElements
  */
 #[Pure] function truthy(string $attribute): Closure {
-    return function(DOMElement $element) use ($attribute): bool {
-        return checkString($element->getAttribute($attribute));
-    };
+	return function(DOMElement $element) use ($attribute): bool {
+		return checkString($element->getAttribute($attribute));
+	};
 }
 
 /**
@@ -687,9 +686,9 @@ function collectElements(DOMElement|DOMDocument $root, string $tag = "*", ?Closu
  * @return Closure to be passed to collectElements
  */
 #[Pure] function attr(string $attribute, string $value): Closure {
-    return function(DOMElement $element) use ($attribute, $value): bool {
-        return $element->getAttribute($attribute) === $value;
-    };
+	return function(DOMElement $element) use ($attribute, $value): bool {
+		return $element->getAttribute($attribute) === $value;
+	};
 }
 
 /**
@@ -699,25 +698,25 @@ function collectElements(DOMElement|DOMDocument $root, string $tag = "*", ?Closu
  * @param bool $href Apply to the href attribute instead of the inner HTML.
  */
 function applyFileTransformation(DOMElement &$element, ?array $file, bool $href = false): void {
-    global $formConfig;
-    if ($file === null) {
-        echo "Warning: got null file to apply transformation";
-        var_dump($element);
-        return;
-    }
-    $transformer = $formConfig->fileTransformers[$element->getAttribute("data-file-transformer") ?:
-        array_key_first($formConfig->fileTransformers)];
-    $value = $transformer($file);
-    if ($href) {
-        $element->setAttribute("href", $value);
-        return;
-    }
-    while ($element->hasChildNodes()) {
-        $element->removeChild($element->firstChild);
-    }
-    $fragment = $element->ownerDocument->createDocumentFragment();
-    $fragment->appendXML($value);
-    $element->appendChild($fragment);
+	global $formConfig;
+	if ($file === null) {
+		echo "Warning: got null file to apply transformation";
+		var_dump($element);
+		return;
+	}
+	$transformer = $formConfig->fileTransformers[$element->getAttribute("data-file-transformer") ?:
+			array_key_first($formConfig->fileTransformers)];
+	$value = $transformer($file);
+	if ($href) {
+		$element->setAttribute("href", $value);
+		return;
+	}
+	while ($element->hasChildNodes()) {
+		$element->removeChild($element->firstChild);
+	}
+	$fragment = $element->ownerDocument->createDocumentFragment();
+	$fragment->appendXML($value);
+	$element->appendChild($fragment);
 }
 
 /**
@@ -728,47 +727,47 @@ function applyFileTransformation(DOMElement &$element, ?array $file, bool $href 
  * @param array $files Uploaded file metadata (in $_FILES format)
  */
 function applyDataValues(DOMElement|DOMDocument &$root, array $data, array $values, array $files): void {
-    foreach (collectElements($root, "*", has("data-value-config")) as $element) {
-        /** @var $element DOMElement */
-        if (isset($values[$element->getAttribute("data-value-config")])) {
-            $element->nodeValue = htmlspecialchars(strval($values[$element->getAttribute("data-value-config")]));
-            $element->removeAttribute("data-value-config");
-        }
-    }
-    foreach (collectElements($root, "*", has("data-value")) as $element) {
-        /** @var $element DOMElement */
-        if (isset($data[$element->getAttribute("data-value")])) {
-            $value = $data[$element->getAttribute("data-value")];
-            if (isset($value["size"])) {
-                applyFileTransformation($element, $value);
-            } else {
-                $element->nodeValue = htmlspecialchars(strval($value));
-            }
-            $element->removeAttribute("data-value");
-        } else if (isset($files[$element->getAttribute("data-value")])) {
-            applyFileTransformation($element, $files[$element->getAttribute("data-value")] ?? null);
-            $element->removeAttribute("data-value");
-        }
-    }
-    foreach (collectElements($root, "*", has("data-href-config")) as $element) {
-        /** @var $element DOMElement */
-        if (isset($values[$element->getAttribute("data-href-config")])) {
-            $element->setAttribute("href", strval($values[$element->getAttribute("data-href-config")]));
-        }
-    }
-    foreach (collectElements($root, "*", has("data-href")) as $element) {
-        /** @var $element DOMElement */
-        if (isset($data[$element->getAttribute("data-href")])) {
-            $value = $data[$element->getAttribute("data-href")];
-            if (isset($value["size"])) {
-                applyFileTransformation($element, $value, true);
-            } else {
-                $element->setAttribute("href", strval($value));
-            }
-        } else if (isset($files[$element->getAttribute("data-href")])) {
-            applyFileTransformation($element, $files[$element->getAttribute("data-href")] ?? null);
-        }
-    }
+	foreach (collectElements($root, "*", has("data-value-config")) as $element) {
+		/** @var $element DOMElement */
+		if (isset($values[$element->getAttribute("data-value-config")])) {
+			$element->nodeValue = htmlspecialchars(strval($values[$element->getAttribute("data-value-config")]));
+			$element->removeAttribute("data-value-config");
+		}
+	}
+	foreach (collectElements($root, "*", has("data-value")) as $element) {
+		/** @var $element DOMElement */
+		if (isset($data[$element->getAttribute("data-value")])) {
+			$value = $data[$element->getAttribute("data-value")];
+			if (isset($value["size"])) {
+				applyFileTransformation($element, $value);
+			} else {
+				$element->nodeValue = htmlspecialchars(strval($value));
+			}
+			$element->removeAttribute("data-value");
+		} else if (isset($files[$element->getAttribute("data-value")])) {
+			applyFileTransformation($element, $files[$element->getAttribute("data-value")] ?? null);
+			$element->removeAttribute("data-value");
+		}
+	}
+	foreach (collectElements($root, "*", has("data-href-config")) as $element) {
+		/** @var $element DOMElement */
+		if (isset($values[$element->getAttribute("data-href-config")])) {
+			$element->setAttribute("href", strval($values[$element->getAttribute("data-href-config")]));
+		}
+	}
+	foreach (collectElements($root, "*", has("data-href")) as $element) {
+		/** @var $element DOMElement */
+		if (isset($data[$element->getAttribute("data-href")])) {
+			$value = $data[$element->getAttribute("data-href")];
+			if (isset($value["size"])) {
+				applyFileTransformation($element, $value, true);
+			} else {
+				$element->setAttribute("href", strval($value));
+			}
+		} else if (isset($files[$element->getAttribute("data-href")])) {
+			applyFileTransformation($element, $files[$element->getAttribute("data-href")] ?? null);
+		}
+	}
 }
 
 /**
@@ -777,21 +776,21 @@ function applyDataValues(DOMElement|DOMDocument &$root, array $data, array $valu
  * @return array A sane file metadata array
  */
 #[Pure] function transformFileArray(array $metadata): array {
-    if (!isset($metadata["size"])) {
-        return [];
-    }
-    if (!is_array($metadata["size"])) {
-        return [$metadata];
-    }
-    $files = [];
-    for ($i = 0; $i < count($metadata["size"]); $i++) {
-        $file = [];
-        foreach ($metadata as $key => $values) {
-            $file[$key] = $values[$i] ?? null;
-        }
-        $files[] = $file;
-    }
-    return $files;
+	if (!isset($metadata["size"])) {
+		return [];
+	}
+	if (!is_array($metadata["size"])) {
+		return [$metadata];
+	}
+	$files = [];
+	for ($i = 0; $i < count($metadata["size"]); $i++) {
+		$file = [];
+		foreach ($metadata as $key => $values) {
+			$file[$key] = $values[$i] ?? null;
+		}
+		$files[] = $file;
+	}
+	return $files;
 }
 
 /**
@@ -802,29 +801,29 @@ function applyDataValues(DOMElement|DOMDocument &$root, array $data, array $valu
  * @return void
  */
 function updateFile(array &$files, int $index, array $file) {
-    if (!isset($files["size"])) {
-        echo "Warning: got a bogus file array!";
-        var_dump($files);
-        return;
-    }
-    $multiple = is_array($files["size"]);
-    if (!$multiple && $index !== 0) {
-        echo "Warning: got index $index for a non-multiple file array!";
-        var_dump($files);
-        return;
-    }
-    if ($multiple && $index > count($files["size"]) - 1) {
-        echo "Warning: key $index out of range in file array!";
-        var_dump($files);
-        return;
-    }
-    if (!$multiple) {
-        $files = $file;
-        return;
-    }
-    foreach ($file as $key => $value) {
-        $files[$key][$index] = $value;
-    }
+	if (!isset($files["size"])) {
+		echo "Warning: got a bogus file array!";
+		var_dump($files);
+		return;
+	}
+	$multiple = is_array($files["size"]);
+	if (!$multiple && $index !== 0) {
+		echo "Warning: got index $index for a non-multiple file array!";
+		var_dump($files);
+		return;
+	}
+	if ($multiple && $index > count($files["size"]) - 1) {
+		echo "Warning: key $index out of range in file array!";
+		var_dump($files);
+		return;
+	}
+	if (!$multiple) {
+		$files = $file;
+		return;
+	}
+	foreach ($file as $key => $value) {
+		$files[$key][$index] = $value;
+	}
 }
 
 /**
@@ -833,120 +832,120 @@ function updateFile(array &$files, int $index, array $file) {
  * @return array The updated file metadata array
  */
 function applyFileConversions(FormEmailConfig $emailConfig): array {
-    if ($emailConfig->globalConversion) {
-        $files = &$_FILES;
-    } else {
-        $files = $_FILES;
-    }
+	if ($emailConfig->globalConversion) {
+		$files = &$_FILES;
+	} else {
+		$files = $_FILES;
+	}
 
-    foreach ($files as $inputName => &$fileArray) {
-        $transformed = transformFileArray($fileArray);
-        foreach ($transformed as $index => &$file) {
-            $file["input"] = $inputName;
+	foreach ($files as $inputName => &$fileArray) {
+		$transformed = transformFileArray($fileArray);
+		foreach ($transformed as $index => &$file) {
+			$file["input"] = $inputName;
 
-            // Apply fileConverter.
-            if ($emailConfig->fileConverter !== null) {
-                ($emailConfig->fileConverter)($file);
-            }
+			// Apply fileConverter.
+			if ($emailConfig->fileConverter !== null) {
+				($emailConfig->fileConverter)($file);
+			}
 
-            // Apply hashFilenames.
-            $hash = is_callable($emailConfig->hashFilenames) ? ($emailConfig->hashFilenames)($file) :
-                $emailConfig->hashFilenames;
-            /** @var $hash HashOptions */
-            if ($hash !== HashOptions::NO) {
-                $ext = pathinfo($file["name"], PATHINFO_EXTENSION);
-                $file["hash"] = sha1_file($file["tmp_name"]);
-                if ($ext) {
-                    $file["hash"] .= ".$ext";
-                }
-                $file["original"] = $file["name"];
-            }
-            if ($hash === HashOptions::EMAIL_ONLY || $hash === HashOptions::YES) {
-                $file["name"] = $file["hash"];
-            }
+			// Apply hashFilenames.
+			$hash = is_callable($emailConfig->hashFilenames) ? ($emailConfig->hashFilenames)($file) :
+					$emailConfig->hashFilenames;
+			/** @var $hash HashOptions */
+			if ($hash !== HashOptions::NO) {
+				$ext = pathinfo($file["name"], PATHINFO_EXTENSION);
+				$file["hash"] = sha1_file($file["tmp_name"]);
+				if ($ext) {
+					$file["hash"] .= ".$ext";
+				}
+				$file["original"] = $file["name"];
+			}
+			if ($hash === HashOptions::EMAIL_ONLY || $hash === HashOptions::YES) {
+				$file["name"] = $file["hash"];
+			}
 
-            // Apply fileDir.
-            $path = is_callable($emailConfig->fileDir) ? ($emailConfig->fileDir)($file) : $emailConfig->fileDir;
-            if (!is_string($path)) {
-                echo "Warning: got non-string path for file; ignoring.";
-                var_dump($path, $file);
-                $path = "";
-            }
-            if ($path) {
-                if (!endsWith($path, "/")) {
-                    $path .= "/";
-                }
-                if ($hash === HashOptions::SAVED_ONLY || $hash === HashOptions::YES) {
-                    $path .= $file["hash"];
-                } else if ($hash === HashOptions::EMAIL_ONLY) {
-                    $path .= $file["original"];
-                } else if ($hash === HashOptions::NO) {
-                    $path .= $file["name"];
-                }
-                if (copy($file["tmp_name"], $path)) {
-                    $file["path"] = $path;
-                } else {
-                    echo "Warning: Failed to copy ${file["tmp_name"]} to $path.";
-                }
-            }
+			// Apply fileDir.
+			$path = is_callable($emailConfig->fileDir) ? ($emailConfig->fileDir)($file) : $emailConfig->fileDir;
+			if (!is_string($path)) {
+				echo "Warning: got non-string path for file; ignoring.";
+				var_dump($path, $file);
+				$path = "";
+			}
+			if ($path) {
+				if (!endsWith($path, "/")) {
+					$path .= "/";
+				}
+				if ($hash === HashOptions::SAVED_ONLY || $hash === HashOptions::YES) {
+					$path .= $file["hash"];
+				} else if ($hash === HashOptions::EMAIL_ONLY) {
+					$path .= $file["original"];
+				} else if ($hash === HashOptions::NO) {
+					$path .= $file["name"];
+				}
+				if (copy($file["tmp_name"], $path)) {
+					$file["path"] = $path;
+				} else {
+					echo "Warning: Failed to copy ${file["tmp_name"]} to $path.";
+				}
+			}
 
-            // Apply attachFiles.
-            $attach =
-                is_callable($emailConfig->attachFiles) ? ($emailConfig->attachFiles)($file) : $emailConfig->attachFiles;
-            $file["attached"] = !!$attach;
+			// Apply attachFiles.
+			$attach =
+					is_callable($emailConfig->attachFiles) ? ($emailConfig->attachFiles)($file) : $emailConfig->attachFiles;
+			$file["attached"] = !!$attach;
 
-            updateFile($fileArray, $index, $file);
-        }
-    }
+			updateFile($fileArray, $index, $file);
+		}
+	}
 
-    // If $files is a reference, this still returns a copy because PHP. https://3v4l.org/T5cKC
-    return $files;
+	// If $files is a reference, this still returns a copy because PHP. https://3v4l.org/T5cKC
+	return $files;
 }
 
 /**
  * Remove invalid files from $_FILES.
  */
 function validateFiles(): void {
-    global $formConfig;
-    $removeInputs = [];
-    foreach ($_FILES as $inputName => &$fileArray) {
-        if (!isset($fileArray["size"])) {
-            echo "Warning: got a bogus file array!";
-            var_dump($fileArray);
-            continue;
-        }
-        $multiple = is_array($fileArray["size"]);
-        $transformed = transformFileArray($fileArray);
-        $invalidFiles = [];
-        foreach ($transformed as $index => $file) {
-            if (!($formConfig->fileValidator)($file)) {
-                $invalidFiles[] = $index;
-            }
-        }
-        if (count($invalidFiles)) {
-            if (!$multiple) {
-                $removeInputs[] = $inputName;
-            } else {
-                foreach ($fileArray as &$fileValuesArray) {
-                    $newValues = [];
-                    foreach ($fileValuesArray as $index => $value) {
-                        if (!in_array($index, $invalidFiles)) {
-                            $newValues[] = $value;
-                        }
-                    }
-                    $fileValuesArray = $newValues;
-                }
-            }
-        }
-    }
-    foreach ($removeInputs as $input) {
-        unset($_FILES[$input]);
-    }
+	global $formConfig;
+	$removeInputs = [];
+	foreach ($_FILES as $inputName => &$fileArray) {
+		if (!isset($fileArray["size"])) {
+			echo "Warning: got a bogus file array!";
+			var_dump($fileArray);
+			continue;
+		}
+		$multiple = is_array($fileArray["size"]);
+		$transformed = transformFileArray($fileArray);
+		$invalidFiles = [];
+		foreach ($transformed as $index => $file) {
+			if (!($formConfig->fileValidator)($file)) {
+				$invalidFiles[] = $index;
+			}
+		}
+		if (count($invalidFiles)) {
+			if (!$multiple) {
+				$removeInputs[] = $inputName;
+			} else {
+				foreach ($fileArray as &$fileValuesArray) {
+					$newValues = [];
+					foreach ($fileValuesArray as $index => $value) {
+						if (!in_array($index, $invalidFiles)) {
+							$newValues[] = $value;
+						}
+					}
+					$fileValuesArray = $newValues;
+				}
+			}
+		}
+	}
+	foreach ($removeInputs as $input) {
+		unset($_FILES[$input]);
+	}
 }
 
 class AttachmentInfo {
-    public function __construct(public string $path, public string $filename, public string $type) {
-    }
+	public function __construct(public string $path, public string $filename, public string $type) {
+	}
 }
 
 /**
@@ -954,25 +953,25 @@ class AttachmentInfo {
  * @return array<AttachmentInfo> Files to attach
  */
 #[Pure] function collectAttachments(array $fileArray): array {
-    $attachments = [];
-    foreach ($fileArray as $metadata) {
-        $files = transformFileArray($metadata);
-        foreach ($files as $file) {
-            if ($file["attached"] ?? false) {
-                $attachments[] = new AttachmentInfo($file["tmp_name"], $file["name"], $file["type"]);
-            }
-        }
-    }
-    return $attachments;
+	$attachments = [];
+	foreach ($fileArray as $metadata) {
+		$files = transformFileArray($metadata);
+		foreach ($files as $file) {
+			if ($file["attached"] ?? false) {
+				$attachments[] = new AttachmentInfo($file["tmp_name"], $file["name"], $file["type"]);
+			}
+		}
+	}
+	return $attachments;
 }
 
 class RenderedEmail {
-    /**
-     * @param string $html
-     * @param array<AttachmentInfo> $attachments
-     */
-    public function __construct(public string $html, public array $attachments) {
-    }
+	/**
+	 * @param string $html
+	 * @param array<AttachmentInfo> $attachments
+	 */
+	public function __construct(public string $html, public array $attachments) {
+	}
 }
 
 /**
@@ -986,377 +985,389 @@ class RenderedEmail {
  * @noinspection PhpMissingBreakStatementInspection
  */
 function renderForm(array $data, string $html, FormEmailConfig $emailConfig): RenderedEmail {
-    global $formConfig, $pwd;
+	global $formConfig, $pwd;
 
-    $files = applyFileConversions($emailConfig);
-    $attachments = collectAttachments($files);
+	$files = applyFileConversions($emailConfig);
+	$attachments = collectAttachments($files);
 
-    $values = $emailConfig->values ?? [];
-    $html5 = new HTML5(["disable_html_ns" => true]);
-    $dom = $html5->loadHTML($html);
-    $forms = $dom->getElementsByTagName('form');
-    if ($forms->length === 0) {
-        throw new Exception('No form elements were found in the rendered HTML.');
-    }
-    if ($forms->length > 1) {
-        throw new Exception('Multiple form elements were found in the rendered HTML.');
-    }
-    $originalForm = $forms[0];
-    /** @var $originalForm DOMElement */
+	$values = $emailConfig->values ?? [];
+	$html5 = new HTML5(["disable_html_ns" => true]);
+	$dom = $html5->loadHTML($html);
+	$forms = $dom->getElementsByTagName('form');
+	$originalForm = null;
+	if ($forms->length === 0) {
+		throw new Exception('No form elements were found in the rendered HTML.');
+	}
+	if ($forms->length > 1) {
+		foreach ($forms as $form) {
+			/** @var $form DOMElement */
+			if ($form->getAttribute("id") === $data["form_id"]) {
+				$originalForm = $form;
+				break;
+			}
+		}
+		if (!$originalForm) {
+			throw new Exception('Multiple form elements were found in the rendered HTML. ' .
+					'Please add a hidden input with name="form_id" matching the id of submitted form.');
+		}
+	} else {
+		$originalForm = $forms[0];
+	}
+	/** @var $originalForm DOMElement */
 
-    // Replace form element with article element.
-    $form = $dom->createElement("article");
-    moveChildren($originalForm, $form);
-    copyAttributes($originalForm, $form, "method", "enctype");
-    $form->setAttribute("data-type", "form");
-    $originalForm->parentNode?->replaceChild($form, $originalForm);
+	// Replace form element with article element.
+	$form = $dom->createElement("article");
+	moveChildren($originalForm, $form);
+	copyAttributes($originalForm, $form, "method", "enctype");
+	$form->setAttribute("data-type", "form");
+	$originalForm->parentNode?->replaceChild($form, $originalForm);
 
-    // Replace input elements with span elements.
-    foreach (collectElements($form, "input") as $input) {
-        /** @var $input DOMElement */
-        $span = $dom->createElement("span");
-        $span->setAttribute("data-type", "input");
-        $inputName = $input->getAttribute("name");
-        copyAttributes($input, $span, "value", "required", "type", "accept", "capture", "multiple", "form", "checked");
-        $inputType = $input->getAttribute("type");
-        $span->setAttribute("data-input-type", $inputType);
-        switch ($inputType) {
-        case 'file':
-            $span->setAttribute("data-value", $inputName);
-            break;
-        case 'button':
-        case 'submit':
-        case 'reset':
-        case 'password':
-        case 'image':
-        case 'hidden':
-            if (!$input->hasAttribute("data-remove")) {
-                $span->setAttribute("data-remove", "1");
-                break;
-            }
-            // Fall through to standard input handler in case it isn't to be removed.
-        case 'checkbox':
-        case 'radio':
-            $span->setAttribute("data-selected",
-                ($input->getAttribute("value") ?: "on") === ($data[$inputName] ?? false) ? "1" : "0");
-            // Fall through to standard input handler.
-        default:
-            if (endsWith($inputName, "[]") && !$input->hasAttribute("data-remove")) {
-                // Remove repeated inputs by default.
-                $span->setAttribute("data-remove", "1");
-            }
-            $span->nodeValue = htmlspecialchars(strval($data[$inputName] ?? $input->getAttribute("value")));
-        }
-        $input->parentNode?->replaceChild($span, $input);
-    }
+	// Replace input elements with span elements.
+	foreach (collectElements($form, "input") as $input) {
+		/** @var $input DOMElement */
+		$span = $dom->createElement("span");
+		$span->setAttribute("data-type", "input");
+		$inputName = $input->getAttribute("name");
+		copyAttributes($input, $span, "value", "required", "type", "accept", "capture", "multiple", "form", "checked");
+		$inputType = $input->getAttribute("type");
+		$span->setAttribute("data-input-type", $inputType);
+		switch ($inputType) {
+		case 'file':
+			$span->setAttribute("data-value", $inputName);
+			break;
+		case 'button':
+		case 'submit':
+		case 'reset':
+		case 'password':
+		case 'image':
+		case 'hidden':
+			if (!$input->hasAttribute("data-remove")) {
+				$span->setAttribute("data-remove", "1");
+				break;
+			}
+			// Fall through to standard input handler in case it isn't to be removed.
+		case 'checkbox':
+		case 'radio':
+			$span->setAttribute("data-selected",
+					($input->getAttribute("value") ?: "on") === ($data[$inputName] ?? false) ? "1" : "0");
+			// Fall through to standard input handler.
+		default:
+			if (endsWith($inputName, "[]") && !$input->hasAttribute("data-remove")) {
+				// Remove repeated inputs by default.
+				$span->setAttribute("data-remove", "1");
+			}
+			$span->nodeValue = htmlspecialchars(strval($data[$inputName] ?? $input->getAttribute("value")));
+		}
+		$input->parentNode?->replaceChild($span, $input);
+	}
 
-    // Replace select elements with span elements.
-    foreach (collectElements($form, "select") as $select) {
-        /** @var $select DOMElement */
-        $span = $dom->createElement("span");
-        $span->setAttribute("data-type", "select");
-        $inputName = $select->getAttribute("name");
-        copyAttributes($select, $span, "value", "required", "form");
-        $selected = $data[$inputName] ?? "";
-        foreach (collectElements($select, "option") as $option) {
-            /** @var $option DOMElement */
-            if (($option->getAttribute("value") ?: $option->nodeValue) === $selected) {
-                $span->nodeValue = htmlspecialchars(strval($option->nodeValue ?: $selected));
-                break;
-            }
-        }
-        $select->parentNode?->replaceChild($span, $select);
-    }
+	// Replace select elements with span elements.
+	foreach (collectElements($form, "select") as $select) {
+		/** @var $select DOMElement */
+		$span = $dom->createElement("span");
+		$span->setAttribute("data-type", "select");
+		$inputName = $select->getAttribute("name");
+		copyAttributes($select, $span, "value", "required", "form");
+		$selected = $data[$inputName] ?? "";
+		foreach (collectElements($select, "option") as $option) {
+			/** @var $option DOMElement */
+			if (($option->getAttribute("value") ?: $option->nodeValue) === $selected) {
+				$span->nodeValue = htmlspecialchars(strval($option->nodeValue ?: $selected));
+				break;
+			}
+		}
+		$select->parentNode?->replaceChild($span, $select);
+	}
 
-    // Replace textarea elements with pre elements.
-    foreach (collectElements($form, "textarea") as $textarea) {
-        /** @var $textarea DOMElement */
-        $pre = $dom->createElement("pre");
-        $pre->setAttribute("data-type", "textarea");
-        $inputName = $textarea->getAttribute("name");
-        copyAttributes($textarea, $pre, "value", "required", "form");
-        $pre->nodeValue = htmlspecialchars(strval($data[$inputName] ?? $textarea->nodeValue));
-        $textarea->parentNode?->replaceChild($pre, $textarea);
-    }
+	// Replace textarea elements with pre elements.
+	foreach (collectElements($form, "textarea") as $textarea) {
+		/** @var $textarea DOMElement */
+		$pre = $dom->createElement("pre");
+		$pre->setAttribute("data-type", "textarea");
+		$inputName = $textarea->getAttribute("name");
+		copyAttributes($textarea, $pre, "value", "required", "form");
+		$pre->nodeValue = htmlspecialchars(strval($data[$inputName] ?? $textarea->nodeValue));
+		$textarea->parentNode?->replaceChild($pre, $textarea);
+	}
 
-    // Replace fieldset elements with section elements with h3 headers.
-    foreach (collectElements($form, "fieldset") as $fieldset) {
-        /** @var $fieldset DOMElement */
+	// Replace fieldset elements with section elements with h3 headers.
+	foreach (collectElements($form, "fieldset") as $fieldset) {
+		/** @var $fieldset DOMElement */
 
-        // Ideally a fieldset should contain exactly one legend, but you never know.
-        $legends = collectElements($fieldset, "legend");
-        if (count($legends)) {
-            /** @var $legend DOMElement */
-            $legend = $legends[0];
-            $h3 = $dom->createElement("h3");
-            copyAttributes($legend, $h3);
-            $h3->setAttribute("data-type", "legend");
-            $h3->nodeValue = $legend->nodeValue;
-            $legend->parentNode?->replaceChild($h3, $legend);
-        }
-        foreach ($legends as $legend) {
-            // Mark all legends for removal.
-            if (!$legend->hasAttribute("data-remove")) {
-                $legend->setAttribute("data-remove", "1");
-            }
-        }
+		// Ideally a fieldset should contain exactly one legend, but you never know.
+		$legends = collectElements($fieldset, "legend");
+		if (count($legends)) {
+			/** @var $legend DOMElement */
+			$legend = $legends[0];
+			$h3 = $dom->createElement("h3");
+			copyAttributes($legend, $h3);
+			$h3->setAttribute("data-type", "legend");
+			$h3->nodeValue = $legend->nodeValue;
+			$legend->parentNode?->replaceChild($h3, $legend);
+		}
+		foreach ($legends as $legend) {
+			// Mark all legends for removal.
+			if (!$legend->hasAttribute("data-remove")) {
+				$legend->setAttribute("data-remove", "1");
+			}
+		}
 
-        $section = $dom->createElement("section");
-        copyAttributes($fieldset, $section, "form");
-        $section->setAttribute("data-type", "fieldset");
-        moveChildren($fieldset, $section);
-        $fieldset->parentNode?->replaceChild($section, $fieldset);
-    }
+		$section = $dom->createElement("section");
+		copyAttributes($fieldset, $section, "form");
+		$section->setAttribute("data-type", "fieldset");
+		moveChildren($fieldset, $section);
+		$fieldset->parentNode?->replaceChild($section, $fieldset);
+	}
 
-    // Replace label elements with span elements.
-    foreach (collectElements($dom, "label") as $label) {
-        /** @var $label DOMElement */
-        $type = null;
-        $selected = null;
-        // Look for input elements within the label to determine type and selected.
-        if ($childInput = collectElements($label, "*", has("data-type"))[0] ?? false) {
-            $elementType = $childInput->getAttribute("data-type");
-            $type = $elementType === "input" ? $childInput->getAttribute("data-input-type") : $elementType;
-            $selected = $childInput->getAttribute("data-selected");
-        }
-        if (!$type && $label->getAttribute("for")) {
-            $input = collectElements($dom, "*", attr("id", $label->getAttribute("for")))[0] ?? null;
-            $type = $input?->getAttribute("data-type") === "input" ? $input->getAttribute("data-input-type") :
-                $input?->getAttribute("data-type") ?? $input?->tagName;
-            $selected = $input?->getAttribute("data-selected");
-        }
-        // Wrap plain text in an inner span.
-        foreach ($label->childNodes as $childNode) {
-            if ($childNode instanceof DOMText) {
-                $innerSpan = $dom->createElement("span");
-                $innerSpan->setAttribute("data-type", "label-text");
-                $innerSpan->nodeValue = trim($childNode->nodeValue);
-                $childNode->replaceWith($innerSpan);
-                break;
-            }
-        }
-        $span = $dom->createElement("span");
-        $span->setAttribute("data-type", "label");
-        if ($type) {
-            $span->setAttribute("data-input-type", $type);
-        }
-        if ($selected !== null && $selected !== "") {
-            $span->setAttribute("data-selected", $selected);
-        }
-        copyAttributes($label, $span, "for");
-        moveChildren($label, $span);
-        $label->replaceWith($span);
-    }
+	// Replace label elements with span elements.
+	foreach (collectElements($dom, "label") as $label) {
+		/** @var $label DOMElement */
+		$type = null;
+		$selected = null;
+		// Look for input elements within the label to determine type and selected.
+		if ($childInput = collectElements($label, "*", has("data-type"))[0] ?? false) {
+			$elementType = $childInput->getAttribute("data-type");
+			$type = $elementType === "input" ? $childInput->getAttribute("data-input-type") : $elementType;
+			$selected = $childInput->getAttribute("data-selected");
+		}
+		if (!$type && $label->getAttribute("for")) {
+			$input = collectElements($dom, "*", attr("id", $label->getAttribute("for")))[0] ?? null;
+			$type = $input?->getAttribute("data-type") === "input" ? $input->getAttribute("data-input-type") :
+					$input?->getAttribute("data-type") ?? $input?->tagName;
+			$selected = $input?->getAttribute("data-selected");
+		}
+		// Wrap plain text in an inner span.
+		foreach ($label->childNodes as $childNode) {
+			if ($childNode instanceof DOMText) {
+				$innerSpan = $dom->createElement("span");
+				$innerSpan->setAttribute("data-type", "label-text");
+				$innerSpan->nodeValue = trim($childNode->nodeValue);
+				$childNode->replaceWith($innerSpan);
+				break;
+			}
+		}
+		$span = $dom->createElement("span");
+		$span->setAttribute("data-type", "label");
+		if ($type) {
+			$span->setAttribute("data-input-type", $type);
+		}
+		if ($selected !== null && $selected !== "") {
+			$span->setAttribute("data-selected", $selected);
+		}
+		copyAttributes($label, $span, "for");
+		moveChildren($label, $span);
+		$label->replaceWith($span);
+	}
 
-    // Replace button elements with span elements (hidden by default).
-    foreach (collectElements($form, "button") as $button) {
-        /** @var $button DOMElement */
-        $span = $dom->createElement("span");
-        $span->setAttribute("data-type", "button");
-        copyAttributes($button, $span, "value", "required", "type");
-        if (!$span->hasAttribute("data-remove")) {
-            $span->setAttribute("data-remove", "1");
-        }
-        $button->parentNode?->replaceChild($span, $button);
-    }
+	// Replace button elements with span elements (hidden by default).
+	foreach (collectElements($form, "button") as $button) {
+		/** @var $button DOMElement */
+		$span = $dom->createElement("span");
+		$span->setAttribute("data-type", "button");
+		copyAttributes($button, $span, "value", "required", "type");
+		if (!$span->hasAttribute("data-remove")) {
+			$span->setAttribute("data-remove", "1");
+		}
+		$button->parentNode?->replaceChild($span, $button);
+	}
 
-    // @todo Replace datalist elements with ul elements (hidden by default).
+	// @todo Replace datalist elements with ul elements (hidden by default).
 
-    // Merge linked style sheets into the output HTML.
-    $stylesToInject = [];
-    foreach (collectElements($dom, "link", attr("rel", "stylesheet")) as $link) {
-        /** @var $link DOMElement */
-        $href = $link->getAttribute("href");
-        $url = parse_url($href);
-        // @todo Consider solutions for $url["query"] === $_SERVER["HTTP_HOST"]
-        // @todo Consider solutions for startsWith($url["path"], "/")
-        if (!isset($url["host"]) && !startsWith($url["path"], "/")) {
-            // Relative path
-            ob_start();
-            if (isset($url["query"])) {
-                parse_str($url["query"], $_GET);
-            }
-            $file = $pwd . "/" . $url["path"];
-            if (!is_file($file)) {
-                // Ignore this one
-                continue;
-            }
-            include $file;
-            $styles = ob_get_clean();
-        } else {
-            // Absolute path
-            if (!ini_get('allow_url_fopen')) {
-                // Can't get the file :(
-                continue;
-            }
-            /** @noinspection HttpUrlsUsage */
-            $path = $url["scheme"] ?? (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] === "on" ? "https://" : "http://");
-            $path .= $url["host"] ?? $_SERVER["HTTP_HOST"];
-            if (isset($url["port"])) {
-                $path .= ":" . $url["port"];
-            }
-            $path .= $url["path"];
-            if (isset($url["query"])) {
-                $path .= "?" . $url["query"];
-            }
-            $styles = file_get_contents($path);
-        }
-        if ($styles === false) {
-            // Failed to get styles; delegate responsibility to the email client.
-            continue;
-        }
-        $style = $dom->createElement("style");
-        $style->setAttribute("type", "text/css");
-        $style->setAttribute("data-type", "link");
-        copyAttributes($link, $style, "rel", "href");
-        $locator = "/* INJECT STYLE HERE: " . sha1($styles) . " */";
-        $stylesToInject[$locator] = $styles;
-        $style->nodeValue = $locator; // Can't inject right now because we would end up with HTML entities, etc.
-        $link->parentNode?->replaceChild($style, $link);
-    }
+	// Merge linked style sheets into the output HTML.
+	$stylesToInject = [];
+	foreach (collectElements($dom, "link", attr("rel", "stylesheet")) as $link) {
+		/** @var $link DOMElement */
+		$href = $link->getAttribute("href");
+		$url = parse_url($href);
+		// @todo Consider solutions for $url["query"] === $_SERVER["HTTP_HOST"]
+		// @todo Consider solutions for startsWith($url["path"], "/")
+		if (!isset($url["host"]) && !startsWith($url["path"], "/")) {
+			// Relative path
+			ob_start();
+			if (isset($url["query"])) {
+				parse_str($url["query"], $_GET);
+			}
+			$file = $pwd . "/" . $url["path"];
+			if (!is_file($file)) {
+				// Ignore this one
+				continue;
+			}
+			include $file;
+			$styles = ob_get_clean();
+		} else {
+			// Absolute path
+			if (!ini_get('allow_url_fopen')) {
+				// Can't get the file :(
+				continue;
+			}
+			/** @noinspection HttpUrlsUsage */
+			$path = $url["scheme"] ?? (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] === "on" ? "https://" : "http://");
+			$path .= $url["host"] ?? $_SERVER["HTTP_HOST"];
+			if (isset($url["port"])) {
+				$path .= ":" . $url["port"];
+			}
+			$path .= $url["path"];
+			if (isset($url["query"])) {
+				$path .= "?" . $url["query"];
+			}
+			$styles = file_get_contents($path);
+		}
+		if ($styles === false) {
+			// Failed to get styles; delegate responsibility to the email client.
+			continue;
+		}
+		$style = $dom->createElement("style");
+		$style->setAttribute("type", "text/css");
+		$style->setAttribute("data-type", "link");
+		copyAttributes($link, $style, "rel", "href");
+		$locator = "/* INJECT STYLE HERE: " . sha1($styles) . " */";
+		$stylesToInject[$locator] = $styles;
+		$style->nodeValue = $locator; // Can't inject right now because we would end up with HTML entities, etc.
+		$link->parentNode?->replaceChild($style, $link);
+	}
 
-    // Mark all script elements with data-remove.
-    foreach (collectElements($dom, "script") as $script) {
-        /** @var $script DOMElement */
-        if (!$script->hasAttribute("data-remove")) {
-            $script->setAttribute("data-remove", "1");
-            break;
-        }
-    }
+	// Mark all script elements with data-remove.
+	foreach (collectElements($dom, "script") as $script) {
+		/** @var $script DOMElement */
+		if (!$script->hasAttribute("data-remove")) {
+			$script->setAttribute("data-remove", "1");
+			break;
+		}
+	}
 
-    // Process data-foreach elements.
-    foreach (collectElements($dom, "*", has("data-foreach", "data-foreach-config")) as $element) {
-        /** @var $element DOMElement */
+	// Process data-foreach elements.
+	foreach (collectElements($dom, "*", has("data-foreach", "data-foreach-config")) as $element) {
+		/** @var $element DOMElement */
 
-        $arr = $data[$element->getAttribute("data-foreach")] ??
-            $values[$element->getAttribute("data-foreach-config")] ?? null;
-        $fileInput = false;
-        if ($arr === null) {
-            $fileInput = true;
-            $arr = transformFileArray($files[$element->getAttribute("data-foreach")]);
-        }
-        if (!is_array($arr)) {
-            $arr = [$arr];
-        }
+		$arr = $data[$element->getAttribute("data-foreach")] ??
+				$values[$element->getAttribute("data-foreach-config")] ?? null;
+		$fileInput = false;
+		if ($arr === null) {
+			$fileInput = true;
+			$arr = transformFileArray($files[$element->getAttribute("data-foreach")]);
+		}
+		if (!is_array($arr)) {
+			$arr = [$arr];
+		}
 
-        $newNodes = [];
+		$newNodes = [];
 
-        foreach ($arr as $value) {
-            $clone = $element->cloneNode(true);
-            if ($element->hasAttribute("data-as")) {
-                applyDataValues($clone, [...$data, $element->getAttribute("data-as") => $value], $values, $files);
-            } else {
-                if ($fileInput) {
-                    $transformer =
-                        $formConfig->fileTransformers[$element->getAttribute("data-file-transformer") ?: "name"];
-                    $clone->nodeValue = strval($transformer($value));
-                } else {
-                    $clone->nodeValue = strval($value);
-                }
-            }
-            $newNodes[] = ($clone);
-        }
+		foreach ($arr as $value) {
+			$clone = $element->cloneNode(true);
+			if ($element->hasAttribute("data-as")) {
+				applyDataValues($clone, [...$data, $element->getAttribute("data-as") => $value], $values, $files);
+			} else {
+				if ($fileInput) {
+					$transformer =
+							$formConfig->fileTransformers[$element->getAttribute("data-file-transformer") ?: "name"];
+					$clone->nodeValue = strval($transformer($value));
+				} else {
+					$clone->nodeValue = strval($value);
+				}
+			}
+			$newNodes[] = ($clone);
+		}
 
-        if (count($newNodes)) {
-            $element->replaceWith(...$newNodes);
-        } else {
-            $element->remove();
-        }
-    }
+		if (count($newNodes)) {
+			$element->replaceWith(...$newNodes);
+		} else {
+			$element->remove();
+		}
+	}
 
-    // Process data-if elements.
-    foreach (collectElements($dom, "*", has("data-if", "data-if-config")) as $element) {
-        /** @var $element DOMElement */
+	// Process data-if elements.
+	foreach (collectElements($dom, "*", has("data-if", "data-if-config")) as $element) {
+		/** @var $element DOMElement */
 
-        $lhs = $data[$element->getAttribute("data-if")] ?? $values[$element->getAttribute("data-if-config")] ?? null;
+		$lhs = $data[$element->getAttribute("data-if")] ?? $values[$element->getAttribute("data-if-config")] ?? null;
 
-        $rhs = true;
-        if ($element->hasAttribute("data-rhs")) {
-            $rhs = $element->getAttribute("data-rhs");
-        } else if ($element->hasAttribute("data-rhs-config")) {
-            $rhs = $values[$element->getAttribute("data-rhs-config")] ?? null;
-        } else if ($element->hasAttribute("data-rhs-value")) {
-            $rhs = $data[$element->getAttribute("data-rhs-value")] ?? null;
-        } else if ($element->hasAttribute("data-rhs-value-config")) {
-            $rhs = $values[$element->getAttribute("data-rhs-value-config")] ?? null;
-        }
-        if ($rhs === "false") {
-            $rhs = false;
-        }
+		$rhs = true;
+		if ($element->hasAttribute("data-rhs")) {
+			$rhs = $element->getAttribute("data-rhs");
+		} else if ($element->hasAttribute("data-rhs-config")) {
+			$rhs = $values[$element->getAttribute("data-rhs-config")] ?? null;
+		} else if ($element->hasAttribute("data-rhs-value")) {
+			$rhs = $data[$element->getAttribute("data-rhs-value")] ?? null;
+		} else if ($element->hasAttribute("data-rhs-value-config")) {
+			$rhs = $values[$element->getAttribute("data-rhs-value-config")] ?? null;
+		}
+		if ($rhs === "false") {
+			$rhs = false;
+		}
 
-        $result = match ($element->getAttribute("data-operator")) {
-            "lt" => $lhs < $rhs,
-            "gt" => $lhs > $rhs,
-            "le" => $lhs <= $rhs,
-            "ge" => $lhs >= $rhs,
-            "ne" => $lhs != $rhs,
-            default => $lhs == $rhs,
-        };
+		$result = match ($element->getAttribute("data-operator")) {
+			"lt" => $lhs < $rhs,
+			"gt" => $lhs > $rhs,
+			"le" => $lhs <= $rhs,
+			"ge" => $lhs >= $rhs,
+			"ne" => $lhs != $rhs,
+			default => $lhs == $rhs,
+		};
 
-        if (!$result) {
-            $element->setAttribute("data-remove", "1");
-        }
-    }
+		if (!$result) {
+			$element->setAttribute("data-remove", "1");
+		}
+	}
 
-    // Remove all elements marked with data-remove.
-    foreach (collectElements($dom, "*", truthy("data-remove")) as $element) {
-        /** @var $element DOMElement */
-        $element->parentNode?->removeChild($element);
-    }
+	// Remove all elements marked with data-remove.
+	foreach (collectElements($dom, "*", truthy("data-remove")) as $element) {
+		/** @var $element DOMElement */
+		$element->parentNode?->removeChild($element);
+	}
 
-    applyDataValues($dom, $data, $values, $files);
+	applyDataValues($dom, $data, $values, $files);
 
-    // Apply data transformations.
-    foreach (collectElements($dom, "*", has("data-transformer")) as $element) {
-        /** @var $element DOMElement */
-        if ($element->hasAttribute("data-transformer-if") || $element->hasAttribute("data-transformer-if-config")) {
-            $lhs = $data[$element->getAttribute("data-transformer-if")] ??
-                $values[$element->getAttribute("data-transformer-if-config")] ?? null;
+	// Apply data transformations.
+	foreach (collectElements($dom, "*", has("data-transformer")) as $element) {
+		/** @var $element DOMElement */
+		if ($element->hasAttribute("data-transformer-if") || $element->hasAttribute("data-transformer-if-config")) {
+			$lhs = $data[$element->getAttribute("data-transformer-if")] ??
+					$values[$element->getAttribute("data-transformer-if-config")] ?? null;
 
-            $rhs = true;
-            if ($element->hasAttribute("data-transformer-rhs")) {
-                $rhs = $element->getAttribute("data-transformer-rhs");
-            } else if ($element->hasAttribute("data-transformer-rhs-value")) {
-                $rhs = $data[$element->getAttribute("data-transformer-rhs-value")] ?? null;
-            } else if ($element->hasAttribute("data-transformer-rhs-config")) {
-                $rhs = $values[$element->getAttribute("data-transformer-rhs-config")] ?? null;
-            }
+			$rhs = true;
+			if ($element->hasAttribute("data-transformer-rhs")) {
+				$rhs = $element->getAttribute("data-transformer-rhs");
+			} else if ($element->hasAttribute("data-transformer-rhs-value")) {
+				$rhs = $data[$element->getAttribute("data-transformer-rhs-value")] ?? null;
+			} else if ($element->hasAttribute("data-transformer-rhs-config")) {
+				$rhs = $values[$element->getAttribute("data-transformer-rhs-config")] ?? null;
+			}
 
-            $result = match ($element->getAttribute("data-transformer-operator")) {
-                "lt" => $lhs < $rhs,
-                "gt" => $lhs > $rhs,
-                "le" => $lhs <= $rhs,
-                "ge" => $lhs >= $rhs,
-                "ne" => $lhs != $rhs,
-                default => $lhs == $rhs,
-            };
+			$result = match ($element->getAttribute("data-transformer-operator")) {
+				"lt" => $lhs < $rhs,
+				"gt" => $lhs > $rhs,
+				"le" => $lhs <= $rhs,
+				"ge" => $lhs >= $rhs,
+				"ne" => $lhs != $rhs,
+				default => $lhs == $rhs,
+			};
 
-            if (!$result) {
-                continue; // Don't apply the transformation to this element.
-            }
-        }
-        $transformer = $element->getAttribute("data-transformer");
-        if (isset($formConfig->transformers[$transformer])) {
-            if ($element->hasAttribute("data-href") || $element->hasAttribute("data-href-config")) {
-                $element->setAttribute("href", $formConfig->transformers[$transformer]($element->getAttribute("href")));
-            } else {
-                $innerHTML = "";
-                while ($element->hasChildNodes()) {
-                    $innerHTML .= $dom->saveHTML($element->firstChild);
-                    $element->removeChild($element->firstChild);
-                }
-                $transformed = $formConfig->transformers[$transformer]($innerHTML);
-                $fragment = $element->ownerDocument->createDocumentFragment();
-                $fragment->appendXML($transformed);
-                $element->appendChild($fragment);
-            }
-        } else {
-            echo "Warning: transformer $transformer not found; leaving value untransformed.";
-        }
-    }
+			if (!$result) {
+				continue; // Don't apply the transformation to this element.
+			}
+		}
+		$transformer = $element->getAttribute("data-transformer");
+		if (isset($formConfig->transformers[$transformer])) {
+			if ($element->hasAttribute("data-href") || $element->hasAttribute("data-href-config")) {
+				$element->setAttribute("href", $formConfig->transformers[$transformer]($element->getAttribute("href")));
+			} else {
+				$innerHTML = "";
+				while ($element->hasChildNodes()) {
+					$innerHTML .= $dom->saveHTML($element->firstChild);
+					$element->removeChild($element->firstChild);
+				}
+				$transformed = $formConfig->transformers[$transformer]($innerHTML);
+				$fragment = $element->ownerDocument->createDocumentFragment();
+				$fragment->appendXML($transformed);
+				$element->appendChild($fragment);
+			}
+		} else {
+			echo "Warning: transformer $transformer not found; leaving value untransformed.";
+		}
+	}
 
-    return new RenderedEmail(str_replace(array_keys($stylesToInject), array_values($stylesToInject), $dom->saveHTML()),
-        $attachments);
+	return new RenderedEmail(str_replace(array_keys($stylesToInject), array_values($stylesToInject), $dom->saveHTML()),
+			$attachments);
 }
 
 /** @noinspection PhpObjectFieldsAreOnlyWrittenInspection
@@ -1366,44 +1377,44 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
 $formConfig = new FormConfig();
 // Default values for $formConfig.
 $formConfig->confirm = function(array $formData): void {
-    ?>
-    <!DOCTYPE html>
-    <title>Thank you!</title>
-    <meta charset="UTF-8">
-    <meta name="robots" content="noindex,nofollow">
-    <h1>Thank You</h1>
-    <p>We have received your form submission.
-    <p><a href="/">Back to homepage</a>
-    <!--
+	?>
+	<!DOCTYPE html>
+	<title>Thank you!</title>
+	<meta charset="UTF-8">
+	<meta name="robots" content="noindex,nofollow">
+	<h1>Thank You</h1>
+	<p>We have received your form submission.
+	<p><a href="/">Back to homepage</a>
+	<!--
 <?php
-    var_dump($formData);
-    ?>
+	var_dump($formData);
+	?>
     -->
-    <?php
+	<?php
 };
 $formConfig->handler = function(FormException $e): void {
-    http_response_code(500);
-    ?>
-    <!DOCTYPE html>
-    <title>Error</title>
-    <meta charset="UTF-8">
-    <meta name="robots" content="noindex,nofollow">
-    <h1>Error <?=$e->getCode()?></h1>
-    <p>Something went wrong submitting the form: <?=$e->getMessage()?>
-    <p><a href="/">Back to homepage</a>
-    <!--
+	http_response_code(500);
+	?>
+	<!DOCTYPE html>
+	<title>Error</title>
+	<meta charset="UTF-8">
+	<meta name="robots" content="noindex,nofollow">
+	<h1>Error <?=$e->getCode()?></h1>
+	<p>Something went wrong submitting the form: <?=$e->getMessage()?>
+	<p><a href="/">Back to homepage</a>
+	<!--
 <?php
-    var_dump($e);
-    ?>
+	var_dump($e);
+	?>
     -->
-    <?php
+	<?php
 };
 
 // Default values that should be overridden by setting $formConfig after including this file.
 $formConfig->emails = function(array $formData): array {
-    $email = new EmailAddress('webmaster@' . $_SERVER['HTTP_HOST']);
-    $config = new FormEmailConfig($email, [$email], 'Form Data');
-    return [$config];
+	$email = new EmailAddress('webmaster@' . $_SERVER['HTTP_HOST']);
+	$config = new FormEmailConfig($email, [$email], 'Form Data');
+	return [$config];
 };
 $formConfig->smtpHost = 'localhost';
 $formConfig->smtpAuth = true;
@@ -1412,53 +1423,53 @@ $formConfig->smtpPort = 25;
 $formConfig->smtpUser = 'root';
 $formConfig->smtpPassword = '';
 $formConfig->transformers = [
-    "email-link" => function(string $email): string {
-        return "<a href=\"mailto:$email\">$email</a>";
-    },
-    "tel-link" => function(string $tel): string {
-        return "<a href=\"tel:$tel\">$tel</a>";
-    },
-    "link" => function(string $url): string {
-        return "<a href=\"$url\">$url</a>";
-    },
+		"email-link" => function(string $email): string {
+			return "<a href=\"mailto:$email\">$email</a>";
+		},
+		"tel-link" => function(string $tel): string {
+			return "<a href=\"tel:$tel\">$tel</a>";
+		},
+		"link" => function(string $url): string {
+			return "<a href=\"$url\">$url</a>";
+		},
 ];
 $formConfig->fileTransformers = [
-    "name" => function(array $metadata): string {
-        return $metadata["name"];
-    },
-    "type" => function(array $metadata): string {
-        return $metadata["type"];
-    },
-    "size" => function(array $metadata): string {
-        return strval($metadata["size"]);
-    },
-    "path" => function(array $metadata): string {
-        return $metadata["path"] ?? $metadata["tmp_name"];
-    },
-    "dump" => function(array $metadata): string {
-        return print_r($metadata, true);
-    },
-    "image" => function(array $metadata): string {
-        return '<img src="data:image/jpeg;base64,' . base64_encode(file_get_contents($metadata["tmp_name"])) .
-            '" alt="' . htmlspecialchars($metadata["name"]) . '"/>';
-    },
-    "thumbnail" => function(array $metadata): string {
-        $image = imagecreatefromstring(file_get_contents($metadata["tmp_name"]));
-        $width = imagesx($image);
-        $height = imagesy($image);
-        $newHeight = 64;
-        $newWidth = floor($width / $height * $newHeight);
-        $thumb = imagecreatetruecolor($newWidth, $newHeight);
-        imagecopyresampled($thumb, $image, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
-        ob_start();
-        imagejpeg($thumb);
-        $data = ob_get_clean();
-        return '<img src="data:image/jpeg;base64,' . base64_encode($data) . '" alt="' .
-            htmlspecialchars($metadata["name"]) . '"/>';
-    },
+		"name" => function(array $metadata): string {
+			return $metadata["name"];
+		},
+		"type" => function(array $metadata): string {
+			return $metadata["type"];
+		},
+		"size" => function(array $metadata): string {
+			return strval($metadata["size"]);
+		},
+		"path" => function(array $metadata): string {
+			return $metadata["path"] ?? $metadata["tmp_name"];
+		},
+		"dump" => function(array $metadata): string {
+			return print_r($metadata, true);
+		},
+		"image" => function(array $metadata): string {
+			return '<img src="data:image/jpeg;base64,' . base64_encode(file_get_contents($metadata["tmp_name"])) .
+					'" alt="' . htmlspecialchars($metadata["name"]) . '"/>';
+		},
+		"thumbnail" => function(array $metadata): string {
+			$image = imagecreatefromstring(file_get_contents($metadata["tmp_name"]));
+			$width = imagesx($image);
+			$height = imagesy($image);
+			$newHeight = 64;
+			$newWidth = floor($width / $height * $newHeight);
+			$thumb = imagecreatetruecolor($newWidth, $newHeight);
+			imagecopyresampled($thumb, $image, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+			ob_start();
+			imagejpeg($thumb);
+			$data = ob_get_clean();
+			return '<img src="data:image/jpeg;base64,' . base64_encode($data) . '" alt="' .
+					htmlspecialchars($metadata["name"]) . '"/>';
+		},
 ];
 $formConfig->fileValidator = function(array $metadata): bool {
-    return !$metadata["error"];
+	return !$metadata["error"];
 };
 
 ob_start();
