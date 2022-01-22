@@ -15,6 +15,35 @@ body > article {
   text-align: center;
 }
 
+#minimal_header {
+  display: block;
+}
+#minimal_header a {
+  color: var(--text-color);
+  text-decoration: none;
+}
+#minimal_header h1 {
+  display: block;
+  font-size: x-large;
+  font-variant: small-caps;
+  margin: 0;
+}
+#minimal_header address {
+  display: contents;
+  font-style: normal;
+}
+#minimal_header address > p {
+  display: inline-block;
+  margin: 0;
+}
+#minimal_header address > p:nth-of-type(2) {
+  margin: 0 2em;
+}
+#minimal_header span.tel {
+  display: inline-block;
+  margin: 0;
+}
+
 #application {
   display: inline-block;
   max-width: 10in;
@@ -27,6 +56,17 @@ body > article {
     border: 1px solid #ccc;
     border-radius: 10px;
     margin: 1em;
+  }
+}
+@media print {
+  #application {
+    display: contents;
+  }
+  #application h1, #application h2, #application h3, #application h4 {
+    break-after: avoid;
+  }
+  #application button {
+    display: none;
   }
 }
 #application input:not([type=file]), #application select, #application textarea, #application button,
