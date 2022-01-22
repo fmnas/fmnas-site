@@ -55,6 +55,8 @@ jobs:
           --smtp_password="${{ secrets.SMTP_PASSWORD }}"
       - name: Unignore config.php for upload
         run: echo '!secrets/config.php' >> .gitignore
+      - name: Unignore compiled css for upload
+        run: sed -i "s/\*\.css//" public/.gitignore
       - name: Restrict access to test site
         run: cat public/.htaccess-test >> public/.htaccess
       - name: Restrict access to test admin site
