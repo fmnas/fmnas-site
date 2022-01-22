@@ -19,6 +19,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '16'
+      - name: Install dev dependencies
         run: npm install --only=dev
       - name: Compile public site stylesheets
         run: sass --style=compressed public:public
