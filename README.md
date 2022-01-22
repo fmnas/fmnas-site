@@ -43,7 +43,8 @@ unstable [test site](http://fmnas.org).
 When making changes, first create a development branch from the test branch: `git checkout -b dev test`
 
 Then either merge this branch into `test` and push (`git fetch; git checkout test; git merge dev; git push`), or push
-your dev branch (`git push origin dev`) and create a pull request on GitHub to merge this branch into `test`.
+your dev branch (`git push --set-upstream origin dev`) and create a pull request on GitHub to merge this branch
+into `test`.
 
 After testing the changes in the live test site environment, create a pull request on GitHub to merge the branch into
 `main`.
@@ -91,17 +92,17 @@ On the build machine:
 * Install NPM build dependencies: `npm install --only=dev`
 * Build the stylesheets for the public site: `npx sass --style=compressed public:public`
 * Set the config values in config.php.
-  * Run, for instance:
-    ```shell
-    npx ts-node handleparse.ts secrets/config.php.hbs --db_name=database --db_username=username --db_pass=password \
-    --db_host=localhost --phpmailer_path="/path/to/PHPMailer" --html5_php_path="/path/to/html5-php" \
-    --smtp_host=smtp.gmail.com --smtp_auth=true --smtp_security=tls --smtp_port=587 --smtp_username=me@gmail.com \
-    --smtp_password=password
-    ```
-  * Alternatively, copy `secrets/config_sample.php` to `secrets/config.php` and update the configuration values
-    manually.
+	* Run, for instance:
+	  ```shell
+		npx ts-node handleparse.ts secrets/config.php.hbs --db_name=database --db_username=username --db_pass=password \
+		--db_host=localhost --phpmailer_path="/path/to/PHPMailer" --html5_php_path="/path/to/html5-php" \
+		--smtp_host=smtp.gmail.com --smtp_auth=true --smtp_security=tls --smtp_port=587 --smtp_username=me@gmail.com \
+		--smtp_password=password
+		```
+	* Alternatively, copy `secrets/config_sample.php` to `secrets/config.php` and update the configuration values
+	  manually.
 * Update the public web templates in the `src/templates` and `src/errors` directories as desired.
-  * The current templates rely on the presence of `/assets/adopted.jpg` and `/assets/logo.png` in the public site.
+	* The current templates rely on the presence of `/assets/adopted.jpg` and `/assets/logo.png` in the public site.
 
 <!-- @todo Minify JS and HTML -->
 
