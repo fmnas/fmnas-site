@@ -16,3 +16,12 @@ span[data-type="label"][data-input-type="checkbox"][data-selected="0"]::before {
 span[data-type="label"][data-input-type="checkbox"][data-selected="1"]::before {
     content: "☑ ";
 }
+
+/* Styles for print */
+@media print {
+    form, article[data-type="form"] {
+        background: white;
+        border: none;
+        box-shadow: none;
+    }
+}
