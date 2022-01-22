@@ -20,8 +20,6 @@ see <https://www.gnu.org/licenses/>.
 
 ### Requirements
 
-The repository includes configs for PHPStorm/IntelliJ.
-
 To get a local server running, you will need:
 
 * Apache (or Litespeed, etc.)
@@ -34,6 +32,21 @@ To get a local server running, you will need:
 * You may want to install the faster Dart version of [Sass](https://sass-lang.com/install):
   * install the [Dart SDK](https://dart.dev/get-dart) and run `dart pub global activate sass`
   * Or with Homebrew: `brew install sass/sass/sass`
+
+### Workflow
+
+The repository includes configs for PHPStorm/IntelliJ.
+
+The `main` branch contains the stable [prod site](https://forgetmenotshelter.org), while the `test` branch contains the
+unstable [test site](http://fmnas.org).
+
+When making changes, first create a development branch from the test branch: `git checkout -b dev test`
+
+Then either merge this branch into `test` and push (`git fetch; git checkout test; git merge dev; git push`), or push
+your dev branch (`git push origin dev`) and create a pull request on GitHub to merge this branch into `test`.
+
+After testing the changes in the live test site environment, create a pull request on GitHub to merge the branch into
+`main`.
 
 ### Watch and build
 
