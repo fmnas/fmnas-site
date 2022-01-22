@@ -173,6 +173,48 @@ echo str_replace("<header>", "<header data-remove='1'>", ob_get_clean());
 		<input type="hidden" name="form_id" value="application">
 		<section id="basic_information">
 			<h3>Basic information</h3>
+			<table class="test_table">
+				<colgroup>
+					<col class="info_headers">
+					<col class="applicant">
+					<col class="coapplicant">
+				</colgroup>
+				<thead>
+				<tr>
+					<td></td>
+					<th>Applicant</th>
+					<th>Coapplicant</th>
+				</tr>
+				</thead>
+				<tbody>
+				<tr>
+					<th>Name</th>
+					<td><input type="text" placeholder="Applicant name"></td>
+					<td><input type="text" placeholder="Coapplicant name"></td>
+				</tr>
+				<tr>
+					<th>Address</th>
+					<td><input type="text" placeholder="Applicant address"></td>
+					<td><input type="text" placeholder="Coapplicant address"></td>
+				</tr>
+				</tbody>
+			</table>
+			<div class="test_div">
+				<section class="applicant">
+					<h4>Applicant</h4>
+					<label for="AName">Name</label>
+					<input type="text" placeholder="Applicant name" id="AName">
+					<label for="AAddress">Address</label>
+					<input type="text" placeholder="Applicant address" id="AAddress">
+				</section>
+				<section class="coapplicant">
+					<h4>Coapplicant</h4>
+					<label for="CName">Name</label>
+					<input type="text" placeholder="Coapplicant name" id="CName">
+					<label for="CAddress">Address</label>
+					<input type="text" placeholder="Coapplicant address" id="CAddress">
+				</section>
+			</div>
 		</section>
 		<section id="household_information">
 			<h3>Household information</h3>
