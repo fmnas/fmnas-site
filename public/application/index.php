@@ -87,7 +87,7 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 			null,
 			[],
 			'',
-			['main' => true, 'path' => $path, 'thumbnails' => true]
+			['main' => true, 'path' => $path, 'thumbnails' => true, 'minhead' => true]
 	);
 	$save->saveFile = "$cwd/received/$hash.html";
 
@@ -288,8 +288,12 @@ echo str_replace("<header>", "<header data-remove='1'>", ob_get_clean());
 		application_reponse();
 		?>
 	</section>
-	<header data-remove="true" class="printonly" id="minimalheader">
-
+	<header data-if-config="minhead" data-hidden="false" class="printonly" id="minimal_header">
+		<a href="/">
+			<h1><?=_G_shortname()?></h1>
+			<address><p><?=mb_strcut(str_replace("\n", "<p>", _G_address()), 0, -5)?></address>
+			<span class="tel"><?=_G_phone()?></span>
+		</a>
 	</header>
 	<form method="POST" enctype="multipart/form-data" id="application">
 		<h2 data-if-config="main" data-rhs="false" data-hidden="false">Adoption Application</h2>
@@ -372,7 +376,7 @@ echo str_replace("<header>", "<header data-remove='1'>", ob_get_clean());
 		<section id="references">
 			<h3>References</h3>
 		</section>
-		<section id="attachments">
+		<section id="attachments" class="noprint">
 			<h3>Attachments</h3>
 			<div data-remove="true">
 				<p>Add any attachments below, or email them to <a data-email></a> after submitting your application.</p>
