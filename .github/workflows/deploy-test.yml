@@ -20,7 +20,7 @@ on:
       - test
 jobs:
   upload:
-    name: Upload website
+    name: Deploy website
     runs-on: ubuntu-latest
     steps:
       - name: Checkout test
