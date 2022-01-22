@@ -27,10 +27,10 @@ document.addEventListener('DOMContentLoaded', () => {
 	let will_live_listener = () => {
 		let selected = document.querySelector('input[name="will_live"]:checked')?.value;
 		if (selected === undefined || selected === 'inside') {
-			document.getElementById('outside').classList.add('hidden');
+			document.getElementById('outside').classList.add('printonly');
 		} else {
 			document.getElementById('will_live_tracker').value = '1';
-			document.getElementById('outside').classList.remove('hidden');
+			document.getElementById('outside').classList.remove('printonly');
 		}
 	};
 	document.querySelectorAll('input[name="will_live"]').forEach((e) => {
