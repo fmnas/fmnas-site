@@ -23,7 +23,7 @@ jobs:
       - name: Install dev dependencies
         run: npm install
       - name: Compile public site stylesheets
-        run: sass --style=compressed public:public
+        run: npm run sass --style=compressed public:public
       - name: Restrict access to test site
         run: cat public/.htaccess-test >> public/.htaccess
       - name: Restrict access to test admin site
