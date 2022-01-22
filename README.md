@@ -33,15 +33,15 @@ TODO: Set up automatic deployment
 * Linux (any POSIX-compatible OS should work)
 * Apache (Litespeed or any other web server with .htaccess and PHP support should work)
 * PHP 8.1
-    * GD
-        * libJPEG
-        * libPNG
-    * mysqli
-    * mbstring
-    * php-xml
-    * PHPMailer (tested with 6.4.1)
-    * [html5-php](https://github.com/Masterminds/html5-php) (tested with 2.7.5)
-    * Needs shell access (with `shell_exec`) and `curl` in PATH to automatically fetch server-side dependencies
+	* GD
+		* libJPEG
+		* libPNG
+	* mysqli
+	* mbstring
+	* php-xml
+	* PHPMailer (tested with 6.4.1)
+	* [html5-php](https://github.com/Masterminds/html5-php) (tested with 2.7.5)
+	* Needs shell access (with `shell_exec`) and `curl` in PATH to automatically fetch server-side dependencies
 * MySQL (MariaDB should work)
 
 #### Configuration
@@ -53,7 +53,7 @@ TODO: Set up automatic deployment
 * Copy `secrets/config_sample.php` to `secrets/config.php` and update the configuration values
 * Import `schema.sql` into the MySQL database
 * Update the public web templates in the `src/templates` and `src/errors` directories as desired
-    * The current templates rely on the presence of `/assets/adopted.jpg` and `/assets/logo.png` in the public site
+	* The current templates rely on the presence of `/assets/adopted.jpg` and `/assets/logo.png` in the public site
 
 Additional static site content can be added by simply placing it in the `public` directory. Files and directories that
 exist in this directory can be accessed at their natural URLs.
@@ -69,21 +69,21 @@ which [may include arbitrary HTML](https://github.github.com/gfm/#raw-html); the
 The following variables are likely to prove useful in listings:
 
 * **pet**: Pet
-    * Properties:
-        * name: string
-        * dob: string ("2020-03-28")
-        * sex: Sex
-            * name: string ("male")
-        * species: Species
-            * name: string ("cat")
-            * plural: string ("cats")
-        * fee: string ("$40")
-    * Methods:
-        * age(): string ("2 years old")
-        * sex(): string ("male")
-        * species(): string ("kitten")
+	* Properties:
+		* name: string
+		* dob: string ("2020-03-28")
+		* sex: Sex
+			* name: string ("male")
+		* species: Species
+			* name: string ("cat")
+			* plural: string ("cats")
+		* fee: string ("$40")
+	* Methods:
+		* age(): string ("2 years old")
+		* sex(): string ("male")
+		* species(): string ("kitten")
 * **litter**: Litter | null (TODO)
-    * Properties: pets (a list of Pets)
+	* Properties: pets (a list of Pets)
 
 ## Technologies
 

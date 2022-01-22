@@ -6,73 +6,73 @@ ini_set("pcre.jit", "0");
 use JetBrains\PhpStorm\Pure;
 
 #[Pure] function startsWith(string $haystack, $needle): bool {
-    if (is_array($needle)) {
-        foreach ($needle as $item) {
-            if (startsWith($haystack, $item)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    return str_starts_with($haystack, $needle);
+	if (is_array($needle)) {
+		foreach ($needle as $item) {
+			if (startsWith($haystack, $item)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	return str_starts_with($haystack, $needle);
 }
 
 #[Pure] function endsWith(string $haystack, $needle): bool {
-    if (is_array($needle)) {
-        foreach ($needle as $item) {
-            if (endsWith($haystack, $item)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    return str_ends_with($haystack, $needle);
+	if (is_array($needle)) {
+		foreach ($needle as $item) {
+			if (endsWith($haystack, $item)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	return str_ends_with($haystack, $needle);
 }
 
 #[Pure] function contains(string $haystack, $needle): bool {
-    if (is_array($needle)) {
-        foreach ($needle as $item) {
-            if (contains($haystack, $item)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    return str_contains($haystack, $needle);
+	if (is_array($needle)) {
+		foreach ($needle as $item) {
+			if (contains($haystack, $item)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	return str_contains($haystack, $needle);
 }
 
 #[Pure] function validateIdentifier(string $id): bool {
-    return strlen($id) > 0 &&
-        ctype_alnum(str_replace("_", "", $id)) &&
-        (ctype_alnum($id[0]) || $id[0] === "_");
+	return strlen($id) > 0 &&
+			ctype_alnum(str_replace("_", "", $id)) &&
+			(ctype_alnum($id[0]) || $id[0] === "_");
 }
 
 /**
  * @return string The absolute path to the src directory
  */
 function src(): string {
-    return __DIR__;
+	return __DIR__;
 }
 
 /**
  * @return string The absolute path to the site root directory (containing admin/, public/, secrets/, src/)
  */
 #[Pure] function root(): string {
-    return dirname(src(), 1);
+	return dirname(src(), 1);
 }
 
 /**
  * @return string The absolute path to the templates directory
  */
 #[Pure] function t(): string {
-    return src() . "/templates";
+	return src() . "/templates";
 }
 
 /**
  * @return string The absolute path to the secrets directory
  */
 #[Pure] function secrets(): string {
-    return root() . "/secrets";
+	return root() . "/secrets";
 }
 
 /**
@@ -80,19 +80,19 @@ function src(): string {
  *     page)
  */
 #[Pure] function assets(): string {
-    $host = $_SERVER["HTTP_HOST"];
-    $adminSubdomain = "admin.";
-    if (startsWith($host, $adminSubdomain)) {
-        return "//" . substr($host, strlen($adminSubdomain)) . "/assets";
-    }
-    return "/assets";
+	$host = $_SERVER["HTTP_HOST"];
+	$adminSubdomain = "admin.";
+	if (startsWith($host, $adminSubdomain)) {
+		return "//" . substr($host, strlen($adminSubdomain)) . "/assets";
+	}
+	return "/assets";
 }
 
 /**
  * @return string The absolute path to the stored assets directory
  */
 #[Pure] function stored_assets(): string {
-    return root() . "/public/assets/stored";
+	return root() . "/public/assets/stored";
 }
 
 /**
@@ -119,8 +119,8 @@ require_once "$secrets/config.php";
  * This can't be moved to a function because it uses the globals and PHP is PHP.
  */
 if (!file_exists("$src/generated.php")) {
-    require_once "$src/generator.php";
-    generate();
+	require_once "$src/generator.php";
+	generate();
 }
 require_once "$src/generated.php";
 
@@ -130,13 +130,13 @@ require_once "$src/generated.php";
  * @param bool $relative Do not output a leading slash in the href.
  */
 function style(string $name = "/common", bool $relative = false): void {
-    if (!startsWith($name, "/") && !$relative) {
-        $name = "/" . $name;
-    }
-    if (!endsWith($name, ".css") && !endsWith($name, ".php")) {
-        $name .= ".css";
-    }
-    echo "<link rel=\"stylesheet\" href=\"" . htmlspecialchars($name) . "\">";
+	if (!startsWith($name, "/") && !$relative) {
+		$name = "/" . $name;
+	}
+	if (!endsWith($name, ".css") && !endsWith($name, ".php")) {
+		$name .= ".css";
+	}
+	echo "<link rel=\"stylesheet\" href=\"" . htmlspecialchars($name) . "\">";
 }
 
 /**
@@ -144,15 +144,15 @@ function style(string $name = "/common", bool $relative = false): void {
  * @param $msg string Message to log, along with backtrace
  */
 function log_err(string $msg = "") {
-    file_put_contents(root() . "/log",
-        date("c\n") . $msg . "\nBacktrace:\n" . print_r(debug_backtrace(), true) . "\n\n", FILE_APPEND);
+	file_put_contents(root() . "/log",
+			date("c\n") . $msg . "\nBacktrace:\n" . print_r(debug_backtrace(), true) . "\n\n", FILE_APPEND);
 }
 
 /**
  * Include the email links script
  */
 function emailLinks(): void {
-    echo '<script src="/email.js.php"></script>';
+	echo '<script src="/email.js.php"></script>';
 }
 
 $phpmailer_path = Config::$phpmailer_path;
