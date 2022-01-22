@@ -12,6 +12,7 @@
     <CssCodeStyleSettings>
       <option name="HEX_COLOR_LOWER_CASE" value="true" />
       <option name="HEX_COLOR_SHORT_FORMAT" value="true" />
+      <option name="USE_DOUBLE_QUOTES" value="false" />
       <option name="ENFORCE_QUOTES_ON_FORMAT" value="true" />
     </CssCodeStyleSettings>
     <HTMLCodeStyleSettings>
@@ -48,6 +49,12 @@
       <option name="ATTRIBUTES_WRAP" value="1" />
       <option name="PARAMETERS_ATTRIBUTES_WRAP" value="1" />
     </PHPCodeStyleSettings>
+    <ScssCodeStyleSettings>
+      <option name="HEX_COLOR_LOWER_CASE" value="true" />
+      <option name="HEX_COLOR_SHORT_FORMAT" value="true" />
+      <option name="USE_DOUBLE_QUOTES" value="false" />
+      <option name="ENFORCE_QUOTES_ON_FORMAT" value="true" />
+    </ScssCodeStyleSettings>
     <TypeScriptCodeStyleSettings version="0">
       <option name="FORCE_SEMICOLON_STYLE" value="true" />
       <option name="USE_DOUBLE_QUOTES" value="false" />

@@ -16,6 +16,31 @@ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Gen
 You should have received a copy of the GNU General Public License along with this program. If not,
 see <https://www.gnu.org/licenses/>.
 
+## Development
+
+### Requirements
+
+The repository includes configs for PHPStorm/IntelliJ.
+
+To get a local server running, you will need:
+
+* Apache (or Litespeed, etc.)
+	* Debian packages: `apache2 libapache2-mod-php`
+* PHP 8.1 and dependencies noted below
+	* Debian packages: `php php-gd php-mbstring php-mysql php-xml`
+* [Sass](https://sass-lang.com/install)
+	* Suggest installing the [Dart SDK](https://dart.dev/get-dart) and using the Dart version
+	  with `dart pub global activate sass`.
+	* Homebrew: `brew install sass/sass/sass`
+	* NPM: `npm install -g sass` (note this installs the slower JS version rather than the Dart version)
+* curl
+
+### Watch and build
+
+The PHPStorm config includes file watchers to automatically build files. To do this manually, run:
+
+* `sass -w public:public` for public site stylesheets
+
 ## Deployment
 
 ### Automatic deployment
@@ -24,9 +49,11 @@ TODO: Set up automatic deployment
 
 ### Manual deployment
 
-#### Requirements (build server)
+#### Requirements (build server/local machine)
 
 <!-- @todo Add requirements for vue build server --> 
+
+* Sass
 
 #### Requirements (web server)
 
@@ -44,16 +71,25 @@ TODO: Set up automatic deployment
 	* Needs shell access (with `shell_exec`) and `curl` in PATH to automatically fetch server-side dependencies
 * MySQL (MariaDB should work)
 
-#### Configuration
+#### Build
 
-<!-- @todo Add instructions to build admin site -->
+On the build machine:
+
+* Build the stylesheets for the public site: `sass --style=compressed public:public`
+* Copy `secrets/config_sample.php` to `secrets/config.php` and update the configuration values
+* Update the public web templates in the `src/templates` and `src/errors` directories as desired
+	* The current templates rely on the presence of `/assets/adopted.jpg` and `/assets/logo.png` in the public site
+
+<!-- @todo Minify JS and HTML -->
+
+#### Deploy
+
+For initial deployment, import `schema.sql` into the MySQL database
+
+Upload the project and all built files to the web server.
 
 * Point a domain to the `public` directory (this will be the public web root)
 * Point a domain to the `admin` directory (this will be the admin interface root)
-* Copy `secrets/config_sample.php` to `secrets/config.php` and update the configuration values
-* Import `schema.sql` into the MySQL database
-* Update the public web templates in the `src/templates` and `src/errors` directories as desired
-	* The current templates rely on the presence of `/assets/adopted.jpg` and `/assets/logo.png` in the public site
 
 Additional static site content can be added by simply placing it in the `public` directory. Files and directories that
 exist in this directory can be accessed at their natural URLs.
