@@ -156,3 +156,14 @@ footer {
 		color: #f00;
 	}
 }
+
+.printonly {
+	@media not print {
+		display: none;
+	}
+}
+.noprint {
+	@media print {
+		display: none;
+	}
+}
