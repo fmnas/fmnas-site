@@ -20,6 +20,7 @@ function initializeDateInput(e: Element): void {
 const otherPeople: HTMLLIElement[] = [];
 const currentAnimals: HTMLLIElement[] = [];
 const pastAnimals: HTMLLIElement[] = [];
+const MEBI = 1048576;
 
 function labeledInput(name: string, label: string, className: string, inputType: string = 'text'): HTMLLabelElement {
 	const labelElement: HTMLLabelElement = document.createElement('label');
@@ -231,6 +232,33 @@ function removeRow(row: HTMLLIElement, list: HTMLLIElement[], generator: () => H
 	}
 }
 
+/**
+ * Prune a list to include only elements matching a certain criteria.
+ * @param list The list of elements.
+ * @param tester Should return true if the given element is to be kept.
+ */
+function prune(list: HTMLLIElement[], tester: (element: HTMLLIElement) => boolean): void {
+	const elements = [...list];
+	for (const element of elements) {
+		if (!tester(element)) {
+			removeRow(element, list, () => document.createElement('li'), 0);
+		}
+	}
+}
+
+/**
+ * Returns true if any text input has a value or radio button or checkbox is selected.
+ * @param element The parent element.
+ */
+function anyValueInput(element: Element): boolean {
+	for (let input of element.querySelectorAll('input:not([type="radio"]):not([type="checkbox"])')) {
+		if (input instanceof HTMLInputElement && input.value) {
+			return true;
+		}
+	}
+	return !!element.querySelector('input:checked');
+}
+
 document.addEventListener('DOMContentLoaded', () => {
 	let form = document.getElementById('application')!;
 	let verifyUnload = (e: BeforeUnloadEvent) => {
@@ -297,4 +325,29 @@ document.addEventListener('DOMContentLoaded', () => {
 				ancestor?.querySelector('button.remove > span')!.setAttribute('data-name', input.value);
 			}
 		}));
+
+	document.querySelector('form#application')!.addEventListener('submit', (e: Event) => {
+		// Presubmit checks.
+		const fileInput: HTMLInputElement = document.querySelector('form#application input[type="file"]')!;
+		let validity = "";
+		let totalSize = 0;
+		for (const file of fileInput.files ?? []) {
+			totalSize += file.size;
+			if (file.size > 10 * MEBI) {
+				validity += `File ${file.name} is over 10 MB! `;
+			}
+		}
+		if (totalSize > 200 * MEBI) {
+			validity += `Total filesize is over 200 MB!`;
+		}
+		fileInput.setCustomValidity(validity);
+		fileInput.reportValidity();
+		if (validity !== "") {
+			e.preventDefault();
+			return;
+		}
+		prune(otherPeople, anyValueInput);
+		prune(currentAnimals, anyValueInput);
+		prune(pastAnimals, anyValueInput);
+	});
 });
