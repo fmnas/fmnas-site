@@ -265,6 +265,29 @@ function anyValueInput(element: Element): boolean {
 	return !!element.querySelector('input:checked');
 }
 
+/**
+ * Register event listeners that monitor radio buttons for changes and show the given element iff tester(value) is true.
+ * @param name The radio group name.
+ * @param tester Returns whether toggle should be shown if the radio value is the parameter.
+ * @param toggle The element to toggle.
+ * @param className The class name to use to hide the element.
+ */
+function monitorRadios(name: string, tester: (value: string | undefined) => boolean, toggle: Element,
+	className: string = 'printonly'): void {
+	const listener = () => {
+		const checkedInput: HTMLInputElement | null = document.querySelector(
+			`input[type="radio"][name="${name}"]:checked`);
+		if (tester(checkedInput?.value)) {
+			toggle.classList.remove(className);
+		} else {
+			toggle.classList.add(className);
+		}
+	};
+	document.querySelectorAll(`input[type="radio"][name="${name}"]`)
+		.forEach((e: Element) => e.addEventListener('change', listener));
+	listener(); // Set initial styles on page load.
+}
+
 document.addEventListener('DOMContentLoaded', () => {
 	let form = document.getElementById('application')!;
 	let verifyUnload = (e: BeforeUnloadEvent) => {
@@ -322,15 +345,55 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	// This value is used in the CSS for 480-600px width.
 	document.querySelectorAll('div.animals input.name')
-		.forEach((input) => input.addEventListener('input', () => {
-			if (input instanceof HTMLInputElement) {
-				let ancestor = input.parentElement;
-				while (ancestor && !(ancestor instanceof HTMLLIElement)) {
-					ancestor = ancestor.parentElement;
+		.forEach((input: Element) => {
+			const listener = () => {
+				if (input instanceof HTMLInputElement) {
+					let ancestor = input.parentElement;
+					while (ancestor && !(ancestor instanceof HTMLLIElement)) {
+						ancestor = ancestor.parentElement;
+					}
+					ancestor?.querySelector('button.remove > span')!.setAttribute('data-name', input.value);
 				}
-				ancestor?.querySelector('button.remove > span')!.setAttribute('data-name', input.value);
-			}
-		}));
+			};
+			input.addEventListener('input', listener);
+			listener();
+		});
+
+	const otherCheckbox: HTMLInputElement = document.querySelector(
+		'section#types_of_animals>div.other input[type="checkbox"]')!;
+	const specifyInput: HTMLInputElement = document.querySelector('input#other_specify')!;
+	const otherListener = () => {
+		specifyInput.disabled = !otherCheckbox.checked;
+	};
+	otherCheckbox.addEventListener('change', otherListener);
+	otherListener();
+
+	monitorRadios('particular', (s) => s === 'y', document.querySelector('label[data-if="particular"]')!);
+	monitorRadios('residence_is', (s) => s === 'rented', document.querySelector('p.rented')!, 'hidden');
+
+	const fenceUnspecified: HTMLSpanElement = document.querySelector('span.fence-unspecified')!;
+	const fenceYes: HTMLSpanElement = document.querySelector('span.fence-yes')!;
+	const fenceNo: HTMLSpanElement = document.querySelector('span.fence-no')!;
+	const fenceListener = () => {
+		const checkedInput: HTMLInputElement | null = document.querySelector('input[name="Fence"]:checked');
+		if (!checkedInput) {
+			fenceUnspecified.classList.remove('hidden');
+		} else {
+			fenceUnspecified.classList.add('hidden');
+		}
+		if (checkedInput?.value === 'Y') {
+			fenceYes.classList.remove('hidden');
+		} else {
+			fenceYes.classList.add('hidden');
+		}
+		if (checkedInput?.value === 'N') {
+			fenceNo.classList.remove('hidden');
+		} else {
+			fenceNo.classList.add('hidden');
+		}
+	};
+	document.querySelectorAll('input[name="Fence"]').forEach((e: Element) => e.addEventListener('change', fenceListener));
+	fenceListener();
 
 	document.querySelector('form#application')!.addEventListener('submit', (e: Event) => {
 		// Presubmit checks.

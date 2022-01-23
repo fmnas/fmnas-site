@@ -289,7 +289,7 @@ function addressInput(string $label, string $prefix, bool $required = false): st
 <?php
 ob_start();
 pageHeader();
-echo str_replace("<header>", "<header data-remove='1'>", ob_get_clean());
+echo str_replace("<header>", "<header data-remove>", ob_get_clean());
 ?>
 <article>
 	<section id="thanks" data-if-config="main" data-rhs="false">
@@ -378,7 +378,10 @@ echo str_replace("<header>", "<header data-remove='1'>", ob_get_clean());
 					<h5 class="breed">Breed</h5>
 					<h5 class="age">Age</h5>
 					<h5 class="gender">Gender</h5>
-					<h5 class="fixed">Spayed/<wbr>Neutered?</h5>
+					<h5 class="fixed">Spayed/
+						<wbr>
+						Neutered?
+					</h5>
 					<div class="name" data-foreach="CurrentName"></div>
 					<div class="species" data-foreach="CurrentSpecies"></div>
 					<div class="breed" data-foreach="CurrentBreed"></div>
@@ -413,29 +416,154 @@ echo str_replace("<header>", "<header data-remove='1'>", ob_get_clean());
 		</section>
 		<section id="adoption_information">
 			<h3>Adoption information</h3>
+			<section id="types_of_animals">
+				<p>Which types of animals are you interested in?</p>
+				<label>
+					<input type="checkbox" name="adult_dog"> Adult dog
+				</label>
+				<label>
+					<input type="checkbox" name="puppy"> Puppy
+				</label>
+				<label>
+					<input type="checkbox" name="adult_cat"> Adult cat
+				</label>
+				<label>
+					<input type="checkbox" name="kitten"> Kitten
+				</label>
+				<div class="other">
+					<label>
+						<input type="checkbox" name="other"> Other:
+					</label>
+					<label for="other_specify">Please specify</label>
+					<input type="text" name="other_specify" id="other_specify" title="Please specify" disabled>
+				</div>
+				<div class="preference">
+					<p>Preference: </p>
+					<label>
+						<input type="radio" name="preference" value="male"> Male
+					</label>
+					<label>
+						<input type="radio" name="preference" value="female"> Female
+					</label>
+					<label>
+						<input type="radio" name="preference" value="either"> Either
+					</label>
+				</div>
+			</section>
+			<?php // @todo Get a particular pet from $_GET ?>
+			<section id="particular">
+				<p>Are you applying for a particular animal listed on our website?</p>
+				<label class="required">
+					<input type="radio" name="particular" value="y" required> Yes
+				</label>
+				<label class="required">
+					<input type="radio" name="particular" value="n" required> No
+				</label>
+				<label data-if="particular" class="printonly" data-rhs="y" data-remove="false">
+					Please specify:
+					<input type="text" name="particular_specify">
+				</label>
+			</section>
 		</section>
 		<section id="about_home">
 			<h3>About your home</h3>
 			<section id="residence">
+				<label>Please describe your residence:
+					<textarea name="residence"></textarea>
+				</label>
 				<input type="hidden" id="will_live_tracker" name="will_live_tracker" value="0">
-				<input type="radio" id="live_inside" name="will_live" value="inside" required>
-				<label for="live_inside">Inside</label>
-				<input type="radio" id="live_outside" name="will_live" value="outside" required>
-				<label for="live_outside">Outside</label>
-				<input type="radio" id="live_both" name="will_live" value="both" required>
-				<label for="live_both">Both</label>
-			</section>
-			<section id="outside" data-if="will_live_tracker" data-operator="ne" data-rhs="inside" data-hidden="false">
+				<div class="residence_grid">
+					<p>The residence is:</p>
+					<input type="radio" id="owned" name="residence_is" value="owned" required>
+					<label for="owned">Owned</label>
+					<input type="radio" id="rented" name="residence_is" value="rented" required>
+					<label for="rented">Rented</label>
+					<p>The pet will live:</p>
+					<input type="radio" id="live_inside" name="will_live" value="inside" required>
+					<label for="live_inside">Inside</label>
+					<input type="radio" id="live_outside" name="will_live" value="outside" required>
+					<label for="live_outside">Outside</label>
+					<input type="radio" id="live_both" name="will_live" value="both" required>
+					<label for="live_both">Both</label>
+				</div>
+				<p class="rented hidden" data-if="residence_is" data-rhs="rented" data-hidden="0">
+					Please attach below, email to <a data-email></a>, or fax to <?=_G_fax()?> a copy of the pet clause of your
+					lease or other written permission, along with contact information for your landlord or managing agent.
+				</p>
 				<p data-if-config="outside_warn" data-value-config="outside_message"></p>
-				outside
 			</section>
+			<section id="outside" class="printonly" data-if="will_live" data-operator="ne" data-rhs="inside"
+					data-hidden="false">
+				<div>
+					<p>Is the yard fenced? </p>
+					<label>
+						<input type="radio" name="Fence" value="Y"> Yes
+					</label>
+					<label>
+						<input type="radio" name="Fence" value="N"> No
+					</label>
+					<label class="fence_description">
+						<span class="fence-unspecified" data-if="Fence" data-rhs="" data-hidden="0">Please describe the height and type of fencing, or if no fence, how you plan to exercise and confine the pet:</span>
+						<span class="fence-yes hidden" data-if="Fence" data-rhs="Y" data-hidden="0">Please describe the height and type of fencing:</span>
+						<span class="fence-no hidden" data-if="Fence" data-rhs="N" data-hidden="0">Please describe how you plan to exercise and confine the pet:</span>
+						<textarea name="fence_description"></textarea>
+					</label>
+				</div>
+				<fieldset>
+					<legend>When outside, the pet will be:</legend>
+					<input type="radio" id="chained_tied" name="when_outside" value="chained_tied">
+					<label for="chained_tied">Chained/tied</label>
+					<input type="radio" id="fenced_in_yard" name="when_outside" value="fenced_in_yard">
+					<label for="fenced_in_yard">Fenced in yard</label>
+					<input type="radio" id="leashed" name="when_outside" value="leashed">
+					<label for="leashed">Leashed</label>
+					<input type="radio" id="free_to_roam" name="when_outside" value="free_to_roam">
+					<label for="free_to_roam">Free to roam</label>
+				</fieldset>
+			</section>
+			<label>
+				Where will the pet sleep at night?
+				<input type="text" name="sleep">
+			</label>
+			<label>
+				Approximately how many hours per week will the pet be left without human companionship?
+				Will the pet be indoors or outdoors when alone?
+				What other pets will be with this pet?
+				<textarea name="companionship"></textarea>
+			</label>
 		</section>
 		<section id="references">
 			<h3>References</h3>
+			<section id="veterinarian">
+				<div>
+					<h4>Veterinarian</h4>
+					<p class="explanatory">If you do not have a current vet, a past vet is fine; if this is your first pet, please tell us what vet you plan to use.</p>
+				</div>
+				<div>
+					<input type="text" id="vet_name" name="vet_name" required>
+					<label for="vet_name" class="explanatory">Name</label>
+					<textarea id="vet_address" name="vet_address" required></textarea>
+					<label for="vet_address" class="explanatory">Address</label>
+					<input type="tel" id="vet_phone" name="vet_phone" required>
+					<label for="vet_phone" class="explanatory">Phone</label>
+				</div>
+			</section>
+			<section id="personal_reference">
+				<div>
+					<h4>Personal Reference</h4>
+					<p class="explanatory">If there is anyone who is particularly familiar with your pets and your pet care who would like to act as a reference for you, please list them here.</p>
+				</div>
+				<div>
+					<input type="text" id="ref_name" name="ref_name">
+					<label for="ref_name" class="explanatory">Name</label>
+					<input type="text" id="ref_contact" name="ref_contact">
+					<label for="ref_contact" class="explanatory">Phone or email</label>
+				</div>
+			</section>
 		</section>
 		<section id="attachments" class="noprint">
 			<h3>Attachments</h3>
-			<div data-remove="true">
+			<div data-remove>
 				<p>Add any attachments below, or email them to <a data-email></a> after submitting your application.</p>
 				<p>If you live outside the Republic/Curlew area, please add photos of your home.</p>
 			</div>
@@ -445,7 +573,7 @@ echo str_replace("<header>", "<header data-remove='1'>", ob_get_clean());
 			?>
 			<input type="file" id="images" name="images[]" accept="image/*,application/pdf" capture="environment"
 					multiple>
-			<span class="limits explanatory" data-remove="true">
+			<span class="limits explanatory" data-remove>
             (max. 10 MB each, 200 MB total)
 			</span>
 			<ul class="thumbnails" data-if-config="thumbnails">
@@ -465,9 +593,10 @@ echo str_replace("<header>", "<header data-remove='1'>", ob_get_clean());
 			</ul>
 		</section>
 		<section id="comments">
-			<h3>Comments</h3>
+			<h3><label for="comments_box">Comments</label></h3>
+			<textarea name="comments" id="comments_box"></textarea>
 		</section>
-		<section id="submit" data-remove="true">
+		<section id="submit" data-remove>
 			<button type="submit">Submit Application</button>
 		</section>
 	</form>
