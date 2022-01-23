@@ -301,7 +301,7 @@ echo str_replace("<header>", "<header data-remove='1'>", ob_get_clean());
 	<form method="POST" enctype="multipart/form-data" id="application">
 		<h2 data-if-config="main" data-rhs="false" data-hidden="false">Adoption Application</h2>
 		<p data-if-config="weblink"><a data-href-config="path">View application on the web</a>
-		<?php // @todo Display a modal for application faq ?>
+			<?php // @todo Display a modal for application faq ?>
 		<p data-remove="true" class="noprint">Please read the <a href="faq.php">application FAQ</a> before filling this out.
 			<input type="hidden" name="form_id" value="application">
 		<section id="basic_information">
@@ -363,12 +363,14 @@ echo str_replace("<header>", "<header data-remove='1'>", ob_get_clean());
 					</ul>
 				</div>
 			</section>
-			<section id="animals_current">
-				<h4>Animals currently residing with you</h4>
-			</section>
-			<section id="animals_past">
-				<h4>Animals no longer residing with you</h4>
-			</section>
+			<div id="animals">
+				<section id="animals_current">
+					<h4>Animals currently residing with you</h4>
+				</section>
+				<section id="animals_past">
+					<h4>Animals no longer residing with you</h4>
+				</section>
+			</div>
 		</section>
 		<section id="adoption_information">
 			<h3>Adoption information</h3>
@@ -426,7 +428,7 @@ echo str_replace("<header>", "<header data-remove='1'>", ob_get_clean());
 		<section id="comments">
 			<h3>Comments</h3>
 		</section>
-		<section id="submit">
+		<section id="submit" data-remove="true">
 			<button type="submit">Submit Application</button>
 		</section>
 	</form>
