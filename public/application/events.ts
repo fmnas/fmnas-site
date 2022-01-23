@@ -334,22 +334,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	document.querySelector('form#application')!.addEventListener('submit', (e: Event) => {
 		// Presubmit checks.
+		console.log('presubmit');
 		const fileInput: HTMLInputElement = document.querySelector('form#application input[type="file"]')!;
-		let validity = "";
+		let validity = '';
 		let totalSize = 0;
 		for (const file of fileInput.files ?? []) {
 			totalSize += file.size;
 			if (file.size > 10 * MEBI) {
 				validity += `File ${file.name} is over 10 MB! `;
 			}
+			if (!file.type.startsWith('image/') && file.type !== 'application/pdf') {
+				validity += `File ${file.name} is not a valid image file or PDF! `;
+			}
 		}
 		if (totalSize > 200 * MEBI) {
 			validity += `Total filesize is over 200 MB!`;
 		}
 		fileInput.setCustomValidity(validity);
-		fileInput.reportValidity();
-		if (validity !== "") {
+		if (validity !== '') {
+			fileInput.reportValidity();
+			// Clear the validity status so the presubmit is retriggered next time if everything else is valid.
+			fileInput.setCustomValidity('');
 			e.preventDefault();
+			console.log(fileInput);
 			return;
 		}
 		prune(otherPeople, anyValueInput);
