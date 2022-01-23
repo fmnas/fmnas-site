@@ -1143,7 +1143,6 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
 				$innerSpan->setAttribute("data-type", "label-text");
 				$innerSpan->nodeValue = trim($childNode->nodeValue);
 				$childNode->replaceWith($innerSpan);
-				break;
 			}
 		}
 		$span = $dom->createElement("span");
@@ -1231,7 +1230,6 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
 		/** @var $script DOMElement */
 		if (!$script->hasAttribute("data-remove")) {
 			$script->setAttribute("data-remove", "1");
-			break;
 		}
 	}
 
