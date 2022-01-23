@@ -28,7 +28,8 @@ To get a local server running, you will need:
 	* Debian packages: `php php-gd php-mbstring php-mysql php-xml`
 * curl
 * Node
-	* Suggest using NVM: `nvm install` (this will install and use the Node version specified in .nvmrc)
+	* I suggest using NVM and enabling [deep shell integration](https://github.com/nvm-sh/nvm#deeper-shell-integration) to
+	  avoid using the wrong node version.
 * You may want to install the faster Dart version of [Sass](https://sass-lang.com/install):
 	* install the [Dart SDK](https://dart.dev/get-dart) and run `dart pub global activate sass`
 	* Or with Homebrew: `brew install sass/sass/sass`
@@ -54,6 +55,9 @@ After testing the changes in the live test site environment, create a pull reque
 The PHPStorm config includes file watchers to automatically build files. To do this manually, run:
 
 * `sass -w public:public` for public site stylesheets
+* `tsc -w -p public` for public site scripts
+
+Prefix these commands with `npx` to use the local version of the CLIs from Node.
 
 ## Deployment
 
