@@ -366,7 +366,7 @@ body > article {
 
 	div.animals {
 		display: grid;
-		$spacer-width: 0;
+		$spacer-width: minmax(0,0.75em);
 		--fixed-width: max-content;
 		@media (max-width: 1000px) {
 			--fixed-width: min-content;

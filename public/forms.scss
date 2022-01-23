@@ -19,6 +19,7 @@ $border-color: #ccc;
 $transition-time: 150ms;
 $hover-background: #eee;
 $active-background: #dfdfdf;
+$focus-background: #f6f6f6;
 $input-border: 1px;
 $input-padding: 7px;
 $input-margin: 5px;
@@ -44,7 +45,11 @@ $line-height: 1.2em;
 				transition: $transition-time;
 
 				&:hover, &:active {
-					background-color: var(--hover-color);
+					background-color: $hover-background;
+				}
+
+				&:focus:not(:hover):not(:active) {
+					background-color: $focus-background;
 				}
 			}
 
