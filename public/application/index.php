@@ -346,6 +346,16 @@ echo str_replace("<header>", "<header data-remove='1'>", ob_get_clean());
 			<h3>Household information</h3>
 			<section id="other_people">
 				<h4>Other people in the household</h4>
+				<div class="people_table">
+					<h5 class="name">Name</h5>
+					<h5 class="dob">Date of birth</h5>
+					<div class="name" data-foreach="PeopleName">Name</div>
+					<div class="dob" data-foreach="PeopleDOB">Date of birth</div>
+					<ul data-remove="true">
+						<!-- Form fields will be injected by the event handler. -->
+						<li class="add"><button class="add">Add</button></li>
+					</ul>
+				</div>
 			</section>
 			<section id="animals_current">
 				<h4>Animals currently residing with you</h4>
