@@ -301,7 +301,8 @@ echo str_replace("<header>", "<header data-remove='1'>", ob_get_clean());
 	<form method="POST" enctype="multipart/form-data" id="application">
 		<h2 data-if-config="main" data-rhs="false" data-hidden="false">Adoption Application</h2>
 		<p data-if-config="weblink"><a data-href-config="path">View application on the web</a>
-		<p data-remove="true" class="noprint">Please read the <a href="faq.htm">application FAQ</a> before filling this out.
+		<?php // @todo Display a modal for application faq ?>
+		<p data-remove="true" class="noprint">Please read the <a href="faq.php">application FAQ</a> before filling this out.
 			<input type="hidden" name="form_id" value="application">
 		<section id="basic_information">
 			<h3>Basic information</h3>
