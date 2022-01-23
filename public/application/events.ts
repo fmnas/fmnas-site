@@ -37,6 +37,7 @@ function otherPeopleRow(): HTMLLIElement {
 	name.name = 'PeopleName[]';
 	dob.classList.add('dob');
 	dob.name = 'PeopleDOB[]';
+	dob.type = 'date';
 	nameLabelText.innerText = 'Name';
 	dobLabelText.innerText = 'Date of birth';
 	nameLabel.append(nameLabelText, name);
