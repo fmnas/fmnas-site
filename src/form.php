@@ -1225,7 +1225,7 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
 		$fileInput = false;
 		if ($arr === null) {
 			$fileInput = true;
-			$arr = transformFileArray($files[$element->getAttribute("data-foreach")]);
+			$arr = transformFileArray($files[$element->getAttribute("data-foreach")] ?? []);
 		}
 		if (!is_array($arr)) {
 			$arr = [$arr];
@@ -1431,11 +1431,15 @@ $formConfig->fileTransformers = [
 			return print_r($metadata, true);
 		},
 		"image" => function(array $metadata): string {
-			return '<img src="data:image/jpeg;base64,' . base64_encode(file_get_contents($metadata["tmp_name"])) .
+			return '<img src="data:' . $metadata["type"] . ';base64,' .
+					base64_encode(file_get_contents($metadata["tmp_name"])) .
 					'" alt="' . htmlspecialchars($metadata["name"]) . '"/>';
 		},
 		"thumbnail" => function(array $metadata): string {
-			$image = imagecreatefromstring(file_get_contents($metadata["tmp_name"]));
+			$image = @imagecreatefromstring(file_get_contents($metadata["tmp_name"]));
+			if (!$image) {
+				return $metadata["name"];
+			}
 			$width = imagesx($image);
 			$height = imagesy($image);
 			$newHeight = 64;
@@ -1446,7 +1450,7 @@ $formConfig->fileTransformers = [
 			imagejpeg($thumb);
 			$data = ob_get_clean();
 			return '<img src="data:image/jpeg;base64,' . base64_encode($data) . '" alt="' .
-					htmlspecialchars($metadata["name"]) . '"/>';
+					htmlspecialchars($metadata["name"]) . '" title="' . htmlspecialchars($metadata["name"]) . '"/>';
 		},
 ];
 $formConfig->fileValidator = function(array $metadata): bool {
