@@ -7,3 +7,7 @@ Application/
 *.css.map
 *.sass.map
 *.scss.map
+
+# Typescript ignores
+*.js
+*.js.map
