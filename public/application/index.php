@@ -440,7 +440,7 @@ echo str_replace("<header>", "<header data-remove='1'>", ob_get_clean());
 			?>
 			<input type="file" id="images" name="images[]" accept="image/*,application/pdf" capture="environment"
 					multiple>
-			<span class="limits" data-remove="true">
+			<span class="limits explanatory" data-remove="true">
             (max. 10 MB each, 200 MB total)
 			</span>
 			<ul class="thumbnails" data-if-config="thumbnails">
