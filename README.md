@@ -63,7 +63,8 @@ Prefix these commands with `npx` to use the local version of the CLIs from Node.
 
 ### Automatic deployment
 
-TODO: Set up automatic deployment
+GitHub Actions are used to automatically deploy the `main` branch to the prod site
+and the `test` branch to the test site. See the Workflow section above for more details.
 
 ### Manual deployment
 
@@ -127,10 +128,10 @@ exist in this directory can be accessed at their natural URLs.
 (TODO)
 
 Pet listing source code is stored as assets. These assets are **[Handlebars](https://handlebarsjs.com)** templates which
-should yield **[Github Flavored Markdown](https://github.github.com/gfm/)** (
-which [may include arbitrary HTML](https://github.github.com/gfm/#raw-html); the tagfilter extension is **not** used).
+should yield **[Github Flavored Markdown](https://github.github.com/gfm/)**
+(which [may include arbitrary HTML](https://github.github.com/gfm/#raw-html); the tagfilter extension is **not** used).
 
-The following variables are likely to prove useful in listings:
+The following variables in the template context are likely to prove useful in listings:
 
 * **pet**: Pet
 	* Properties:

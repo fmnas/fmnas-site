@@ -355,8 +355,8 @@ echo str_replace("<header>", "<header data-remove='1'>", ob_get_clean());
 				<div class="people_table">
 					<h5 class="name">Name</h5>
 					<h5 class="dob">Date of birth</h5>
-					<div class="name" data-foreach="PeopleName">Name</div>
-					<div class="dob" data-foreach="PeopleDOB">Date of birth</div>
+					<div class="name" data-foreach="PeopleName"></div>
+					<div class="dob" data-foreach="PeopleDOB"></div>
 					<ul data-remove="true">
 						<!-- Form fields will be injected by the event handler. -->
 						<li class="add">
@@ -365,12 +365,44 @@ echo str_replace("<header>", "<header data-remove='1'>", ob_get_clean());
 					</ul>
 				</div>
 			</section>
-			<div id="animals">
+			<div class="animals">
 				<section id="animals_current">
 					<h4>Animals currently residing with you</h4>
+					<h5 class="name">Pet's Name</h5>
+					<h5 class="species">Species</h5>
+					<h5 class="breed">Breed</h5>
+					<h5 class="age">Age</h5>
+					<h5 class="gender">Gender</h5>
+					<h5 class="fixed">Spayed/<wbr>Neutered?</h5>
+					<div class="name" data-foreach="CurrentName"></div>
+					<div class="species" data-foreach="CurrentSpecies"></div>
+					<div class="breed" data-foreach="CurrentBreed"></div>
+					<div class="age" data-foreach="CurrentAge"></div>
+					<div class="gender" data-foreach="CurrentGender"></div>
+					<div class="spayed" data-foreach="CurrentFixed"></div>
+					<ul data-remove="true">
+						<!-- Form fields will be injected by the event handler. -->
+						<li class="add">
+							<button class="add"><span>➕</span> Add another</button>
+						</li>
+					</ul>
 				</section>
 				<section id="animals_past">
 					<h4>Animals no longer residing with you</h4>
+					<h5 class="name">Pet's Name</h5>
+					<h5 class="species">Species</h5>
+					<h5 class="breed">Breed</h5>
+					<h5 class="reason">Reason for loss</h5>
+					<div class="name" data-foreach="PastName"></div>
+					<div class="species" data-foreach="PastSpecies"></div>
+					<div class="breed" data-foreach="PastBreed"></div>
+					<div class="reason" data-foreach="PastAge"></div>
+					<ul data-remove="true">
+						<!-- Form fields will be injected by the event handler. -->
+						<li class="add">
+							<button class="add"><span>➕</span> Add another</button>
+						</li>
+					</ul>
 				</section>
 			</div>
 		</section>
