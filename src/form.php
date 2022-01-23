@@ -486,6 +486,7 @@ function collectForm(): void {
  */
 function processForm(array $data, string $html): void {
 	global $formConfig;
+	$data["_FORM_SUBMITTED_DATE_"] = date('Y-m-d'); // For deduplication
 
 	validateFiles();
 
