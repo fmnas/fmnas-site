@@ -38,6 +38,8 @@ jobs:
         run: npm install
       - name: Compile public site stylesheets
         run: npx sass --style=compressed public:public
+      - name: Compile public site scripts
+        run: npx tsc -p public
       - name: Set config values
         run: |
           npx ts-node handleparse.ts secrets/config.php.hbs \
