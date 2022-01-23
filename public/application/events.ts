@@ -31,6 +31,7 @@ function otherPeopleRow(): HTMLLIElement {
 	const dobLabelText: HTMLSpanElement = document.createElement('span');
 	const dob: HTMLInputElement = document.createElement('input');
 	const remove: HTMLButtonElement = document.createElement('button');
+	const removeText: HTMLSpanElement = document.createElement('span');
 	li.classList.add('printonly');
 	name.classList.add('name');
 	name.name = 'PeopleName[]';
@@ -40,9 +41,15 @@ function otherPeopleRow(): HTMLLIElement {
 	dobLabelText.innerText = 'Date of birth';
 	nameLabel.append(nameLabelText, name);
 	dobLabel.append(dobLabelText, dob);
-	remove.innerText = 'Remove';
+	removeText.innerText = '❌';
+	remove.ariaLabel = 'Remove';
+	remove.title = 'Remove';
 	remove.classList.add('remove');
-	remove.addEventListener('click', () => removeRow(li, otherPeople, otherPeopleRow));
+	remove.append(removeText);
+	remove.addEventListener('click', (e: Event) => {
+		e.preventDefault();
+		removeRow(li, otherPeople, otherPeopleRow);
+	});
 	li.append(nameLabel, dobLabel, remove);
 	return li;
 }
@@ -87,6 +94,7 @@ function addRow(list: HTMLLIElement[], generator: () => HTMLLIElement, hiddenCla
 		unhideElement.classList.remove(hiddenClass);
 	} else {
 		appendRow(list, generator());
+		addRow(list, generator, hiddenClass);
 	}
 }
 
@@ -145,7 +153,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	initializeList(otherPeople, otherPeopleRow, document.querySelector('div.people_table > ul')!);
 	document.querySelector('div.people_table button.add')!.addEventListener('click',
-		() => addRow(otherPeople, otherPeopleRow));
+		(e: Event) => {
+			e.preventDefault();
+			addRow(otherPeople, otherPeopleRow);
+		});
 });
 
 window.addEventListener('keypress', (e: KeyboardEvent) => {

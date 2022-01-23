@@ -70,11 +70,15 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 	$hash = sha1(print_r($formData, true));
 	$path = "https://" . _G_public_domain() . "/application/received/$hash.html";
 
+	$outside_warn = $formData['will_live'] === 'inside' && $formData['will_live_tracker'];
+	$outside_message = 'Warning: This applicant checked then unchecked "pet will live outside."';
+
 	$dump = new FormEmailConfig(
 			null,
 			[],
 			'',
-			['main' => true, 'path' => $path, 'thumbnails' => true]
+			['main' => true, 'path' => $path, 'weblink' => true,
+					'outside_warn' => $outside_warn, 'outside_message' => $outside_message,]
 	);
 
 	$dump->fileDir = function(array $file) use ($cwd): string {
@@ -87,7 +91,8 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 			null,
 			[],
 			'',
-			['main' => true, 'path' => $path, 'thumbnails' => true, 'minhead' => true]
+			['main' => true, 'path' => $path, 'thumbnails' => true, 'minhead' => true,
+					'outside_warn' => $outside_warn, 'outside_message' => $outside_message,]
 	);
 	$save->saveFile = "$cwd/received/$hash.html";
 
@@ -101,9 +106,7 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 			[$shelterEmail],
 			$primarySubject,
 			['main' => true, 'path' => $path, 'weblink' => true,
-					'outside_warn' => $formData['will_live'] === 'inside' && $formData['will_live_tracker'],
-					'outside_message' => 'Warning: This applicant checked then unchecked "pet will live outside."',
-			]
+					'outside_warn' => $outside_warn, 'outside_message' => $outside_message,]
 	);
 	$primaryEmail->attachFiles = function(array $metadata): bool {
 		$total_size = 0;
@@ -353,7 +356,9 @@ echo str_replace("<header>", "<header data-remove='1'>", ob_get_clean());
 					<div class="dob" data-foreach="PeopleDOB">Date of birth</div>
 					<ul data-remove="true">
 						<!-- Form fields will be injected by the event handler. -->
-						<li class="add"><button class="add">Add</button></li>
+						<li class="add">
+							<button class="add"><span>➕</span> Add another</button>
+						</li>
 					</ul>
 				</div>
 			</section>
@@ -378,7 +383,7 @@ echo str_replace("<header>", "<header data-remove='1'>", ob_get_clean());
 				<input type="radio" id="live_both" name="will_live" value="both" required>
 				<label for="live_both">Both</label>
 			</section>
-			<section id="outside" data-if="will_live" data-operator="ne" data-rhs="inside" data-hidden="false">
+			<section id="outside" data-if="will_live_tracker" data-operator="ne" data-rhs="inside" data-hidden="false">
 				<p data-if-config="outside_warn" data-value-config="outside_message"></p>
 				outside
 			</section>
