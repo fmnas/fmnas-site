@@ -594,12 +594,12 @@ function moveChildren(DOMElement &$from, DOMElement &$to): void {
 }
 
 /**
- * Check truthiness of a string. Defined the same as in PHP, except "false" is falsy.
+ * Check truthiness of a string. Defined the same as in PHP, except "false" is falsy and "" is truthy.
  * @param string $str A string
  * @return bool Whether the string is truthy.
  */
 #[Pure] function checkString(string $str): bool {
-	return $str && $str !== "false";
+	return $str === "" || ($str && $str !== "false");
 }
 
 /**
