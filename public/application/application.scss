@@ -130,7 +130,7 @@ body > article {
 				justify-self: end;
 				white-space: nowrap;
 				grid-column: 1;
-				cursor: inherit;
+				cursor: auto;
 
 				&:not(article#application *).required::after {
 					content: '*';
@@ -363,20 +363,16 @@ body > article {
 				display: none;
 			}
 
-			label>span {
+			label>span, h6.legend {
 				display: block !important;
+				margin: 0.75em 0 0 0;
+				padding: 0;
+				font: inherit;
 			}
 
 			input.age {
 				max-width: 4em;
 				justify-self: center !important;
-			}
-
-			h6.legend {
-				display: block !important;
-				font: inherit;
-				margin: 0;
-				padding: 0;
 			}
 
 			fieldset > legend {
