@@ -18,30 +18,96 @@ function initializeDateInput(e: Element): void {
 }
 
 const otherPeople: HTMLLIElement[] = [];
+const currentAnimals: HTMLLIElement[] = [];
+const pastAnimals: HTMLLIElement[] = [];
 
-/**
- * Creates an li element for otherPeopleRows, initially with the printonly class.
- */
-function otherPeopleRow(): HTMLLIElement {
-	const li: HTMLLIElement = document.createElement('li');
-	const nameLabel: HTMLLabelElement = document.createElement('label');
-	const nameLabelText: HTMLSpanElement = document.createElement('span');
-	const name: HTMLInputElement = document.createElement('input');
-	const dobLabel: HTMLLabelElement = document.createElement('label');
-	const dobLabelText: HTMLSpanElement = document.createElement('span');
-	const dob: HTMLInputElement = document.createElement('input');
+function labeledInput(name: string, label: string, className: string, inputType: string = 'text'): HTMLLabelElement {
+	const labelElement: HTMLLabelElement = document.createElement('label');
+	const labelText: HTMLSpanElement = document.createElement('span');
+	const input: HTMLInputElement = document.createElement('input');
+	labelElement.classList.add(className);
+	labelText.classList.add(className);
+	input.classList.add(className);
+	input.name = name;
+	input.title = label;
+	input.ariaLabel = label;
+	input.type = inputType;
+	labelText.innerText = label;
+	labelElement.append(labelText, input);
+	return labelElement;
+}
+
+function labeledSelect(name: string, label: string, className: string,
+	options: Record<string, string> = {}): HTMLLabelElement {
+	const labelElement: HTMLLabelElement = document.createElement('label');
+	const labelText: HTMLSpanElement = document.createElement('span');
+	const select: HTMLSelectElement = document.createElement('select');
+	labelElement.classList.add(className);
+	labelText.classList.add(className);
+	labelText.innerText = label;
+	select.title = label;
+	select.name = name;
+	select.classList.add(className);
+	const defaultOption: HTMLOptionElement = document.createElement('option');
+	select.append(defaultOption);
+	for (const [value, valueLabel] of Object.entries(options)) {
+		const option: HTMLOptionElement = document.createElement('option');
+		option.innerText = valueLabel;
+		option.value = value;
+		select.append(option);
+	}
+	labelElement.append(labelText, select);
+	return labelElement;
+}
+
+let groupCounter = 0;
+
+function radioGroup(name: string, label: string, className: string,
+	options: Record<string, string> = {}): HTMLDivElement {
+	const fieldset: HTMLFieldSetElement = document.createElement('fieldset');
+	const heading: HTMLHeadingElement = document.createElement('h6');
+	const legend: HTMLLegendElement = document.createElement('legend');
+	const hidden: HTMLInputElement = document.createElement('input');
+	hidden.name = name;
+	hidden.type = 'hidden';
+	fieldset.append(legend, hidden);
+	legend.innerText = label;
+	fieldset.classList.add(className);
+	heading.classList.add(className);
+	heading.classList.add('legend');
+	heading.innerText = label;
+	for (const [value, valueLabel] of Object.entries(options)) {
+		const labelElement: HTMLLabelElement = document.createElement('label');
+		const labelText: HTMLSpanElement = document.createElement('span');
+		const radio: HTMLInputElement = document.createElement('input');
+		labelText.innerText = valueLabel;
+		radio.type = 'radio';
+		radio.title = label;
+		radio.ariaLabel = valueLabel;
+		radio.name = `group_${groupCounter}`;
+		radio.value = value;
+		radio.addEventListener('change', () => {
+			let checkedInput: HTMLInputElement | null = fieldset.querySelector('input[type="radio"]:checked');
+			if (!checkedInput) {
+				hidden.removeAttribute(value);
+			} else {
+				hidden.value = checkedInput.value;
+			}
+		});
+		labelElement.append(labelText, radio);
+		fieldset.append(labelElement);
+	}
+	groupCounter++;
+	const div: HTMLDivElement = document.createElement('div');
+	div.classList.add(className);
+	div.classList.add('fieldset');
+	div.append(heading, fieldset);
+	return div;
+}
+
+function removeButton(li: HTMLLIElement, list: HTMLLIElement[], generator: () => HTMLLIElement): HTMLButtonElement {
 	const remove: HTMLButtonElement = document.createElement('button');
 	const removeText: HTMLSpanElement = document.createElement('span');
-	li.classList.add('printonly');
-	name.classList.add('name');
-	name.name = 'PeopleName[]';
-	dob.classList.add('dob');
-	dob.name = 'PeopleDOB[]';
-	dob.type = 'date';
-	nameLabelText.innerText = 'Name';
-	dobLabelText.innerText = 'Date of birth';
-	nameLabel.append(nameLabelText, name);
-	dobLabel.append(dobLabelText, dob);
 	removeText.innerText = '❌';
 	remove.ariaLabel = 'Remove';
 	remove.title = 'Remove';
@@ -49,9 +115,59 @@ function otherPeopleRow(): HTMLLIElement {
 	remove.append(removeText);
 	remove.addEventListener('click', (e: Event) => {
 		e.preventDefault();
-		removeRow(li, otherPeople, otherPeopleRow);
+		removeRow(li, list, generator);
 	});
-	li.append(nameLabel, dobLabel, remove);
+	return remove;
+}
+
+function otherPeopleRow(): HTMLLIElement {
+	const li: HTMLLIElement = document.createElement('li');
+	const name = labeledInput('PeopleName[]', 'Name', 'name');
+	const dob = labeledInput('PeopleDOB[]', 'Date of birth', 'dob', 'date');
+	const remove = removeButton(li, otherPeople, otherPeopleRow);
+	li.classList.add('printonly');
+	li.append(name, dob, remove);
+	return li;
+}
+
+const speciesOptions = {
+	'cat': 'Cat',
+	'dog': 'Dog',
+	'horse': 'Horse',
+	'other': 'Other',
+};
+
+function currentAnimalRow(): HTMLLIElement {
+	const li: HTMLLIElement = document.createElement('li');
+	const name = labeledInput('CurrentName[]', 'Name', 'name');
+	const species = labeledSelect('CurrentSpecies[]', 'Species', 'species', speciesOptions);
+	const breed = labeledInput('CurrentBreed[]', 'Breed', 'breed');
+	const age = labeledInput('CurrentAge[]', 'Age', 'age', 'text');
+	const gender = radioGroup('CurrentGender[]', 'Gender', 'gender', {
+		'M': 'Male',
+		'F': 'Female',
+	});
+	const fixed = radioGroup('CurrentFixed[]', 'Fixed', 'spayed', {
+		'Y': 'Yes',
+		'N': 'No',
+	});
+	gender.setAttribute('data-remove', '1');
+	fixed.setAttribute('data-remove', '1');
+	const remove = removeButton(li, currentAnimals, currentAnimalRow);
+	li.classList.add('printonly');
+	li.append(name, species, breed, age, gender, fixed, remove);
+	return li;
+}
+
+function pastAnimalRow(): HTMLLIElement {
+	const li: HTMLLIElement = document.createElement('li');
+	const name = labeledInput('PastName[]', 'Name', 'name');
+	const species = labeledSelect('PastSpecies[]', 'Species', 'species', speciesOptions);
+	const breed = labeledInput('PastBreed[]', 'Breed', 'breed');
+	const reason = labeledInput('PastReason[]', 'Reason for loss', 'reason');
+	const remove = removeButton(li, pastAnimals, pastAnimalRow);
+	li.classList.add('printonly');
+	li.append(name, species, breed, reason, remove);
 	return li;
 }
 
@@ -153,9 +269,32 @@ document.addEventListener('DOMContentLoaded', () => {
 	document.querySelectorAll('input[type="date"]').forEach(initializeDateInput);
 
 	initializeList(otherPeople, otherPeopleRow, document.querySelector('div.people_table > ul')!);
-	document.querySelector('div.people_table button.add')!.addEventListener('click',
-		(e: Event) => {
-			e.preventDefault();
-			addRow(otherPeople, otherPeopleRow);
-		});
+	document.querySelector('div.people_table button.add')!.addEventListener('click', (e: Event) => {
+		e.preventDefault();
+		addRow(otherPeople, otherPeopleRow);
+	});
+
+	initializeList(currentAnimals, currentAnimalRow, document.querySelector('section#animals_current > ul')!);
+	document.querySelector('section#animals_current button.add')!.addEventListener('click', (e: Event) => {
+		e.preventDefault();
+		addRow(currentAnimals, currentAnimalRow);
+	});
+
+	initializeList(pastAnimals, pastAnimalRow, document.querySelector('section#animals_past > ul')!);
+	document.querySelector('section#animals_past button.add')!.addEventListener('click', (e: Event) => {
+		e.preventDefault();
+		addRow(pastAnimals, pastAnimalRow);
+	});
+
+	// This value is used in the CSS for 480-600px width.
+	document.querySelectorAll('div.animals input.name')
+		.forEach((input) => input.addEventListener('input', () => {
+			if (input instanceof HTMLInputElement) {
+				let ancestor = input.parentElement;
+				while (ancestor && !(ancestor instanceof HTMLLIElement)) {
+					ancestor = ancestor.parentElement;
+				}
+				ancestor?.querySelector('button.remove > span')!.setAttribute('data-name', input.value);
+			}
+		}));
 });
