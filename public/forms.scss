@@ -11,6 +11,7 @@ $line-height: 1.2em;
 	input:not([type='file']), select, textarea, span[data-type='textarea'],
 	span[data-type='input']:not([data-input-type='file']), span[data-type='select'] {
 		width: 20em;
+		min-width: 0;
 		max-width: 100%;
 
 		// Excluding emailed inputs
@@ -47,6 +48,10 @@ $line-height: 1.2em;
 				}
 			}
 		}
+	}
+
+	select {
+		width: auto;
 	}
 
 	button {
