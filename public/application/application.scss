@@ -366,6 +366,8 @@ body > article {
 
 	div.animals {
 		display: grid;
+		row-gap: $row-gap;
+		column-gap: $column-gap;
 		$spacer-width: minmax(0,0.75em);
 		--fixed-width: max-content;
 		@media (max-width: 1000px) {
@@ -382,7 +384,7 @@ body > article {
 
 			label>span, h6.legend {
 				display: block !important;
-				margin: 0.75em 0 0 0;
+				margin: calc(0.75em - #{$row-gap}) 0 0 0;
 				padding: 0;
 				font: inherit;
 			}
@@ -397,13 +399,11 @@ body > article {
 			}
 
 			button.remove {
-				margin-bottom: 2em;
+				margin-bottom: calc(2em - #{$row-gap});
 				border-radius: 0;
 				border-bottom: 1px solid forms.$border-color;
 				justify-self: center !important;
-				padding-bottom: 1em;
-				padding-left: 1em;
-				padding-right: 1em;
+				padding: forms.$input-padding 1em 1em 1em;
 				font-size: 90%;
 
 				&:hover:not(:active) {
