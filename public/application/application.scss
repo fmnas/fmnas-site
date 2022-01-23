@@ -82,6 +82,7 @@ body > article {
 #application {
 	display: inline-block;
 	max-width: 10in;
+	padding-bottom: 2rem;
 
 	@media screen and (min-width: calc(#{$cutoff-width} + 1px)) {
 		// Excludes emailed and mobile forms
@@ -122,6 +123,7 @@ body > article {
 				box-shadow: -1px 1px 2px $border-color inset;
 				background-color: var(--background-color);
 				transition: $transition-time;
+
 				&:hover, &:active {
 					background-color: var(--hover-color);
 				}
@@ -181,7 +183,11 @@ body > article {
 	h3 {
 		font-size: 18pt;
 		font-variant: small-caps;
-		margin-bottom: 0;
+		margin-bottom: 1rem;
+	}
+
+	h4 {
+		margin: 1rem;
 	}
 
 	#basic_information {
@@ -437,6 +443,22 @@ body > article {
 		input:nth-of-type(2) {
 			flex-grow: 1;
 		}
+	}
+
+	section#attachments {
+		> div {
+			margin: 1em;
+
+			p {
+				max-width: 8in;
+				margin: 1em auto;
+			}
+		}
+	}
+
+	section#submit button {
+		font-size: 120%;
+		padding: 0.5em;
 	}
 
 	/* Styles for email */
