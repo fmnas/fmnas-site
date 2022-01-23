@@ -133,6 +133,11 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 		$secondaryEmail->cc = [new EmailAddress(trim($formData['CEmail']), trim($formData['CName']))];
 	}
 
+	if (file_exists($save->saveFile)) {
+		echo '<!-- Application not sent - detected duplicate at ' . $save->saveFile . ' -->';
+		return [];
+	}
+
 	return [$dump, $save, $primaryEmail, $secondaryEmail];
 };
 $formConfig->fileTransformers["url"] = function(array $metadata): string {
