@@ -32,7 +32,7 @@ function labeledInput(name: string, label: string, className: string, inputType:
 	input.title = label;
 	input.ariaLabel = label;
 	input.type = inputType;
-	labelText.innerText = label;
+	labelText.innerHTML = label;
 	labelElement.append(labelText, input);
 	return labelElement;
 }
@@ -44,7 +44,7 @@ function labeledSelect(name: string, label: string, className: string,
 	const select: HTMLSelectElement = document.createElement('select');
 	labelElement.classList.add(className);
 	labelText.classList.add(className);
-	labelText.innerText = label;
+	labelText.innerHTML = label;
 	select.title = label;
 	select.name = name;
 	select.classList.add(className);
@@ -52,7 +52,7 @@ function labeledSelect(name: string, label: string, className: string,
 	select.append(defaultOption);
 	for (const [value, valueLabel] of Object.entries(options)) {
 		const option: HTMLOptionElement = document.createElement('option');
-		option.innerText = valueLabel;
+		option.innerHTML = valueLabel;
 		option.value = value;
 		select.append(option);
 	}
@@ -71,16 +71,16 @@ function radioGroup(name: string, label: string, className: string,
 	hidden.name = name;
 	hidden.type = 'hidden';
 	fieldset.append(legend, hidden);
-	legend.innerText = label;
+	legend.innerHTML = label;
 	fieldset.classList.add(className);
 	heading.classList.add(className);
 	heading.classList.add('legend');
-	heading.innerText = label;
+	heading.innerHTML = label;
 	for (const [value, valueLabel] of Object.entries(options)) {
 		const labelElement: HTMLLabelElement = document.createElement('label');
 		const labelText: HTMLSpanElement = document.createElement('span');
 		const radio: HTMLInputElement = document.createElement('input');
-		labelText.innerText = valueLabel;
+		labelText.innerHTML = valueLabel;
 		radio.type = 'radio';
 		radio.title = label;
 		radio.ariaLabel = valueLabel;
@@ -108,7 +108,7 @@ function radioGroup(name: string, label: string, className: string,
 function removeButton(li: HTMLLIElement, list: HTMLLIElement[], generator: () => HTMLLIElement): HTMLButtonElement {
 	const remove: HTMLButtonElement = document.createElement('button');
 	const removeText: HTMLSpanElement = document.createElement('span');
-	removeText.innerText = '❌';
+	removeText.innerHTML = '❌';
 	remove.ariaLabel = 'Remove';
 	remove.title = 'Remove';
 	remove.classList.add('remove');
@@ -147,7 +147,7 @@ function currentAnimalRow(): HTMLLIElement {
 		'M': 'Male',
 		'F': 'Female',
 	});
-	const fixed = radioGroup('CurrentFixed[]', 'Fixed', 'spayed', {
+	const fixed = radioGroup('CurrentFixed[]', 'Spayed/<wbr>Neutered?', 'spayed', {
 		'Y': 'Yes',
 		'N': 'No',
 	});
