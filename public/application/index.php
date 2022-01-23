@@ -278,6 +278,7 @@ function addressInput(string $label, string $prefix, bool $required = false): st
 	style("application", true);
 	?>
 	<script src="events.js"></script>
+	<script src="/formenter.js"></script>
 </head>
 <body>
 <?php
