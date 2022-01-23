@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUnusedParameterInspection */
 require_once "../../src/common.php";
 require_once "../../src/form.php";
 require_once "$t/header.php";
@@ -289,7 +289,7 @@ function addressInput(string $label, string $prefix, bool $required = false): st
 <?php
 ob_start();
 pageHeader();
-echo str_replace("<header>", "<header data-remove>", ob_get_clean());
+echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 ?>
 <article>
 	<section id="thanks" data-if-config="main" data-rhs="false">
@@ -453,13 +453,15 @@ echo str_replace("<header>", "<header data-remove>", ob_get_clean());
 			<?php // @todo Get a particular pet from $_GET ?>
 			<section id="particular">
 				<p>Are you applying for a particular animal listed on our website?</p>
-				<label class="required">
-					<input type="radio" name="particular" value="y" required> Yes
-				</label>
-				<label class="required">
-					<input type="radio" name="particular" value="n" required> No
-				</label>
-				<label data-if="particular" class="printonly" data-rhs="y" data-remove="false">
+				<div>
+					<label>
+						<input type="radio" name="particular" value="y" required> Yes
+					</label>
+					<label>
+						<input type="radio" name="particular" value="n" required> No
+					</label>
+				</div>
+				<label data-if="particular" class="printonly" data-rhs="y" data-hidden="false">
 					Please specify:
 					<input type="text" name="particular_specify">
 				</label>
@@ -468,8 +470,9 @@ echo str_replace("<header>", "<header data-remove>", ob_get_clean());
 		<section id="about_home">
 			<h3>About your home</h3>
 			<section id="residence">
-				<label>Please describe your residence:
-					<textarea name="residence"></textarea>
+				<label class="textarea">
+					<span>Please describe your residence:</span>
+					<textarea name="residence" required></textarea>
 				</label>
 				<input type="hidden" id="will_live_tracker" name="will_live_tracker" value="0">
 				<div class="residence_grid">
@@ -502,68 +505,78 @@ echo str_replace("<header>", "<header data-remove>", ob_get_clean());
 					<label>
 						<input type="radio" name="Fence" value="N"> No
 					</label>
-					<label class="fence_description">
+					<label class="fence_description textarea">
 						<span class="fence-unspecified" data-if="Fence" data-rhs="" data-hidden="0">Please describe the height and type of fencing, or if no fence, how you plan to exercise and confine the pet:</span>
 						<span class="fence-yes hidden" data-if="Fence" data-rhs="Y" data-hidden="0">Please describe the height and type of fencing:</span>
 						<span class="fence-no hidden" data-if="Fence" data-rhs="N" data-hidden="0">Please describe how you plan to exercise and confine the pet:</span>
 						<textarea name="fence_description"></textarea>
 					</label>
 				</div>
-				<fieldset>
-					<legend>When outside, the pet will be:</legend>
-					<input type="radio" id="chained_tied" name="when_outside" value="chained_tied">
-					<label for="chained_tied">Chained/tied</label>
-					<input type="radio" id="fenced_in_yard" name="when_outside" value="fenced_in_yard">
-					<label for="fenced_in_yard">Fenced in yard</label>
-					<input type="radio" id="leashed" name="when_outside" value="leashed">
-					<label for="leashed">Leashed</label>
-					<input type="radio" id="free_to_roam" name="when_outside" value="free_to_roam">
-					<label for="free_to_roam">Free to roam</label>
-				</fieldset>
+				<div class="fieldset">
+					<fieldset>
+						<legend>When outside, the pet will be:</legend>
+						<input type="radio" id="chained_tied" name="when_outside" value="chained_tied">
+						<label for="chained_tied">Chained/tied</label>
+						<input type="radio" id="fenced_in_yard" name="when_outside" value="fenced_in_yard">
+						<label for="fenced_in_yard">Fenced in yard</label>
+						<input type="radio" id="leashed" name="when_outside" value="leashed">
+						<label for="leashed">Leashed</label>
+						<input type="radio" id="free_to_roam" name="when_outside" value="free_to_roam">
+						<label for="free_to_roam">Free to roam</label>
+					</fieldset>
+				</div>
 			</section>
 			<label>
-				Where will the pet sleep at night?
+				<span>Where will the pet sleep at night?</span>
 				<input type="text" name="sleep">
 			</label>
-			<label>
-				Approximately how many hours per week will the pet be left without human companionship?
+			<label class="textarea">
+				<span>Approximately how many hours per week will the pet be left without human companionship?
 				Will the pet be indoors or outdoors when alone?
-				What other pets will be with this pet?
+					What other pets will be with this pet?</span>
 				<textarea name="companionship"></textarea>
 			</label>
 		</section>
 		<section id="references">
 			<h3>References</h3>
-			<section id="veterinarian">
-				<div>
-					<h4>Veterinarian</h4>
-					<p class="explanatory">If you do not have a current vet, a past vet is fine; if this is your first pet, please tell us what vet you plan to use.</p>
-				</div>
-				<div>
-					<input type="text" id="vet_name" name="vet_name" required>
-					<label for="vet_name" class="explanatory">Name</label>
-					<textarea id="vet_address" name="vet_address" required></textarea>
-					<label for="vet_address" class="explanatory">Address</label>
-					<input type="tel" id="vet_phone" name="vet_phone" required>
-					<label for="vet_phone" class="explanatory">Phone</label>
-				</div>
-			</section>
-			<section id="personal_reference">
-				<div>
-					<h4>Personal Reference</h4>
-					<p class="explanatory">If there is anyone who is particularly familiar with your pets and your pet care who would like to act as a reference for you, please list them here.</p>
-				</div>
-				<div>
-					<input type="text" id="ref_name" name="ref_name">
-					<label for="ref_name" class="explanatory">Name</label>
-					<input type="text" id="ref_contact" name="ref_contact">
-					<label for="ref_contact" class="explanatory">Phone or email</label>
-				</div>
-			</section>
+			<div>
+				<section id="veterinarian">
+					<div>
+						<h4>Veterinarian</h4>
+						<p class="explanatory">If you do not have a current vet, a past vet is fine; if this is your first pet,
+							please
+							tell us what vet you plan to use.</p>
+					</div>
+					<div>
+						<input type="text" id="vet_name" name="vet_name" required>
+						<label for="vet_name" class="explanatory required">Name</label>
+						<textarea id="vet_address" name="vet_address" required></textarea>
+						<label for="vet_address" class="explanatory required">Address</label>
+						<input type="tel" id="vet_phone" name="vet_phone" required>
+						<label for="vet_phone" class="explanatory required">Phone</label>
+					</div>
+				</section>
+				<div class="spacer"></div>
+				<section id="personal_reference">
+					<div>
+						<h4>Personal Reference</h4>
+						<p class="explanatory">If there is anyone who is particularly familiar with your pets and your pet care who
+							would like to act as a reference for you, please list them here.</p>
+					</div>
+					<div>
+						<div class="spacer"></div>
+						<input type="text" id="ref_name" name="ref_name">
+						<label for="ref_name" class="explanatory">Name</label>
+						<input type="text" id="ref_contact" name="ref_contact">
+						<label for="ref_contact" class="explanatory">Phone&nbsp;or email</label>
+						<div class="spacer"></div>
+					</div>
+				</section>
+			</div>
 		</section>
 		<section id="attachments" class="noprint">
 			<h3>Attachments</h3>
-			<div data-remove>
+			<div data-remove="true">
 				<p>Add any attachments below, or email them to <a data-email></a> after submitting your application.</p>
 				<p>If you live outside the Republic/Curlew area, please add photos of your home.</p>
 			</div>
@@ -573,7 +586,7 @@ echo str_replace("<header>", "<header data-remove>", ob_get_clean());
 			?>
 			<input type="file" id="images" name="images[]" accept="image/*,application/pdf" capture="environment"
 					multiple>
-			<span class="limits explanatory" data-remove>
+			<span class="limits explanatory" data-remove="true">
             (max. 10 MB each, 200 MB total)
 			</span>
 			<ul class="thumbnails" data-if-config="thumbnails">
@@ -596,7 +609,7 @@ echo str_replace("<header>", "<header data-remove>", ob_get_clean());
 			<h3><label for="comments_box">Comments</label></h3>
 			<textarea name="comments" id="comments_box"></textarea>
 		</section>
-		<section id="submit" data-remove>
+		<section id="submit" data-remove="true">
 			<button type="submit">Submit Application</button>
 		</section>
 	</form>

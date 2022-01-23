@@ -19,7 +19,7 @@
  * type of the corresponding input element if found.
  * All <datalist> elements will be removed unless they have an explicit falsy data-remove attribute, in which case they
  * will be replaced with <ul> elements. <option> elements therein will be replaced with <li> elements, and any contained
- * within an <optgroup> element will have a data-optgroup attribute with the optgroup label (the outgroup is removed).
+ * within an <optgroup> element will have a data-optgroup attribute with the optgroup label (the optgroup is removed).
  *
  * All generated elements will have a data-type attribute with the original tag ("form", "input", etc.).
  * For elements generated from an <input> element, the data-input-type attribute will be set with the original type.
@@ -571,7 +571,7 @@ function sendEmail(FormEmailConfig $emailConfig, RenderedEmail $renderedEmail): 
  * @param string ...$exclude A list of attributes not to copy.
  * @return void
  */
-function copyAttributes(DOMElement &$from, DOMElement &$to, string ...$exclude): void {
+function copyAttributes(DOMElement $from, DOMElement $to, string ...$exclude): void {
 	if ($from->hasAttributes()) {
 		foreach ($from->attributes as $attribute) {
 			if (!in_array($attribute->nodeName, $exclude)) {
@@ -587,19 +587,20 @@ function copyAttributes(DOMElement &$from, DOMElement &$to, string ...$exclude):
  * @param DOMElement $to The element that wants the children.
  * @return void
  */
-function moveChildren(DOMElement &$from, DOMElement &$to): void {
+function moveChildren(DOMElement $from, DOMElement $to): void {
 	while ($from->firstChild) {
 		$to->appendChild($from->firstChild);
 	}
 }
 
 /**
- * Check truthiness of a string. Defined the same as in PHP, except "false" is falsy and "" is truthy.
+ * Check truthiness of a string. Defined the same as in PHP, except "false" is falsy.
+ * @todo Make "" truthy (doesn't seem to work?)
  * @param string $str A string
  * @return bool Whether the string is truthy.
  */
 #[Pure] function checkString(string $str): bool {
-	return $str === "" || ($str && $str !== "false");
+	return $str && $str !== "false";
 }
 
 /**
@@ -612,6 +613,7 @@ function moveChildren(DOMElement &$from, DOMElement &$to): void {
  * @param string $tag The tag to match.
  * @param Closure|null $filter A filter (DOMElement -> bool) to apply to elements before adding them to the array.
  * @return array An array containing elements.
+ * @noinspection PhpUnusedParameterInspection
  */
 function collectElements(DOMElement|DOMDocument $root, string $tag = "*", ?Closure $filter = null): array {
 	$filter ??= function(DOMElement $element): bool {
@@ -681,7 +683,7 @@ function collectElements(DOMElement|DOMDocument $root, string $tag = "*", ?Closu
  * @param array|null $file File metadata
  * @param bool $href Apply to the href attribute instead of the inner HTML.
  */
-function applyFileTransformation(DOMElement &$element, ?array $file, bool $href = false): void {
+function applyFileTransformation(DOMElement $element, ?array $file, bool $href = false): void {
 	global $formConfig;
 	if ($file === null) {
 		echo "Warning: got null file to apply transformation";
@@ -710,7 +712,7 @@ function applyFileTransformation(DOMElement &$element, ?array $file, bool $href 
  * @param array $values Values to use for elements with the data-value-config or data-href-config attribute
  * @param array $files Uploaded file metadata (in $_FILES format)
  */
-function applyDataValues(DOMElement|DOMDocument &$root, array $data, array $values, array $files): void {
+function applyDataValues(DOMElement|DOMDocument $root, array $data, array $values, array $files): void {
 	foreach (collectElements($root, "*", has("data-value-config")) as $element) {
 		/** @var $element DOMElement */
 		if (isset($values[$element->getAttribute("data-value-config")])) {
