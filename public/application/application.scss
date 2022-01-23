@@ -22,6 +22,7 @@ $row-gap: 5px;
 $column-gap: 3px;
 $total-input-height: calc(#{forms.$line-height} + #{forms.$input-border} + #{forms.$input-border}
 + #{forms.$input-margin} + #{forms.$input-margin} + #{forms.$input-padding} + #{forms.$input-padding});
+$paragraph-width: 40em;
 
 // Hide the link to the application in the header - we are already here!
 section.adopt {
@@ -148,13 +149,6 @@ body > article {
 				white-space: nowrap;
 				grid-column: 1;
 				cursor: auto;
-
-				&:not(article#application *).required::after {
-					content: '*';
-					color: red;
-					margin-left: 1px;
-					font-size: 90%;
-				}
 
 				> * {
 					line-height: forms.$line-height;
@@ -368,7 +362,7 @@ body > article {
 		display: grid;
 		row-gap: $row-gap;
 		column-gap: $column-gap;
-		$spacer-width: minmax(0,0.75em);
+		$spacer-width: minmax(0, 0.75em);
 		--fixed-width: max-content;
 		@media (max-width: 1000px) {
 			--fixed-width: min-content;
@@ -382,7 +376,7 @@ body > article {
 				display: none;
 			}
 
-			label>span, h6.legend {
+			label > span, h6.legend {
 				display: block !important;
 				margin: calc(0.75em - #{$row-gap}) 0 0 0;
 				padding: 0;
@@ -502,6 +496,7 @@ body > article {
 
 		div.fieldset {
 			display: contents;
+
 			h6.legend {
 				display: none;
 			}
@@ -512,20 +507,24 @@ body > article {
 			display: flex;
 			justify-content: space-evenly;
 			padding: 0;
+
 			legend {
 				display: none;
 			}
+
 			> label {
 				display: flex !important;
 				flex-direction: column;
 				justify-content: center;
 				height: $total-input-height;
+
 				> span {
 					display: block !important;
 					white-space: nowrap;
 					order: 2;
 					margin: 0.2em;
 				}
+
 				> input {
 					order: 1;
 				}
@@ -534,23 +533,272 @@ body > article {
 	}
 
 	// Adoption information
+	$box-width: 1em;
+	$radio-margin-top: 0.2em;
+	$radio-margin-left: 0.3em;
+
+	input[type='checkbox'], input[type='radio'] {
+		width: $box-width;
+	}
+
+	section#adoption_information {
+		p {
+			text-align: center;
+			margin-bottom: 0;
+			display: inline-block;
+		}
+
+		section#types_of_animals {
+			display: grid;
+			grid-template-columns: [start] 1fr [left] max-content [right] max-content 1fr [end];
+			row-gap: $row-gap;
+			column-gap: $column-gap;
+			margin-bottom: 1em;
+
+			> p, > div {
+				grid-column: start / end;
+				align-self: end;
+				justify-self: center;
+			}
+
+			> label {
+				justify-self: left;
+				margin: 0.1em 0;
+			}
+
+			> label:nth-of-type(odd), > span[data-type='label']:nth-of-type(odd) {
+				grid-column: left;
+				margin-left: -$box-width; // Disregard the left checkbox when centering, for optical reasons.
+				margin-right: 2em;
+			}
+
+			> label:nth-of-type(even), > span[data-type='label']:nth-of-type(even) {
+				grid-column: right;
+			}
+
+			label[for='other_specify'] {
+				display: none;
+			}
+		}
+
+		div.preference, section#particular > div {
+			white-space: nowrap;
+			display: inline-block;
+
+			> label {
+				white-space: nowrap;
+				margin: $radio-margin-top $radio-margin-left;
+			}
+		}
+
+		section#particular > label {
+			display: block;
+		}
+	}
 
 	// About your home
+	section#about_home {
+		label.textarea {
+			display: flex;
+			flex-direction: column;
+
+			> textarea {
+				align-self: center;
+				width: $paragraph-width;
+				max-width: 90vw;
+				height: 6em;
+			}
+
+			> span {
+				cursor: auto;
+			}
+		}
+
+		div.residence_grid {
+			display: grid; // inline-grid jumps around when the rented paragraph is shown for some reason
+			row-gap: $row-gap;
+			column-gap: $column-gap;
+			grid-template-columns: 1fr repeat(7, max-content) 1fr;
+			margin: 0.5em;
+
+			> input {
+				margin-left: $radio-margin-left;
+				margin-top: 0;
+				height: forms.$line-height;
+			}
+
+			> label {
+				margin-right: $radio-margin-left;
+				justify-self: start;
+			}
+
+			> p {
+				grid-column: 2;
+				margin: 0 $radio-margin-left 0 0;
+				justify-self: end;
+			}
+		}
+
+		p.rented:not(.hidden) {
+			max-width: 40em;
+			display: inline-block;
+			text-align: justify;
+			text-align-last: center;
+			font-style: italic;
+			font-size: 90%;
+		}
+
+		section#outside {
+			display: block;
+			$vertical-space: 1em;
+			margin: $vertical-space 0;
+
+			> div > p {
+				display: inline-block;
+				margin-bottom: $row-gap;
+			}
+
+			> div.fieldset {
+				display: inline-grid;
+				grid-template-columns: repeat(4, max-content);
+				margin: $vertical-space 0;
+				border: none;
+				column-gap: $column-gap;
+			}
+
+			fieldset {
+				display: contents;
+
+				> * {
+					justify-self: center;
+				}
+
+				> legend {
+					grid-column: 1/span 4;
+					grid-row: 1;
+				}
+
+				> input {
+					grid-row: 2;
+					justify-self: stretch;
+					width: auto;
+					height: $box-width;
+				}
+
+				> label {
+					grid-row: 3;
+					margin: 0 $radio-margin-left;
+					padding: 0 $radio-margin-left;
+				}
+			}
+
+			& + label {
+				// Where will the pet sleep at night?
+				display: block;
+				margin: $vertical-space 0;
+
+				> span {
+					display: block;
+				}
+
+				> input {
+					width: 40em;
+					max-width: 90vw;
+				}
+			}
+		}
+
+		label.textarea > span {
+			max-width: $paragraph-width;
+			text-align: justify;
+			text-align-last: center;
+			margin-left: auto;
+			margin-right: auto;
+		}
+	}
 
 	// References
+
+	section#references > div {
+		display: grid;
+		grid-template-columns: 1fr minmax(0, 15em) minmax(0, 20em) min-content 1fr;
+		align-items: center;
+		row-gap: 0.5em;
+		column-gap: $column-gap;
+
+		.explanatory {
+			font-size: 80%;
+		}
+
+		> section {
+			display: contents;
+
+			> div:first-child {
+				grid-column: 2;
+				text-align: right;
+				margin-right: 0.5em;
+
+				h4 {
+					margin: 0.2rem 0;
+				}
+			}
+
+			&#veterinarian > div:first-child {
+				grid-row-end: span 3;
+			}
+
+			&#personal_reference > div:first-child {
+				grid-row-end: span 4;
+			}
+
+			> div:nth-child(2) {
+				display: contents;
+
+				input, textarea {
+					grid-column: 3;
+					justify-self: stretch;
+					width: auto;
+					margin: 0;
+				}
+
+				label {
+					grid-column: 4;
+					justify-self: start;
+					text-align: left;
+				}
+			}
+
+			div.spacer {
+				grid-column: 3/span 2;
+				height: 0.5em;
+			}
+		}
+
+		> div.spacer {
+			grid-column: 1/span 5;
+			height: 1em;
+		}
+	}
 
 	section#attachments {
 		> div {
 			margin: 1em;
 
 			p {
-				max-width: 8in;
+				max-width: $paragraph-width;
 				margin: 1em auto;
 			}
 		}
 	}
 
+	section#comments textarea {
+		width: $paragraph-width;
+		max-width: 90vw;
+		height: 5em;
+	}
+
 	section#submit button {
+		margin-top: 1rem;
 		font-size: 120%;
 		padding: 0.5em;
 	}

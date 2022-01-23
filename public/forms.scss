@@ -20,6 +20,8 @@ $transition-time: 150ms;
 $hover-background: #eee;
 $active-background: #dfdfdf;
 $focus-background: #f6f6f6;
+$invalid-background: #fee;
+$invalid-border: #fcc;
 $input-border: 1px;
 $input-padding: 7px;
 $input-margin: 5px;
@@ -34,6 +36,7 @@ $line-height: 1.2em;
 	box-shadow: -1px 1px 2px $border-color inset;
 	background-color: var(--background-color);
 	transition: $transition-time;
+	//outline: none !important;
 
 	&:hover, &:active {
 		background-color: $hover-background;
@@ -49,6 +52,24 @@ $line-height: 1.2em;
 		@media not print {
 			@include form-field;
 		}
+	}
+
+	&.submitted {
+		*:invalid {
+			background-color: $invalid-background !important;
+			border-color: $invalid-border !important;
+			box-shadow: -1px 1px 2px $invalid-border inset;
+			&:focus, &:focus-visible {
+				outline: 2px solid #c00;
+			}
+		}
+	}
+
+	.required:not(input):not(textarea):not(select):not(article[date-type="form"] *)::after {
+		content: '*';
+		color: red;
+		margin-left: 1px;
+		font-size: 90%;
 	}
 
 	input:not([type='file']), select, textarea, span[data-type='textarea'],

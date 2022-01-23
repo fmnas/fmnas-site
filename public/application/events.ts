@@ -289,9 +289,9 @@ function monitorRadios(name: string, tester: (value: string | undefined) => bool
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-	let form = document.getElementById('application')!;
-	let verifyUnload = (e: BeforeUnloadEvent) => {
-		for (let input of document.getElementsByTagName('input')) {
+	const form: HTMLFormElement = document.querySelector('form#application')!;
+	const verifyUnload = (e: BeforeUnloadEvent) => {
+		for (const input of document.getElementsByTagName('input')) {
 			if (input.type === 'checkbox' || input.type === 'radio') {
 				continue;
 			}
@@ -308,12 +308,12 @@ document.addEventListener('DOMContentLoaded', () => {
 	window.addEventListener('beforeunload', verifyUnload);
 	form.addEventListener('submit', () => window.removeEventListener('beforeunload', verifyUnload));
 
-	let will_live_listener = () => {
-		let checkedInput: HTMLInputElement | null = document.querySelector('input[name="will_live"]:checked');
+	const will_live_listener = () => {
+		const checkedInput: HTMLInputElement | null = document.querySelector('input[name="will_live"]:checked');
 		if (!checkedInput?.value || checkedInput.value === 'inside') {
 			document.getElementById('outside')!.classList.add('printonly');
 		} else {
-			let tracker: HTMLInputElement = document.querySelector('input#will_live_tracker')!;
+			const tracker: HTMLInputElement = document.querySelector('input#will_live_tracker')!;
 			tracker.value = '1';
 			document.getElementById('outside')!.classList.remove('printonly');
 		}
@@ -395,10 +395,14 @@ document.addEventListener('DOMContentLoaded', () => {
 	document.querySelectorAll('input[name="Fence"]').forEach((e: Element) => e.addEventListener('change', fenceListener));
 	fenceListener();
 
-	document.querySelector('form#application')!.addEventListener('submit', (e: Event) => {
-		// Presubmit checks.
-		console.log('presubmit');
-		const fileInput: HTMLInputElement = document.querySelector('form#application input[type="file"]')!;
+	form.querySelector('button[type="submit"]')!.addEventListener('click', () => {
+		form.classList.add('submitted');
+	});
+
+	form.addEventListener('submit', (e: Event) => {
+		// Presubmit checks, after the browser's.
+		form.classList.add('submitted');
+		const fileInput: HTMLInputElement = form.querySelector('input[type="file"]')!;
 		let validity = '';
 		let totalSize = 0;
 		for (const file of fileInput.files ?? []) {
