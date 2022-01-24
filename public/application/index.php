@@ -96,9 +96,13 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 	);
 	$save->saveFile = "$cwd/received/$hash.html";
 
-	$primarySubject = 'Adoption Application from ' . trim($formData['AName']);
+	$primarySubject = 'Adoption Application';
+	if (trim($formData['particular_specify'] ?? '') && strlen($formData['particular_specify']) < 20) {
+		$primarySubject .= ' for ' . trim($formData['particular_specify']);
+	}
+	$primarySubject .= ' from ' . trim($formData['AName']);
 	if (trim($formData['CName'] ?? '')) {
-		$primarySubject .= ' and ' . $formData['CName'];
+		$primarySubject .= ' and ' . trim($formData['CName']);
 	}
 
 	$primaryEmail = new FormEmailConfig(
