@@ -486,7 +486,7 @@ function collectForm(): void {
  */
 function processForm(array $data, string $html): void {
 	global $formConfig;
-	$data["_FORM_SUBMITTED_DATE_"] = date('Y-m-d'); // For deduplication
+	$data["_FORM_DEDUPLICATION_METADATA_"] = date("Ymd") . (@md5_file(__FILE__) ?: "") . md5($html);
 
 	validateFiles();
 
@@ -1014,7 +1014,8 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
 		$span = $dom->createElement("span");
 		$span->setAttribute("data-type", "input");
 		$inputName = $input->getAttribute("name");
-		copyAttributes($input, $span, "value", "required", "type", "accept", "capture", "multiple", "form", "checked");
+		copyAttributes($input, $span, "value", "required", "type", "accept", "capture", "multiple", "form", "checked",
+				"pattern", "name", "disabled");
 		$inputType = $input->getAttribute("type");
 		$span->setAttribute("data-input-type", $inputType);
 		switch ($inputType) {
@@ -1053,7 +1054,7 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
 		$span = $dom->createElement("span");
 		$span->setAttribute("data-type", "select");
 		$inputName = $select->getAttribute("name");
-		copyAttributes($select, $span, "value", "required", "form");
+		copyAttributes($select, $span, "value", "required", "form", "name", "disabled");
 		$selected = $data[$inputName] ?? "";
 		foreach (collectElements($select, "option") as $option) {
 			/** @var $option DOMElement */
@@ -1071,7 +1072,7 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
 		$pre = $dom->createElement("pre");
 		$pre->setAttribute("data-type", "textarea");
 		$inputName = $textarea->getAttribute("name");
-		copyAttributes($textarea, $pre, "value", "required", "form");
+		copyAttributes($textarea, $pre, "value", "required", "form", "name", "disabled");
 		$pre->nodeValue = htmlspecialchars(strval($data[$inputName] ?? $textarea->nodeValue));
 		$textarea->parentNode?->replaceChild($pre, $textarea);
 	}
@@ -1149,7 +1150,7 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
 		/** @var $button DOMElement */
 		$span = $dom->createElement("span");
 		$span->setAttribute("data-type", "button");
-		copyAttributes($button, $span, "value", "required", "type");
+		copyAttributes($button, $span, "value", "required", "type", "name", "formaction", "disabled");
 		if (!$span->hasAttribute("data-remove")) {
 			$span->setAttribute("data-remove", "1");
 		}

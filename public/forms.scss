@@ -21,12 +21,17 @@ $line-height: 1.2em;
 	transition: $transition-time;
 	//outline: none !important;
 
-	&:hover, &:active {
+	&:hover:not(:disabled), &:active:not(:disabled) {
 		background-color: $hover-background;
 	}
 
-	&:focus:not(:hover):not(:active) {
+	&:focus:not(:hover):not(:active):not(:disabled) {
 		background-color: $focus-background;
+	}
+
+	&:disabled {
+		background-color: transparent;
+		box-shadow: none;
 	}
 }
 
@@ -48,21 +53,21 @@ $line-height: 1.2em;
 		}
 	}
 
-	.required:not(input):not(textarea):not(select):not(article[date-type="form"] *)::after {
+	&:not(article[data-type="form"]) .required:not(input):not(textarea):not(select)::after {
 		content: '*';
 		color: red;
 		margin-left: 1px;
 		font-size: 90%;
 	}
 
-	input:not([type='file']), select, textarea, span[data-type='textarea'],
+	input:not([type='file']), select, textarea, pre[data-type='textarea'],
 	span[data-type='input']:not([data-input-type='file']), span[data-type='select'] {
 		width: 20em;
 		min-width: 0;
 		max-width: 100%;
 
 		// Excluding emailed inputs
-		&:not(span) {
+		&:not(span):not(pre) {
 			&:not([type='radio']):not([type='checkbox']) {
 				@include form-field;
 			}
@@ -117,8 +122,14 @@ $line-height: 1.2em;
 		display: none;
 	}
 
+	span[data-type='label'][data-input-type='radio'][data-selected='1'] {
+		font-weight: bold;
+	}
+
 	span[data-type='label'][data-input-type='checkbox'] {
-		display: none;
+		* {
+			display: none;
+		}
 
 		&[data-selected='0']::before {
 			content: '☐ ';
@@ -126,6 +137,10 @@ $line-height: 1.2em;
 
 		&[data-selected='1']::before {
 			content: '☑ ';
+		}
+
+		&[data-selected='1'] {
+			font-weight: bold;
 		}
 	}
 
@@ -160,5 +175,3 @@ $line-height: 1.2em;
 		}
 	}
 }
-
-// TODO use :invalid

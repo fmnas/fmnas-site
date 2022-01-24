@@ -1,12 +1,12 @@
 <?php
 require_once __DIR__ . "/../common.php";
-function application_reponse(): void { ?>
+function application_response(): void { ?>
 	<p>Thank you for your adoption application; we will be reviewing it shortly
 		(applications are reviewed Sunday through Thursday), and will contact you with any additional questions.
 		In the meantime, please provide any required supplemental information by responding to this message, or emailing
 		us
-		at <a href="mailto:<?=_G_default_email_user()?>@<?=_G_public_domain()?>"><?=_G_default_email_user()?>
-			@<?=_G_public_domain()?></a> - this will help speed up your
+		at <a href="mailto:<?=_G_default_email_user()?>@<?=_G_public_domain()?>">
+			<?=_G_default_email_user()?>@<?=_G_public_domain()?></a> - this will help speed up your
 		application processing time.
 
 	<p><strong>If your home is not registered under your ownership with your county assessor,</strong>
@@ -16,15 +16,15 @@ function application_reponse(): void { ?>
 		records).
 
 	<p>If you do not hear back from us within 72 hours, please email us at
-		<a href="mailto:<?=_G_default_email_user()?>@<?=_G_public_domain()?>g"><?=_G_default_email_user()?>
-			@<?=_G_public_domain()?></a>.
+		<a href="mailto:<?=_G_default_email_user()?>@<?=_G_public_domain()?>">
+			<?=_G_default_email_user()?>@<?=_G_public_domain()?></a>.
 
 	<p>Thanks so much for caring about shelter pets!
 
 	<p>
 	Kim Gillen, Adoption Coordinator<br>
 	<?=_G_shortname()?><br>
-	<a href="tel:<?=_G_phone()?>"><?=_G_phone()?></a> (shelter)<br>
+	<a href="tel:<?='1'.preg_replace('/[^0-9]/', '', _G_phone())?>"><?=_G_phone()?></a> (shelter)<br>
 	<?=_G_fax()?> (fax)<br>
 	<a href="https://<?=_G_public_domain()?>/">https://<?=_G_public_domain()?></a><br>
 	like us on Facebook: <a href="https://www.facebook.com/ForgetMeNotAnimalShelter">https://www.facebook.com/ForgetMeNotAnimalShelter</a>
