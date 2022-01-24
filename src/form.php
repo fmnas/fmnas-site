@@ -498,6 +498,7 @@ function collectForm(): void {
 /**
  * Send emails containing the submitted form data.
  * @param array $data Raw form data ($_GET or $_POST).
+ * @param string $html The server-rendered HTML of the empty form.
  * @throws \PHPMailer\PHPMailer\Exception
  * @throws DOMException
  */
