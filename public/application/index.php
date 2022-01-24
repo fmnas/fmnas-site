@@ -19,7 +19,8 @@ $formConfig->confirm = function(array $formData): void {
 	<meta name="robots" content="noindex,nofollow">
 	<?php
 	style();
-	pageHeader();
+	// @todo Use page header and make the min header printonly.
+//	pageHeader();
 	?>
 	<h2>Adoption Application</h2>
 	<p>Thank you! We have received your application and you will hear back from us soon.
@@ -38,7 +39,7 @@ $formConfig->handler = function(FormException $e): void {
 	<script src="/email.js.php"></script>
 	<?php
 	style();
-	pageHeader();
+//	pageHeader();
 	?>
 	<h2>Error <?=$e->getCode() ?: 500?></h2>
 	<p>Something went wrong submitting the form: <?=$e->getMessage()?>
@@ -285,15 +286,16 @@ function addressInput(string $label, string $prefix, bool $required = false): st
 	<?php
 	style();
 	style("application", true);
+	style("minheader", true);
 	?>
 	<script src="events.js"></script>
 	<script src="/formenter.js"></script>
 </head>
 <body>
 <?php
-ob_start();
-pageHeader();
-echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
+//ob_start();
+//pageHeader();
+//echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 ?>
 <article>
 	<section id="thanks" data-if-config="main" data-rhs="false">
@@ -301,7 +303,7 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 		application_response();
 		?>
 	</section>
-	<header data-if-config="minhead" data-hidden="false" class="printonly" id="minimal_header">
+	<header data-if-config="minhead" data-hidden="false" class="" id="minimal_header">
 		<a href="/">
 			<h1><?=_G_shortname()?></h1>
 			<address><p><?=mb_strcut(str_replace("\n", "<p>", _G_address()), 0, -5)?></address>
