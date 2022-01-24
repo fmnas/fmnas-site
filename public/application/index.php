@@ -82,7 +82,7 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 	);
 
 	$dump->fileDir = function(array $file) use ($cwd): string {
-		return $file["type"] === "image/jpeg" ? "$cwd/received" : "";
+		return "$cwd/received";
 	};
 	$dump->hashFilenames = HashOptions::SAVED_ONLY;
 	$dump->globalConversion = true;
@@ -125,7 +125,7 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 	$secondaryEmail = new FormEmailConfig(
 			$shelterEmail,
 			[$applicantEmail],
-			'Your ' . _G_longname() . ' Adoption Application',
+			'Your ' . _G_shortname() . ' Adoption Application',
 			['main' => false]
 	);
 	$secondaryEmail->attachFiles = false;
@@ -294,7 +294,7 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 <article>
 	<section id="thanks" data-if-config="main" data-rhs="false">
 		<?php
-		application_reponse();
+		application_response();
 		?>
 	</section>
 	<header data-if-config="minhead" data-hidden="false" class="printonly" id="minimal_header">
@@ -378,10 +378,9 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 					<h5 class="breed">Breed</h5>
 					<h5 class="age">Age</h5>
 					<h5 class="gender">Gender</h5>
-					<h5 class="fixed">Spayed/
-						<wbr>
-						Neutered?
-					</h5>
+					<!-- @formatter:off -->
+					<h5 class="spayed">Spayed/<wbr>Neutered?</h5>
+					<!-- @formatter:on -->
 					<div class="name" data-foreach="CurrentName"></div>
 					<div class="species" data-foreach="CurrentSpecies"></div>
 					<div class="breed" data-foreach="CurrentBreed"></div>
@@ -432,7 +431,7 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 				</label>
 				<div class="other">
 					<label>
-						<input type="checkbox" name="other"> Other:
+						<input type="checkbox" name="other"> <span class="other_label">Other</span>
 					</label>
 					<label for="other_specify">Please specify</label>
 					<input type="text" name="other_specify" id="other_specify" title="Please specify" disabled>
@@ -446,7 +445,7 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 						<input type="radio" name="preference" value="female"> Female
 					</label>
 					<label>
-						<input type="radio" name="preference" value="either"> Either
+						<input type="radio" name="preference" value="either"> Either<span data-if="preference" data-rhs="either"> male or female</span>
 					</label>
 				</div>
 			</section>
@@ -461,7 +460,7 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 						<input type="radio" name="particular" value="n" required> No
 					</label>
 				</div>
-				<label data-if="particular" class="printonly" data-rhs="y" data-hidden="false">
+				<label data-if="particular" data-rhs="y" data-hidden="false">
 					Please specify:
 					<input type="text" name="particular_specify">
 				</label>
@@ -487,15 +486,15 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 					<input type="radio" id="live_outside" name="will_live" value="outside" required>
 					<label for="live_outside">Outside</label>
 					<input type="radio" id="live_both" name="will_live" value="both" required>
-					<label for="live_both">Both</label>
+					<label for="live_both">Both<span data-if="will_live" data-rhs="both"> inside and outside</span></label>
 				</div>
-				<p class="rented hidden" data-if="residence_is" data-rhs="rented" data-hidden="0">
+				<p class="rented" data-remove="true" data-hidden="0">
 					Please attach below, email to <a data-email></a>, or fax to <?=_G_fax()?> a copy of the pet clause of your
 					lease or other written permission, along with contact information for your landlord or managing agent.
 				</p>
 				<p data-if-config="outside_warn" data-value-config="outside_message"></p>
 			</section>
-			<section id="outside" class="printonly" data-if="will_live" data-operator="ne" data-rhs="inside"
+			<section id="outside" data-if="will_live" data-operator="ne" data-rhs="inside"
 					data-hidden="false">
 				<div>
 					<p>Is the yard fenced? </p>
@@ -507,8 +506,8 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 					</label>
 					<label class="fence_description textarea">
 						<span class="fence-unspecified" data-if="Fence" data-rhs="" data-hidden="0">Please describe the height and type of fencing, or if no fence, how you plan to exercise and confine the pet:</span>
-						<span class="fence-yes hidden" data-if="Fence" data-rhs="Y" data-hidden="0">Please describe the height and type of fencing:</span>
-						<span class="fence-no hidden" data-if="Fence" data-rhs="N" data-hidden="0">Please describe how you plan to exercise and confine the pet:</span>
+						<span class="fence-yes" data-if="Fence" data-rhs="Y" data-hidden="0">Please describe the height and type of fencing:</span>
+						<span class="fence-no" data-if="Fence" data-rhs="N" data-hidden="0">Please describe how you plan to exercise and confine the pet:</span>
 						<textarea name="fence_description"></textarea>
 					</label>
 				</div>
@@ -528,7 +527,7 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 			</section>
 			<label>
 				<span>Where will the pet sleep at night?</span>
-				<input type="text" name="sleep">
+				<input type="text" name="sleep" class="sleep">
 			</label>
 			<label class="textarea">
 				<span>Approximately how many hours per week will the pet be left without human companionship?
@@ -582,7 +581,6 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 			</div>
 			<?php
 			// @todo Better image upload interface
-			// @todo Enforce image size limit on client side
 			?>
 			<input type="file" id="images" name="images[]" accept="image/*,application/pdf" capture="environment"
 					multiple>
@@ -605,7 +603,7 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 				<li data-foreach="images" data-if-config="main" data-rhs="false"></li>
 			</ul>
 		</section>
-		<section id="comments">
+		<section id="comments" data-if="comments" data-hidden="false">
 			<h3><label for="comments_box">Comments</label></h3>
 			<textarea name="comments" id="comments_box"></textarea>
 		</section>
