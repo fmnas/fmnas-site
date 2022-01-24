@@ -34,7 +34,13 @@ html {
 }
 
 body > article {
+	width: 100%;
 	text-align: center;
+}
+
+// Override this from common.css
+p > strong:first-child {
+	color: inherit;
 }
 
 #minimal_header {
@@ -141,7 +147,7 @@ body > article {
 				}
 			}
 
-			> label, > div.label, > span[type='label'] {
+			> label, > div.label, > span[data-type='label'] {
 				align-self: start;
 				line-height: $total-input-height;
 				vertical-align: middle;
@@ -158,8 +164,10 @@ body > article {
 
 				& + * {
 					justify-self: stretch;
+					align-self: center;
 					width: auto;
 					grid-column: 2;
+					text-align: left;
 				}
 
 				&.span-2 {
@@ -184,12 +192,12 @@ body > article {
 					margin-top: 1em;
 				}
 
-				> h4 + label + *, > h4 + div.label + *, > h4 + span[type='label'] + * {
+				> h4 + label + *, > h4 + div.label + *, > h4 + span[data-type='label'] + * {
 					// Reset to row 2 when inserting the first coapplicant input
 					grid-row: 2;
 				}
 
-				> label, > div.label, > span[type='label'] {
+				> label, > div.label, > span[data-type='label'] {
 					display: none;
 					@media screen and (max-width: $cutoff-width) {
 						display: inline-block;
@@ -213,15 +221,15 @@ body > article {
 		display: inline-flex;
 		justify-content: space-between;
 
-		label {
+		label, span[data-type='label'] {
 			display: none;
 		}
 
-		input, select {
+		input, select, span[data-type='select'] {
 			width: 0;
 		}
 
-		input:first-of-type {
+		input:first-of-type, span[data-type='input']:first-of-type {
 			flex-grow: 2;
 		}
 
@@ -232,7 +240,7 @@ body > article {
 		}
 
 		// ZIP
-		input:nth-of-type(2) {
+		input:nth-of-type(2), span[data-type='input']:nth-of-type(2) {
 			flex-grow: 1;
 		}
 	}
@@ -306,8 +314,10 @@ body > article {
 	div.people_table {
 		display: grid;
 		$spacer-width: 3em;
-		grid-template-columns: minmax(0, #{$spacer-width}) 1fr 10em 3em;
+		grid-template-columns: minmax(0, $spacer-width) 1fr 10em 3em;
 		margin-left: -$spacer-width;
+		row-gap: $row-gap;
+		column-gap: $column-gap;
 		@media print {
 			// Don't need the button column for printing.
 			grid-template-columns: 0 1fr 10em;
@@ -351,11 +361,6 @@ body > article {
 		}
 	}
 
-	article[type='form'] div.people_table {
-		// Don't need the button column in the emailed version.
-		grid-template-columns: 1fr 6em;
-	}
-
 	// Animals currently & no longer residing with you
 
 	div.animals {
@@ -367,7 +372,7 @@ body > article {
 		@media (max-width: 1000px) {
 			--fixed-width: min-content;
 		}
-		$left-columns: [left] #{$spacer-width} [name] 1fr [species] min-content [breed] 1fr [age] 3em [gender] min-content [spayed] var(--fixed-width);
+		$left-columns: [left] $spacer-width [name] 1fr [species] min-content [breed] 1fr [age] 3em [gender] min-content [spayed] var(--fixed-width);
 		grid-template-columns: #{$left-columns} [remove content-right] 3em [right];
 		@media (max-width: 600px) {
 			grid-template-columns: [left name age remove] 1fr [species gender] min-content [breed spayed] 1fr [right content-right name];
@@ -383,7 +388,7 @@ body > article {
 				font: inherit;
 			}
 
-			input.age {
+			input.age, span[data-type='input'].age {
 				max-width: 4em;
 				justify-self: center !important;
 			}
@@ -412,7 +417,6 @@ body > article {
 				}
 			}
 		}
-		margin-left: -$spacer-width;
 
 		@media print {
 			// Don't need the button column for printing.
@@ -502,30 +506,30 @@ body > article {
 			}
 		}
 
-		fieldset {
+		fieldset, section[data-type='fieldset'] {
 			border: none;
 			display: flex;
 			justify-content: space-evenly;
 			padding: 0;
 
-			legend {
+			legend, h3[data-type='legend'] {
 				display: none;
 			}
 
-			> label {
+			> label, > span[data-type='label'] {
 				display: flex !important;
 				flex-direction: column;
 				justify-content: center;
 				height: $total-input-height;
 
-				> span {
+				> span:not([data-type]) {
 					display: block !important;
 					white-space: nowrap;
 					order: 2;
 					margin: 0.2em;
 				}
 
-				> input {
+				> input, > span[data-type='input'] {
 					order: 1;
 				}
 			}
@@ -561,8 +565,8 @@ body > article {
 				justify-self: center;
 			}
 
-			> label {
-				justify-self: left;
+			> label, > span[data-type='label'] {
+				justify-self: start;
 				margin: 0.1em 0;
 			}
 
@@ -576,8 +580,16 @@ body > article {
 				grid-column: right;
 			}
 
-			label[for='other_specify'] {
+			label[for='other_specify'], div.other>span[data-type='label'][data-input-type='text'] {
 				display: none;
+			}
+
+			span.other_label::after {
+				content: ': ';
+			}
+
+			> div.other > input:disabled {
+				pointer-events: none;
 			}
 		}
 
@@ -585,13 +597,13 @@ body > article {
 			white-space: nowrap;
 			display: inline-block;
 
-			> label {
+			> label, > span[data-type='label'] {
 				white-space: nowrap;
 				margin: $radio-margin-top $radio-margin-left;
 			}
 		}
 
-		section#particular > label {
+		section#particular > label, section#particular > span[data-type='label'] {
 			display: block;
 		}
 	}
@@ -621,13 +633,13 @@ body > article {
 			grid-template-columns: 1fr repeat(7, max-content) 1fr;
 			margin: 0.5em;
 
-			> input {
+			> input, > span[data-type='input'] {
 				margin-left: $radio-margin-left;
 				margin-top: 0;
 				height: forms.$line-height;
 			}
 
-			> label {
+			> label, > span[data-type='label'] {
 				margin-right: $radio-margin-left;
 				justify-self: start;
 			}
@@ -692,12 +704,20 @@ body > article {
 				}
 			}
 
-			& + label {
+			section[data-type='fieldset'] {
+				h3 {
+					display: inline;
+					font: inherit;
+					margin: 0.2em;
+				}
+			}
+
+			& + label, & + span[data-type='label'] {
 				// Where will the pet sleep at night?
 				display: block;
 				margin: $vertical-space 0;
 
-				> span {
+				> span:not([data-type]) {
 					display: block;
 				}
 
@@ -754,14 +774,14 @@ body > article {
 			> div:nth-child(2) {
 				display: contents;
 
-				input, textarea {
+				input, textarea, span[data-type='input'], pre {
 					grid-column: 3;
 					justify-self: stretch;
 					width: auto;
 					margin: 0;
 				}
 
-				label {
+				label, span[data-type='label'] {
 					grid-column: 4;
 					justify-self: start;
 					text-align: left;
@@ -802,11 +822,91 @@ body > article {
 		font-size: 120%;
 		padding: 0.5em;
 	}
+}
 
-	// Styles for email
-	section.thanks {
-		padding-bottom: 1em;
-		margin-bottom: 1em;
-		border-bottom: 1pt solid forms.$border-color;
+// Styles for email
+section.thanks {
+	padding-bottom: 1em;
+	margin-bottom: 1em;
+	border-bottom: 1pt solid forms.$border-color;
+}
+
+article#application {
+	h3 {
+		width: 100%;
+	}
+
+	.city-st-zip {
+		display: inline;
+
+		span[data-type]:not([data-type='label']) {
+			display: inline;
+			width: auto;
+
+			&::after {
+				content: ' ';
+			}
+		}
+	}
+
+	div.info_grid {
+		column-gap: 0.5em;
+	}
+
+	div.people_table {
+		grid-template-columns: 1fr minmax(min-content, max-content) max-content 1fr;
+		margin-left: 0;
+	}
+
+	div.people_table, div.animals {
+		grid-auto-flow: column;
+		column-gap: 0.5em;
+
+		h5 {
+			font-weight: bold !important;
+		}
+	}
+
+	span.other_label {
+		display: inline !important;
+	}
+
+	span[data-type='label'][data-selected='0'] > span.other_label::after {
+		display: none;
+	}
+
+	#particular span[data-type='input'] {
+		margin: 0.2em;
+		font-weight: bold;
+	}
+
+	#attachments ul.thumbnails {
+		list-style-type: none;
+		display: inline;
+		margin: 0.2rem;
+	}
+
+	span.textarea {
+		display: block;
+	}
+
+	pre[data-type='textarea']:not(#vet_address), span.sleep {
+		font: inherit;
+		border: 1px solid black;
+		display: block;
+		margin: 0.2em auto;
+		padding: 0.2em;
+		min-height: 3em;
+		max-width: $paragraph-width;
+		width: auto;
+	}
+
+	pre#vet_address {
+		margin: 0;
+		font: inherit;
+	}
+
+	section.applicant span.explanatory {
+		display: none;
 	}
 }

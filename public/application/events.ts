@@ -364,8 +364,19 @@ document.addEventListener('DOMContentLoaded', () => {
 	const specifyInput: HTMLInputElement = document.querySelector('input#other_specify')!;
 	const otherListener = () => {
 		specifyInput.disabled = !otherCheckbox.checked;
+		if (otherCheckbox.checked) {
+			specifyInput.focus();
+		}
 	};
 	otherCheckbox.addEventListener('change', otherListener);
+	const specifyDiv: HTMLDivElement = document.querySelector('section#types_of_animals>div.other')!;
+	specifyDiv.addEventListener('click', (e: MouseEvent) => {
+		if (e.target !== specifyDiv) {
+			return;
+		}
+		otherCheckbox.checked = true;
+		otherListener();
+	});
 	otherListener();
 
 	monitorRadios('particular', (s) => s === 'y', document.querySelector('label[data-if="particular"]')!);
