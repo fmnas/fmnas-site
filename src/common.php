@@ -128,13 +128,17 @@ require_once "$src/generated.php";
  * Import a stylesheet
  * @param string $name The relative path to the stylesheet file, optionally including .css or .php
  * @param bool $relative Do not output a leading slash in the href.
+ * @param string|null $buster A cachebuster to use.
  */
-function style(string $name = "/common", bool $relative = false): void {
+function style(string $name = "/common", bool $relative = false, ?string $buster = null): void {
 	if (!startsWith($name, "/") && !$relative) {
 		$name = "/" . $name;
 	}
 	if (!endsWith($name, ".css") && !endsWith($name, ".php")) {
 		$name .= ".css";
+	}
+	if ($buster !== null) {
+		$name .= "?buster=$buster";
 	}
 	echo "<link rel=\"stylesheet\" href=\"" . htmlspecialchars($name) . "\">";
 }
