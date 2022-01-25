@@ -27,7 +27,6 @@
 		display: block;
 		font-size: x-large;
 		font-variant: small-caps;
-		margin: 0;
 	}
 
 	div {
@@ -40,9 +39,9 @@
 	address {
 		display: contents;
 		font-style: normal;
+	}
 
-		> p {
-			margin: 0;
-		}
+	* {
+		margin: 0;
 	}
 }
