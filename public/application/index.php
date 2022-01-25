@@ -20,7 +20,7 @@ $formConfig->confirm = function(array $formData): void {
 	<?php
 	style();
 	// @todo Use page header and make the min header printonly.
-//	pageHeader();
+	//	pageHeader();
 	?>
 	<h2>Adoption Application</h2>
 	<p>Thank you! We have received your application and you will hear back from us soon.
@@ -39,7 +39,7 @@ $formConfig->handler = function(FormException $e): void {
 	<script src="/email.js.php"></script>
 	<?php
 	style();
-//	pageHeader();
+	//	pageHeader();
 	?>
 	<h2>Error <?=$e->getCode() ?: 500?></h2>
 	<p>Something went wrong submitting the form: <?=$e->getMessage()?>
@@ -281,7 +281,7 @@ function addressInput(string $label, string $prefix, bool $required = false): st
 	<title>Adoption Application - <?=_G_longname()?></title>
 	<meta charset="UTF-8">
 	<meta name="robots" content="nofollow">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="viewport" content="width=device-width">
 	<script src="/email.js.php"></script>
 	<?php
 	style();
@@ -306,8 +306,10 @@ function addressInput(string $label, string $prefix, bool $required = false): st
 	<header data-if-config="minhead" data-hidden="false" class="" id="minimal_header">
 		<a href="/">
 			<h1><?=_G_shortname()?></h1>
-			<address><p><?=mb_strcut(str_replace("\n", "<p>", _G_address()), 0, -5)?></address>
-			<span class="tel"><?=_G_phone()?></span>
+			<div>
+				<address><p><?=mb_strcut(str_replace("\n", "<p>", _G_address()), 0, -5)?></address>
+				<span class="tel"><?=_G_phone()?></span>
+			</div>
 		</a>
 	</header>
 	<form method="POST" enctype="multipart/form-data" id="application">

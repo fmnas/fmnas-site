@@ -13,22 +13,19 @@
 		margin: 0;
 	}
 
+	div {
+		display: inline-flex;
+		flex-wrap: wrap;
+		column-gap: 2em;
+		justify-content: center;
+	}
+
 	address {
 		display: contents;
 		font-style: normal;
 
 		> p {
-			display: inline-block;
 			margin: 0;
-
-			&:nth-of-type(2) {
-				margin: 0 2em;
-			}
 		}
-	}
-
-	span.tel {
-		display: inline-block;
-		margin: 0;
 	}
 }
