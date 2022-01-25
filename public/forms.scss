@@ -105,6 +105,7 @@ $line-height: 1.2em;
 		transition: $transition-time;
 		background-color: var(--background-color);
 		cursor: pointer;
+		color: #000;
 
 		&:hover {
 			background-color: $hover-background;
