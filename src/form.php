@@ -197,8 +197,8 @@
  *    content: "☑ ";
  *  }
  *
- * TODO [$61f0e352d9ea4400084e2739]: Add unit tests for the form processor.
- * TODO [$61f0e352d9ea4400084e273a]: Split the form processor into a separate repo?
+ * TODO [#69]: Add unit tests for the form processor.
+ * TODO [#70]: Split the form processor into a separate repo?
  * @noinspection GrazieInspection
  */
 
@@ -215,7 +215,7 @@ require "$phpmailer_path/src/PHPMailer.php";
 require "$phpmailer_path/src/SMTP.php";
 require "$html5_php_path/src/HTML5.php";
 
-// TODO [$61f0e352d9ea4400084e273b]: Figure out how to get PSR-4 autoloading without composer.
+// TODO [#71]: Figure out how to get PSR-4 autoloading without composer.
 // Relevant: https://akrabat.com/using-composer-with-shared-hosting/
 require_once("$html5_php_path/src/HTML5/Elements.php");
 require_once("$html5_php_path/src/HTML5/Entities.php");
@@ -612,7 +612,7 @@ function moveChildren(DOMElement $from, DOMElement $to): void {
 
 /**
  * Check truthiness of a string. Defined the same as in PHP, except "false" is falsy.
- * TODO [$61f0e352d9ea4400084e273c]: Make "" truthy (doesn't seem to work?)
+ * TODO [#72]: Make "" truthy (doesn't seem to work?)
  * @param string $str A string
  * @return bool Whether the string is truthy.
  */
@@ -1174,7 +1174,7 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
 		$button->parentNode?->replaceChild($span, $button);
 	}
 
-	// TODO [$61f0e352d9ea4400084e273d]: Replace datalist elements with ul elements (hidden by default).
+	// TODO [#73]: Replace datalist elements with ul elements (hidden by default).
 
 	// Merge linked style sheets into the output HTML.
 	$stylesToInject = [];
@@ -1182,8 +1182,8 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
 		/** @var $link DOMElement */
 		$href = $link->getAttribute("href");
 		$url = parse_url($href);
-		// TODO [$61f0e352d9ea4400084e273e]: Consider solutions for $url["query"] === $_SERVER["HTTP_HOST"]
-		// TODO [$61f0e352d9ea4400084e273f]: Consider solutions for startsWith($url["path"], "/")
+		// TODO [#74]: Consider solutions for $url["query"] === $_SERVER["HTTP_HOST"]
+		// TODO [#75]: Consider solutions for startsWith($url["path"], "/")
 		if (!isset($url["host"]) && !startsWith($url["path"], "/")) {
 			// Relative path
 			ob_start();
