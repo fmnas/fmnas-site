@@ -22,7 +22,7 @@ $formConfig->confirm = function(array $formData): void {
 	<?php
 	style();
 	style("minheader", true);
-	// TODO [$61f0e352d9ea4400084e2734]: Use page header and make the min header printonly.
+	// TODO [#64]: Use page header and make the min header printonly.
 	//	pageHeader();
 	?>
 	<header data-if-config="minhead" data-hidden="false" class="" id="minimal_header">
@@ -87,7 +87,7 @@ $formConfig->handler = function(FormException $e): void {
 					[]));
 };
 
-// TODO [$61f0e352d9ea4400084e2735]: Email the applicant a copy of their application as a PDF.
+// TODO [#65]: Email the applicant a copy of their application as a PDF.
 
 $cwd = getcwd();
 $formConfig->emails = function(array $formData) use ($cwd): array {
@@ -615,7 +615,7 @@ function addressInput(string $label, string $prefix, bool $required = false): st
 				<p>If you live outside the Republic/Curlew area, please add photos of your home.</p>
 			</div>
 			<?php
-			// TODO [$61f0e352d9ea4400084e2736]: Better image upload interface
+			// TODO [#66]: Better image upload interface
 			?>
 			<input type="file" id="images" name="images[]" accept="image/*,application/pdf" capture="environment"
 					multiple>

@@ -27,7 +27,7 @@ CREATE TABLE config
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci COMMENT ='Global configuration values; these are cached by the backend';
 
--- TODO [$61f0e352d9ea4400084e2737]: Replace schema.sql with schema.sql.hbs
+-- TODO [#67]: Replace schema.sql with schema.sql.hbs
 INSERT INTO config
 VALUES ('address', '49&nbsp;W&nbsp;Curlew&nbsp;Lake&nbsp;Rd\nRepublic&nbsp;WA&nbsp;99166‑8742'),
        ('admin_domain', 'admin.fmnas.org'),

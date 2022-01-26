@@ -215,7 +215,7 @@ p > strong:first-child {
 	button.add, button.remove {
 		> span {
 			color: #0000;
-			// TODO [$61f0e352d9ea4400084e2733]: uncomment once gradients can transition.
+			// TODO [#63]: uncomment once gradients can transition.
 			//background: radial-gradient(circle, var(--inner-color) 20%, var(--outer-color) 100%);
 			background-color: var(--inner-color);
 			-webkit-background-clip: text;

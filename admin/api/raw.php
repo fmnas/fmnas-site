@@ -24,7 +24,7 @@ endpoint(...[
 		'get' => $reject,
 		'get_value' => function($value) use ($db): Result {
 			if (startsWith($value, "cached/")) {
-				// TODO [$61f0e352d9ea4400084e272e]: Handle cached images in raw api and use in listing editor
+				// TODO [#58]: Handle cached images in raw api and use in listing editor
 				return new Result(501, "Can't read cache");
 			}
 			$asset = startsWith($value, "stored/") ?
