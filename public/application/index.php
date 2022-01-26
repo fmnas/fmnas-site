@@ -39,9 +39,9 @@ $formConfig->handler = function(FormException $e): void {
 	<meta charset="UTF-8">
 	<meta name="robots" content="noindex,nofollow">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
-	<script src="/email.js.php"></script>
 	<?php
 	style();
+	emailLinks();
 	//	pageHeader();
 	?>
 	<h2>Error <?=$e->getCode() ?: 500?></h2>
@@ -287,9 +287,9 @@ function addressInput(string $label, string $prefix, bool $required = false): st
 		<meta name="robots" content="noindex">
 	<?php endif; ?>
 	<meta name="viewport" content="width=device-width">
-	<script src="/email.js.php"></script>
 	<?php
 	style();
+	emailLinks();
 	style("application", true, "2201251555");
 	style("minheader", true);
 	?>
