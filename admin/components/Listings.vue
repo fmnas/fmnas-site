@@ -17,15 +17,14 @@
 		</tr>
 		</thead>
 		<tbody>
-		<!-- @todo Make listing metadata editable from table view -->
+		<!-- TODO [#34]: Make listing metadata editable from table view -->
 		<tr v-for="listing of listings">
-			<!-- @todo Use HTTPS for img src once https public site works -->
 			<td class="photo"><img :alt="listing['name']" :src="`/api/raw/stored/${listing['photo']?.['id']}`"></td>
 			<td class="id">{{ listing['id'] }}</td>
 			<td class="name">{{ listing['name'] }}</td>
 			<td v-if="!species" class="species">{{ config['species']?.[listing['species']]?.['name'] }}</td>
 			<td class="breed">{{ listing['breed'] }}</td>
-			<td class="dob">{{ listing['dob'] }}</td> <!-- @todo Display DOB as M/D/Y -->
+			<td class="dob">{{ listing['dob'] }}</td> <!-- TODO [#36]: Display DOB as M/D/Y -->
 			<td class="sex">{{ config['sexes']?.[listing['sex']]?.['name'] }}</td>
 			<td class="fee">{{ listing['fee'] }}</td>
 			<td class="status">{{ config['statuses']?.[listing['status']]?.['name'] }}</td>
@@ -54,7 +53,7 @@ export default {
 		}
 	},
 	mounted() {
-		// @todo Add a loading indicator for listings
+		// TODO [#30]: Add a loading indicator for listings
 		fetch(this.apiUrl, {
 			method: 'GET',
 		}).then(res => {

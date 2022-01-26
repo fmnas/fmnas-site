@@ -6,7 +6,7 @@
 </template>
 
 <script>
-// @todo Use Toast UI Editor
+// TODO [#40]: Use Toast UI Editor
 export default {
 	name: 'Editor',
 	props: ['modelValue'],

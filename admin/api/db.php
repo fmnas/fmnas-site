@@ -4,7 +4,7 @@ require_once "$src/common.php";
 require_once "$src/db.php";
 
 class DatabaseWriter extends Database {
-	private mysqli_stmt $addHistoryEntry; // @todo add version history
+	private mysqli_stmt $addHistoryEntry; // TODO [#5]: add version history
 	private mysqli_stmt $setConfigValue;
 
 	public function __construct() {
