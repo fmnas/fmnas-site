@@ -1,7 +1,7 @@
 <?php /** @noinspection PhpUnusedParameterInspection */
 require_once "../../src/common.php";
 require_once "../../src/form.php";
-require_once "$t/header.php";
+//require_once "$t/header.php";
 require_once "$t/application_response.php";
 ini_set('upload_max_filesize', '10M');
 ini_set('max_file_uploads', '20');
@@ -21,9 +21,19 @@ $formConfig->confirm = function(array $formData): void {
 	<meta name="viewport" content="width=device-width,initial-scale=1">
 	<?php
 	style();
+	style("minheader", true);
 	// @todo Use page header and make the min header printonly.
 	//	pageHeader();
 	?>
+	<header data-if-config="minhead" data-hidden="false" class="" id="minimal_header">
+		<a href="/">
+			<h1><?=_G_shortname()?></h1>
+			<div>
+				<address><p><?=mb_strcut(str_replace("\n", "<p>", _G_address()), 0, -5)?></address>
+				<span class="tel"><?=_G_phone()?></span>
+			</div>
+		</a>
+	</header>
 	<h2>Adoption Application</h2>
 	<p>Thank you! We have received your application and you will hear back from us soon.
 	<p><a href="/">Return to the shelter homepage</a>
@@ -42,8 +52,19 @@ $formConfig->handler = function(FormException $e): void {
 	<?php
 	style();
 	emailLinks();
+	style("minheader", true);
 	//	pageHeader();
 	?>
+	<article>
+	<header data-if-config="minhead" data-hidden="false" class="" id="minimal_header">
+		<a href="/">
+			<h1><?=_G_shortname()?></h1>
+			<div>
+				<address><p><?=mb_strcut(str_replace("\n", "<p>", _G_address()), 0, -5)?></address>
+				<span class="tel"><?=_G_phone()?></span>
+			</div>
+		</a>
+	</header>
 	<h2>Error <?=$e->getCode() ?: 500?></h2>
 	<p>Something went wrong submitting the form: <?=$e->getMessage()?>
 	<p><img src="//http.cat/500" alt="">
@@ -77,20 +98,6 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 	$outside_warn = $formData['will_live'] === 'inside' && $formData['will_live_tracker'];
 	$outside_message = 'Warning: This applicant checked then unchecked "pet will live outside."';
 
-	$dump = new FormEmailConfig(
-			null,
-			[],
-			'',
-			['main' => true, 'path' => $path, 'weblink' => true,
-					'outside_warn' => $outside_warn, 'outside_message' => $outside_message,]
-	);
-
-	$dump->fileDir = function(array $file) use ($cwd): string {
-		return "$cwd/received";
-	};
-	$dump->hashFilenames = HashOptions::SAVED_ONLY;
-	$dump->globalConversion = true;
-
 	$save = new FormEmailConfig(
 			null,
 			[],
@@ -99,6 +106,19 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 					'outside_warn' => $outside_warn, 'outside_message' => $outside_message,]
 	);
 	$save->saveFile = "$cwd/received/$hash.html";
+	$save->fileDir = function(array $file) use ($cwd): string {
+		return "$cwd/received";
+	};
+	$save->hashFilenames = HashOptions::SAVED_ONLY;
+	$save->globalConversion = true;
+
+	$dump = new FormEmailConfig(
+			null,
+			[],
+			'',
+			['main' => true, 'path' => $path, 'weblink' => true,
+					'outside_warn' => $outside_warn, 'outside_message' => $outside_message,]
+	);
 
 	$primarySubject = 'Adoption Application';
 	if (trim($formData['particular_specify'] ?? '') && strlen($formData['particular_specify']) < 20) {
@@ -106,7 +126,7 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 	}
 	$primarySubject .= ' from ' . trim($formData['AName']);
 	if (trim($formData['CName'] ?? '')) {
-		$primarySubject .= ' and ' . trim($formData['CName']);
+		$primarySubject .= ' & ' . trim($formData['CName']);
 	}
 
 	$primaryEmail = new FormEmailConfig(
@@ -146,7 +166,7 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 		return [];
 	}
 
-	return [$dump, $save, $primaryEmail, $secondaryEmail];
+	return [$save, $primaryEmail, $secondaryEmail];
 };
 $formConfig->fileTransformers["url"] = function(array $metadata): string {
 	return "https://" . _G_public_domain() . "/application/received/" . $metadata["hash"];
