@@ -1,4 +1,5 @@
 # Depends on MongoDB Atlas instance using apps account SSO.
+# TODO: Close this test todo.
 name: Create issues from TODOs
 on:
   push:
