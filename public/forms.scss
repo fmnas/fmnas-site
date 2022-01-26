@@ -1,0 +1,178 @@
+$border-color: #ccc;
+$transition-time: 150ms;
+$hover-background: #eee;
+$active-background: #dfdfdf;
+$focus-background: #f6f6f6;
+$invalid-background: #fee;
+$invalid-border: #fcc;
+$input-border: 1px;
+$input-padding: 7px;
+$input-margin: 5px;
+$line-height: 1.2em;
+
+@mixin form-field {
+	border-radius: 5px;
+	border: $input-border solid $border-color;
+	padding: $input-padding;
+	margin: $input-margin;
+	font: inherit;
+	box-shadow: -1px 1px 2px $border-color inset;
+	background-color: var(--background-color);
+	transition: $transition-time;
+	//outline: none !important;
+
+	&:hover:not(:disabled), &:active:not(:disabled) {
+		background-color: $hover-background;
+	}
+
+	&:focus:not(:hover):not(:active):not(:disabled) {
+		background-color: $focus-background;
+	}
+
+	&:disabled {
+		background-color: transparent;
+		box-shadow: none;
+	}
+}
+
+@mixin form-common {
+	input[type='file'] {
+		@media not print {
+			@include form-field;
+		}
+	}
+
+	&.submitted {
+		*:invalid {
+			background-color: $invalid-background !important;
+			border-color: $invalid-border !important;
+			box-shadow: -1px 1px 2px $invalid-border inset;
+			&:focus, &:focus-visible {
+				outline: 2px solid #c00;
+			}
+		}
+	}
+
+	&:not(article[data-type="form"]) .required:not(input):not(textarea):not(select)::after {
+		content: '*';
+		color: red;
+		margin-left: 1px;
+		font-size: 90%;
+	}
+
+	input:not([type='file']), select, textarea, pre[data-type='textarea'],
+	span[data-type='input']:not([data-input-type='file']), span[data-type='select'] {
+		width: 20em;
+		min-width: 0;
+		max-width: 100%;
+
+		// Excluding emailed inputs
+		&:not(span):not(pre) {
+			&:not([type='radio']):not([type='checkbox']) {
+				@include form-field;
+			}
+
+			@media print {
+				&:not([type='radio']):not([type='checkbox']) {
+					border: none;
+					border-radius: 0;
+					border-bottom: 1pt solid black;
+					box-shadow: none;
+					appearance: none;
+					-moz-appearance: none;
+					-webkit-appearance: none;
+				}
+
+				&[type='date']:not(.filled) {
+					// In conjunction with an event listener, hide the "mm/dd/yyyy" placeholder.
+					color: var(--background-color);
+				}
+			}
+		}
+	}
+
+	select {
+		width: auto;
+	}
+
+	button {
+		border-radius: 5px;
+		border: $input-border solid $border-color;
+		padding: $input-padding;
+		margin: $input-margin;
+		font: inherit;
+		box-shadow: -1px 1px 2px $border-color;
+		transition: $transition-time;
+		background-color: var(--background-color);
+		cursor: pointer;
+		color: #000;
+
+		&:hover {
+			background-color: $hover-background;
+		}
+
+		&:active {
+			background-color: $active-background;
+			box-shadow: -1px 1px 2px #bbb inset;
+		}
+	}
+
+	// Styles for email
+	span[data-type='input'][data-input-type='radio'],
+	span[data-type='label'][data-input-type='radio'][data-selected='0'] {
+		display: none;
+	}
+
+	span[data-type='label'][data-input-type='radio'][data-selected='1'] {
+		font-weight: bold;
+	}
+
+	span[data-type='label'][data-input-type='checkbox'] {
+		* {
+			display: none;
+		}
+
+		&[data-selected='0']::before {
+			content: '☐ ';
+		}
+
+		&[data-selected='1']::before {
+			content: '☑ ';
+		}
+
+		&[data-selected='1'] {
+			font-weight: bold;
+		}
+	}
+
+	@media print {
+		display: contents;
+
+		h1, h2, h3, h4 {
+			break-after: avoid;
+		}
+
+		button {
+			display: none;
+		}
+	}
+}
+
+@mixin fullwidth-form($cutoff-width: 0) {
+	@include form-common;
+
+	display: inline-block;
+	max-width: 10in;
+	padding-bottom: 2rem;
+
+	@media screen and (min-width: calc(#{$cutoff-width} + 1px)) {
+		// Excludes emailed and mobile forms
+		&:not(article) {
+			background-color: whitesmoke;
+			box-shadow: -2px 2px 3px $border-color;
+			border: 1px solid $border-color;
+			border-radius: 10px;
+			margin: 1em;
+		}
+	}
+}
