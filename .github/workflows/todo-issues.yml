@@ -13,7 +13,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Depends on MongoDB Atlas instance using apps account SSO.
-# TODO: Close this test todo.
 name: Create issues from TODOs
 on:
   push:
