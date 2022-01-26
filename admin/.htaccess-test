@@ -3,5 +3,5 @@
 AuthName "Development Site"
 AuthType Basic
 AuthUserFile /home/kimgil5/newsite/secrets/.htpasswd
-# TODO: Use GitHub secret for htpasswd path
+# TODO [$61f0e352d9ea4400084e272c]: Use GitHub secret for htpasswd path
 Require valid-user
