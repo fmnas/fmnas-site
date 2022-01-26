@@ -40,7 +40,7 @@ export default {
 	},
 	methods: {
 		compiled() {
-			// TODO: Compile Handlebars then GFM
+			// TODO [$61f0df9a8f5ee10008aa424b]: Compile Handlebars then GFM
 			return this.source;
 		},
 	},
