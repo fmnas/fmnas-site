@@ -317,7 +317,7 @@ function addressInput(string $label, string $prefix, bool $required = false): st
 			</div>
 		</a>
 	</header>
-	<form method="POST" enctype="multipart/form-data" id="application">
+	<form method="POST" enctype="multipart/form-data" id="application" data-if-config="main" data-hidden="false">
 		<h2 data-if-config="main" data-rhs="false" data-hidden="false">Adoption Application</h2>
 		<p data-if-config="weblink"><a data-href-config="path">View application on the web</a>
 			<?php // @todo Display a modal for application faq ?>
