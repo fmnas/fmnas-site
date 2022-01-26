@@ -1497,4 +1497,3 @@ $formConfig->fileValidator = function(array $metadata): bool {
 
 ob_start();
 register_shutdown_function('collectForm');
-// TODO [#55]: Close this test todo.
