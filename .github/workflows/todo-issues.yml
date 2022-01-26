@@ -1,0 +1,19 @@
+# Depends on MongoDB Atlas instance using apps account SSO.
+# TODO: Close this test todo.
+name: Create issues from TODOs
+on:
+  push:
+    branches:
+      - test
+jobs:
+  todos:
+    name: Sync TODOs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v1
+      - name: Run todo-actions
+        uses: dtinth/todo-actions@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TODO_ACTIONS_MONGO_URL: ${{ secrets.TODO_ACTIONS_MONGO_URL }}
