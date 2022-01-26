@@ -1,2 +1,13 @@
 assets/
-*.generated.css
+Application/
+
+# Sass ignores
+.sass-cache/
+*.css
+*.css.map
+*.sass.map
+*.scss.map
+
+# Typescript ignores
+*.js
+*.js.map

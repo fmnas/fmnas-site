@@ -1,0 +1,15 @@
+{
+	"extends": "@tsconfig/node16/tsconfig.json",
+	"ts-node": {
+		"files": true,
+		"compilerOptions": {
+			"esModuleInterop": true
+		}
+	},
+	"compilerOptions": {
+	},
+	"exclude": [
+		"node_modules",
+		"public",
+	]
+}
