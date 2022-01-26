@@ -1,7 +1,7 @@
 <?php /** @noinspection PhpUnusedParameterInspection */
 require_once "../../src/common.php";
 require_once "../../src/form.php";
-require_once "$t/header.php";
+//require_once "$t/header.php";
 require_once "$t/application_response.php";
 ini_set('upload_max_filesize', '10M');
 ini_set('max_file_uploads', '20');
@@ -77,20 +77,6 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 	$outside_warn = $formData['will_live'] === 'inside' && $formData['will_live_tracker'];
 	$outside_message = 'Warning: This applicant checked then unchecked "pet will live outside."';
 
-	$dump = new FormEmailConfig(
-			null,
-			[],
-			'',
-			['main' => true, 'path' => $path, 'weblink' => true,
-					'outside_warn' => $outside_warn, 'outside_message' => $outside_message,]
-	);
-
-	$dump->fileDir = function(array $file) use ($cwd): string {
-		return "$cwd/received";
-	};
-	$dump->hashFilenames = HashOptions::SAVED_ONLY;
-	$dump->globalConversion = true;
-
 	$save = new FormEmailConfig(
 			null,
 			[],
@@ -99,6 +85,19 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 					'outside_warn' => $outside_warn, 'outside_message' => $outside_message,]
 	);
 	$save->saveFile = "$cwd/received/$hash.html";
+	$save->fileDir = function(array $file) use ($cwd): string {
+		return "$cwd/received";
+	};
+	$save->hashFilenames = HashOptions::SAVED_ONLY;
+	$save->globalConversion = true;
+
+	$dump = new FormEmailConfig(
+			null,
+			[],
+			'',
+			['main' => true, 'path' => $path, 'weblink' => true,
+					'outside_warn' => $outside_warn, 'outside_message' => $outside_message,]
+	);
 
 	$primarySubject = 'Adoption Application';
 	if (trim($formData['particular_specify'] ?? '') && strlen($formData['particular_specify']) < 20) {
@@ -106,7 +105,7 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 	}
 	$primarySubject .= ' from ' . trim($formData['AName']);
 	if (trim($formData['CName'] ?? '')) {
-		$primarySubject .= ' and ' . trim($formData['CName']);
+		$primarySubject .= ' & ' . trim($formData['CName']);
 	}
 
 	$primaryEmail = new FormEmailConfig(
@@ -146,7 +145,7 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 		return [];
 	}
 
-	return [$dump, $save, $primaryEmail, $secondaryEmail];
+	return [$save, $primaryEmail, $secondaryEmail];
 };
 $formConfig->fileTransformers["url"] = function(array $metadata): string {
 	return "https://" . _G_public_domain() . "/application/received/" . $metadata["hash"];
