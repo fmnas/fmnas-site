@@ -17,6 +17,8 @@
  * All <label> elements will be replaced with span elements. Any inner text will itself be in a span element with a
  * data-type="label-text" attribute as well, and the outer span element will have a data-input-type attribute with the
  * type of the corresponding input element if found.
+ *
+ * TODO [#73]:
  * All <datalist> elements will be removed unless they have an explicit falsy data-remove attribute, in which case they
  * will be replaced with <ul> elements. <option> elements therein will be replaced with <li> elements, and any contained
  * within an <optgroup> element will have a data-optgroup attribute with the optgroup label (the optgroup is removed).
