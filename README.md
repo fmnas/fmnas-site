@@ -71,7 +71,7 @@ site. See the Workflow section above for more details.
 
 #### Requirements (build server/local machine)
 
-<!-- @todo Add requirements for vue build server --> 
+<!-- TODO: Add requirements for vue build server --> 
 
 * Node & NPM (see development requirements above)
 
@@ -113,7 +113,7 @@ On the build machine:
 * Update the public web templates in the `src/templates` and `src/errors` directories as desired.
 	* The current templates rely on the presence of `/assets/adopted.jpg` and `/assets/logo.png` in the public site.
 
-<!-- @todo Minify JS and HTML -->
+<!-- TODO: Minify JS and HTML -->
 
 #### Deploy
 
@@ -165,7 +165,7 @@ is used instead of Webpack and node.js.
 
 On the server side, listings are first compiled with [lightncandy](https://github.com/zordius/lightncandy), then parsed
 with [Parsedown](https://parsedown.org/). Any PHP code embedded in listings will **not** be executed on the server (
-@todo verify). The resulting HTML is cached (TODO); the cached assets are automatically deleted when listings are
+TODO verify). The resulting HTML is cached (TODO); the cached assets are automatically deleted when listings are
 updated through the admin interface, but must be manually deleted if changes are made to the asset or corresponding
 database records outside the admin interface.
 
@@ -187,7 +187,7 @@ The listing parser (`src/parser.php`) depends on
 
 To update the dependencies, run `src/update_dependencies.php` or simply delete the existing `src/ligntncandy`
 and `src/parsedown`
-directories. (@todo Will need a way to automate periodic updates someday)
+directories. (TODO [#2]: Will need a way to automate periodic updates someday)
 
 ### Client-side dependencies
 

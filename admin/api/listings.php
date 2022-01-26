@@ -2,7 +2,7 @@
 require_once 'api.php';
 
 endpoint(...[
-	// @todo API to get non-adoptable pets
+	// TODO: API to get non-adoptable pets
 		'get' => function() use ($db): Result {
 			if (isset($_GET['species'])) {
 				foreach (_G_species() as $species) {

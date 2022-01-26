@@ -3,7 +3,7 @@
 		<label>
 			Transport date:
 			<input v-model="date" type="date">
-			<!-- @todo use a nicer date picker -->
+			<!-- TODO [#28]: use a nicer date picker -->
 		</label>
 		<button v-if="date !== savedDate" type="button" @click="save()">Save</button>
 	</form>
@@ -32,7 +32,7 @@ export default {
 		},
 	},
 	mounted() {
-		// @todo Add a loading indicator for transport date editor
+		// TODO [#31]: Add a loading indicator for transport date editor
 		fetch('/api/config/transport_date', {
 			method: 'GET',
 		}).then(res => {

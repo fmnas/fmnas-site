@@ -12,10 +12,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# @todo OAuth authentication for admin site
+# TODO [#3]: OAuth authentication for admin site
 # Temporary password protection for development
 AuthName "Development Site"
 AuthType Basic
 AuthUserFile /home/kimgil5/newsite/secrets/.htpasswd
-# @todo Use GitHub secret for htpasswd path
+# TODO: Use GitHub secret for htpasswd path
 Require valid-user

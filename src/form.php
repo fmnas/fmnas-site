@@ -214,7 +214,8 @@
  *    content: "☑ ";
  *  }
  *
- * @todo Add unit tests for the form processor and maybe split it into a separate repo.
+ * TODO: Add unit tests for the form processor.
+ * TODO: Split the form processor into a separate repo?
  * @noinspection GrazieInspection
  */
 
@@ -231,7 +232,7 @@ require "$phpmailer_path/src/PHPMailer.php";
 require "$phpmailer_path/src/SMTP.php";
 require "$html5_php_path/src/HTML5.php";
 
-// @todo Figure out how to get PSR-4 autoloading without composer.
+// TODO: Figure out how to get PSR-4 autoloading without composer.
 // Relevant: https://akrabat.com/using-composer-with-shared-hosting/
 require_once("$html5_php_path/src/HTML5/Elements.php");
 require_once("$html5_php_path/src/HTML5/Entities.php");
@@ -628,7 +629,7 @@ function moveChildren(DOMElement $from, DOMElement $to): void {
 
 /**
  * Check truthiness of a string. Defined the same as in PHP, except "false" is falsy.
- * @todo Make "" truthy (doesn't seem to work?)
+ * TODO: Make "" truthy (doesn't seem to work?)
  * @param string $str A string
  * @return bool Whether the string is truthy.
  */
@@ -1190,7 +1191,7 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
 		$button->parentNode?->replaceChild($span, $button);
 	}
 
-	// @todo Replace datalist elements with ul elements (hidden by default).
+	// TODO: Replace datalist elements with ul elements (hidden by default).
 
 	// Merge linked style sheets into the output HTML.
 	$stylesToInject = [];
@@ -1198,8 +1199,8 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
 		/** @var $link DOMElement */
 		$href = $link->getAttribute("href");
 		$url = parse_url($href);
-		// @todo Consider solutions for $url["query"] === $_SERVER["HTTP_HOST"]
-		// @todo Consider solutions for startsWith($url["path"], "/")
+		// TODO: Consider solutions for $url["query"] === $_SERVER["HTTP_HOST"]
+		// TODO: Consider solutions for startsWith($url["path"], "/")
 		if (!isset($url["host"]) && !startsWith($url["path"], "/")) {
 			// Relative path
 			ob_start();

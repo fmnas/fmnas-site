@@ -133,7 +133,7 @@ Introducing {{name}} <` + /* i hate javascript */ `!-- Write the rest of the lis
 	created() {
 		if (this.species && this.path) {
 			// Updating an existing listing
-			// @todo Add a loading indicator for single listing
+			// TODO [#39]: Add a loading indicator for single listing
 			fetch(this.apiUrl()).then(res => {
 				if (!res.ok) {
 					throw res;
@@ -177,7 +177,7 @@ Introducing {{name}} <` + /* i hate javascript */ `!-- Write the rest of the lis
 		},
 		save() {
 			console.log('eeeee');
-			// @todo Handle changing id of existing pet
+			// TODO: Handle changing id of existing pet
 			fetch(this.apiUrl(), {
 				method: this.path ? 'PUT' : 'POST',
 			}).then(res => {
@@ -228,7 +228,7 @@ Introducing {{name}} <` + /* i hate javascript */ `!-- Write the rest of the lis
 		},
 		editProfileImage() {
 			alert('Should bring up the profile image editor.');
-			// @todo profile image editor
+			// TODO: profile image editor
 		},
 		sexClick(sex) {
 			// Allow deselecting a sex rather than just selecting one.

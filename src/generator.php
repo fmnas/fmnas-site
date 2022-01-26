@@ -75,7 +75,7 @@ function generate() {
 			echo $sel . '>td.fee>*::before{content:"';
 			echo cssspecialchars($status->name);
 			echo '";}';
-			// @todo Render status text in fee cell on server side for a11y
+			// TODO: Render status text in fee cell on server side for a11y
 			if (isset($status->description) && strlen(trim($status->description)) > 0) {
 				$hoverStatusSelectors[] = $sel;
 
@@ -166,6 +166,6 @@ function generate() {
 		echo "{overflow:visible;position:relative;}";
 	}
 	$output = ob_get_clean();
-	// @todo Minify adoptable.generated.css
+	// TODO: Minify adoptable.generated.css
 	file_put_contents(root() . "/public/adoptable.generated.css", $output);
 }
