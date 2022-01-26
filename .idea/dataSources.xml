@@ -2,20 +2,13 @@
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
     <data-source source="LOCAL" name="fmnas_dev@localhost" uuid="393a74d8-361b-45f1-8878-b48955ad544c">
-      <driver-ref>mysql.8</driver-ref>
+      <driver-ref>mysql</driver-ref>
       <synchronize>true</synchronize>
-      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://mysql.forgetmenotshelter.org:3306/fmnas_testing</jdbc-url>
+      <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://localhost/fmnas_dev</jdbc-url>
       <driver-properties>
         <property name="autoReconnect" value="true" />
       </driver-properties>
-    </data-source>
-    <data-source source="LOCAL" name="fmnas_testing@mysql.forgetmenotshelter.org" uuid="25f622fa-979b-4d37-abdb-b5d5682c08d9">
-      <driver-ref>mariadb</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>org.mariadb.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mariadb://mysql.forgetmenotshelter.org:3306</jdbc-url>
-      <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>
 </project>
