@@ -107,7 +107,7 @@ $secrets = secrets();
 /**
  * Dummy definitions for use by PhpStorm
  */
-$root ??= "..";
+$root ??= __DIR__ . "..";
 $src ??= "$root/src";
 $t ??= "$src/templates";
 $secrets ??= "$root/secrets";
