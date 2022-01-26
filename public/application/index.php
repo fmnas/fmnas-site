@@ -10,6 +10,7 @@ ini_set('post_max_size', '200M');
 ini_set('memory_limit', '2048M');
 setlocale(LC_ALL, 'en_US.UTF-8');
 set_time_limit(300);
+$formConfig->method = HTTPMethod::POST;
 $formConfig->confirm = function(array $formData): void {
 	?>
 	<!DOCTYPE html>
@@ -17,6 +18,7 @@ $formConfig->confirm = function(array $formData): void {
 	<title>Adoption Application - <?=_G_longname()?></title>
 	<meta charset="UTF-8">
 	<meta name="robots" content="noindex,nofollow">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
 	<?php
 	style();
 	// @todo Use page header and make the min header printonly.
@@ -36,6 +38,7 @@ $formConfig->handler = function(FormException $e): void {
 	<title>Adoption Application - <?=_G_longname()?></title>
 	<meta charset="UTF-8">
 	<meta name="robots" content="noindex,nofollow">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
 	<script src="/email.js.php"></script>
 	<?php
 	style();
@@ -280,7 +283,9 @@ function addressInput(string $label, string $prefix, bool $required = false): st
 <head>
 	<title>Adoption Application - <?=_G_longname()?></title>
 	<meta charset="UTF-8">
-	<meta name="robots" content="nofollow">
+	<?php if ($_GET): ?>
+		<meta name="robots" content="noindex">
+	<?php endif; ?>
 	<meta name="viewport" content="width=device-width">
 	<script src="/email.js.php"></script>
 	<?php

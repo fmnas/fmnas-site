@@ -303,6 +303,11 @@ class FormConfig {
 	 */
 	public Closure $fileValidator;
 
+	/**
+	 * The HTTP method to check for a submitted form.
+	 */
+	public HTTPMethod $method;
+
 	public string $smtpHost;
 	public string $smtpSecurity;
 	public int $smtpPort;
@@ -316,6 +321,12 @@ enum HashOptions {
 	case SAVED_ONLY;
 	case EMAIL_ONLY;
 	case YES;
+}
+
+enum HTTPMethod {
+	case POST;
+	case GET;
+	case EITHER;
 }
 
 /**
@@ -446,7 +457,11 @@ function collectForm(): void {
 	$html = ob_get_clean();
 
 	// Get the submitted POST or GET data.
-	$receivedData = $_POST ?: $_GET;
+	$receivedData = match ($formConfig->method) {
+		HTTPMethod::GET => $_GET,
+		HTTPMethod::POST => $_POST,
+		HTTPMethod::EITHER => $_POST ?: $_GET,
+	};
 
 	if ($receivedData || $_FILES) {
 		try {
@@ -1425,6 +1440,7 @@ $formConfig->smtpSecurity = '';
 $formConfig->smtpPort = 25;
 $formConfig->smtpUser = 'root';
 $formConfig->smtpPassword = '';
+$formConfig->method = HTTPMethod::EITHER;
 $formConfig->transformers = [
 		"email-link" => function(string $email): string {
 			return "<a href=\"mailto:$email\">$email</a>";
