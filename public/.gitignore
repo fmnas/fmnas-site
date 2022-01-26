@@ -1,5 +1,6 @@
 assets/
 Application/
+blog/
 
 # Sass ignores
 .sass-cache/

@@ -21,9 +21,19 @@ $formConfig->confirm = function(array $formData): void {
 	<meta name="viewport" content="width=device-width,initial-scale=1">
 	<?php
 	style();
+	style("minheader", true);
 	// @todo Use page header and make the min header printonly.
 	//	pageHeader();
 	?>
+	<header data-if-config="minhead" data-hidden="false" class="" id="minimal_header">
+		<a href="/">
+			<h1><?=_G_shortname()?></h1>
+			<div>
+				<address><p><?=mb_strcut(str_replace("\n", "<p>", _G_address()), 0, -5)?></address>
+				<span class="tel"><?=_G_phone()?></span>
+			</div>
+		</a>
+	</header>
 	<h2>Adoption Application</h2>
 	<p>Thank you! We have received your application and you will hear back from us soon.
 	<p><a href="/">Return to the shelter homepage</a>
@@ -42,8 +52,19 @@ $formConfig->handler = function(FormException $e): void {
 	<?php
 	style();
 	emailLinks();
+	style("minheader", true);
 	//	pageHeader();
 	?>
+	<article>
+	<header data-if-config="minhead" data-hidden="false" class="" id="minimal_header">
+		<a href="/">
+			<h1><?=_G_shortname()?></h1>
+			<div>
+				<address><p><?=mb_strcut(str_replace("\n", "<p>", _G_address()), 0, -5)?></address>
+				<span class="tel"><?=_G_phone()?></span>
+			</div>
+		</a>
+	</header>
 	<h2>Error <?=$e->getCode() ?: 500?></h2>
 	<p>Something went wrong submitting the form: <?=$e->getMessage()?>
 	<p><img src="//http.cat/500" alt="">
