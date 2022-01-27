@@ -1,5 +1,5 @@
 # prevent caching
-# TODO [$61f1f31c510afb000a7e2ced]: Selectively allow caching for admin site.
+# TODO [#107]: Selectively allow caching for admin site.
 <IfModule mod_headers.c>
     Header set Cache-Control "no-cache"
     FileETag MTime Size
