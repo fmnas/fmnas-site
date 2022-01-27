@@ -1178,59 +1178,6 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
 
 	// TODO [#73]: Replace datalist elements with ul elements (hidden by default).
 
-	// Merge linked style sheets into the output HTML.
-	$stylesToInject = [];
-	foreach (collectElements($dom, "link", attr("rel", "stylesheet")) as $link) {
-		/** @var $link DOMElement */
-		$href = $link->getAttribute("href");
-		$url = parse_url($href);
-		// TODO [#74]: Consider solutions for $url["query"] === $_SERVER["HTTP_HOST"]
-		// TODO [#75]: Consider solutions for startsWith($url["path"], "/")
-		if (!isset($url["host"]) && !startsWith($url["path"], "/")) {
-			// Relative path
-			ob_start();
-			if (isset($url["query"])) {
-				parse_str($url["query"], $_GET);
-			}
-			$file = $pwd . "/" . $url["path"];
-			if (!is_file($file)) {
-				// Ignore this one
-				continue;
-			}
-			include $file;
-			$styles = ob_get_clean();
-		} else {
-			// Absolute path
-			if (!ini_get('allow_url_fopen')) {
-				// Can't get the file :(
-				continue;
-			}
-			/** @noinspection HttpUrlsUsage */
-			$path = $url["scheme"] ?? (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] === "on" ? "https://" : "http://");
-			$path .= $url["host"] ?? $_SERVER["HTTP_HOST"];
-			if (isset($url["port"])) {
-				$path .= ":" . $url["port"];
-			}
-			$path .= $url["path"];
-			if (isset($url["query"])) {
-				$path .= "?" . $url["query"];
-			}
-			$styles = file_get_contents($path);
-		}
-		if ($styles === false) {
-			// Failed to get styles; delegate responsibility to the email client.
-			continue;
-		}
-		$style = $dom->createElement("style");
-		$style->setAttribute("type", "text/css");
-		$style->setAttribute("data-type", "link");
-		copyAttributes($link, $style, "rel", "href");
-		$locator = "/* INJECT STYLE HERE: " . sha1($styles) . " */";
-		$stylesToInject[$locator] = $styles;
-		$style->nodeValue = $locator; // Can't inject right now because we would end up with HTML entities, etc.
-		$link->parentNode?->replaceChild($style, $link);
-	}
-
 	// Mark all script elements with data-remove.
 	foreach (collectElements($dom, "script") as $script) {
 		/** @var $script DOMElement */
@@ -1317,6 +1264,59 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
 	foreach (collectElements($dom, "*", truthy("data-remove")) as $element) {
 		/** @var $element DOMElement */
 		$element->parentNode?->removeChild($element);
+	}
+
+	// Merge linked style sheets into the output HTML.
+	$stylesToInject = [];
+	foreach (collectElements($dom, "link", attr("rel", "stylesheet")) as $link) {
+		/** @var $link DOMElement */
+		$href = $link->getAttribute("href");
+		$url = parse_url($href);
+		// TODO [#74]: Consider solutions for $url["query"] === $_SERVER["HTTP_HOST"]
+		// TODO [#75]: Consider solutions for startsWith($url["path"], "/")
+		if (!isset($url["host"]) && !startsWith($url["path"], "/")) {
+			// Relative path
+			ob_start();
+			if (isset($url["query"])) {
+				parse_str($url["query"], $_GET);
+			}
+			$file = $pwd . "/" . $url["path"];
+			if (!is_file($file)) {
+				// Ignore this one
+				continue;
+			}
+			include $file;
+			$styles = ob_get_clean();
+		} else {
+			// Absolute path
+			if (!ini_get('allow_url_fopen')) {
+				// Can't get the file :(
+				continue;
+			}
+			$path = $url["scheme"] ?? (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] === "on" ? "https" : "http");
+			$path .= "://";
+			$path .= $url["host"] ?? $_SERVER["HTTP_HOST"];
+			if (isset($url["port"])) {
+				$path .= ":" . $url["port"];
+			}
+			$path .= $url["path"];
+			if (isset($url["query"])) {
+				$path .= "?" . $url["query"];
+			}
+			$styles = file_get_contents($path);
+		}
+		if ($styles === false) {
+			// Failed to get styles; delegate responsibility to the email client.
+			continue;
+		}
+		$style = $dom->createElement("style");
+		$style->setAttribute("type", "text/css");
+		$style->setAttribute("data-type", "link");
+		copyAttributes($link, $style, "rel", "href");
+		$locator = "/* INJECT STYLE HERE: " . sha1($styles) . " */";
+		$stylesToInject[$locator] = $styles;
+		$style->nodeValue = $locator; // Can't inject right now because we would end up with HTML entities, etc.
+		$link->parentNode?->replaceChild($style, $link);
 	}
 
 	applyDataValues($dom, $data, $values, $files);

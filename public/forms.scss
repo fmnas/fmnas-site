@@ -95,7 +95,7 @@ $line-height: 1.2em;
 		width: auto;
 	}
 
-	button {
+	button:not(.filepond--root button) {
 		border-radius: 5px;
 		border: $input-border solid $border-color;
 		padding: $input-padding;
