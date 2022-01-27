@@ -296,9 +296,6 @@ document.addEventListener('DOMContentLoaded', () => {
 				continue;
 			}
 			if (input.value !== input.defaultValue) {
-				console.log(input);
-				console.log(input.value);
-				console.log(input.defaultValue);
 				e.preventDefault();
 				e.returnValue = true;
 				return;
