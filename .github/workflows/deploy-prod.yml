@@ -41,6 +41,9 @@ jobs:
           --smtp_port="${{ secrets.SMTP_PORT }}" \
           --smtp_username="${{ secrets.SMTP_USERNAME }}" \
           --smtp_password="${{ secrets.SMTP_PASSWORD }}"
+      - name: Require HTTPS to access prod public site
+        run: cat public/.htaccess-prod >> public/.htaccess
+      # TODO: Require HTTPS to access prod admin site
       - name: Unignore config.php for upload
         run: echo '!secrets/config.php' >> .gitignore
       - name: Unignore compiled files for upload
