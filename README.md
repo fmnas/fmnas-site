@@ -27,6 +27,7 @@ To get a local server running, you will need:
 * PHP 8.1 and dependencies noted below
 	* Debian packages: `php php-gd php-mbstring php-mysql php-xml`
 * curl
+* wkhtmltopdf
 * Node
 	* I suggest using NVM and enabling [deep shell integration](https://github.com/nvm-sh/nvm#deeper-shell-integration) to
 	  avoid using the wrong node version.
@@ -63,8 +64,8 @@ Prefix these commands with `npx` to use the local version of the CLIs from Node.
 
 ### Automatic deployment
 
-GitHub Actions are used to automatically deploy the `main` branch to the prod site
-and the `test` branch to the test site. See the Workflow section above for more details.
+GitHub Actions are used to automatically deploy the `main` branch to the prod site and the `test` branch to the test
+site. See the Workflow section above for more details.
 
 ### Manual deployment
 
@@ -87,7 +88,9 @@ and the `test` branch to the test site. See the Workflow section above for more 
 	* php-xml
 	* PHPMailer (tested with 6.4.1)
 	* [html5-php](https://github.com/Masterminds/html5-php) (tested with 2.7.5)
-	* Needs shell access (with `shell_exec`) and `curl` in PATH to automatically fetch server-side dependencies
+	* Needs shell access (with `shell_exec`) and the following executables in PATH:
+		* `curl` to automatically fetch server-side dependencies
+		* `wkhtmltopdf` to render PDF versions of applications
 * MySQL (MariaDB should work)
 
 #### Build
@@ -96,6 +99,7 @@ On the build machine:
 
 * Install NPM build dependencies: `npm install --only=dev`
 * Build the stylesheets for the public site: `npx sass --style=compressed public:public`
+* Build the scripts for the public site: `tsc -p public`
 * Set the config values in config.php.
 	* Run, for instance:
 	  ```shell
