@@ -488,6 +488,7 @@
 				if(!($catscsv = fopen('cats.csv','r'))) die();
 				fgetcsv($catscsv); // Consume header.
 				while(($data = fgetcsv($catscsv)) !== FALSE):
+				if (!isset($data[0]) || !trim($data[0])) continue;
 				$listed=file_exists($data[1].$data[0].'/'.$data[7]);
 			?>
 			<tr class="<?=$data[8].' '.($listed?'':'soon')?>">
