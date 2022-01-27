@@ -56,24 +56,24 @@ $formConfig->handler = function(FormException $e): void {
 	//	pageHeader();
 	?>
 	<article>
-	<header data-if-config="minhead" data-hidden="false" class="" id="minimal_header">
-		<a href="/">
-			<h1><?=_G_shortname()?></h1>
-			<div>
-				<address><p><?=mb_strcut(str_replace("\n", "<p>", _G_address()), 0, -5)?></address>
-				<span class="tel"><?=_G_phone()?></span>
-			</div>
-		</a>
-	</header>
-	<h2>Error <?=$e->getCode() ?: 500?></h2>
-	<p>Something went wrong submitting the form: <?=$e->getMessage()?>
-	<p><img src="//http.cat/500" alt="">
-	<p>Please contact Sean at <a data-email="sean"></a> with the following information:
-	<pre><?php
-		var_dump($e);
-		?>
+		<header data-if-config="minhead" data-hidden="false" class="" id="minimal_header">
+			<a href="/">
+				<h1><?=_G_shortname()?></h1>
+				<div>
+					<address><p><?=mb_strcut(str_replace("\n", "<p>", _G_address()), 0, -5)?></address>
+					<span class="tel"><?=_G_phone()?></span>
+				</div>
+			</a>
+		</header>
+		<h2>Error <?=$e->getCode() ?: 500?></h2>
+		<p>Something went wrong submitting the form: <?=$e->getMessage()?>
+		<p><img src="//http.cat/500" alt="">
+		<p>Please contact Sean at <a data-email="sean"></a> with the following information:
+		<pre><?php
+			var_dump($e);
+			?>
     </pre>
-	<p><a href="/">Return to the shelter homepage</a>
+		<p><a href="/">Return to the shelter homepage</a>
 	</html>
 	<?php
 	// Attempt to email the PHP context to Sean so he can fix it.
@@ -315,6 +315,10 @@ function addressInput(string $label, string $prefix, bool $required = false): st
 	?>
 	<script src="events.js"></script>
 	<script src="/formenter.js"></script>
+	<link href="https://unpkg.com/filepond/dist/filepond.css" rel="stylesheet" data-remove="true">
+	<link
+			href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css"
+			rel="stylesheet" data-remove="true">
 </head>
 <body>
 <?php
@@ -612,9 +616,6 @@ function addressInput(string $label, string $prefix, bool $required = false): st
 				<p>Add any attachments below, or email them to <a data-email></a> after submitting your application.</p>
 				<p>If you live outside the Republic/Curlew area, please attach or email photos of your home.</p>
 			</div>
-			<?php
-			// @todo Better image upload interface
-			?>
 			<input type="file" id="images" name="images[]" accept="image/*,application/pdf" capture="environment"
 					multiple>
 			<span class="limits explanatory" data-remove="true">
@@ -644,6 +645,28 @@ function addressInput(string $label, string $prefix, bool $required = false): st
 			<button type="submit">Submit Application</button>
 		</section>
 	</form>
+	<script src="https://unpkg.com/filepond/dist/filepond.js"></script>
+	<script src="https://unpkg.com/filepond-plugin-image-exif-orientation/dist/filepond-plugin-image-exif-orientation.js"></script>
+	<script src="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.js"></script>
+	<script src="https://unpkg.com/filepond-plugin-image-transform/dist/filepond-plugin-image-transform.js"></script>
+	<script src="https://unpkg.com/filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.js"></script>
+	<script src="https://unpkg.com/filepond-plugin-file-validate-size/dist/filepond-plugin-file-validate-size.js"></script>
+	<script>
+		// TODO [#66]: Asynchronous attachment upload
+		// TODO [#66]: Use image editor plugin
+		FilePond.registerPlugin(FilePondPluginImageExifOrientation);
+		FilePond.registerPlugin(FilePondPluginImagePreview);
+		FilePond.registerPlugin(FilePondPluginImageTransform);
+		FilePond.registerPlugin(FilePondPluginFileValidateType);
+		FilePond.registerPlugin(FilePondPluginFileValidateSize);
+		const pond = FilePond.create(document.querySelector('input#images'), {
+			maxFileSize: "10MB",
+			maxTotalFileSize: "200MB",
+			imagePreviewMinHeight: 0,
+			imagePreviewMaxHeight: 128,
+			storeAsFile: true,
+		});
+	</script>
 </article>
 </body>
 </html>
