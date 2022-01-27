@@ -1,9 +1,5 @@
 
 RewriteEngine On
-# TODO [#15]: enforce https when cert problem resolved
-#RewriteCond %{HTTPS} !=on
-#RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=308]
-#TODO check behavior on IE11 on Win7
 
 # redirect old /Application to /application
 Redirect 301 /Application /application
