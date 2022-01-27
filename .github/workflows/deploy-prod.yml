@@ -20,13 +20,51 @@ on:
       - main
 jobs:
   upload:
-    name: Upload website
+    name: Deploy prod website
     runs-on: ubuntu-latest
     steps:
       - name: Checkout main
         uses: actions/checkout@main
         with:
           ref: main
+      - name: Create local branch
+        run: git checkout -b prod_deployment
+      - name: Set up Node
+        uses: actions/setup-node@v2
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+      - name: Install dev dependencies
+        run: npm install
+      - name: Compile public site stylesheets
+        run: npx sass --style=compressed public:public
+      - name: Compile public site scripts
+        run: npx tsc -p public
+      - name: Set config values
+        run: |
+          npx ts-node handleparse.ts secrets/config.php.hbs \
+          --db_name="${{ secrets.PROD_DB_NAME }}" \
+          --db_username="${{ secrets.DB_USERNAME }}" \
+          --db_pass="${{ secrets.DB_PASS }}" \
+          --db_host="${{ secrets.DB_HOST }}" \
+          --phpmailer_path="${{ secrets.PHPMAILER_PATH }}" \
+          --html5_php_path="${{ secrets.HTML5_PHP_PATH }}" \
+          --smtp_host="${{ secrets.SMTP_HOST }}" \
+          --smtp_auth="${{ secrets.SMTP_AUTH }}" \
+          --smtp_security="${{ secrets.SMTP_SECURITY }}" \
+          --smtp_port="${{ secrets.SMTP_PORT }}" \
+          --smtp_username="${{ secrets.SMTP_USERNAME }}" \
+          --smtp_password="${{ secrets.SMTP_PASSWORD }}"
+      - name: Unignore config.php for upload
+        run: echo '!secrets/config.php' >> .gitignore
+      - name: Unignore compiled files for upload
+        run: sed -i -E "/\.(css|js)$/d" public/.gitignore
+      - name: Commit changes to local branch
+        run: |
+          git config user.email "admin+automation@forgetmenotshelter.org"
+          git config user.name "FMNAS Automation"
+          git add .
+          git commit -am "Automated changes for deployment"
       - name: SFTP upload
         uses: SamKirkland/FTP-Deploy-Action@3.0.0
         with:

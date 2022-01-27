@@ -1,0 +1,173 @@
+:root {
+	--background-color: #fff;
+	--text-color: #000;
+
+	--link-color: #066;
+	--visited-color: #39f;
+	--active-color: #f60;
+}
+
+body {
+	color: var(--text-color);
+	background: var(--background-color);
+	font-family: sans-serif;
+	font-size: 12pt;
+	text-align: justify;
+}
+
+a {
+	text-decoration: none;
+
+	&:link {
+		color: var(--link-color);
+	}
+
+	&:visited {
+		color: var(--visited-color);
+	}
+
+	&:active {
+		color: var(--active-color);
+	}
+
+	&:hover {
+		text-decoration: underline;
+	}
+}
+
+p {
+	margin-top: 0;
+	margin-bottom: 1em;
+
+	> strong:first-child {
+		font-weight: bold;
+		color: red;
+		display: inline;
+	}
+}
+
+section, footer {
+	display: block;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+h2 {
+	text-align: center;
+	font-size: 24pt;
+	margin: 0;
+}
+
+.big {
+	font-size: 28pt;
+}
+
+section > h2 {
+	color: #069;
+	font-size: 14pt;
+}
+
+
+header {
+	display: flex;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	width: 100%;
+	padding: 0 3% 0 3%;
+	box-sizing: border-box;
+	align-items: flex-start;
+
+	> * {
+		flex-grow: 1;
+	}
+
+	* {
+		display: inline-block;
+		vertical-align: middle;
+		margin-bottom: 5pt;
+	}
+
+	img#logo {
+		max-width: 100%;
+		height: 150px;
+	}
+
+	a.return {
+		width: 100%;
+		text-align: right;
+		font-size: 10pt;
+		margin-bottom: 0.25in;
+	}
+
+	aside.adopted, aside.adopted figure {
+		text-align: right;
+		margin: 0;
+	}
+
+	aside.adopted {
+		> * {
+			margin-left: auto;
+		}
+
+		figcaption {
+			max-width: 2.5in;
+			font-size: 11pt;
+		}
+
+		img {
+			width: 1in;
+		}
+	}
+
+	section, > div, > aside {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-evenly;
+	}
+
+	> div {
+		flex-grow: 5;
+		flex-direction: column;
+	}
+
+	.apply button {
+		font-size: 18pt;
+		padding: 5pt;
+	}
+
+	@media print {
+		display: none;
+	}
+}
+
+/*Footer*/
+footer {
+	text-align: justify;
+	text-align-last: center;
+
+	> address {
+		font-style: normal;
+		font-size: 28pt;
+	}
+
+	.hours {
+		font-size: 16pt;
+		text-transform: uppercase;
+		color: #f00;
+	}
+}
+
+.printonly {
+	@media not print {
+		display: none !important;
+	}
+}
+.noprint {
+	@media print {
+		display: none !important;
+	}
+}
+
+.hidden {
+	display: none;
+}
