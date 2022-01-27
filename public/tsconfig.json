@@ -1,0 +1,13 @@
+{
+	"compilerOptions": {
+		"module": "commonjs",
+		"target": "ES2021",
+		"lib": [
+			"ES2021",
+			"DOM",
+			"DOM.Iterable"
+		],
+		"sourceMap": true,
+		"strict": true
+	}
+}
