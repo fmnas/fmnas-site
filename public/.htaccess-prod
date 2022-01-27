@@ -12,6 +12,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Header set Strict-Transport-Security "max-age=63072000;includeSubDomains"
+Header set Strict-Transport-Security "max-age=63072000"
 RewriteCond %{HTTPS} !=on
 RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=308]
