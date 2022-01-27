@@ -612,7 +612,7 @@ function addressInput(string $label, string $prefix, bool $required = false): st
 			<h3>Attachments</h3>
 			<div data-remove="true">
 				<p>Add any attachments below, or email them to <a data-email></a> after submitting your application.</p>
-				<p>If you live outside the Republic/Curlew area, please add photos of your home.</p>
+				<p>If you live outside the Republic/Curlew area, please attach or email photos of your home.</p>
 			</div>
 			<?php
 			// TODO [#66]: Better image upload interface
