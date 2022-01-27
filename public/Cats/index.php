@@ -486,6 +486,7 @@
 		<tbody>
 			<?php
 				if(!($catscsv = fopen('cats.csv','r'))) die();
+				fgetcsv($catscsv); // Consume header.
 				while(($data = fgetcsv($catscsv)) !== FALSE):
 				$listed=file_exists($data[1].$data[0].'/'.$data[7]);
 			?>
