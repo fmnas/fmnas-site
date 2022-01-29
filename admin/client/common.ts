@@ -17,12 +17,12 @@
 
 import store from './store/index';
 
-// TODO [$61f4c71115395d0009dba032]: Get 404 redirect working in vue router.
+// TODO [#136]: Get 404 redirect working in vue router.
 export function r404(path: string) {
 	window.location.href = `/404.php?p=${encodeURIComponent(path)}`;
 }
 
-// TODO [$61f4c71115395d0009dba033]: TypeScript Pet class.
+// TODO [#137]: TypeScript Pet class.
 export const ucfirst = (str = '') => str.charAt(0).toUpperCase() + str.slice(1);
 export const getPathForPet = (pet: any) => `${pet['id']}${pet['name']?.split(' ').join('')}`;
 export const getFullPathForPet = (pet: any) => `${store.state.config['species']?.[pet['species']]?.['plural']}/${getPathForPet(pet)}`;
