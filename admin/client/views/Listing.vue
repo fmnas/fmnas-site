@@ -103,7 +103,7 @@
 	<p>modified status: {{ modified() }}</p>
 	<p>loading status: {{ loading }}</p>
 	<section class="photos">
-		TODO: Photos in listing editor
+		TODO [$61f5b46b2c16f9000ab30fb7]: Photos in listing editor
 	</section>
 	<editor v-model="description" :context="this.pet"/>
 </template>
