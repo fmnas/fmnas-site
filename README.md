@@ -57,8 +57,27 @@ The PHPStorm config includes file watchers to automatically build files. To do t
 
 * `sass -w public:public` for public site stylesheets
 * `tsc -w -p public` for public site scripts
+* `vite build -w --mode development admin/client` for the admin site
+	* Note that all three commands must be run before the admin site works properly.
 
 Prefix these commands with `npx` to use the local version of the CLIs from Node.
+
+#### Hot reloading for admin site
+
+To run a Vue dev server with hot reloading, run `admin/dev.sh` in a terminal. This does the following:
+
+* Instructs git to ignore changes to `admin/.htaccess`.
+* Modifies `admin/.htaccess` to route /assets requests to localhost:3000 and use `loader.html` instead of `index.html`
+  as the Vue entry point.
+* Starts `vite admin/client` to serve Vue assets on localhost:3000.
+* Waits for vite to die.
+* Unmodifies `admin/.htaccess`.
+* Instructs git not to ignore changes to `admin/.htaccess`.
+
+If the script is terminated abnormally, run it again so the cleanup steps run.
+
+`admin/loader.html` should be kept in sync with `admin/client/index.html`.
+<!-- TODO: Add a status check for admin/dev.sh sync and teardown -->
 
 ## Deployment
 
@@ -97,19 +116,20 @@ On the build machine:
 
 * Install NPM build dependencies: `npm install --only=dev`
 * Build the stylesheets for the public site: `npx sass --style=compressed public:public`
-* Build the scripts for the public site: `tsc -p public`
+* Build the scripts for the public site: `npx tsc -p public`
+* Build the admin site client: `npx vite build admin/client`
 * Set the config values in config.php.
-	* Run, for instance:
-	  ```shell
-		npx ts-node handleparse.ts secrets/config.php.hbs --db_name=database --db_username=username --db_pass=password \
-		--db_host=localhost --phpmailer_path="/path/to/PHPMailer" --html5_php_path="/path/to/html5-php" \
-		--smtp_host=smtp.gmail.com --smtp_auth=true --smtp_security=tls --smtp_port=587 --smtp_username=me@gmail.com \
-		--smtp_password=password
-		```
-	* Alternatively, copy `secrets/config_sample.php` to `secrets/config.php` and update the configuration values
-	  manually.
+  * Run, for instance:
+    ```shell
+    npx ts-node handleparse.ts secrets/config.php.hbs --db_name=database --db_username=username --db_pass=password \
+    --db_host=localhost --phpmailer_path="/path/to/PHPMailer" --html5_php_path="/path/to/html5-php" \
+    --smtp_host=smtp.gmail.com --smtp_auth=true --smtp_security=tls --smtp_port=587 --smtp_username=me@gmail.com \
+    --smtp_password=password
+    ```
+  * Alternatively, copy `secrets/config_sample.php` to `secrets/config.php` and update the configuration values
+    manually.
 * Update the public web templates in the `src/templates` and `src/errors` directories as desired.
-	* The current templates rely on the presence of `/assets/adopted.jpg` and `/assets/logo.png` in the public site.
+  * The current templates rely on the presence of `/assets/adopted.jpg` and `/assets/logo.png` in the public site.
 
 #### Deploy
 
@@ -156,9 +176,10 @@ The following variables in the template context are likely to prove useful in li
 vanilla JS, and SCSS.
 
 On the server side, listings are first compiled with [lightncandy](https://github.com/zordius/lightncandy), then parsed
-with [Parsedown](https://parsedown.org/). Any PHP code embedded in listings will **not** be executed on the server. The resulting HTML is cached (TODO); the cached assets are automatically deleted when listings are
-updated through the admin interface, but must be manually deleted if changes are made to the asset or corresponding
-database records outside the admin interface.
+with [Parsedown](https://parsedown.org/). Any PHP code embedded in listings will **not** be executed on the server. The
+resulting HTML is cached (TODO); the cached assets are automatically deleted when listings are updated through the admin
+interface, but must be manually deleted if changes are made to the asset or corresponding database records outside the
+admin interface.
 
 The client-side editor is [Toast UI Editor](https://ui.toast.com/tui-editor/).
 
