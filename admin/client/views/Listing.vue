@@ -164,7 +164,7 @@ Introducing {{name}} <` + /* i hate javascript */ `!-- Write the rest of the lis
 			});
 		} else {
 			// Creating a new listing
-			// TODO: Type for species.
+			// TODO [$61f4c71115395d0009dba036]: Type for species.
 			this.pet['species'] =
 				(Object.values(store.state.config['species']) as any).find((s: any) => s['plural'] === this.species)?.['id'];
 			this.originalDescription = this.description;
@@ -237,7 +237,7 @@ Introducing {{name}} <` + /* i hate javascript */ `!-- Write the rest of the lis
 			alert('Should bring up the profile image editor.');
 			// TODO [#60]: profile image editor
 		},
-		// TODO: Type for sex
+		// TODO [$61f4c71115395d0009dba037]: Type for sex
 		sexClick(sex: any) {
 			// Allow deselecting a sex rather than just selecting one.
 			this.pet['sex'] = this.pet['sex'] === sex['key'] ? null : sex['key'];

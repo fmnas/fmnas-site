@@ -73,7 +73,7 @@ export default defineComponent({
 		});
 	},
 	computed: mapState({
-		// TODO: Type for state
+		// TODO [$61f4c71115395d0009dba034]: Type for state
 		config: (state: any) => state.config,
 	}),
 });
