@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,8 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-header('Content-Type: text/css');
-readfile("../public/common.css");
-readfile("../public/listing.css");
-readfile("../public/adoptable.css");
-readfile("../public/adoptable.generated.css");
+require_once 'api.php';
+
+endpoint(...[
+		'get' => function(): Result {
+			if (!chdir('../templates')) {
+				return new Result(500, "Failed to chdir into templates");
+			}
+			$partials = [];
+			foreach (glob('*') as $filename) {
+				$partials[$filename] = file_get_contents($filename);
+			}
+			return new Result(200, $partials);
+		},
+		'put' => $reject,
+		'delete' => $reject,
+]);

@@ -32,15 +32,13 @@ if (!($pet = $db->getPetByPath($path))) {
 	<a class="return" href="/<?=$pet->species->plural()?>" title="<?=ucfirst($pet->species->plural())?>">
 		Return to the <?=$pet->species->pluralWithYoung()?> page
 	</a>
-	<article>
+	<article class="listing">
 		<h2><?=$pet?></h2>
 		<p class="subtitle"><?php
 			echo $pet->age();
 			echo '&nbsp;&middot;&nbsp;';
-			if (!$pet->status->listed || $pet->status->displayStatus) {
-				echo $pet->status->name;
-			} else {
-				echo $pet->status->name;
+			echo $pet->status->name;
+			if ($pet->status->listed && !$pet->status->displayStatus) {
 				echo '&nbsp;&middot;&nbsp;';
 				echo $pet->fee;
 			}
