@@ -1,7 +1,7 @@
 import {defineConfig} from 'vite';
 import vue from '@vitejs/plugin-vue';
 import * as path from 'path';
-import eslintPlugin from 'vite-plugin-eslint'; // TODO: Get linting to work in vite.
+import eslintPlugin from 'vite-plugin-eslint'; // TODO [#144]: Get linting to work in vite.
 
 export default defineConfig({
 	plugins: [
