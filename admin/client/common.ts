@@ -83,11 +83,11 @@ export function partial(name: string): string {
 	return store.state.partials[name];
 }
 
-// TODO [$61f5b46b2c16f9000ab30fb5]: Test that description rendering matches on client and server.
+// TODO [#150]: Test that description rendering matches on client and server.
 export function renderDescription(source: string, context: any): string {
 	return marked.parse(Handlebars.compile(source)(context), {
 		// Marked options
 		breaks: true,
-		// TODO [$61f5b46b2c16f9000ab30fb6]: Sanitize email links in rendered description.
+		// TODO [#151]: Sanitize email links in rendered description.
 	});
 }
