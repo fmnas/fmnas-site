@@ -26,6 +26,8 @@ jobs:
         run: npx sass --style=compressed public:public
       - name: Compile public site scripts
         run: npx tsc -p public
+      - name: Build admin client
+        run: npx vite build admin/client
       - name: Set config values
         run: |
           npx ts-node handleparse.ts secrets/config.php.hbs \
@@ -44,10 +46,12 @@ jobs:
       - name: Unignore config.php for upload
         run: echo '!secrets/config.php' >> .gitignore
       - name: Unignore compiled files for upload
-        run: sed -i -E "/\.(css|js)$/d" public/.gitignore
+        run: |
+          sed -i -E "/\.(css|js)$/d" public/.gitignore
+          rm admin/.gitignore
       - name: Restrict access to test site
         run: cat public/.htaccess-test >> public/.htaccess
-      - name: Restrict access to test admin site
+      - name: Restrict access to admin site
         run: cat admin/.htaccess-test >> admin/.htaccess
       - name: Enable error reporting on test site
         run: |
