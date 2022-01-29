@@ -77,7 +77,7 @@ To run a Vue dev server with hot reloading, run `admin/dev.sh` in a terminal. Th
 If the script is terminated abnormally, run it again so the cleanup steps run.
 
 `admin/loader.html` should be kept in sync with `admin/client/index.html`.
-<!-- TODO: Add a status check for admin/dev.sh sync and teardown -->
+<!-- TODO [#142]: Add a status check for admin/dev.sh sync and teardown -->
 
 ## Deployment
 

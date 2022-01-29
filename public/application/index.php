@@ -346,7 +346,7 @@ function addressInput(string $label, string $prefix, bool $required = false): st
 	<form method="POST" enctype="multipart/form-data" id="application" data-if-config="main" data-hidden="false">
 		<h2 data-if-config="main" data-rhs="false" data-hidden="false">Adoption Application</h2>
 		<p data-if-config="weblink"><a data-href-config="path">View application on the web</a>
-			<?php // TODO: Display a modal for application faq ?>
+			<?php // TODO [#143]: Display a modal for application faq ?>
 		<p data-remove="true" class="noprint">Please read the <a href="faq.php" target="_blank">application FAQ</a> before
 			filling this out.
 			<input type="hidden" name="form_id" value="application">
@@ -488,7 +488,7 @@ function addressInput(string $label, string $prefix, bool $required = false): st
 					</label>
 				</div>
 			</section>
-			<?php // TODO: Get a particular pet from $_GET ?>
+			<?php // TODO [#145]: Get a particular pet from $_GET ?>
 			<section id="particular">
 				<p>Are you applying for a particular animal listed on our website?</p>
 				<div>
