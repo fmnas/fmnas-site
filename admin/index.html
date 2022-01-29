@@ -1,66 +1,17 @@
 <!DOCTYPE html>
-<meta charset="UTF-8">
-<title>FMNAS Admin</title> <!-- TODO [#29]: Dynamic title -->
-<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=yes" name="viewport">
-<script src="https://unpkg.com/vue@3"></script>
-<script src="https://unpkg.com/vue-router@4"></script>
-<script src="https://unpkg.com/vue3-sfc-loader"></script>
-<script src="/common.js"></script>
-<link href="/common.css.php" rel="stylesheet">
-<script type="module">
-	const options = {
-		moduleCache: {
-			vue: Vue,
-		},
-		async getFile(url) {
-			const res = await fetch(url);
-			if (!res.ok) {
-				throw Object.assign(new Error(res.statusText + ' ' + url), {res});
-			}
-			return await res.text();
-		},
-		addStyle(textContent) {
-			const style = Object.assign(document.createElement('style'), {textContent});
-			const ref = document.head.getElementsByTagName('style')[0] || null;
-			document.head.insertBefore(style, ref);
-		},
-	};
-
-	const {loadModule} = window['vue3-sfc-loader'];
-
-	const Index = () => loadModule('/views/Index.vue', options);
-	const Listing = () => loadModule('/views/Listing.vue', options);
-
-	const routes = [
-		{
-			name: 'new',
-			path: '/new',
-			component: Listing,
-		},
-		{
-			path: '/:species?',
-			component: Index,
-		},
-		{
-			path: '/:species/:pet',
-			component: Listing,
-		},
-		{
-			path: '/:pathMatch(.*)',
-			redirect: (to) => r404(to.fullPath),
-		},
-	];
-
-	const router = VueRouter.createRouter({
-		history: VueRouter.createWebHistory(),
-		routes,
-	});
-
-	const app = Vue.createApp({
-		template: '<router-view></router-view>',
-	});
-	app.mixin(await globalsPromise);
-	app.use(router);
-
-	app.mount(document.body);
-</script>
+<html lang="">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+    <title><%= htmlWebpackPlugin.options.title %></title>
+  </head>
+  <body>
+    <noscript>
+      <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+    </noscript>
+    <div id="app"></div>
+    <!-- built files will be auto injected -->
+  </body>
+</html>

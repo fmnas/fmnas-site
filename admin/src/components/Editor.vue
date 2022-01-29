@@ -1,5 +1,5 @@
 <!--
-Copyright 2021 Google LLC
+Copyright 2022 Google LLC
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -22,29 +22,31 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	</div>
 </template>
 
-<script>
+<script lang="ts">
 // TODO [#40]: Use Toast UI Editor
-export default {
+import {defineComponent} from 'vue';
+
+export default defineComponent({
 	name: 'Editor',
 	props: ['modelValue'],
 	emits: ['update:modelValue'],
 	computed: {
 		source: {
-			get() {
+			get(): string {
 				return this.modelValue;
 			},
-			set(value) {
+			set(value: string) {
 				this.$emit('update:modelValue', value);
 			},
 		},
 	},
 	methods: {
-		compiled() {
+		compiled(): string {
 			// TODO [#54]: Compile Handlebars then GFM
 			return this.source;
 		},
 	},
-};
+});
 </script>
 
 <style scoped>

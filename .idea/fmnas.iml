@@ -5,6 +5,7 @@
       <sourceFolder url="file://$MODULE_DIR$/admin" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/lib" isTestSource="false" packagePrefix="PHPMailer" />
       <sourceFolder url="file://$MODULE_DIR$/public" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/admin_old" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
