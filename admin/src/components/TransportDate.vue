@@ -9,8 +9,10 @@
 	</form>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import {defineComponent} from 'vue';
+
+export default defineComponent({
 	name: 'TransportDate',
 	data() {
 		return {
@@ -44,7 +46,7 @@ export default {
 			this.date = this.savedDate = data;
 		});
 	},
-};
+});
 </script>
 
 <style scoped>

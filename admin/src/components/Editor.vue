@@ -5,29 +5,31 @@
 	</div>
 </template>
 
-<script>
+<script lang="ts">
 // TODO [#40]: Use Toast UI Editor
-export default {
+import {defineComponent} from 'vue';
+
+export default defineComponent({
 	name: 'Editor',
 	props: ['modelValue'],
 	emits: ['update:modelValue'],
 	computed: {
 		source: {
-			get() {
+			get(): string {
 				return this.modelValue;
 			},
-			set(value) {
+			set(value: string) {
 				this.$emit('update:modelValue', value);
 			},
 		},
 	},
 	methods: {
-		compiled() {
+		compiled(): string {
 			// TODO [#54]: Compile Handlebars then GFM
 			return this.source;
 		},
 	},
-};
+});
 </script>
 
 <style scoped>

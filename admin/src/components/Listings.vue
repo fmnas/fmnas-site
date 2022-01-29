@@ -18,7 +18,7 @@
 		</thead>
 		<tbody>
 		<!-- TODO [#34]: Make listing metadata editable from table view -->
-		<tr v-for="listing of listings">
+		<tr v-for="listing of listings" :key="listing['id']">
 			<td class="photo"><img :alt="listing['name']" :src="`/api/raw/stored/${listing['photo']?.['id']}`"></td>
 			<td class="id">{{ listing['id'] }}</td>
 			<td class="name">{{ listing['name'] }}</td>
@@ -37,10 +37,17 @@
 	</table>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import {getFullPathForPet} from '../common';
+import {mapState} from 'vuex';
+import { defineComponent } from 'vue';
+
+export default defineComponent({
 	name: 'Listings',
 	props: ['species'],
+	methods: {
+		getFullPathForPet: getFullPathForPet,
+	},
 	data() {
 		return {
 			apiUrl: '/api/listings',
@@ -65,7 +72,11 @@ export default {
 			this.listings = data;
 		});
 	},
-};
+	computed: mapState({
+		// TODO: Type for state
+		config: (state: any) => state.config,
+	}),
+});
 </script>
 
 <style scoped>

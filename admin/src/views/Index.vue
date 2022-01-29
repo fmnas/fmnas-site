@@ -6,11 +6,12 @@
 <script>
 import TransportDate from '../components/TransportDate.vue';
 import Listings from '../components/Listings.vue';
+import {defineComponent} from 'vue';
 
-export default {
+export default defineComponent({
 	name: 'Index',
 	components: {Listings, TransportDate},
-};
+});
 </script>
 
 <style scoped>
