@@ -274,9 +274,7 @@ Introducing {{name}} <` + /* i hate javascript */ `!-- Write the rest of the lis
 });
 </script>
 
-<style scoped>
-@import '/adoptable.css.php';
-
+<style scoped lang="scss">
 /* Make a missing profile image seem like a link */
 td.img img {
 	vertical-align: center;
@@ -294,20 +292,20 @@ td.img img {
 	background-position: bottom 152px center, center;
 	background-clip: padding-box;
 	margin-top: 2px;
-}
 
-td.img img::before {
-	display: block;
-	width: 100%;
-	height: 100%;
-}
+	&::before {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
 
-td.img img:not([src]), td.img img[src]::before, td.img img:hover {
-	outline: 2px dashed var(--link-color);
-}
+	&:not([src]), &::before, &:hover {
+		outline: 2px dashed var(--link-color);
+	}
 
-td.img img:hover {
-	text-decoration: underline;
+	&:hover {
+		text-decoration: underline;
+	}
 }
 
 td.img img:active, td.img img:active::before {

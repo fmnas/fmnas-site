@@ -15,9 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint-disable */
-declare module '*.vue' {
-  import type { DefineComponent } from 'vue'
-  const component: DefineComponent<{}, {}, any>
-  export default component
-}
+import {defineConfig} from 'vite';
+import vue from '@vitejs/plugin-vue';
+import * as path from 'path';
+import eslintPlugin from 'vite-plugin-eslint'; // TODO: Get linting to work in vite.
+
+export default defineConfig({
+	plugins: [
+		vue(),
+		eslintPlugin(),
+	],
+	resolve: {
+		alias: {
+			'@': path.resolve(__dirname, '.'),
+		},
+	},
+	publicDir: false,
+	build: {
+		outDir: '../',
+		emptyOutDir: false,
+		target: 'es2015',
+	},
+});
