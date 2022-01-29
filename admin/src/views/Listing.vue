@@ -15,8 +15,9 @@
 					<input id="name" v-model="pet['name']" name="name" required type="text">
 				</li>
 				<li class="species">
-					<label for="species">Species</label>
-					<select id="species" v-model="pet['species']" name="species" required>
+					<!--suppress XmlInvalidId no idea why this is firing -->
+					<label for="species_input">Species</label>
+					<select id="species_input" v-model="pet['species']" name="species" required>
 						<option value=""></option>
 						<option v-for="s of config['species']" :value="s['id']">{{ ucfirst(s['name']) }}</option>
 					</select>
@@ -46,6 +47,7 @@
 					<input id="fee" v-model="pet['fee']" name="fee" type="text">
 				</li>
 				<li class="status">
+					<!--suppress XmlInvalidId no idea why this is firing -->
 					<label for="status">Status</label>
 					<select id="status" v-model="pet['status']" name="status" required>
 						<option value=""></option>
@@ -103,18 +105,22 @@
 	<editor v-model="description"/>
 </template>
 
-<script>
+<script lang="ts">
 import Editor from '../components/Editor.vue';
+import {defineComponent} from 'vue';
+import store from '../store';
+import {getFullPathForPet, getPathForPet, petAge, ucfirst} from '../common';
+import {mapState} from 'vuex';
 
-export default {
+export default defineComponent({
 	name: 'Listing',
 	components: {Editor},
 	data() {
 		return {
 			species: this.$route.params.species,
 			path: this.$route.params.pet,
-			pet: {},
-			original: {},
+			pet: {} as any,
+			original: {} as any,
 			description: `{{>coming_soon}}
 
 Introducing {{name}} <` + /* i hate javascript */ `!-- Write the rest of the listing here -->
@@ -158,8 +164,9 @@ Introducing {{name}} <` + /* i hate javascript */ `!-- Write the rest of the lis
 			});
 		} else {
 			// Creating a new listing
+			// TODO: Type for species.
 			this.pet['species'] =
-					Object.values(this.config['species']).find((s) => s['plural'] === this.species)?.['id'];
+				(Object.values(store.state.config['species']) as any).find((s: any) => s['plural'] === this.species)?.['id'];
 			this.originalDescription = this.description;
 			this.loading = false;
 		}
@@ -195,11 +202,11 @@ Introducing {{name}} <` + /* i hate javascript */ `!-- Write the rest of the lis
 				}
 			}
 			// Update URL
-			if (`${this.species}/${this.path}` !== this.getFullPathForPet(this.pet)) {
-				this.species = this.config['species'][this.pet.species]['plural'];
-				this.path = this.getPathForPet(this.pet);
-				console.info(`Replacing route with ${this.getFullPathForPet(this.pet)}`);
-				this.$router.replace(`/${this.getFullPathForPet(this.pet)}`);
+			if (`${this.species}/${this.path}` !== getFullPathForPet(this.pet)) {
+				this.species = store.state.config['species'][this.pet.species]['plural'];
+				this.path = getPathForPet(this.pet);
+				console.info(`Replacing route with ${getFullPathForPet(this.pet)}`);
+				this.$router.replace(`/${getFullPathForPet(this.pet)}`);
 			}
 		},
 		modified() {
@@ -209,13 +216,13 @@ Introducing {{name}} <` + /* i hate javascript */ `!-- Write the rest of the lis
 				return false;
 			}
 			if (this.description?.trim().replaceAll('\r', '') !==
-					this.originalDescription?.trim().replaceAll('\r', '')) {
+			    this.originalDescription?.trim().replaceAll('\r', '')) {
 				return true;
 			}
 			for (const key of new Set([...Object.keys(this.original), ...Object.keys(this.pet)])) {
 				if ((typeof this.pet[key] !== 'object' || typeof this.pet[key] !== 'object') &&
-						this.pet[key] !== this.original[key] &&
-						!(!this.pet[key] && !this.original[key]) // so null matches '', etc.
+				    this.pet[key] !== this.original[key] &&
+				    !(!this.pet[key] && !this.original[key]) // so null matches '', etc.
 				) {
 					return true;
 				}
@@ -224,13 +231,14 @@ Introducing {{name}} <` + /* i hate javascript */ `!-- Write the rest of the lis
 		},
 		listed() {
 			return !this.description?.startsWith('{{>coming_soon}}') &&
-					(this.description || this.pet['photos']?.length);
+			       (this.description || this.pet['photos']?.length);
 		},
 		editProfileImage() {
 			alert('Should bring up the profile image editor.');
 			// TODO [#60]: profile image editor
 		},
-		sexClick(sex) {
+		// TODO: Type for sex
+		sexClick(sex: any) {
 			// Allow deselecting a sex rather than just selecting one.
 			this.pet['sex'] = this.pet['sex'] === sex['key'] ? null : sex['key'];
 			this.sexInteracted = true;
@@ -238,12 +246,19 @@ Introducing {{name}} <` + /* i hate javascript */ `!-- Write the rest of the lis
 		deleteListing() {
 			alert('Not yet implemented');
 		},
+		getFullPathForPet,
+		getPathForPet,
+		ucfirst,
+		petAge,
 	},
-};
+	computed: mapState({
+		config: (state: any) => state.config,
+	}),
+});
 </script>
 
 <style scoped>
-@import "/adoptable.css.php";
+@import '/adoptable.css.php';
 
 /* Make a missing profile image seem like a link */
 td.img img {
@@ -255,7 +270,7 @@ td.img img {
 	cursor: pointer;
 	--stripe-1-color: transparent;
 	--stripe-2-color: rgba(0, 0, 0, 0.03);
-	--plus-url: url("/plus.svg.php?color=066");
+	--plus-url: url('/plus.svg.php?color=066');
 	background-image: var(--plus-url), linear-gradient(135deg, var(--stripe-1-color) 25%, var(--stripe-2-color) 25%, var(--stripe-2-color) 50%, var(--stripe-1-color) 50%, var(--stripe-1-color) 75%, var(--stripe-2-color) 75%, var(--stripe-2-color) 100%);
 	background-size: 20px 20px;
 	background-repeat: no-repeat, repeat;
@@ -281,7 +296,7 @@ td.img img:hover {
 td.img img:active, td.img img:active::before {
 	color: var(--active-color);
 	outline-color: var(--active-color);
-	--plus-url: url("/plus.svg.php?color=f60");
+	--plus-url: url('/plus.svg.php?color=f60');
 }
 
 /* Styles for metadata editor */

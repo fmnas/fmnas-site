@@ -2,12 +2,34 @@
 	"extends": "@tsconfig/node16/tsconfig.json",
 	"ts-node": {
 		"files": true,
-		"compilerOptions": {
-			"esModuleInterop": true
-		}
 	},
 	"compilerOptions": {
+		"target": "esnext",
+		"module": "esnext",
+		"strict": true,
+		"jsx": "preserve",
+		"importHelpers": true,
+		"moduleResolution": "node",
+		"skipLibCheck": true,
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+		"sourceMap": true,
+		"baseUrl": ".",
+		"types": [
+			"webpack-env"
+		],
+		"lib": [
+			"esnext",
+			"DOM",
+			"DOM.Iterable",
+			"ScriptHost"
+		]
 	},
+	"include": [
+		"**/*.ts",
+		"**/*.tsx",
+		"**/*.vue",
+	],
 	"exclude": [
 		"node_modules",
 		"public",
