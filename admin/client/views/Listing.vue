@@ -102,14 +102,14 @@
 	</section>
 	<p>modified status: {{ modified() }}</p>
 	<p>loading status: {{ loading }}</p>
-	<editor v-model="description"/>
+	<editor v-model="description" :context="this.pet"/>
 </template>
 
 <script lang="ts">
 import Editor from '../components/Editor.vue';
 import {defineComponent} from 'vue';
 import store from '../store';
-import {getFullPathForPet, getPathForPet, petAge, ucfirst} from '../common';
+import {getFullPathForPet, getPathForPet, partial, petAge, ucfirst} from '../common';
 import {mapState} from 'vuex';
 
 export default defineComponent({
@@ -121,15 +121,7 @@ export default defineComponent({
 			path: this.$route.params.pet,
 			pet: {} as any,
 			original: {} as any,
-			description: `{{>coming_soon}}
-
-Introducing {{name}} <` + /* i hate javascript */ `!-- Write the rest of the listing here -->
-
-{{>youtube id='<` + `!-- video id here -->'}}
-
-{{>single_kitten}} <` + `!-- Remove if not applicable -->
-
-{{>standard_info}}`,
+			description: partial('default'),
 			originalDescription: '',
 			loading: true,
 			sexInteracted: false,
@@ -258,6 +250,14 @@ Introducing {{name}} <` + /* i hate javascript */ `!-- Write the rest of the lis
 </script>
 
 <style scoped lang="scss">
+@mixin input {
+	box-sizing: content-box;
+	border: none;
+	box-shadow: inset 0 0 0 1px var(--border-color);
+	border-radius: var(--border-radius);
+	outline: none;
+}
+
 /* Make a missing profile image seem like a link */
 td.img img {
 	vertical-align: center;
@@ -309,6 +309,48 @@ td.img img:active, td.img img:active::before {
 	--border-color: #aaa;
 	--focus-color: var(--visited-color);
 	--error-color: #f00;
+
+	form {
+		flex-shrink: 0;
+	}
+
+	table {
+		width: auto;
+	}
+
+	ul {
+		list-style: none;
+		padding: var(--input-padding);
+		margin: var(--input-margin);
+	}
+
+	li > label {
+		display: inline-block;
+		width: var(--label-width);
+	}
+
+	input, option, select, button {
+		font-size: inherit;
+		font-family: inherit;
+		padding: var(--input-padding);
+		margin: var(--input-margin);
+		width: var(--input-width);
+		@include input;
+	}
+	button {
+		width: 5em;
+		height: 1.5em;
+		background-color: inherit;
+	}
+	abbr {
+		text-decoration: none;
+	}
+	button.delete:hover {
+		box-shadow: inset 0 0 0 1px var(--error-color);
+	}
+	button.delete:active {
+		background-color: var(--error-color) !important;
+	}
 }
 
 section.metadata {
@@ -318,40 +360,7 @@ section.metadata {
 	align-items: center;
 }
 
-.metadata form {
-	flex-shrink: 0;
-}
-
-.metadata table {
-	width: auto;
-}
-
-.metadata ul {
-	list-style: none;
-	padding: var(--input-padding);
-	margin: var(--input-margin);
-}
-
-.metadata li > label {
-	display: inline-block;
-	width: var(--label-width);
-}
-
-.metadata input, .metadata option, .metadata select, .metadata button {
-	font-size: inherit;
-	font-family: inherit;
-	padding: var(--input-padding);
-	margin: var(--input-margin);
-	width: var(--input-width);
-}
-
-.metadata input, .metadata option, .metadata select, .metadata button, fieldset#sexes input + abbr {
-	box-sizing: content-box;
-	border: none;
-	box-shadow: inset 0 0 0 1px var(--border-color);
-	border-radius: var(--border-radius);
-	outline: none;
-}
+fieldset#sexes
 
 .metadata input:focus, .metadata select:focus, fieldset#sexes input:checked + abbr, fieldset#sexes input + abbr:hover,
 .metadata button:hover {
@@ -377,30 +386,25 @@ fieldset#sexes {
 	margin: var(--input-margin);
 	padding: 0 var(--input-padding-horizontal);
 	width: var(--input-width);
-}
 
-fieldset#sexes input {
-	display: none;
-}
+	input {
+		display: none;
 
-fieldset#sexes input + abbr {
-	--dimension: calc(1em + 2 * var(--input-padding-vertical));
-	width: calc(2 * var(--dimension));
-	height: var(--dimension);
-	line-height: var(--dimension);
-	user-select: none;
+		& + abbr {
+			@include input;
+			--dimension: calc(1em + 2 * var(--input-padding-vertical));
+			width: calc(2 * var(--dimension));
+			height: var(--dimension);
+			line-height: var(--dimension);
+			user-select: none;
+		}
+	}
 }
 
 fieldset#sexes input + abbr, .metadata button {
 	display: inline-block;
 	text-align: center;
 	transition: all 0.2s;
-}
-
-.metadata button {
-	width: 5em;
-	height: 1.5em;
-	background-color: inherit;
 }
 
 fieldset#sexes input:not(:checked):not(:invalid) + abbr:hover,
@@ -418,18 +422,6 @@ fieldset#sexes input + abbr:active, .metadata button:active {
 	background-color: var(--active-color) !important;
 	color: var(--background-color) !important;
 	transition: none;
-}
-
-button.delete:hover {
-	box-shadow: inset 0 0 0 1px var(--error-color);
-}
-
-.metadata button.delete:active {
-	background-color: var(--error-color) !important;
-}
-
-.metadata abbr {
-	text-decoration: none;
 }
 
 div.buttons {

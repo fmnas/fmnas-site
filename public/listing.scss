@@ -1,24 +1,5 @@
-p > strong {
-	font-weight: bold;
-	color: #5021da;
-	display: inline;
-}
-
-.big {
-	font-size: 20pt;
-}
-
-h1 {
-	font-size: 24pt;
-}
-
-p.big > strong {
-	text-transform: uppercase;
-}
-
-.apply button {
-	font-size: 18pt;
-	padding: 5pt;
+header a.return {
+	display: none;
 }
 
 a.return {
@@ -32,45 +13,80 @@ a.return {
 	}
 }
 
-img, iframe {
-	max-height: 640px;
-	max-width: 100%;
-}
+.listing {
+	p > strong {
+		font-weight: bold;
+		color: #5021da;
+		display: inline;
+	}
 
-form.paypal {
-	display: inline-block;
-}
+	.big {
+		font-size: 20pt;
+	}
 
-a.im > img {
-	vertical-align: bottom;
-}
+	h1 {
+		font-size: 24pt;
+	}
 
-header a.return {
-	display: none;
-}
+	p.big > strong {
+		text-transform: uppercase;
+	}
 
-section#description iframe {
-	margin: 0 auto 1em;
-	display: block;
-	max-height: calc((100vw - 1em) * 9 / 16);
-}
+	.apply button {
+		font-size: 18pt;
+		padding: 5pt;
+	}
 
-aside.images {
-	width: 100%;
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: space-around;
-	align-items: center;
-	margin-top: 1.5em;
-}
+	img, iframe {
+		max-height: 640px;
+		max-width: 100%;
+	}
 
-section#description {
-	max-width: 14in;
-	margin: 1em auto;
-}
+	form.paypal {
+		display: inline-block;
+	}
 
-p.subtitle {
-	text-align: center;
-	font-size: 18pt;
-	margin: 0.2em;
+	a.im > img {
+		vertical-align: bottom;
+	}
+
+	section#description iframe {
+		margin: 0 auto 1em;
+		display: block;
+		max-height: calc((100vw - 1em) * 9 / 16);
+	}
+
+	aside.images {
+		width: 100%;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-around;
+		align-items: center;
+		margin-top: 1.5em;
+	}
+
+	section#description {
+		max-width: 14in;
+		margin: 1em auto;
+	}
+
+	p.subtitle {
+		text-align: center;
+		font-size: 18pt;
+		margin: 0.2em;
+	}
+
+	div.video {
+		width: 100%;
+
+		//noinspection CssOverwrittenProperties
+		iframe {
+			width: 853px;
+			height: 480px;
+			width: calc(1280px + 0.25em);
+			height: calc((1280px + 0.25em) * 9 / 16);
+			max-width: calc(100vw - 16px);
+			max-height: calc((100vw - 16px) * 9 / 16);
+		}
+	}
 }

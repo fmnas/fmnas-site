@@ -1,4 +1,7 @@
-import store from './store/index';
+import store from './store';
+import * as Handlebars from 'handlebars';
+// @ts-ignore types not coming in in PHPStorm for some reason
+import { marked } from 'marked';
 
 // TODO [#136]: Get 404 redirect working in vue router.
 export function r404(path: string) {
@@ -51,3 +54,22 @@ export const getConfig = (): Promise<any> => fetch('/api/config', {method: 'GET'
 	}
 	return res.json();
 });
+
+export const getPartials = (): Promise<Record<string, string>> => fetch('/api/partials', {method: 'GET'}).then(res => {
+	if (!res.ok) {
+		throw res;
+	}
+	return res.json();
+});
+
+export function partial(name: string): string {
+	return store.state.partials[name];
+}
+
+export function renderDescription(source: string, context: any): string {
+	return marked.parse(Handlebars.compile(source)(context), {
+		// Marked options
+		breaks: true,
+		// TODO: Sanitize email links in rendered description.
+	});
+}
