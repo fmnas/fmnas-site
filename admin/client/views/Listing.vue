@@ -119,6 +119,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	</section>
 	<p>modified status: {{ modified() }}</p>
 	<p>loading status: {{ loading }}</p>
+	<section class="photos">
+		TODO: Photos in listing editor
+	</section>
 	<editor v-model="description" :context="this.pet"/>
 </template>
 
