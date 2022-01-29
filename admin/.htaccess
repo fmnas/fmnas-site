@@ -17,14 +17,19 @@ AddOutputFilterByType DEFLATE application/javascript
 AddOutputFilterByType DEFLATE application/x-javascript
 
 # route API requests
+RewriteEngine on
 RewriteCond %{REQUEST_FILENAME} !.php
 RewriteRule ^api/([^/]+)/?$ /api/$1.php [L,QSA]
 RewriteRule ^api/([^/]+)/(.+)/$ /api/$1.php?v=$2 [L,QSA]
 RewriteRule ^api/([^/]+)/(.+)$ /api/$1.php?v=$2 [L,QSA]
-# TODO [#27]: figure out how to 404 on nonexistent endpoints
 
-# route with vue
+# route vue assets to dev server
+# RewriteRule ^assets/(.*)$ http://localhost:3000/assets/$1 [L] # dev.sh add
+
+# route everything else with vue
 RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^.*$ /index.html [L]
+RewriteCond %{REQUEST_URI} !^/(api|assets)(/.*)?$
+RewriteRule ^.*$ /index.html [L] # dev.sh remove
+# RewriteRule ^.*$ /loader.html [L] # dev.sh add
 
 # Authentication for test site is taken from .htaccess-test at deployment.
