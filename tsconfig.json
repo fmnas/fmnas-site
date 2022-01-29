@@ -2,6 +2,9 @@
 	"extends": "@tsconfig/node16/tsconfig.json",
 	"ts-node": {
 		"files": true,
+		"compilerOptions": {
+			"module": "commonjs",
+		}
 	},
 	"compilerOptions": {
 		"target": "es2015",
@@ -18,6 +21,7 @@
 		"types": [
 			"webpack-env",
 			"vite/client",
+			"node",
 		],
 		"lib": [
 			"esnext",
@@ -29,10 +33,10 @@
 	"include": [
 		"**/*.ts",
 		"**/*.tsx",
-		"**/*.vue",
+		"**/*.vue"
 	],
 	"exclude": [
 		"node_modules",
-		"public",
+		"public"
 	]
 }
