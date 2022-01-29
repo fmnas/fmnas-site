@@ -50,12 +50,6 @@ a.return {
 		vertical-align: bottom;
 	}
 
-	section#description iframe {
-		margin: 0 auto 1em;
-		display: block;
-		max-height: calc((100vw - 1em) * 9 / 16);
-	}
-
 	aside.images {
 		width: 100%;
 		display: flex;
@@ -83,10 +77,12 @@ a.return {
 		iframe {
 			width: 853px;
 			height: 480px;
+			margin: 0 auto 1em;
+			display: block;
 			width: calc(1280px + 0.25em);
 			height: calc((1280px + 0.25em) * 9 / 16);
-			max-width: calc(100vw - 16px);
-			max-height: calc((100vw - 16px) * 9 / 16);
+			max-width: 95vw;
+			max-height: calc((100vw - 1em) * 9 / 16);
 		}
 	}
 }
