@@ -36,7 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					<label for="species_input">Species</label>
 					<select id="species_input" v-model="pet['species']" name="species" required>
 						<option value=""></option>
-						<option v-for="s of config['species']" :value="s['id']">{{ ucfirst(s['name']) }}</option>
+						<option v-for="s of config['species']" :value="s['id']" :key="s['id']">{{ ucfirst(s['name']) }}</option>
 					</select>
 				</li>
 				<li class="breed">
@@ -51,7 +51,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<li class="sex">
 					<label for="sexes">Sex</label>
 					<fieldset id="sexes" :class="sexInteracted || validated ? 'validated' : ''">
-						<label v-for="sex of config['sexes']">
+						<label v-for="sex of config['sexes']" :key="sex['key']">
 							<input v-model="pet['sex']" :value="sex['key']" name="sex" required type="radio">
 							<abbr :title="ucfirst(sex['name'])" @click.prevent="sexClick(sex)">{{
 									sex['name'][0].toUpperCase()
@@ -68,7 +68,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					<label for="status">Status</label>
 					<select id="status" v-model="pet['status']" name="status" required>
 						<option value=""></option>
-						<option v-for="status of config['statuses']" :value="status['key']">
+						<option v-for="status of config['statuses']" :value="status['key']" :key="status['key']">
 							{{ status['name'] }}
 						</option>
 					</select>
