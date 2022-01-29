@@ -12,6 +12,7 @@ Dependencies::lightncandy();
  */
 function parse(string $raw, array $context): string {
 	$Parsedown = new Parsedown();
+	$Parsedown->setBreaksEnabled(true);
 	return $Parsedown->text(
 			LightnCandy\LightnCandy::prepare(
 					LightnCandy\LightnCandy::compile($raw, [
