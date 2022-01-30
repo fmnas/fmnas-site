@@ -182,7 +182,7 @@ export default defineComponent({
 			// Wait for async uploads
 			await this.profilePromise;
 			await Promise.all(this.photoPromises);
-			this.pet.description = await(uploadDescription(this.description));
+			this.pet.description = await(uploadDescription(this.description, this.pet.description?.key));
 			console.log('fffff');
 			// TODO [#59]: Handle changing id of existing pet
 			fetch(this.apiUrl(), {

@@ -10,6 +10,8 @@ $writer = function(string $key, mixed $body) use ($db): Result {
 	if (file_put_contents($path, $body) === false) {
 		return new Result(500, error: "Failed to save asset to $path");
 	}
+	unlink(cached_assets() . "/" . $asset->key);
+	array_map('unlink', glob(cached_assets() . "/" . $asset->key . ".*"));
 	return new Result(204);
 };
 

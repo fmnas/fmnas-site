@@ -42,7 +42,7 @@ class Asset {
 	}
 
 	private static function createCacheDirectory(): void {
-		@mkdir(root() . "/public/assets/cache", 0755, true);
+		@mkdir(cached_assets(), 0755, true);
 	}
 
 	public function getType(): string {
