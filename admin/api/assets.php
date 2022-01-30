@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,33 +18,37 @@
 
 require_once 'api.php';
 
+// This endpoint is for asset metadata. For raw data, use tha raw endpoint.
 endpoint(...[
-		'get' => function(): Result {
-			global $_G;
-			return new Result(200, $_G);
-		},
-		'get_value' => function($key): Result {
-			global $_G;
-			if (isset($_G[$key])) {
-				return new Result(200, $_G[$key]);
+		'get' => $reject,
+		'get_value' => function($key) use ($db): Result {
+			if (!is_numeric($key)) {
+				return new Result(400, error: "Asset key $key must be numeric");
 			}
-			return new Result(404, error: "Config key $key not found");
+			$asset = $db->getAssetByKey(intval($key));
+			if ($asset === null) {
+				return new Result(404, error: "Asset $key not found");
+			}
+			return new Result(200, $asset);
 		},
 		'put' => $reject,
 		'put_value' => function($key, $value) use ($db): Result {
-			global $src;
-			if (!isset($_G[$key])) {
-				return new Result(404, error: "Config key $key not found");
+			if ($db->getAssetByKey(intval($key)) === null) {
+				return new Result(404, error: "Asset $key not found");
 			}
-			if (!is_string($value)) {
-				return new Result(400, error: "Supplied value must be a string");
-			}
-			$error = $db->setConfigValue($key, $value);
+			$error = $db->updateAsset(intval($key), $value);
 			if ($error) {
 				return new Result(500, error: $error);
 			}
-			require_once "$src/generator.php";
 			return new Result(204);
 		},
+		'post' => function($value) use ($db): Result {
+			$key = $db->insertAsset($value);
+			if (is_string($key)) {
+				return new Result(500, error: $key);
+			}
+			return new Result(200, $db->getAssetByKey($key));
+		},
+		'post_value' => $reject,
 		'delete' => $reject,
 ]);

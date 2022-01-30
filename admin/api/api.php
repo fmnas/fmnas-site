@@ -7,6 +7,7 @@ class Result implements JsonSerializable {
 			public int $status,
 			public mixed $value = null,
 			public ?string $error = null,
+			public ?string $location = null,
 	) {
 	}
 
@@ -81,4 +82,3 @@ function endpoint(?callable $get = null, ?callable $post = null, ?callable $put 
 $reject = function($key = null, $value = null): Result {
 	return new Result(405, "Action not allowed");
 };
-
