@@ -103,10 +103,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					<span>{{ pet['fee'] || '&nbsp;' }}</span>
 				</td>
 				<td class="img">
-					<a :href="listed() ? `//${config['public_domain']}/${getFullPathForPet(pet)}` : null"
-							@click.prevent="editProfileImage">
-						<img :src="pet['photo']?.['key'] ? `/api/raw/stored/${pet['photo']?.['key']}` : null"
-								alt="Add profile image">
+					<a>
+						<profile-photo v-model="pet.photo" v-model:promise="profilePromise"></profile-photo>
 					</a>
 				</td>
 				<td class="inquiry"><a :href="`mailto:${config['default_email_user']}@${config['public_domain']}`"
@@ -119,7 +117,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	</section>
 	<p>modified status: {{ modified() }}</p>
 	<p>loading status: {{ loading }}</p>
-	<photos v-model="pet.photos"></photos>
+	<photos v-model="pet.photos" v-model:promises="photoPromises"></photos>
 	<editor v-model="description" :context="this.pet"/>
 </template>
 
@@ -128,13 +126,14 @@ import Editor from '../components/Editor.vue';
 import Photos from '../components/Photos.vue';
 import {defineComponent} from 'vue';
 import store from '../store';
-import {getFullPathForPet, getPathForPet, partial, petAge, ucfirst} from '../common';
+import {getFullPathForPet, getPathForPet, partial, petAge, ucfirst, uploadDescription} from '../common';
 import {mapState} from 'vuex';
-import {Pet, Species} from '../types';
+import {Asset, Pet, Sex} from '../types';
+import ProfilePhoto from '../components/ProfilePhoto.vue';
 
 export default defineComponent({
 	name: 'Listing',
-	components: {Editor, Photos},
+	components: {ProfilePhoto, Editor, Photos},
 	data() {
 		return {
 			species: this.$route.params.species as string,
@@ -146,6 +145,8 @@ export default defineComponent({
 			loading: true,
 			sexInteracted: false,
 			validated: false,
+			profilePromise: null as Promise<Asset>|null,
+			photoPromises: [] as Promise<Asset>[],
 		};
 	},
 	created() {
@@ -193,11 +194,17 @@ export default defineComponent({
 		apiUrl() {
 			return (this.species && this.path) ? `/api/listings/${this.species}/${this.path}` : '/api/listings';
 		},
-		save() {
+		async save() {
 			console.log('eeeee');
+			// Wait for async uploads
+			await this.profilePromise;
+			await Promise.all(this.photoPromises);
+			this.pet.description = await(uploadDescription(this.description));
+			console.log('fffff');
 			// TODO [#59]: Handle changing id of existing pet
 			fetch(this.apiUrl(), {
 				method: this.path ? 'PUT' : 'POST',
+				body: JSON.stringify(this.pet),
 			}).then(res => {
 				if (!res.ok) {
 					throw res;
@@ -246,14 +253,9 @@ export default defineComponent({
 			return !this.description?.startsWith('{{>coming_soon}}') &&
 			       (this.description || this.pet['photos']?.length);
 		},
-		editProfileImage() {
-			alert('Should bring up the profile image editor.');
-			// TODO [#60]: profile image editor
-		},
-		// TODO [#141]: Type for sex
-		sexClick(sex: any) {
+		sexClick(sex: Sex) {
 			// Allow deselecting a sex rather than just selecting one.
-			this.pet['sex'] = this.pet['sex'] === sex['key'] ? null : sex['key'];
+			this.pet['sex'] = this.pet['sex'] === sex['key'] ? undefined : sex['key'];
 			this.sexInteracted = true;
 		},
 		deleteListing() {
@@ -279,46 +281,6 @@ export default defineComponent({
 	outline: none;
 }
 
-/* Make a missing profile image seem like a link */
-td.img img {
-	vertical-align: center;
-	line-height: 318px;
-	box-sizing: border-box;
-	color: var(--link-color);
-	font-weight: bold;
-	cursor: pointer;
-	--stripe-1-color: transparent;
-	--stripe-2-color: rgba(0, 0, 0, 0.03);
-	--plus-url: url('/plus.svg.php?color=066');
-	background-image: var(--plus-url), linear-gradient(135deg, var(--stripe-1-color) 25%, var(--stripe-2-color) 25%, var(--stripe-2-color) 50%, var(--stripe-1-color) 50%, var(--stripe-1-color) 75%, var(--stripe-2-color) 75%, var(--stripe-2-color) 100%);
-	background-size: 20px 20px;
-	background-repeat: no-repeat, repeat;
-	background-position: bottom 152px center, center;
-	background-clip: padding-box;
-	margin-top: 2px;
-
-	&::before {
-		display: block;
-		width: 100%;
-		height: 100%;
-	}
-
-	&:not([src]), &::before, &:hover {
-		outline: 2px dashed var(--link-color);
-	}
-
-	&:hover {
-		text-decoration: underline;
-	}
-}
-
-td.img img:active, td.img img:active::before {
-	color: var(--active-color);
-	outline-color: var(--active-color);
-	--plus-url: url('/plus.svg.php?color=f60');
-}
-
-/* Styles for metadata editor */
 .metadata {
 	--label-width: 6em;
 	--input-width: 14em;
@@ -446,5 +408,9 @@ fieldset#sexes input + abbr:active, .metadata button:active {
 div.buttons {
 	display: flex;
 	justify-content: space-evenly;
+}
+
+td.img > a {
+
 }
 </style>

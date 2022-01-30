@@ -54,16 +54,15 @@ export interface Pet {
 	photo?: Asset;
 	photos?: Asset[];
 	description?: Asset;
-	status: Status;
+	status: number;
 	plural?: boolean;
 }
 
 export interface Asset {
-	key: string;
+	key: number;
 	path?: string;
 	data?: Object;
 	type?: string;
-	contents?: string;
 	size?: Number[];
 }
 

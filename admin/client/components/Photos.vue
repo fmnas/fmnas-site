@@ -24,8 +24,8 @@ import {defineComponent} from 'vue';
 
 export default defineComponent({
 	name: 'Photos',
-	props: ['modelValue'],
-	emits: ['update:modelValue'],
+	props: ['modelValue', 'promises'],
+	emits: ['update:modelValue', 'update:promises'],
 	computed: {
 		source: {
 			get(): string {
