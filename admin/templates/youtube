@@ -1,7 +1,7 @@
 <div class="video">
 
 {{#if id}}
-{{#editor}}
+{{#editor}} {{!TODO: Show the name of the youtube video in the editor preview}}
 YouTube Video: [{{id}}](https://youtu.be/{{id}})
 {{/editor}}
 {{^editor}}

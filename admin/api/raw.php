@@ -19,7 +19,7 @@ endpoint(...[
 			// Caching
 			$etag = '"' . filemtime(__FILE__) . filemtime($asset->absolutePath()) . '"';
 			header("ETag: $etag");
-			$ifNoneMatch = array_map('trim', explode(',', trim($_SERVER['HTTP_IF_NONE_MATCH'])));
+			$ifNoneMatch = array_map('trim', explode(',', trim($_SERVER['HTTP_IF_NONE_MATCH'] ?? '')));
 			if (in_array($etag, $ifNoneMatch, true)) {
 				header("HTTP/2 304 Not Modified");
 				exit();
