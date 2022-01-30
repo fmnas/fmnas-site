@@ -12,6 +12,7 @@ if (!($pet = $db->getPetByPath($path))) {
 	return; // this is not a valid listing
 }
 ?>
+
 	<!DOCTYPE html>
 	<html lang="en-US">
 	<title>
@@ -56,11 +57,7 @@ if (!($pet = $db->getPetByPath($path))) {
 		<?php
 		if ($pet->description !== null) {
 			echo '<section id="description">';
-			echo $pet->description->parse([
-					"pet" => $pet->toArray(),
-					"name" => $pet->name,
-					"fee" => $pet->fee,
-			]);
+			echo $pet->description->parse((array) $pet);
 			echo '</section>';
 		}
 		?>

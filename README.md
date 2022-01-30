@@ -149,24 +149,16 @@ Pet listing source code is stored as assets. These assets are **[Handlebars](htt
 should yield **[Github Flavored Markdown](https://github.github.com/gfm/)**
 (which [may include arbitrary HTML](https://github.github.com/gfm/#raw-html); the tagfilter extension is **not** used).
 
-The following variables in the template context are likely to prove useful in listings:
+The template context is of the type Pet. Some useful properties include:
 
-* **pet**: Pet
-	* Properties:
-		* name: string
-		* dob: string ("2020-03-28")
-		* sex: Sex
-			* name: string ("male")
-		* species: Species
-			* name: string ("cat")
-			* plural: string ("cats")
-		* fee: string ("$40")
-	* Methods:
-		* age(): string ("2 years old")
-		* sex(): string ("male")
-		* species(): string ("kitten")
-* **litter**: Litter | null (TODO [#80])
-	* Properties: pets (a list of Pets)
+* name: string
+* dob: string ("2020-03-28")
+* sex: Sex
+	* name: string ("male")
+* species: Species
+	* name: string ("cat")
+	* plural: string ("cats")
+* fee: string ("$40")
 
 ## Architecture
 
