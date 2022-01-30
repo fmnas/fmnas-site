@@ -3,7 +3,7 @@ require_once "common.php";
 require_once "db.php";
 
 class Asset {
-	public string $key; // Database key & storage filename
+	public int $key; // Database key & storage filename
 	public ?string $path; // Canonical pathname
 	public ?array $data; // generic data associated with this asset
 	private ?string $type; // MIME type

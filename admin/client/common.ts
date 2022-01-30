@@ -2,7 +2,7 @@ import store from './store';
 import * as Handlebars from 'handlebars';
 // @ts-ignore types not coming in in PHPStorm for some reason
 import { marked } from 'marked';
-import {Config, Pet} from './types';
+import {Asset, Config, Pet} from './types';
 
 // TODO [#136]: Get 404 redirect working in vue router.
 export function r404(path: string) {
@@ -73,4 +73,25 @@ export function renderDescription(source: string, context: any): string {
 		breaks: true,
 		// TODO: Sanitize email links in rendered description.
 	});
+}
+
+// TODO: Make file upload promises observables with progress.
+async function uploadFile(file: File): Promise<Asset> {
+	// TODO: Upload asset.
+	console.error("Upload file not implemented");
+	return {key: 0};
+}
+
+export async function uploadDescription(body: string): Promise<Asset> {
+	// TODO: Upload asset.
+	console.error("Upload description not implemented");
+	return {key: 0};
+}
+
+export function uploadFiles(files: FileList|null): Promise<Asset>[] {
+	const promises = [];
+	for (const file of files ?? []) {
+		promises.push(uploadFile(file));
+	}
+	return promises;
 }
