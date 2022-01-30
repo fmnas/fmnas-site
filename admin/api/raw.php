@@ -12,6 +12,7 @@ $writer = function(string $key, mixed $body) use ($db): Result {
 	}
 	unlink(cached_assets() . "/" . $asset->key);
 	array_map('unlink', glob(cached_assets() . "/" . $asset->key . ".*"));
+	array_map('unlink', glob(cached_assets() . "/" . $asset->key . "_*"));
 	return new Result(204);
 };
 
