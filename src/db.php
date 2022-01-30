@@ -239,7 +239,7 @@ class Database {
 			return null;
 		}
 		$result = $this->getAssetByKey->get_result();
-		if ($result === null || $result->num_rows === 0) {
+		if ($result === false || $result->num_rows === 0) {
 			return null;
 		}
 		return self::createAsset($result->fetch_assoc());
