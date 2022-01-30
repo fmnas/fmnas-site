@@ -19,23 +19,23 @@ import store from './store';
 import * as Handlebars from 'handlebars';
 // @ts-ignore types not coming in in PHPStorm for some reason
 import { marked } from 'marked';
+import {Config, Pet} from './types';
 
 // TODO [#136]: Get 404 redirect working in vue router.
 export function r404(path: string) {
 	window.location.href = `/404.php?p=${encodeURIComponent(path)}`;
 }
 
-// TODO [#137]: TypeScript Pet class.
 export const ucfirst = (str = '') => str.charAt(0).toUpperCase() + str.slice(1);
-export const getPathForPet = (pet: any) => `${pet['id']}${pet['name']?.split(' ').join('')}`;
-export const getFullPathForPet = (pet: any) => `${store.state.config['species']?.[pet['species']]?.['plural']}/${getPathForPet(pet)}`;
-export const petAge = (pet: any) => {
+export const getPathForPet = (pet: Pet) => `${pet.id}${pet.name?.split(' ').join('')}`;
+export const getFullPathForPet = (pet: Pet) => `${store.state.config.species[pet.species as number].plural}/${getPathForPet(pet)}`;
+export const petAge = (pet: Pet) => {
 	const dob = pet['dob'];
 	if (!dob) {
 		return '\xa0'; // &nbsp;
 	}
 	try {
-		const species = store.state.config['species']?.[pet['species']];
+		const species = store.state.config.species[pet.species as number];
 		const startDate = new Date(dob);
 		const endDate = new Date();
 		const yearDiff = endDate.getFullYear() - startDate.getFullYear();
@@ -65,7 +65,7 @@ export const petAge = (pet: any) => {
 	}
 };
 
-export const getConfig = (): Promise<any> => fetch('/api/config', {method: 'GET'}).then(res => {
+export const getConfig = (): Promise<Config> => fetch('/api/config', {method: 'GET'}).then(res => {
 	if (!res.ok) {
 		throw res;
 	}

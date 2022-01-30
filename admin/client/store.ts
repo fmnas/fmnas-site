@@ -17,15 +17,15 @@
 
 import {createStore} from 'vuex';
 import * as Handlebars from 'handlebars';
+import {Config} from './types';
 
 export default createStore({
 	state: {
-		// TODO [#139]: Type for config in vuex.
-		config: {} as any,
+		config: {} as Config,
 		partials: {} as Record<string, string>,
 	},
 	mutations: {
-		setConfig(state, config: any) {
+		setConfig(state, config: Config) {
 			state.config = config;
 		},
 		setPartials(state, partials: Record<string, string>) {

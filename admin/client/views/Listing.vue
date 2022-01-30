@@ -119,7 +119,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	</section>
 	<p>modified status: {{ modified() }}</p>
 	<p>loading status: {{ loading }}</p>
-	<photos v-model="photos"></photos>
+	<photos v-model="pet.photos"></photos>
 	<editor v-model="description" :context="this.pet"/>
 </template>
 
@@ -130,22 +130,22 @@ import {defineComponent} from 'vue';
 import store from '../store';
 import {getFullPathForPet, getPathForPet, partial, petAge, ucfirst} from '../common';
 import {mapState} from 'vuex';
+import {Pet, Species} from '../types';
 
 export default defineComponent({
 	name: 'Listing',
 	components: {Editor, Photos},
 	data() {
 		return {
-			species: this.$route.params.species,
-			path: this.$route.params.pet,
-			pet: {} as any,
-			original: {} as any,
+			species: this.$route.params.species as string,
+			path: this.$route.params.pet as string,
+			pet: {} as Pet,
+			original: {} as Pet,
 			description: partial('default'),
 			originalDescription: '',
 			loading: true,
 			sexInteracted: false,
 			validated: false,
-			photos: [],
 		};
 	},
 	created() {
@@ -176,9 +176,8 @@ export default defineComponent({
 			});
 		} else {
 			// Creating a new listing
-			// TODO [#140]: Type for species.
 			this.pet['species'] =
-				(Object.values(store.state.config['species']) as any).find((s: any) => s['plural'] === this.species)?.['id'];
+				(Object.values(store.state.config.species)).find((s: any) => s['plural'] === this.species)?.['id'];
 			this.originalDescription = this.description;
 			this.loading = false;
 		}
@@ -210,12 +209,12 @@ export default defineComponent({
 			// Update original pet
 			for (const [key, value] of Object.entries(this.pet)) {
 				if (typeof value !== 'object') {
-					this.original[key] = value;
+					(this.original as any)[key] = value;
 				}
 			}
 			// Update URL
 			if (`${this.species}/${this.path}` !== getFullPathForPet(this.pet)) {
-				this.species = store.state.config['species'][this.pet.species]['plural'];
+				this.species = store.state.config['species'][this.pet.species as number]['plural'] ?? 'pets';
 				this.path = getPathForPet(this.pet);
 				console.info(`Replacing route with ${getFullPathForPet(this.pet)}`);
 				this.$router.replace(`/${getFullPathForPet(this.pet)}`);
@@ -231,10 +230,12 @@ export default defineComponent({
 			    this.originalDescription?.trim().replaceAll('\r', '')) {
 				return true;
 			}
-			for (const key of new Set([...Object.keys(this.original), ...Object.keys(this.pet)])) {
-				if ((typeof this.pet[key] !== 'object' || typeof this.pet[key] !== 'object') &&
-				    this.pet[key] !== this.original[key] &&
-				    !(!this.pet[key] && !this.original[key]) // so null matches '', etc.
+			const original = this.original as any;
+			const pet = this.pet as any;
+			for (const key of new Set([...Object.keys(original), ...Object.keys(pet)])) {
+				if ((typeof pet[key] !== 'object' || typeof original[key] !== 'object') &&
+				    pet[key] !== original[key] &&
+				    !(!pet[key] && !original[key]) // so null matches '', etc.
 				) {
 					return true;
 				}
