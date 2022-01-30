@@ -6,7 +6,7 @@ class Asset {
 	public int $key; // Database key & storage filename
 	public ?string $path; // Canonical pathname
 	public ?array $data; // generic data associated with this asset
-	private ?string $type; // MIME type
+	public ?string $type; // MIME type
 	private ?string $contents;
 	private ?array $size; // intrinsic size of image
 

@@ -75,23 +75,61 @@ export function renderDescription(source: string, context: any): string {
 	});
 }
 
+async function createAsset(type: string, path: string = '', data: any = {}): Promise<Asset> {
+	const res = await fetch(`/api/assets`, {method: 'POST', body: JSON.stringify({
+			type: type,
+			data: data,
+			path: path,
+		})});
+	if (!res.ok) {
+		throw res;
+	}
+	return res.json();
+}
+
+async function updateAsset(asset: Asset): Promise<void> {
+	const res = await fetch(`/api/assets/${asset.key}`, {method: 'PUT', body: JSON.stringify(asset)});
+	if (!res.ok) {
+		throw res;
+	}
+}
+
+async function getAsset(key: number): Promise<Asset> {
+	const res = await fetch(`/api/assets/${key}`);
+	if (!res.ok) {
+		throw res;
+	}
+	return res.json();
+}
+
 // TODO: Make file upload promises observables with progress.
-async function uploadFile(file: File): Promise<Asset> {
-	// TODO: Upload asset.
-	console.error("Upload file not implemented");
-	return {key: 0};
+export async function uploadFile(file: File, key: number | undefined = undefined, pathPrefix: string = ''): Promise<Asset> {
+	const asset = key ? await getAsset(key) : await createAsset(file.type, pathPrefix + file.name);
+	if (asset.type !== file.type || asset.path !== pathPrefix + file.name) {
+		asset.type = file.type;
+		asset.path = pathPrefix + file.name;
+		await updateAsset(asset);
+	}
+	const res = await fetch(`/api/raw/${asset.key}`, {method: 'POST', body: file});
+	if (!res.ok) {
+		throw res;
+	}
+	return asset;
 }
 
-export async function uploadDescription(body: string): Promise<Asset> {
-	// TODO: Upload asset.
-	console.error("Upload description not implemented");
-	return {key: 0};
+export async function uploadDescription(body: string, key: number | undefined = undefined): Promise<Asset> {
+	const asset = key ? await getAsset(key): await createAsset('text/plain');
+	const res = await fetch(`/api/raw/${asset.key}`, {method: 'POST', body: body});
+	if (!res.ok) {
+		throw res;
+	}
+	return asset;
 }
 
-export function uploadFiles(files: FileList|null): Promise<Asset>[] {
+export function uploadFiles(files: FileList|null, pathPrefix: string = ''): Promise<Asset>[] {
 	const promises = [];
 	for (const file of files ?? []) {
-		promises.push(uploadFile(file));
+		promises.push(uploadFile(file, undefined, pathPrefix));
 	}
 	return promises;
 }

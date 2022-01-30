@@ -7,8 +7,8 @@
 
 <script lang="ts">
 import {defineComponent, PropType} from 'vue';
-import {Asset} from '../types';
-import {uploadFiles} from '../common';
+import {Asset, Pet} from '../types';
+import {uploadFile} from '../common';
 
 export default defineComponent({
 	name: 'ProfilePhoto',
@@ -51,8 +51,8 @@ export default defineComponent({
 			const input = this.$refs.input as HTMLInputElement;
 			if (input.files?.[0]) {
 				this.localPath = URL.createObjectURL(input.files[0]);
+				this.prom = uploadFile(input.files[0], this.photo?.key).then((asset) => this.photo = asset);
 			}
-			this.prom = uploadFiles(input.files)[0].then((asset) => this.photo = asset);
 			input.value = '';
 			input.files = null;
 		}

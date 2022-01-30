@@ -1,19 +1,30 @@
 <?php
 require_once 'api.php';
 
+$writer = function(string $key, mixed $body) use ($db): Result {
+	$asset = $db->getAssetByKey(intval($key));
+	if ($asset === null) {
+		return new Result(404, error: "Metadata not found for asset $key");
+	}
+	$path = $asset->absolutePath();
+	if (file_put_contents($path, $body) === false) {
+		return new Result(500, error: "Failed to save asset to $path");
+	}
+	return new Result(204);
+};
+
 // This endpoint is for raw asset data. For metadata, use the assets endpoint.
-// TODO [#33]: implement the assets endpoint
 endpoint(...[
 		'get' => $reject,
 		'get_value' => function($value) use ($db): Result {
 			if (startsWith($value, "cached/")) {
 				// TODO [#58]: Handle cached images in raw api and use in listing editor
-				return new Result(501, "Can't read cache");
+				return new Result(501, error: "Can't read cache");
 			}
 			$asset = startsWith($value, "stored/") ?
 					$db->getAssetByKey(intval(substr($value, strlen("stored/")))) : $db->getAssetByPath($value);
 			if ($asset === null) {
-				return new Result(404, "Asset $value not found");
+				return new Result(404, error: "Asset $value not found");
 			}
 
 			// Caching
@@ -29,6 +40,10 @@ endpoint(...[
 			readfile($asset->absolutePath());
 			exit(); // Exit here to avoid outputting JSON
 		},
+		'post' => $reject,
+		'post_value' => $writer,
+		'put' => $reject,
+		'put_value' => $writer,
 		'delete' => $reject,
 		'delete_value' => $reject,
 ]);
