@@ -119,14 +119,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	</section>
 	<p>modified status: {{ modified() }}</p>
 	<p>loading status: {{ loading }}</p>
-	<section class="photos">
-		TODO: Photos in listing editor
-	</section>
+	<photos v-model="photos"></photos>
 	<editor v-model="description" :context="this.pet"/>
 </template>
 
 <script lang="ts">
 import Editor from '../components/Editor.vue';
+import Photos from '../components/Photos.vue';
 import {defineComponent} from 'vue';
 import store from '../store';
 import {getFullPathForPet, getPathForPet, partial, petAge, ucfirst} from '../common';
@@ -134,7 +133,7 @@ import {mapState} from 'vuex';
 
 export default defineComponent({
 	name: 'Listing',
-	components: {Editor},
+	components: {Editor, Photos},
 	data() {
 		return {
 			species: this.$route.params.species,
@@ -146,6 +145,7 @@ export default defineComponent({
 			loading: true,
 			sexInteracted: false,
 			validated: false,
+			photos: [],
 		};
 	},
 	created() {
@@ -379,8 +379,6 @@ section.metadata {
 	justify-content: space-evenly;
 	align-items: center;
 }
-
-fieldset#sexes
 
 .metadata input:focus, .metadata select:focus, fieldset#sexes input:checked + abbr, fieldset#sexes input + abbr:hover,
 .metadata button:hover {
