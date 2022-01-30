@@ -16,8 +16,8 @@ export default defineComponent({
 	name: 'TransportDate',
 	data() {
 		return {
-			date: null,
-			savedDate: null,
+			date: null as string|null,
+			savedDate: null as string|null,
 		};
 	},
 	methods: {
