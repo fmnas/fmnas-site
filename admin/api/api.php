@@ -52,7 +52,8 @@ function endpoint(?callable $get = null, ?callable $post = null, ?callable $put 
 	$result = new Result(500, error: "Endpoint function didn't return a result");
 
 	$method = $_SERVER['REQUEST_METHOD'];
-	$data = json_decode(file_get_contents('php://input'), true);
+	$raw = file_get_contents('php://input');
+	$data = json_decode($raw, true) ?? $raw;
 	$v = isset($_GET['v']);
 	$value = $v ? $_GET['v'] : null;
 	switch ($method) {

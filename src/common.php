@@ -96,6 +96,13 @@ function src(): string {
 }
 
 /**
+ * @return string The absolute path to the cached assets directory
+ */
+#[Pure] function cached_assets(): string {
+	return root() . "/public/assets/cache";
+}
+
+/**
  * Global variables from the above functions
  */
 $assets = assets();

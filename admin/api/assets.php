@@ -18,7 +18,7 @@
 
 require_once 'api.php';
 
-// This endpoint is for asset metadata. For raw data, use tha raw endpoint.
+// This endpoint is for asset metadata. For raw data, use the raw endpoint.
 endpoint(...[
 		'get' => $reject,
 		'get_value' => function($key) use ($db): Result {
