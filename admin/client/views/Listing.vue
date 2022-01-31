@@ -178,7 +178,9 @@ export default defineComponent({
 			// Wait for async uploads
 			await this.profilePromise;
 			await Promise.all(this.photoPromises);
-			this.pet.description = await uploadDescription(this.description);
+			if (this.description !== this.originalDescription && this.pet.description?.key) {
+				this.pet.description = await uploadDescription(this.description);
+			}
 			fetch(this.original?.id ? `/api/listings/${this.original.id}` : `/api/listings`, {
 				method: this.original?.id ? 'PUT' : 'POST',
 				body: JSON.stringify(this.pet),
