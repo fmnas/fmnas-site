@@ -125,7 +125,11 @@ class Asset {
 			while ($currentScale * $height < $intrinsicHeight) {
 				$tag .= $this->cachedImage($currentScale * $height);
 				$tag .= " {$currentScale}x, ";
-				$currentScale += 0.5;
+				if ($currentScale < 4) {
+					$currentScale += 0.5;
+				} else {
+					$currentScale *= 2;
+				}
 			}
 			$tag .= "$path " . $intrinsicHeight / $height . "x\"";
 		}
