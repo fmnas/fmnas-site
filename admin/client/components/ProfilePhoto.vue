@@ -51,7 +51,7 @@ export default defineComponent({
 			const input = this.$refs.input as HTMLInputElement;
 			if (input.files?.[0]) {
 				this.localPath = URL.createObjectURL(input.files[0]);
-				this.prom = uploadFile(input.files[0], this.photo?.key).then((asset) => this.photo = asset);
+				this.prom = uploadFile(input.files[0]).then((asset) => this.photo = asset);
 			}
 			input.value = '';
 			input.files = null;

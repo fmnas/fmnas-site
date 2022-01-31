@@ -7,12 +7,12 @@ $writer = function(string $key, mixed $body) use ($db): Result {
 		return new Result(404, error: "Metadata not found for asset $key");
 	}
 	$path = $asset->absolutePath();
+	if (file_exists($path)) {
+		return new Result(409, error: "Asset $key already exists");
+	}
 	if (file_put_contents($path, $body) === false) {
 		return new Result(500, error: "Failed to save asset to $path");
 	}
-	unlink(cached_assets() . "/" . $asset->key);
-	array_map('unlink', glob(cached_assets() . "/" . $asset->key . ".*"));
-	array_map('unlink', glob(cached_assets() . "/" . $asset->key . "_*"));
 	return new Result(204);
 };
 
@@ -46,7 +46,7 @@ endpoint(...[
 		'post' => $reject,
 		'post_value' => $writer,
 		'put' => $reject,
-		'put_value' => $writer,
+		'put_value' => $reject,
 		'delete' => $reject,
 		'delete_value' => $reject,
 ]);
