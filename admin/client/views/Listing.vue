@@ -145,7 +145,7 @@ export default defineComponent({
 			loading: true,
 			sexInteracted: false,
 			validated: false,
-			profilePromise: null as Promise<Asset>|null,
+			profilePromise: null as Promise<Asset> | null,
 			photoPromises: [] as Promise<Asset>[],
 		};
 	},
@@ -153,7 +153,7 @@ export default defineComponent({
 		if (this.species && this.path) {
 			// Updating an existing listing
 			// TODO [#39]: Add a loading indicator for listing editor
-			fetch(this.apiUrl()).then(res => {
+			fetch((this.species && this.path) ? `/api/listings/${this.species}/${this.path}` : '/api/listings').then(res => {
 				if (!res.ok) {
 					throw res;
 				}
@@ -191,19 +191,13 @@ export default defineComponent({
 		});
 	},
 	methods: {
-		apiUrl() {
-			return (this.species && this.path) ? `/api/listings/${this.species}/${this.path}` : '/api/listings';
-		},
 		async save() {
-			console.log('eeeee');
 			// Wait for async uploads
 			await this.profilePromise;
 			await Promise.all(this.photoPromises);
-			this.pet.description = await(uploadDescription(this.description, this.pet.description?.key));
-			console.log('fffff');
-			// TODO [#59]: Handle changing id of existing pet
-			fetch(this.apiUrl(), {
-				method: this.path ? 'PUT' : 'POST',
+			this.pet.description = await uploadDescription(this.description);
+			fetch(this.original?.id ? `/api/listings/${this.original.id}` : `/api/listings`, {
+				method: this.original?.id ? 'PUT' : 'POST',
 				body: JSON.stringify(this.pet),
 			}).then(res => {
 				if (!res.ok) {
@@ -320,17 +314,21 @@ export default defineComponent({
 		width: var(--input-width);
 		@include input;
 	}
+
 	button {
 		width: 5em;
 		height: 1.5em;
 		background-color: inherit;
 	}
+
 	abbr {
 		text-decoration: none;
 	}
+
 	button.delete:hover {
 		box-shadow: inset 0 0 0 1px var(--error-color);
 	}
+
 	button.delete:active {
 		background-color: var(--error-color) !important;
 	}

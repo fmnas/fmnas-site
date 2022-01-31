@@ -56,6 +56,7 @@ function endpoint(?callable $get = null, ?callable $post = null, ?callable $put 
 	$data = json_decode($raw, true) ?? $raw;
 	$v = isset($_GET['v']);
 	$value = $v ? $_GET['v'] : null;
+	try {
 	switch ($method) {
 	case 'GET':
 		$result = call($v ? $get_value : $get, $value);
@@ -75,6 +76,9 @@ function endpoint(?callable $get = null, ?callable $post = null, ?callable $put 
 	case 'DELETE': // Delete
 		$result = call($v ? $delete_value : $delete, $value);
 		break;
+	}
+	} catch (Exception $e) {
+		$result = new Result(500, print_r($e, true));
 	}
 	http_response_code($result->status);
 	echo json_encode($result);
