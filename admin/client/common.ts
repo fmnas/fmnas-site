@@ -120,8 +120,8 @@ async function getAsset(key: number): Promise<Asset> {
 }
 
 // TODO: Make file upload promises observables with progress.
-export async function uploadFile(file: File, key: number | undefined = undefined, pathPrefix: string = ''): Promise<Asset> {
-	const asset = key ? await getAsset(key) : await createAsset(file.type, pathPrefix + file.name);
+export async function uploadFile(file: File, pathPrefix: string = ''): Promise<Asset> {
+	const asset = await createAsset(file.type, pathPrefix + file.name);
 	if (asset.type !== file.type || asset.path !== pathPrefix + file.name) {
 		asset.type = file.type;
 		asset.path = pathPrefix + file.name;
@@ -134,8 +134,8 @@ export async function uploadFile(file: File, key: number | undefined = undefined
 	return asset;
 }
 
-export async function uploadDescription(body: string, key: number | undefined = undefined): Promise<Asset> {
-	const asset = key ? await getAsset(key): await createAsset('text/plain');
+export async function uploadDescription(body: string): Promise<Asset> {
+	const asset = await createAsset('text/plain');
 	const res = await fetch(`/api/raw/${asset.key}`, {method: 'POST', body: body});
 	if (!res.ok) {
 		throw res;
@@ -146,7 +146,7 @@ export async function uploadDescription(body: string, key: number | undefined = 
 export function uploadFiles(files: FileList|null, pathPrefix: string = ''): Promise<Asset>[] {
 	const promises = [];
 	for (const file of files ?? []) {
-		promises.push(uploadFile(file, undefined, pathPrefix));
+		promises.push(uploadFile(file, pathPrefix));
 	}
 	return promises;
 }

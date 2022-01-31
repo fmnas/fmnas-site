@@ -27,7 +27,7 @@ class DatabaseWriter extends Database {
 		}
 
 		if (!($insertAsset = $this->db->prepare("
-			INSERT INTO assets VALUES(?, ?, ?, ?)
+			INSERT INTO assets VALUES(NULL, ?, ?, ?)
 			"))) {
 			log_err("Failed to prepare insertAsset: {$this->db->error}");
 		} else {
