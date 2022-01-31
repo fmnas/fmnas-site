@@ -195,7 +195,7 @@ export default defineComponent({
 			// Wait for async uploads
 			await this.profilePromise;
 			await Promise.all(this.photoPromises);
-			if (this.description !== this.originalDescription && this.pet.description?.key) {
+			if (this.description !== this.originalDescription) {
 				this.pet.description = await uploadDescription(this.description);
 			}
 			fetch(this.original?.id ? `/api/listings/${this.original.id}` : `/api/listings`, {
@@ -210,11 +210,8 @@ export default defineComponent({
 		},
 		updateAfterSave() {
 			// Update original pet
-			for (const [key, value] of Object.entries(this.pet)) {
-				if (typeof value !== 'object') {
-					(this.original as any)[key] = value;
-				}
-			}
+			this.original = JSON.parse(JSON.stringify(this.pet));
+			this.originalDescription = this.description;
 			// Update URL
 			if (`${this.species}/${this.path}` !== getFullPathForPet(this.pet)) {
 				this.species = store.state.config['species'][this.pet.species as number]['plural'] ?? 'pets';
@@ -233,17 +230,8 @@ export default defineComponent({
 			    this.originalDescription?.trim().replaceAll('\r', '')) {
 				return true;
 			}
-			const original = this.original as any;
-			const pet = this.pet as any;
-			for (const key of new Set([...Object.keys(original), ...Object.keys(pet)])) {
-				if ((typeof pet[key] !== 'object' || typeof original[key] !== 'object') &&
-				    pet[key] !== original[key] &&
-				    !(!pet[key] && !original[key]) // so null matches '', etc.
-				) {
-					return true;
-				}
-			}
-			return false;
+			return JSON.stringify(this.original) !== JSON.stringify(this.pet);
+
 		},
 		listed() {
 			return !this.description?.startsWith('{{>coming_soon}}') &&
