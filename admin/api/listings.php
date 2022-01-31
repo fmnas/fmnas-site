@@ -24,11 +24,29 @@ endpoint(...[
 		},
 		'put' => $reject,
 		'put_value' => function($key, $pet) use ($db): Result {
-
-			return new Result(200, $pet);
+			$error = $db->insertPet($pet);
+			if ($key !== $pet['id']) {
+				$error ??= $db->deletePet($key); // Delete the original pet
+			}
+			if ($error !== null) {
+				return new Result(500, $error);
+			}
+			return new Result(204);
 		},
 		'post' => function($pet) use ($db): Result {
-			return new Result(200, $pet);
+			$error = $db->insertPet($pet);
+			if ($error !== null) {
+				return new Result(500, $error);
+			}
+			return new Result(204);
 		},
 		'post_value' => $reject,
+		'delete'=> $reject,
+		'delete_value' => function($key) use ($db): Result {
+			$error = $db->deletePet($key);
+			if ($error !== null) {
+				return new Result(500, $error);
+			}
+			return new Result(204);
+		},
 ]);
