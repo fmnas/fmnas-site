@@ -147,8 +147,12 @@ class DatabaseWriter extends Database {
 		if (!$this->db->begin_transaction()) {
 			$error = "Failed to begin transaction";
 		} else {
-			$this->updateAsset($photo, $pet['photo']);
-			$this->updateAsset($description, $pet['description']);
+			if ($photo) {
+				$this->updateAsset($photo, $pet['photo']);
+			}
+			if ($description) {
+				$this->updateAsset($description, $pet['description']);
+			}
 		}
 		if (!$error) {
 			if (!$this->insertPet->bind_param("ssissisiiii", $id, $name, $species, $breed, $dob, $sex, $fee, $photo, $description, $status, $plural)) {
@@ -161,6 +165,9 @@ class DatabaseWriter extends Database {
 				$error = "Executing deletePhotos failed: {$this->db->error}";
 			} else {
 				foreach($photos as $photo) {
+					if (!$photo || !$photo['key']) {
+						continue;
+					}
 					// TODO: Add sort order to photos table.
 					if (!$this->insertPhoto->bind_param("ss", $id, $photo['key'])) {
 						$error = "Binding $id,{$photo['key']} to insertPhoto failed: {$this->db->error}";
