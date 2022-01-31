@@ -39,7 +39,9 @@ class DatabaseWriter extends Database {
 		global $src;
 
 		$error = null;
-		if (!$this->setConfigValue->bind_param("ss", $value, $key)) {
+		if (!$this->db->begin_transaction()) {
+			$error = "Failed to begin transaction";
+		} else if (!$this->setConfigValue->bind_param("ss", $value, $key)) {
 			$error = "Binding $key,$value to setConfigValue failed: {$this->db->error}";
 		} else {
 			if (!$this->setConfigValue->execute()) {
@@ -54,8 +56,10 @@ class DatabaseWriter extends Database {
 		}
 		if ($error) {
 			log_err($error);
+			$this->db->rollback();
+			return $error;
 		}
-		return $error;
+		return $this->db->commit() ? "Failed to commit" : null;
 	}
 
 	public function insertAsset(array $value): string|int {
@@ -63,7 +67,9 @@ class DatabaseWriter extends Database {
 		$path = ($value['path'] ?? null) ?: null;
 		$data = isset($value['data']) ? serialize($value['data']) : null;
 		$type = $value['type'] ?? null;
-		if (!$this->insertAsset->bind_param("sss", $path, $data, $type)) {
+		if (!$this->db->begin_transaction()) {
+			$error = "Failed to begin transaction";
+		} else if (!$this->insertAsset->bind_param("sss", $path, $data, $type)) {
 			$error = "Binding $path,$data,$type to insertAsset failed: {$this->db->error}";
 		} else {
 			if (!$this->insertAsset->execute()) {
@@ -72,13 +78,16 @@ class DatabaseWriter extends Database {
 					$error = "insertAsset affected {$this->insertAsset->affected_rows} rows instead of 1";
 			}
 		}
-		if (!$error && $this->db->insert_id === 0) {
-			$error = "Got insert id {$this->db->insert_id}";
+		$id = $this->db->insert_id;
+		if (!$error && $id === 0) {
+			$error = "Got insert id 0";
 		}
 		if ($error) {
 			log_err($error);
+			$this->db->rollback();
+			return $error;
 		}
-		return $error ?? $this->db->insert_id;
+		return $this->db->commit() ? "Failed to commit" : $id;
 	}
 
 	public function updateAsset(int $key, array $value): ?string {
@@ -86,7 +95,9 @@ class DatabaseWriter extends Database {
 		$path = ($value['path'] ?? null) ?: null;
 		$data = isset($value['data']) ? serialize($value['data']) : null;
 		$type = $value['type'] ?? null;
-		if (!$this->updateAsset->bind_param("sssi", $path, $data, $type, $key)) {
+		if (!$this->db->begin_transaction()) {
+			$error = "Failed to begin transaction";
+		} else if (!$this->updateAsset->bind_param("sssi", $path, $data, $type, $key)) {
 			$error = "Binding $path,$data,$type,$key to updateAsset failed: {$this->db->error}";
 		} else {
 			if (!$this->updateAsset->execute()) {
@@ -97,7 +108,17 @@ class DatabaseWriter extends Database {
 		}
 		if ($error) {
 			log_err($error);
+			$this->db->rollback();
+			return $error;
 		}
-		return $error;
+		return $this->db->commit() ? "Failed to commit" : null;
+	}
+
+	public function startTransaction(): bool {
+		return $this->db->begin_transaction();
+	}
+
+	public function endTransaction(): bool {
+		return $this->db->commit();
 	}
 }

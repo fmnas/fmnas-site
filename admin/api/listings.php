@@ -22,5 +22,13 @@ endpoint(...[
 			}
 			return new Result(200, $pet);
 		},
+		'put' => $reject,
+		'put_value' => function($key, $pet) use ($db): Result {
+
+			return new Result(200, $pet);
+		},
+		'post' => function($pet) use ($db): Result {
+			return new Result(200, $pet);
+		},
 		'post_value' => $reject,
 ]);
