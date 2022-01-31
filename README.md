@@ -106,8 +106,7 @@ site. See the Workflow section above for more details.
 	* PHPMailer (tested with 6.4.1)
 	* [html5-php](https://github.com/Masterminds/html5-php) (tested with 2.7.5)
 	* Needs shell access (with `shell_exec`) and the following executables in PATH:
-		* `curl` to automatically fetch server-side dependencies
-		* `wkhtmltopdf` to render PDF versions of applications
+		* `curl` to request caching uploaded images
 * MySQL or MariaDB
 
 #### Build
