@@ -162,7 +162,6 @@ export default defineComponent({
 			// Creating a new listing
 			this.pet['species'] =
 				(Object.values(store.state.config.species)).find((s: any) => s['plural'] === this.species)?.['id'];
-			this.originalDescription = this.description;
 			this.loading = false;
 		}
 
