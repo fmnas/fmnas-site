@@ -149,6 +149,7 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 		}
 		return $total_size < 20 * 1048576;
 	};
+	$primaryEmail->replyTo = [$applicantEmail];
 
 	$secondaryEmail = new FormEmailConfig(
 			$shelterEmail,
