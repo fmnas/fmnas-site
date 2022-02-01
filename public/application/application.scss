@@ -854,6 +854,11 @@ article#application {
 		font: inherit;
 	}
 
+	pre {
+		white-space: pre-wrap;
+		text-align: left;
+	}
+
 	section.applicant span.explanatory {
 		display: none;
 	}
