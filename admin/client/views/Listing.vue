@@ -100,7 +100,7 @@
 	</section>
 	<p>modified status: {{ modified() }}</p>
 	<p>loading status: {{ loading }}</p>
-	<photos v-model="pet.photos" v-model:promises="photoPromises"></photos>
+	<photos v-model="pet.photos" @update:promises="photoPromises = $event"></photos>
 	<editor v-model="description" :context="this.pet"/>
 </template>
 
@@ -129,7 +129,7 @@ export default defineComponent({
 			sexInteracted: false,
 			validated: false,
 			profilePromise: null as Promise<Asset> | null,
-			photoPromises: [] as Promise<Asset>[],
+			photoPromises: [] as Promise<any>[],
 		};
 	},
 	created() {

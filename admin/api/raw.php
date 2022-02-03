@@ -16,8 +16,9 @@ $writer = function(string $key, mixed $body) use ($db): Result {
 	if (startsWith($asset->getType(), "image/")) {
 		// Make an (asynchronous) imgTag request to generate cached versions
 		$domain = _G_admin_domain();
+		$height = $_GET["height"] ?? '';
 		/** @noinspection HttpUrlsUsage */
-		exec("bash -c 'curl http://$domain/api/tag/{$asset->key} > /dev/null 2>&1 &'");
+		exec("bash -c 'curl http://$domain/api/tag/{$asset->key}?height=$height > /dev/null 2>&1 &'");
 	}
 	return new Result(204);
 };
