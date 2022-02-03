@@ -50,7 +50,7 @@ endpoint(...[
 			$asset = startsWith($value, "stored/") ?
 					$db->getAssetByKey(intval(substr($value, strlen("stored/")))) : $db->getAssetByPath($value);
 			if ($asset === null) {
-				return new Result(404, error: "Asset $value not found");
+				return new Result(404, error: "Asset $value not found (did you mean stored/$value?)");
 			}
 
 			// Caching

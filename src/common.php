@@ -2,6 +2,7 @@
 declare(strict_types = 1);
 @header("Content-Encoding: UTF-8");
 ini_set("pcre.jit", "0");
+set_include_path(__DIR__);
 
 use JetBrains\PhpStorm\Pure;
 
