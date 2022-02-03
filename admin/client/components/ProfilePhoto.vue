@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 <script lang="ts">
 import {defineComponent, PropType} from 'vue';
-import {Asset, Pet} from '../types';
+import {Asset} from '../types';
 import {uploadFile} from '../common';
 
 export default defineComponent({
@@ -38,10 +38,14 @@ export default defineComponent({
 			type: Object as PropType<Promise<Asset>>,
 			required: false
 		},
+		prefix: {
+			type: String,
+			required: false
+		},
 	},
 	data() {
 		return {
-			localPath: null as string|null,
+			localPath: null as string | null,
 		};
 	},
 	emits: ['update:modelValue', 'update:promise'],
@@ -68,7 +72,7 @@ export default defineComponent({
 			const input = this.$refs.input as HTMLInputElement;
 			if (input.files?.[0]) {
 				this.localPath = URL.createObjectURL(input.files[0]);
-				this.prom = uploadFile(input.files[0]).then((asset) => this.photo = asset);
+				this.prom = uploadFile(input.files[0], this.prefix, 300).then((asset) => this.photo = asset);
 			}
 			input.value = '';
 			input.files = null;

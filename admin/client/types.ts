@@ -64,6 +64,7 @@ export interface Asset {
 	data?: Object;
 	type?: string;
 	size?: Number[];
+	localPath?: string;
 }
 
 export interface Config {
@@ -80,4 +81,9 @@ export interface Config {
 	species: Species[];
 	sexes: Sex[];
 	statuses: Status[];
+}
+
+export interface PendingPhoto {
+	localPath: string;
+	promise: Promise<any>;
 }

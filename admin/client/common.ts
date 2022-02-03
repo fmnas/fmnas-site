@@ -18,7 +18,7 @@
 import store from './store';
 import * as Handlebars from 'handlebars';
 // @ts-ignore types not coming in in PHPStorm for some reason
-import { marked } from 'marked';
+import {marked} from 'marked';
 import {Asset, Config, Pet} from './types';
 
 // TODO [#136]: Get 404 redirect working in vue router.
@@ -28,7 +28,8 @@ export function r404(path: string) {
 
 export const ucfirst = (str = '') => str.charAt(0).toUpperCase() + str.slice(1);
 export const getPathForPet = (pet: Pet) => `${pet.id}${pet.name?.split(' ').join('')}`;
-export const getFullPathForPet = (pet: Pet) => `${store.state.config.species[pet.species as number].plural}/${getPathForPet(pet)}`;
+export const getFullPathForPet = (pet: Pet) => `${store.state.config.species[pet.species as number].plural}/${getPathForPet(
+	pet)}`;
 export const petAge = (pet: Pet) => {
 	const dob = pet['dob'];
 	if (!dob) {
@@ -93,11 +94,13 @@ export function renderDescription(source: string, context: any): string {
 }
 
 async function createAsset(type: string, path: string = '', data: any = {}): Promise<Asset> {
-	const res = await fetch(`/api/assets`, {method: 'POST', body: JSON.stringify({
+	const res = await fetch(`/api/assets`, {
+		method: 'POST', body: JSON.stringify({
 			type: type,
 			data: data,
 			path: path,
-		})});
+		})
+	});
 	if (!res.ok) {
 		throw res;
 	}
@@ -120,14 +123,14 @@ async function getAsset(key: number): Promise<Asset> {
 }
 
 // TODO: Make file upload promises observables with progress.
-export async function uploadFile(file: File, pathPrefix: string = ''): Promise<Asset> {
+export async function uploadFile(file: File, pathPrefix: string = '', height: string | number = ''): Promise<Asset> {
 	const asset = await createAsset(file.type, pathPrefix + file.name);
 	if (asset.type !== file.type || asset.path !== pathPrefix + file.name) {
 		asset.type = file.type;
 		asset.path = pathPrefix + file.name;
 		await updateAsset(asset);
 	}
-	const res = await fetch(`/api/raw/${asset.key}`, {method: 'POST', body: file});
+	const res = await fetch(`/api/raw/${asset.key}?height=${height}`, {method: 'POST', body: file});
 	if (!res.ok) {
 		throw res;
 	}
@@ -143,7 +146,7 @@ export async function uploadDescription(body: string): Promise<Asset> {
 	return asset;
 }
 
-export function uploadFiles(files: FileList|null, pathPrefix: string = ''): Promise<Asset>[] {
+export function uploadFiles(files: FileList | null, pathPrefix: string = ''): Promise<Asset>[] {
 	const promises = [];
 	for (const file of files ?? []) {
 		promises.push(uploadFile(file, pathPrefix));

@@ -22,6 +22,7 @@ require_once 'api.php';
 endpoint(...[
 		'get' => $reject,
 		'get_value' => function($key) use ($db): Result {
+			$height = $_GET["height"] ?: 600;
 			if (!is_numeric($key)) {
 				return new Result(400, error: "Asset key $key must be numeric");
 			}
@@ -29,7 +30,7 @@ endpoint(...[
 			if ($asset === null) {
 				return new Result(404, error: "Asset $key not found");
 			}
-			return new Result(200, $asset->imgTag());
+			return new Result(200, $asset->imgTag("", false, false, $height));
 		},
 		'put' => $reject,
 		'put_value' => $reject,
