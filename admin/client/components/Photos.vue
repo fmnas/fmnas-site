@@ -48,10 +48,13 @@ export default defineComponent({
 	emits: ['update:modelValue', 'update:promises'],
 	computed: {
 		photos: {
-			get(): Asset[] | undefined {
+			get(): Asset[] {
+				if (!this.modelValue?.[0]) {
+					return [];
+				}
 				return this.modelValue;
 			},
-			set(value: Asset[] | undefined): void {
+			set(value: Asset[]): void {
 				this.$emit('update:modelValue', value);
 			},
 		},

@@ -144,19 +144,20 @@ export default defineComponent({
 			}).then(data => {
 				this.pet = data;
 				this.updateAfterSave();
-				fetch(`/api/raw/stored/${this.pet['description']?.['key']}`).then(res => {
-					if (!res.ok) {
-						throw res;
-					}
-					return res.text();
-				}).then(data => {
-					this.description = data;
-					this.originalDescription = data;
-					this.loading = false;
-				}).catch((e) => {
-					console.error('Error fetching description: ', e);
-					this.loading = false;
-				});
+				if (this.pet.description) {
+					fetch(`/api/raw/stored/${this.pet['description']?.['key']}`).then(res => {
+						if (!res.ok) {
+							throw res;
+						}
+						return res.text();
+					}).then(data => {
+						this.description = data;
+						this.originalDescription = data;
+					}).catch((e) => {
+						console.error('Error fetching description: ', e);
+					});
+				}
+				this.loading = false;
 			});
 		} else {
 			// Creating a new listing
