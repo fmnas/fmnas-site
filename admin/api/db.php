@@ -168,7 +168,7 @@ class DatabaseWriter extends Database {
 					if (!$photo || !$photo['key']) {
 						continue;
 					}
-					// TODO: Add sort order to photos table.
+					// TODO [#162]: Add sort order to photos table.
 					if (!$this->insertPhoto->bind_param("ss", $id, $photo['key'])) {
 						$error = "Binding $id,{$photo['key']} to insertPhoto failed: {$this->db->error}";
 						break;
