@@ -243,7 +243,7 @@ export default defineComponent({
 			this.sexInteracted = true;
 		},
 		deleteListing() {
-			// TODO: Allow deleting listings.
+			// TODO [#167]: Allow deleting listings.
 			alert('Not yet implemented');
 		},
 		getFullPathForPet,
