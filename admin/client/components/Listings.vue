@@ -60,11 +60,9 @@ export default defineComponent({
 				if (!res.ok) {
 					throw res;
 				}
-				console.log(res);
 				return res.json();
 			}).then(data => {
 				this.listings = data;
-				console.log(this.listings);
 			});
 		}
 	},
