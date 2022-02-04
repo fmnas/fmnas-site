@@ -67,12 +67,12 @@ export function partial(name: string): string {
 	return store.state.partials[name];
 }
 
-// TODO: Test that description rendering matches on client and server.
+// TODO [#150]: Test that description rendering matches on client and server.
 export function renderDescription(source: string, context: any): string {
 	return marked.parse(Handlebars.compile(source)(context), {
 		// Marked options
 		breaks: true,
-		// TODO: Sanitize email links in rendered description.
+		// TODO [#151]: Sanitize email links in rendered description.
 	});
 }
 
