@@ -105,7 +105,7 @@ async function getAsset(key: number): Promise<Asset> {
 	return res.json();
 }
 
-// TODO [$61fd9995a687780009060292]: Make file upload promises observables with progress.
+// TODO [#163]: Make file upload promises observables with progress.
 export async function uploadFile(file: File, pathPrefix: string = '', height: string | number = ''): Promise<Asset> {
 	const asset = await createAsset(file.type, pathPrefix + file.name);
 	if (asset.type !== file.type || asset.path !== pathPrefix + file.name) {

@@ -58,7 +58,7 @@ export default defineComponent({
 	},
 	methods: {
 		remove(photo: Asset): void {
-			// TODO [$61fd9995a687780009060293]: Confirm photo deletion.
+			// TODO [#164]: Confirm photo deletion.
 			this.photos!.splice(this.photos!.indexOf(photo), 1);
 		},
 		promote(localPath: string, asset: Asset): void {
@@ -84,8 +84,8 @@ export default defineComponent({
 			input.files = null;
 		},
 		cancel(pendingPhoto: PendingPhoto): void {
-			// TODO [$61fd9995a687780009060294]: Make canceling an upload actually cancel the HTTP request.
-			// TODO [$61fd9995a687780009060295]: Confirm upload cancellation.
+			// TODO [#165]: Make canceling an upload actually cancel the HTTP request.
+			// TODO [#166]: Confirm upload cancellation.
 			this.pendingPhotos.splice(this.pendingPhotos.indexOf(pendingPhoto), 1);
 		}
 	},
