@@ -98,8 +98,8 @@
 			</tbody>
 		</table>
 	</section>
-	<p>modified status: {{ modified() }}</p>
-	<p>loading status: {{ loading }}</p>
+<!--	<p>modified status: {{ modified() }}</p>-->
+<!--	<p>loading status: {{ loading }}</p>-->
 	<photos v-model="pet.photos" @update:promises="photoPromises = $event"></photos>
 	<editor v-model="description" :context="this.pet"/>
 </template>
