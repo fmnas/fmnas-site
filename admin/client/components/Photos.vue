@@ -97,8 +97,25 @@ input {
 	display: none;
 }
 
-img {
-	max-width: 2in;
-	max-height: 2in;
+ul {
+	list-style-type: none;
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+	flex-wrap: wrap;
+	li > img {
+		max-height: 2in;
+		cursor: pointer;
+
+		&:hover {
+			outline: 2px dashed red;
+		}
+	}
+}
+
+button {
+	font-size: 120%;
+	padding: 0.4em;
+	color: green;
 }
 </style>
