@@ -103,6 +103,7 @@ ul {
 	align-items: center;
 	justify-content: space-around;
 	flex-wrap: wrap;
+	padding: 0;
 	li > img {
 		max-height: 2in;
 		cursor: pointer;
