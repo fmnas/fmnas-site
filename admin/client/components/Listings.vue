@@ -36,7 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<tbody>
 		<!-- TODO [#34]: Make listing metadata editable from table view -->
 		<tr v-for="listing of listings" :key="listing['id']">
-			<td class="photo"><img :alt="listing['name']" :src="`/api/raw/stored/${listing['photo']?.['id']}`"></td>
+			<td class="photo"><img :alt="listing['name']" :src="`/api/raw/stored/${listing.photo?.key}`"></td>
 			<td class="id">{{ listing['id'] }}</td>
 			<td class="name">{{ listing['name'] }}</td>
 			<td v-if="!species" class="species">{{ config['species']?.[listing['species']]?.['name'] }}</td>
@@ -58,36 +58,45 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import {getFullPathForPet} from '../common';
 import {mapState} from 'vuex';
 import { defineComponent } from 'vue';
+import {Pet} from '../types';
 
 export default defineComponent({
 	name: 'Listings',
 	props: ['species'],
 	methods: {
 		getFullPathForPet: getFullPathForPet,
+		populate() {
+			let apiUrl = '/api/listings';
+			if (this.species) {
+				apiUrl += `/?species=${this.species}`;
+			}
+			// TODO [#30]: Add a loading indicator for listings
+			fetch(apiUrl, {
+				method: 'GET',
+			}).then(res => {
+				if (!res.ok) {
+					throw res;
+				}
+				console.log(res);
+				return res.json();
+			}).then(data => {
+				this.listings = data;
+				console.log(this.listings);
+			});
+		}
 	},
 	data() {
 		return {
-			apiUrl: '/api/listings',
-			listings: [],
+			listings: [] as Pet[],
 		};
 	},
-	created() {
-		if (this.species) {
-			this.apiUrl += `/?species=${this.species}`;
+	watch: {
+		species() {
+			this.populate();
 		}
 	},
 	mounted() {
-		// TODO [#30]: Add a loading indicator for listings
-		fetch(this.apiUrl, {
-			method: 'GET',
-		}).then(res => {
-			if (!res.ok) {
-				throw res;
-			}
-			return res.json();
-		}).then(data => {
-			this.listings = data;
-		});
+		this.populate();
 	},
 	computed: mapState({
 		// TODO [#138]: Type for state
@@ -108,5 +117,9 @@ tbody tr {
 
 td, img {
 	max-height: var(--row-height);
+}
+
+td.options a {
+	padding: 0.4em;
 }
 </style>
