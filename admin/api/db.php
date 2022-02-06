@@ -80,16 +80,8 @@ class DatabaseWriter extends Database {
 			$error = "Failed to begin transaction";
 		} else if (!$this->setConfigValue->bind_param("ss", $value, $key)) {
 			$error = "Binding $key,$value to setConfigValue failed: {$this->db->error}";
-		} else {
-			if (!$this->setConfigValue->execute()) {
-				$error = "Executing setConfigValue failed: {$this->db->error}";
-			} else {
-				if ($this->setConfigValue->affected_rows !== 1) {
-					$error = "setConfigValue affected {$this->setConfigValue->affected_rows} rows instead of 1";
-				} else {
-					require_once "$src/generator.php";
-				}
-			}
+		} else if (!$this->setConfigValue->execute()) {
+			$error = "Executing setConfigValue failed: {$this->db->error}";
 		}
 		if ($error) {
 			log_err($error);

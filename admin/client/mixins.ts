@@ -27,8 +27,10 @@ const successToastOptions = {
 
 export const checkResponse = (res: Response, confirmation = null as null | string) => {
 	if (!res.ok) {
-		res.json().then((json) => store.state.toast.error(json.toString(), errorToastOptions),
-			() => store.state.toast.error(res.toString(), errorToastOptions));
+		res.json().then(
+			(json) => store.state.toast.error(typeof (json) === 'string' ? json : json['error'] ?? res.statusText,
+				errorToastOptions),
+			() => store.state.toast.error(res.statusText, errorToastOptions));
 		throw res;
 	}
 	if (confirmation !== null) {
@@ -50,7 +52,7 @@ export const progressBar = {
 			store.state.progress[id] = {
 				count: promises.length,
 				resolved: 0,
-			}
+			};
 			for (const promise of promises) {
 				promise.then(() => {
 					const count = store.state.progress[id].count;
