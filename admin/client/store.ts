@@ -14,6 +14,7 @@ export default createStore({
 		partials: {} as Record<string, string>,
 		toast: useToast(),
 		progress: {} as Record<string, Progress>,
+		lastGoodDescription: '' as string,
 	},
 	mutations: {
 		setConfig(state, config: Config) {

@@ -66,11 +66,15 @@ export function partial(name: string): string {
 
 // TODO [#150]: Test that description rendering matches on client and server.
 export function renderDescription(source: string, context: any): string {
-	return marked.parse(Handlebars.compile(source)(context), {
-		// Marked options
-		breaks: true,
-		// TODO [#151]: Sanitize email links in rendered description.
-	});
+	if (source.match(/{{/g)?.length === source.match(/}}/g)?.length) {
+		// Don't render the description if there are mismatched {{}} - this crashes handlebars.
+		store.state.lastGoodDescription = marked.parse(Handlebars.compile(source)(context), {
+			// Marked options
+			breaks: true,
+			// TODO [#151]: Sanitize email links in rendered description.
+		});
+	}
+	return store.state.lastGoodDescription;
 }
 
 async function createAsset(type: string, path: string = '', data: any = {}): Promise<Asset> {
