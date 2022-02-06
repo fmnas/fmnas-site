@@ -3,6 +3,7 @@ import * as Handlebars from 'handlebars';
 // @ts-ignore types not coming in in PHPStorm for some reason
 import {marked} from 'marked';
 import {Asset, Config, Pet} from './types';
+import {checkResponse} from './mixins';
 
 // TODO [#136]: Get 404 redirect working in vue router.
 export function r404(path: string) {
@@ -50,16 +51,12 @@ export const petAge = (pet: Pet) => {
 };
 
 export const getConfig = (): Promise<Config> => fetch('/api/config', {method: 'GET'}).then(res => {
-	if (!res.ok) {
-		throw res;
-	}
+	checkResponse(res);
 	return res.json();
 });
 
 export const getPartials = (): Promise<Record<string, string>> => fetch('/api/partials', {method: 'GET'}).then(res => {
-	if (!res.ok) {
-		throw res;
-	}
+	checkResponse(res);
 	return res.json();
 });
 
@@ -84,24 +81,18 @@ async function createAsset(type: string, path: string = '', data: any = {}): Pro
 			path: path,
 		})
 	});
-	if (!res.ok) {
-		throw res;
-	}
+	checkResponse(res);
 	return res.json();
 }
 
 async function updateAsset(asset: Asset): Promise<void> {
 	const res = await fetch(`/api/assets/${asset.key}`, {method: 'PUT', body: JSON.stringify(asset)});
-	if (!res.ok) {
-		throw res;
-	}
+	checkResponse(res);
 }
 
 async function getAsset(key: number): Promise<Asset> {
 	const res = await fetch(`/api/assets/${key}`);
-	if (!res.ok) {
-		throw res;
-	}
+	checkResponse(res);
 	return res.json();
 }
 
@@ -114,18 +105,14 @@ export async function uploadFile(file: File, pathPrefix: string = '', height: st
 		await updateAsset(asset);
 	}
 	const res = await fetch(`/api/raw/${asset.key}?height=${height}`, {method: 'POST', body: file});
-	if (!res.ok) {
-		throw res;
-	}
+	checkResponse(res);
 	return asset;
 }
 
 export async function uploadDescription(body: string): Promise<Asset> {
 	const asset = await createAsset('text/plain');
 	const res = await fetch(`/api/raw/${asset.key}`, {method: 'POST', body: body});
-	if (!res.ok) {
-		throw res;
-	}
+	checkResponse(res);
 	return asset;
 }
 

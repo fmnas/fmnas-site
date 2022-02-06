@@ -32,11 +32,11 @@ export default defineComponent({
 	components: {Modal},
 	props: {
 		modelValue: {
-			type: [] as PropType<Asset[]>,
+			type: Array as PropType<Asset[]>,
 			required: false
 		},
 		promises: {
-			type: [] as PropType<Promise<Asset>[]>,
+			type: Array as PropType<Promise<Asset>[]>,
 			required: false
 		},
 		prefix: {
@@ -59,7 +59,8 @@ export default defineComponent({
 	computed: {
 		photos: {
 			get(): Asset[] {
-				if (!this.modelValue?.[0]) {
+				if (!this.modelValue || this.modelValue[0] === null) {
+					this.$emit('update:modelValue', []);
 					return [];
 				}
 				return this.modelValue;

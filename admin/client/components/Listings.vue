@@ -42,10 +42,12 @@ import {getFullPathForPet} from '../common';
 import {mapState} from 'vuex';
 import { defineComponent } from 'vue';
 import {Pet} from '../types';
+import {responseChecker} from '../mixins';
 
 export default defineComponent({
 	name: 'Listings',
 	props: ['species'],
+	mixins: [responseChecker],
 	methods: {
 		getFullPathForPet: getFullPathForPet,
 		populate() {
@@ -57,9 +59,7 @@ export default defineComponent({
 			fetch(apiUrl, {
 				method: 'GET',
 			}).then(res => {
-				if (!res.ok) {
-					throw res;
-				}
+				this.checkResponse(res);
 				return res.json();
 			}).then(data => {
 				this.listings = data;
