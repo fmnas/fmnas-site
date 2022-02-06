@@ -230,7 +230,7 @@ export default defineComponent({
 		async save() {
 			// TODO [#185]: Display toasts for input validation
 			// TODO [#186]: Confirm before changing pet ID (maybe the intention is to create a new pet instead).
-			if (this.description !== store.state.lastGoodDescription) {
+			if (store.state.parseError) {
 				console.error(store.state.parseError);
 				store.state.toast.error(`Description is invalid (check your handlebars syntax)\n${store.state.parseError}`);
 				return;
