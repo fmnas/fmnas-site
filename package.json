@@ -5,6 +5,7 @@
 		"tslib": "^2.3.1",
 		"vue": "^3.2.29",
 		"vue-router": "^4.0.0-0",
+		"vue-toastification": "^2.0.0-rc.5",
 		"vuex": "^4.0.0-0"
 	},
 	"name": "fmnas-site",

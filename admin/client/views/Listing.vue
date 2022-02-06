@@ -127,10 +127,12 @@ import {mapState} from 'vuex';
 import {Asset, Pet, Sex} from '../types';
 import ProfilePhoto from '../components/ProfilePhoto.vue';
 import Modal from '../components/Modal.vue';
+import {progressBar, responseChecker} from '../mixins';
 
 export default defineComponent({
 	name: 'Listing',
 	components: {ProfilePhoto, Editor, Photos, Modal},
+	mixins: [responseChecker, progressBar],
 	data() {
 		return {
 			species: this.$route.params.species as string | undefined,
@@ -153,18 +155,14 @@ export default defineComponent({
 			// Updating an existing listing
 			// TODO [#39]: Add a loading indicator for listing editor
 			fetch(`/api/listings/${this.species}/${this.path}`).then(res => {
-				if (!res.ok) {
-					throw res;
-				}
+				this.checkResponse(res);
 				return res.json();
 			}).then(data => {
 				this.pet = data;
 				this.updateAfterSave();
 				if (this.pet.description) {
 					fetch(`/api/raw/stored/${this.pet['description']?.['key']}`).then(res => {
-						if (!res.ok) {
-							throw res;
-						}
+						this.checkResponse(res);
 						return res.text();
 					}).then(data => {
 						this.description = data;
@@ -202,23 +200,26 @@ export default defineComponent({
 			this.photoPromises = [] as Promise<any>[];
 			this.showModal = false;
 			this.showAbandonModal = false;
-			this.pet['species'] =
+			this.pet.species =
 				(Object.values(store.state.config.species)).find((s: any) => s['plural'] === this.species)?.['id'];
+			if (!this.pet.photos?.[0]) {
+				this.pet.photos = [];
+			}
 		},
 		async save() {
 			// Wait for async uploads
+			this.reportProgress(this.profilePromise ? [this.profilePromise, ...this.photoPromises] : this.photoPromises,
+				'Uploading photos');
 			await this.profilePromise;
 			await Promise.all(this.photoPromises);
-			if (this.description !== this.originalDescription) {
+			if (!this.original?.id || this.description !== this.originalDescription) {
 				this.pet.description = await uploadDescription(this.description);
 			}
 			fetch(this.original?.id ? `/api/listings/${this.original.id}` : `/api/listings`, {
 				method: this.original?.id ? 'PUT' : 'POST',
 				body: JSON.stringify(this.pet),
 			}).then(res => {
-				if (!res.ok) {
-					throw res;
-				}
+				this.checkResponse(res, 'Saved successfully');
 				this.updateAfterSave();
 			});
 		},
@@ -262,9 +263,7 @@ export default defineComponent({
 				fetch(`/api/listings/${this.original.id}`, {
 					method: 'DELETE',
 				}).then((res) => {
-					if (!res.ok) {
-						throw res;
-					}
+					this.checkResponse(res, 'Deleted listing successfully');
 				});
 			}
 			this.showModal = false;

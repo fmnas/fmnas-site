@@ -34,6 +34,9 @@ endpoint(...[
 			return new Result(204);
 		},
 		'post' => function($pet) use ($db): Result {
+			if (isset($pet['id']) && $db->getPetById($pet['id']) !== null) {
+				return new Result(409, "Pet {$pet['id']} already exists");
+			}
 			$error = $db->insertPet($pet);
 			if ($error !== null) {
 				return new Result(500, $error);
