@@ -194,7 +194,6 @@ export default defineComponent({
 	},
 	beforeRouteEnter(to, from, next) {
 		next((vm: any) => {
-			console.log('beforeRouteEnter');
 			vm.species = to.params.species as string | undefined;
 			vm.path = to.params.pet as string | undefined;
 			vm.load();
