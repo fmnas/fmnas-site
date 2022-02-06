@@ -10,6 +10,10 @@ const successToastOptions = {
 
 export const checkResponse = (res: Response, confirmation = null as null | string) => {
 	if (!res.ok) {
+		if (res.status === 418) {
+			store.state.toast.error("API request rejected by Apache modsecurity.");
+			throw res;
+		}
 		res.json().then(
 			(json) => store.state.toast.error(typeof (json) === 'string' ? json : json['error'] ?? res.statusText,
 				errorToastOptions),
