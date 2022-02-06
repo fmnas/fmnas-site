@@ -15,7 +15,7 @@ endpoint(...[
 		},
 		'put' => $reject,
 		'put_value' => function($key, $value) use ($db): Result {
-			global $src;
+			global $src, $_G;
 			if (!isset($_G[$key])) {
 				return new Result(404, error: "Config key $key not found");
 			}
@@ -27,6 +27,7 @@ endpoint(...[
 				return new Result(500, error: $error);
 			}
 			require_once "$src/generator.php";
+			generate();
 			return new Result(204);
 		},
 		'delete' => $reject,
