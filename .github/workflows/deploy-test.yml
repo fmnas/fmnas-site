@@ -90,6 +90,8 @@ jobs:
           host: ${{ secrets.TEST_SFTP_HOST }}
           username: ${{ secrets.TEST_SFTP_USER }}
           password: ${{ secrets.TEST_SFTP_PASS }}
-          script: pwd; ls "${{ secrets.TEST_SITE_ROOT }}"; rm "${{ secrets.TEST_SITE_ROOT }}/src/generated.php"
+          script: |
+            cd ${{ secrets.TEST_SITE_ROOT }}
+            rm /src/generated.php
       - name: Regenerate generated.php
         run: curl -u ${{ secrets.BASIC_HTTP_CREDENTIALS }} ${{ secrets.TEST_SITE_URL }}
