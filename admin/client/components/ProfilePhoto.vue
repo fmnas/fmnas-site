@@ -25,11 +25,21 @@ export default defineComponent({
 			type: String,
 			required: false
 		},
+		reset: {
+			type: Number,
+			required: false,
+		}
 	},
 	data() {
 		return {
 			localPath: null as string | null,
 		};
+	},
+	watch: {
+		reset() {
+			// Reset local path on parent reset
+			this.localPath = null;
+		},
 	},
 	emits: ['update:modelValue', 'update:promise'],
 	computed: {

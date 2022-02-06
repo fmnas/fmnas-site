@@ -90,7 +90,7 @@
 				</td>
 				<td class="img">
 					<a>
-						<profile-photo v-model="pet.photo" v-model:promise="profilePromise"></profile-photo>
+						<profile-photo v-model="pet.photo" v-model:promise="profilePromise" :reset="resetCount"/>
 					</a>
 				</td>
 				<td class="inquiry"><a :href="`mailto:${config['default_email_user']}@${config['public_domain']}`"
@@ -103,7 +103,7 @@
 	</section>
 	<!--	<p>modified status: {{ modified() }}</p>-->
 	<!--	<p>loading status: {{ loading }}</p>-->
-	<photos v-model="pet.photos" @update:promises="photoPromises = $event"></photos>
+	<photos v-model="pet.photos" @update:promises="photoPromises = $event" :reset="resetCount"/>
 	<editor v-model="description" :context="pet"/>
 	<modal v-if="showModal" @confirm="deleteListing" @cancel="showModal = false">
 		Are you sure you want to delete this listing?
@@ -150,6 +150,7 @@ export default defineComponent({
 			photoPromises: [] as Promise<any>[],
 			showModal: false,
 			showAbandonModal: false,
+			resetCount: 0,
 		};
 	},
 	mounted() {
@@ -199,18 +200,17 @@ export default defineComponent({
 			this.loading = false;
 			this.sexInteracted = false;
 			this.validated = false;
-			this.profilePromise = null as Promise<Asset> | null;
-			this.photoPromises = [] as Promise<any>[];
+			this.profilePromise = null;
+			this.photoPromises = [];
 			this.showModal = false;
 			this.showAbandonModal = false;
 			this.pet.species =
 				(Object.values(store.state.config.species)).find((s: any) => s['plural'] === this.species)?.['id'];
-			if (!this.pet.photos?.[0]) {
-				this.pet.photos = [];
-			}
+			this.resetCount++;
 		},
 		async save() {
 			// TODO [#185]: Display toasts for input validation
+			// TODO: Confirm before changing pet ID (maybe the intention is to create a new pet instead).
 			if (!validateDescription(this.description)) {
 				store.state.toast.error('Description is invalid (contains mismatched {{...}})');
 				return;
