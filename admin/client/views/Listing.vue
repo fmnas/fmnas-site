@@ -180,37 +180,6 @@ export default defineComponent({
 		};
 	},
 	mounted() {
-		if (this.species && this.path) {
-			// Updating an existing listing
-			// TODO [#39]: Add a loading indicator for listing editor
-			fetch(`/api/listings/${this.species}/${this.path}`).then(res => {
-				this.checkResponse(res);
-				return res.json();
-			}).then(data => {
-				this.pet = data;
-				this.updateAfterSave();
-				if (this.pet.description) {
-					fetch(`/api/raw/stored/${this.pet['description']?.['key']}`).then(res => {
-						this.checkResponse(res);
-						return res.text();
-					}).then(data => {
-						this.description = data;
-						this.originalDescription = data;
-					}).catch((e) => {
-						console.error('Error fetching description: ', e);
-					});
-				}
-				this.loading = false;
-			});
-		} else {
-			// Creating a new listing
-			this.reset();
-		}
-		this.listener = (event: BeforeUnloadEvent) => {
-			if (this.modified()) {
-				event.preventDefault();
-			}
-		}
 		window.addEventListener('beforeunload', this.listener);
 	},
 	unmounted() {
@@ -223,9 +192,56 @@ export default defineComponent({
 			next();
 		}
 	},
+	beforeRouteUpdate(to, from, next) {
+		this.species = to.params.species as string | undefined;
+		this.path = to.params.pet as string | undefined;
+		this.load();
+	},
+	beforeRouteEnter(to, from, next) {
+		next((vm: any) => {
+			vm.species = to.params.species as string | undefined;
+			vm.path = to.params.pet as string | undefined;
+			vm.load();
+		});
+	},
 	methods: {
+		load() {
+			if (this.species && this.path) {
+				// Updating an existing listing
+				// TODO [#39]: Add a loading indicator for listing editor
+				fetch(`/api/listings/${this.species}/${this.path}`).then(res => {
+					this.checkResponse(res);
+					return res.json();
+				}).then(data => {
+					this.pet = data;
+					if (!this.pet.photos?.[0]) {
+						this.pet.photos = [];
+					}
+					this.updateAfterSave();
+					if (this.pet.description) {
+						fetch(`/api/raw/stored/${this.pet['description']?.['key']}`).then(res => {
+							this.checkResponse(res);
+							return res.text();
+						}).then(data => {
+							this.description = data;
+							this.originalDescription = data;
+						}).catch((e) => {
+							console.error('Error fetching description: ', e);
+						});
+					}
+					this.loading = false;
+				});
+			} else {
+				// Creating a new listing
+				this.reset();
+			}
+			this.listener = (event: BeforeUnloadEvent) => {
+				if (this.modified()) {
+					event.preventDefault();
+				}
+			}
+		},
 		reset() {
-			this.$router.push('/new');
 			this.path = undefined;
 			this.pet = {} as Pet;
 			this.original = {} as Pet;
@@ -241,7 +257,11 @@ export default defineComponent({
 			this.showAbandonModal = false;
 			this.pet.species =
 				(Object.values(store.state.config.species)).find((s: any) => s['plural'] === this.species)?.['id'];
+			this.original.species = this.pet.species;
+			this.pet.photos = [];
+			this.original.photos = [];
 			this.resetCount++;
+			this.$router.push('/new');
 		},
 		async save() {
 			// TODO [#185]: Display toasts for input validation
@@ -287,6 +307,7 @@ export default defineComponent({
 			this.profilePromise = null;
 		},
 		modified() {
+			console.log(this.loading, this.description, this.originalDescription, JSON.stringify(this.original), JSON.stringify(this.pet));
 			// TODO: Weaken modified check so undefined == '' == null
 			if (this.loading) {
 				// Ignore bogus "modified" value if still loading.
