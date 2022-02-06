@@ -21,8 +21,8 @@ export default defineComponent({
 	name: 'Modal',
 	emits: ['cancel', 'confirm'],
 });
-// TODO: Add transition to modal.
-// TODO: Add Esc and Enter keybindings to modal.
+// TODO [#172]: Add transition to modal.
+// TODO [#173]: Add Esc and Enter keybindings to modal.
 </script>
 
 <style scoped lang="scss">
