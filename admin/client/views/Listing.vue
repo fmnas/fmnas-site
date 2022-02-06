@@ -139,7 +139,9 @@ import Editor from '../components/Editor.vue';
 import Photos from '../components/Photos.vue';
 import {defineComponent} from 'vue';
 import store from '../store';
-import {getFullPathForPet, getPathForPet, partial, petAge, ucfirst, uploadDescription} from '../common';
+import {
+	getFullPathForPet, getPathForPet, partial, petAge, ucfirst, uploadDescription, validateDescription
+} from '../common';
 import {mapState} from 'vuex';
 import {Asset, Pet, Sex} from '../types';
 import ProfilePhoto from '../components/ProfilePhoto.vue';
@@ -227,6 +229,11 @@ export default defineComponent({
 			}
 		},
 		async save() {
+			// TODO: Display toasts for input validation
+			if (!validateDescription(this.description)) {
+				store.state.toast.error('Description is invalid (contains mismatched {{...}})');
+				return;
+			}
 			const promises = [...this.photoPromises];
 			if (this.profilePromise) {
 				promises.push(this.profilePromise);
