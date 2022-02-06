@@ -28,8 +28,8 @@ export function r404(path: string) {
 }
 
 export const ucfirst = (str = '') => str.charAt(0).toUpperCase() + str.slice(1);
-export const getPathForPet = (pet: Pet) => `${pet.id}${pet.name?.split(' ').join('')}`;
-export const getFullPathForPet = (pet: Pet) => `${store.state.config.species[pet.species as number].plural}/${getPathForPet(
+export const getPathForPet = (pet: Pet) => `${pet.id}${pet?.name?.split(' ').join('')}`;
+export const getFullPathForPet = (pet: Pet) => `${store.state.config.species[pet?.species as number]?.plural}/${getPathForPet(
 	pet)}`;
 export const petAge = (pet: Pet) => {
 	const dob = pet['dob'];
