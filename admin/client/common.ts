@@ -66,13 +66,15 @@ export function partial(name: string): string {
 
 // TODO [#150]: Test that description rendering matches on client and server.
 export function renderDescription(source: string, context: any): string {
-	if (validateDescription(source)) {
+	try {
 		// Don't render the description if there are mismatched {{}} - this crashes handlebars.
 		store.state.lastGoodDescription = marked.parse(Handlebars.compile(source)(context), {
 			// Marked options
 			breaks: true,
 			// TODO [#151]: Sanitize email links in rendered description.
 		});
+	} catch (e) {
+		store.state.parseError = e;
 	}
 	return store.state.lastGoodDescription;
 }
@@ -130,6 +132,7 @@ export function uploadFiles(files: FileList | null, pathPrefix: string = ''): Pr
 	return promises;
 }
 
-export function validateDescription(source: string): boolean {
-	return source.match(/{{/g)?.length === source.match(/}}/g)?.length;
+function validateLine(line: string): boolean {
+	return (line.match(/{{/g)?.length ?? 0) <= (line.match(/}}/g)?.length ?? 0) && // Catch {{x
+	       !line.match(/{{([^}'"]|}(?!}))*('([^'}]|}(?!}))*|"([^"}]|}(?!}))*)}}/g)?.length; // Catch {{x y='}}
 }
