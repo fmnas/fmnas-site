@@ -18,11 +18,19 @@
 import {createStore} from 'vuex';
 import * as Handlebars from 'handlebars';
 import {Config} from './types';
+import {useToast} from 'vue-toastification';
+
+interface Progress {
+	count: number;
+	resolved: number;
+}
 
 export default createStore({
 	state: {
 		config: {} as Config,
 		partials: {} as Record<string, string>,
+		toast: useToast(),
+		progress: {} as Record<string, Progress>,
 	},
 	mutations: {
 		setConfig(state, config: Config) {

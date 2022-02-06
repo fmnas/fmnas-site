@@ -28,9 +28,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 <script lang="ts">
 import {defineComponent} from 'vue';
+import {responseChecker} from '../mixins';
 
 export default defineComponent({
 	name: 'TransportDate',
+	mixins: [responseChecker],
 	data() {
 		return {
 			date: null as string|null,
@@ -43,9 +45,7 @@ export default defineComponent({
 				method: 'PUT',
 				body: JSON.stringify(this.date),
 			}).then(res => {
-				if (!res.ok) {
-					throw res;
-				}
+				this.checkResponse(res, 'Updated transport date');
 				this.savedDate = this.date;
 			});
 		},
@@ -55,9 +55,7 @@ export default defineComponent({
 		fetch('/api/config/transport_date', {
 			method: 'GET',
 		}).then(res => {
-			if (!res.ok) {
-				throw res;
-			}
+			this.checkResponse(res);
 			return res.json();
 		}).then(data => {
 			this.date = this.savedDate = data;
