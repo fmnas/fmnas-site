@@ -186,8 +186,6 @@ export default defineComponent({
 				event.preventDefault();
 			}
 		});
-
-		store.state.lastGoodDescription = this.description;
 	},
 	methods: {
 		reset() {
