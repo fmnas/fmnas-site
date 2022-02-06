@@ -32,6 +32,7 @@ export default createStore({
 		toast: useToast(),
 		progress: {} as Record<string, Progress>,
 		lastGoodDescription: 'Error rendering description' as string,
+		parseError: undefined as any,
 	},
 	mutations: {
 		setConfig(state, config: Config) {
