@@ -115,11 +115,8 @@ class Asset {
 			$tag .= "<a href=\"$path\">";
 		}
 		$tag .= '<img';
-		if ($height !== 0 && $height < $this->size()[1]) {
-			$intrinsicWidth = $this->size()[0];
+		if ($height !== 0 && $height <= $this->size()[1]) {
 			$intrinsicHeight = $this->size()[1];
-			$ratio = $this->size()[0] / $this->size()[1];
-			$newWidth = round($ratio * $height);
 			$tag .= ' srcset="';
 			$currentScale = 1;
 			while ($currentScale * $height < $intrinsicHeight) {
