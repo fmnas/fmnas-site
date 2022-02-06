@@ -121,7 +121,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<!--	<p>modified status: {{ modified() }}</p>-->
 	<!--	<p>loading status: {{ loading }}</p>-->
 	<photos v-model="pet.photos" @update:promises="photoPromises = $event"></photos>
-	<editor v-model="description" :context="this.pet"/>
+	<editor v-model="description" :context="pet"/>
 	<modal v-if="showModal" @confirm="deleteListing" @cancel="showModal = false">
 		Are you sure you want to delete this listing?
 		<br>
@@ -201,6 +201,8 @@ export default defineComponent({
 				event.preventDefault();
 			}
 		});
+
+		store.state.lastGoodDescription = this.description;
 	},
 	methods: {
 		reset() {
@@ -210,6 +212,7 @@ export default defineComponent({
 			this.original = {} as Pet;
 			this.description = partial('default');
 			this.originalDescription = partial('default');
+			store.state.lastGoodDescription = this.description;
 			this.loading = false;
 			this.sexInteracted = false;
 			this.validated = false;
