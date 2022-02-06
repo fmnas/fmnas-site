@@ -227,11 +227,15 @@ export default defineComponent({
 			}
 		},
 		async save() {
+			const promises = [...this.photoPromises];
+			if (this.profilePromise) {
+				promises.push(this.profilePromise);
+			}
+			promises.push(...(this.pet.photos??[]).map(() => Promise.resolve())); // Resolved promises for photos already uploaded
+			console.log('Waiting for promises', promises, this.profilePromise, this.photoPromises);
 			// Wait for async uploads
-			this.reportProgress(this.profilePromise ? [this.profilePromise, ...this.photoPromises] : this.photoPromises,
-				'Uploading photos');
-			await this.profilePromise;
-			await Promise.all(this.photoPromises);
+			this.reportProgress(promises,'Uploading photos');
+			await Promise.all(promises);
 			if (!this.original?.id || this.description !== this.originalDescription) {
 				this.pet.description = await uploadDescription(this.description);
 			}
@@ -254,6 +258,9 @@ export default defineComponent({
 				console.info(`Replacing route with ${getFullPathForPet(this.pet)}`);
 				this.$router.replace(`/${getFullPathForPet(this.pet)}`);
 			}
+			// Clear promises
+			this.photoPromises = [];
+			this.profilePromise = null;
 		},
 		modified() {
 			if (this.loading) {

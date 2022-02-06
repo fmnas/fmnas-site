@@ -68,8 +68,11 @@ export default defineComponent({
 		};
 	},
 	watch: {
-		pendingPhotos(newPhotos: PendingPhoto[]) {
-			this.$emit('update:promises', newPhotos.map(photo => photo.promise));
+		pendingPhotos: {
+			handler(newPhotos: PendingPhoto[]) {
+				this.$emit('update:promises', newPhotos.map(photo => photo.promise));
+			},
+			deep: true,
 		}
 	},
 	emits: ['update:modelValue', 'update:promises'],
