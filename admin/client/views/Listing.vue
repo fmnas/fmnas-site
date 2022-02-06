@@ -107,7 +107,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				</td>
 				<td class="img">
 					<a>
-						<profile-photo v-model="pet.photo" v-model:promise="profilePromise" :reset="resetCount"/>
+						<profile-photo v-model="pet.photo" v-model:promise="profilePromise" :reset="resetCount"
+								:prefix="getFullPathForPet(pet) + '/'"/>
 					</a>
 				</td>
 				<td class="inquiry"><a :href="`mailto:${config['default_email_user']}@${config['public_domain']}`"
@@ -120,7 +121,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	</section>
 	<!--	<p>modified status: {{ modified() }}</p>-->
 	<!--	<p>loading status: {{ loading }}</p>-->
-	<photos v-model="pet.photos" @update:promises="photoPromises = $event" :reset="resetCount"/>
+	<photos v-model="pet.photos" @update:promises="photoPromises = $event" :reset="resetCount"
+			:prefix="getFullPathForPet(pet) + '/'"/>
 	<editor v-model="description" :context="pet"/>
 	<modal v-if="showModal" @confirm="deleteListing" @cancel="showModal = false">
 		Are you sure you want to delete this listing?
@@ -236,10 +238,10 @@ export default defineComponent({
 			if (this.profilePromise) {
 				promises.push(this.profilePromise);
 			}
-			promises.push(...(this.pet.photos??[]).map(() => Promise.resolve())); // Resolved promises for photos already uploaded
+			promises.push(...(this.pet.photos ?? []).map(() => Promise.resolve())); // Resolved promises for photos already uploaded
 			console.log('Waiting for promises', promises, this.profilePromise, this.photoPromises);
 			// Wait for async uploads
-			this.reportProgress(promises,'Uploading photos');
+			this.reportProgress(promises, 'Uploading photos');
 			await Promise.all(promises);
 			if (!this.original?.id || this.description !== this.originalDescription) {
 				this.pet.description = await uploadDescription(this.description);
