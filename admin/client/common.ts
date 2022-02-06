@@ -66,7 +66,7 @@ export function partial(name: string): string {
 
 // TODO [#150]: Test that description rendering matches on client and server.
 export function renderDescription(source: string, context: any): string {
-	if (source.match(/{{/g)?.length === source.match(/}}/g)?.length) {
+	if (validateDescription(source)) {
 		// Don't render the description if there are mismatched {{}} - this crashes handlebars.
 		store.state.lastGoodDescription = marked.parse(Handlebars.compile(source)(context), {
 			// Marked options
@@ -128,4 +128,8 @@ export function uploadFiles(files: FileList | null, pathPrefix: string = ''): Pr
 		promises.push(uploadFile(file, pathPrefix));
 	}
 	return promises;
+}
+
+export function validateDescription(source: string): boolean {
+	return source.match(/{{/g)?.length === source.match(/}}/g)?.length;
 }
