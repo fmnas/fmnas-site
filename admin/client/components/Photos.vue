@@ -34,7 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<br>
 		<img :src="selectedPhoto.localPath ?? `/api/raw/stored/${selectedPhoto.key}`"
 				:alt="selectedPhoto.path ?? 'Pending upload'" :title="selectedPhoto.path ?? 'Pending upload'"
-		class="modal">
+				class="modal">
 	</modal>
 </template>
 
@@ -52,19 +52,19 @@ export default defineComponent({
 			type: Array as PropType<Asset[]>,
 			required: false
 		},
-		promises: {
-			type: Array as PropType<Promise<Asset>[]>,
-			required: false
-		},
 		prefix: {
 			type: String,
+			required: false,
+		},
+		reset: {
+			type: Number,
 			required: false,
 		}
 	},
 	data() {
 		return {
 			pendingPhotos: [] as PendingPhoto[],
-			selectedPhoto: undefined as PendingPhoto|Asset|undefined,
+			selectedPhoto: undefined as PendingPhoto | Asset | undefined,
 		};
 	},
 	watch: {
@@ -73,6 +73,10 @@ export default defineComponent({
 				this.$emit('update:promises', newPhotos.map(photo => photo.promise));
 			},
 			deep: true,
+		},
+		reset() {
+			this.pendingPhotos = [];
+			this.selectedPhoto = undefined;
 		}
 	},
 	emits: ['update:modelValue', 'update:promises'],
@@ -91,7 +95,7 @@ export default defineComponent({
 		},
 	},
 	methods: {
-		remove(photo: Asset|PendingPhoto): void {
+		remove(photo: Asset | PendingPhoto): void {
 			if ('key' in photo) {
 				this.photos!.splice(this.photos!.indexOf(photo), 1);
 			} else {
@@ -100,7 +104,7 @@ export default defineComponent({
 			}
 			this.selectedPhoto = undefined;
 		},
-		select(photo: Asset|PendingPhoto): void {
+		select(photo: Asset | PendingPhoto): void {
 			this.selectedPhoto = photo;
 		},
 		promote(localPath: string, asset: Asset): void {
@@ -144,6 +148,7 @@ ul {
 	justify-content: space-around;
 	flex-wrap: wrap;
 	padding: 0;
+
 	li > img {
 		height: 2in;
 		min-width: calc(2in * 8 / 6);
