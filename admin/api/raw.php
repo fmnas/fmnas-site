@@ -19,6 +19,9 @@
 require_once 'api.php';
 
 $writer = function(string $key, mixed $body) use ($db): Result {
+	if(isset($_FILES['file']['tmp_name'])) {
+		$body = file_get_contents($_FILES['file']['tmp_name']);
+	}
 	$asset = $db->getAssetByKey(intval($key));
 	if ($asset === null) {
 		return new Result(404, error: "Metadata not found for asset $key");
