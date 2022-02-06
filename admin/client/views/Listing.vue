@@ -217,7 +217,11 @@ export default defineComponent({
 		window.removeEventListener('beforeunload', this.listener);
 	},
 	beforeRouteLeave(to, from, next) {
-		this.navCallback = next;
+		if (this.modified()) {
+			this.navCallback = next;
+		} else {
+			next();
+		}
 	},
 	methods: {
 		reset() {
