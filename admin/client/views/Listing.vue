@@ -212,7 +212,7 @@ export default defineComponent({
 			}
 		},
 		async save() {
-			// TODO [$61ff67b5397741000a6d578c]: Display toasts for input validation
+			// TODO [#185]: Display toasts for input validation
 			if (!validateDescription(this.description)) {
 				store.state.toast.error('Description is invalid (contains mismatched {{...}})');
 				return;
