@@ -207,6 +207,9 @@ export default defineComponent({
 			}
 		});
 	},
+	unmounted() {
+		this.reset();
+	},
 	methods: {
 		reset() {
 			this.$router.push('/new');
