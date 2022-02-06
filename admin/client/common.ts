@@ -41,7 +41,7 @@ export const petAge = (pet: Pet) => {
 			return `DOB ${startDate.getMonth() + 1}/${startDate.getDate() + 1}/${startDate.getFullYear()}`;
 		}
 		if (months > (species?.['age_unit_cutoff'] || 12)) {
-			return `${years} years old`;
+			return `${years} year${years === 1 ? '' : 's'} old`;
 		}
 		return `${months} months old`;
 	} catch (e) {
