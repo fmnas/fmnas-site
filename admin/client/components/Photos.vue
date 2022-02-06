@@ -2,25 +2,34 @@
 	<ul>
 		<li v-for="photo of photos">
 			<img :src="photo.localPath ?? `/api/raw/stored/${photo.key}`" :alt="photo.path" :title="photo.path"
-					@click="remove(photo)">
+					@click="select(photo)">
 		</li>
 		<li v-for="photo of pendingPhotos">
-			<img :src="photo.localPath" alt="Pending photo" title="Uploading..." @click="cancel(photo)">
+			<img :src="photo.localPath" alt="Pending photo" title="Uploading..." @click="select(photo)">
 		</li>
 		<li class="add">
 			<button @click="$refs.input.click()">Add photos</button>
 		</li>
 	</ul>
 	<input type="file" ref="input" @change="upload()" accept="image/*" multiple>
+	<modal v-if="selectedPhoto" @cancel="selectedPhoto = null" @confirm="remove(selectedPhoto)">
+		Are you sure you want to delete this image?
+		<br>
+		<img :src="selectedPhoto.localPath ?? `/api/raw/stored/${selectedPhoto.key}`"
+				:alt="selectedPhoto.path ?? 'Pending upload'" :title="selectedPhoto.path ?? 'Pending upload'"
+		class="modal">
+	</modal>
 </template>
 
 <script lang="ts">
 import {defineComponent, PropType} from 'vue';
 import {Asset, PendingPhoto} from '../types';
 import {uploadFile} from '../common';
+import Modal from './Modal.vue';
 
 export default defineComponent({
 	name: 'Photos',
+	components: {Modal},
 	props: {
 		modelValue: {
 			type: [] as PropType<Asset[]>,
@@ -38,10 +47,11 @@ export default defineComponent({
 	data() {
 		return {
 			pendingPhotos: [] as PendingPhoto[],
+			selectedPhoto: undefined as PendingPhoto|Asset|undefined,
 		};
 	},
 	watch: {
-		pendingPhotos(newPhotos: PendingPhoto[], oldPhotos: PendingPhoto[]) {
+		pendingPhotos(newPhotos: PendingPhoto[]) {
 			this.$emit('update:promises', newPhotos.map(photo => photo.promise));
 		}
 	},
@@ -60,9 +70,17 @@ export default defineComponent({
 		},
 	},
 	methods: {
-		remove(photo: Asset): void {
-			// TODO [#164]: Confirm photo deletion.
-			this.photos!.splice(this.photos!.indexOf(photo), 1);
+		remove(photo: Asset|PendingPhoto): void {
+			if ('key' in photo) {
+				this.photos!.splice(this.photos!.indexOf(photo), 1);
+			} else {
+				// TODO [#165]: Make canceling an upload actually cancel the HTTP request.
+				this.pendingPhotos.splice(this.pendingPhotos.indexOf(photo), 1);
+			}
+			this.selectedPhoto = undefined;
+		},
+		select(photo: Asset|PendingPhoto): void {
+			this.selectedPhoto = photo;
 		},
 		promote(localPath: string, asset: Asset): void {
 			const pendingIndex = this.pendingPhotos.findIndex(pending => pending.localPath === localPath);
@@ -73,6 +91,9 @@ export default defineComponent({
 			asset.localPath = localPath;
 			this.photos ??= [];
 			this.photos.push(asset);
+			if (this.selectedPhoto?.localPath === localPath) {
+				this.selectedPhoto = asset;
+			}
 		},
 		upload(): void {
 			const input = this.$refs.input as HTMLInputElement;
@@ -86,11 +107,6 @@ export default defineComponent({
 			input.value = '';
 			input.files = null;
 		},
-		cancel(pendingPhoto: PendingPhoto): void {
-			// TODO [#165]: Make canceling an upload actually cancel the HTTP request.
-			// TODO [#166]: Confirm upload cancellation.
-			this.pendingPhotos.splice(this.pendingPhotos.indexOf(pendingPhoto), 1);
-		}
 	},
 });
 </script>
@@ -121,5 +137,10 @@ button {
 	font-size: 120%;
 	padding: 0.4em;
 	color: green;
+}
+
+img.modal {
+	max-width: 95vw;
+	max-height: calc(100vh - 9rem);
 }
 </style>
