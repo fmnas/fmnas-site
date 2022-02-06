@@ -134,7 +134,7 @@ export async function uploadFile(file: File, pathPrefix: string = '', height: st
 
 export async function uploadDescription(body: string): Promise<Asset> {
 	const asset = await createAsset('text/plain');
-	const res = await fetch(`/api/raw/${asset.key}`, {method: 'POST', body: body});
+	const res = await fetch(`/api/raw/${asset.key}`, {method: 'POST', body: JSON.stringify(body)});
 	checkResponse(res);
 	return asset;
 }
