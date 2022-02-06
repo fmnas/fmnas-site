@@ -78,6 +78,6 @@ jobs:
           password: ${{ secrets.TEST_SFTP_PASS }}
           script: |
             cd ${{ secrets.TEST_SITE_ROOT }}
-            rm src/generated.php
+            rm src/generated.php || exit 0
       - name: Regenerate generated.php
         run: curl -u ${{ secrets.BASIC_HTTP_CREDENTIALS }} ${{ secrets.TEST_SITE_URL }}
