@@ -16,7 +16,7 @@
  */
 
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
-import Index from '../views/Index.vue'
+import Index from './views/Index.vue'
 // import {r404} from '@/common'
 
 const routes: Array<RouteRecordRaw> = [
@@ -28,7 +28,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     name: 'new',
     path: '/new',
-    component: () => import('../views/Listing.vue'),
+    component: () => import('./views/Listing.vue'),
   },
   {
     path: '/:species?',
@@ -36,7 +36,7 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/:species/:pet',
-    component: () => import('../views/Listing.vue'),
+    component: () => import('./views/Listing.vue'),
   },
   // {
   //   path: '/:pathMatch(.*)',
