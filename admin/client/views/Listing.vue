@@ -262,6 +262,8 @@ export default defineComponent({
 			this.original.species = this.pet.species;
 			this.pet.photos = [];
 			this.original.photos = [];
+			this.pet.status = 1; // Default to adoptable
+			this.original.status = 1;
 			this.resetCount++;
 			this.$router.push('/new');
 		},
