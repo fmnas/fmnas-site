@@ -212,7 +212,7 @@ export default defineComponent({
 		},
 		async save() {
 			// TODO [#185]: Display toasts for input validation
-			// TODO [$61ff6f4c1fad6b00095d2e88]: Confirm before changing pet ID (maybe the intention is to create a new pet instead).
+			// TODO [#186]: Confirm before changing pet ID (maybe the intention is to create a new pet instead).
 			if (!validateDescription(this.description)) {
 				store.state.toast.error('Description is invalid (contains mismatched {{...}})');
 				return;
