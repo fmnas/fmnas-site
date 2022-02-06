@@ -51,7 +51,7 @@ export const responseChecker = {
 export const progressBar = {
 	methods: {
 		reportProgress(promises: Promise<any>[], flavor = 'Progress', id = 'progress') {
-			// TODO: Display an actual progress bar rather than just a counter.
+			// TODO [#184]: Display an actual progress bar rather than just a counter.
 			store.state.toast.dismiss(id);
 			store.state.progress[id] = {
 				count: promises.length,
