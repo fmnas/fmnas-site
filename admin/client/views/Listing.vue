@@ -290,8 +290,7 @@ export default defineComponent({
 			this.profilePromise = null;
 		},
 		modified() {
-			console.log(this.loading, this.description, this.originalDescription, JSON.stringify(this.original), JSON.stringify(this.pet));
-			// TODO: Weaken modified check so undefined == '' == null
+			// TODO [#196]: Weaken modified check so undefined == '' == null
 			if (this.loading) {
 				// Ignore bogus "modified" value if still loading.
 				// This means navigating to the editor then quickly away will work as expected.
