@@ -160,6 +160,7 @@ export default defineComponent({
 			resetCount: 0,
 			listener: (event: BeforeUnloadEvent) => {},
 			navCallback: undefined as any,
+			suppressBeforeRouteEnter: false,
 		};
 	},
 	mounted() {
@@ -177,6 +178,10 @@ export default defineComponent({
 	},
 	beforeRouteEnter(to, from, next) {
 		next((vm: any) => {
+			if (vm.suppressBeforeRouteEnter) {
+				vm.suppressBeforeRouteEnter = false;
+				return;
+			}
 			if (to.params.species) {
 				vm.species = to.params.species as string;
 			}
@@ -276,6 +281,7 @@ export default defineComponent({
 			this.original = JSON.parse(JSON.stringify(this.pet));
 			this.originalDescription = this.description;
 			// Update URL
+			this.suppressBeforeRouteEnter = true; // So images don't get reloaded
 			if (`${this.species}/${this.path}` !== getFullPathForPet(this.pet)) {
 				this.species = store.state.config['species'][this.pet.species as number]['plural'] ?? 'pets';
 				this.path = getPathForPet(this.pet);
