@@ -128,7 +128,8 @@ ul {
 	flex-wrap: wrap;
 	padding: 0;
 	li > img {
-		max-height: 2in;
+		height: 2in;
+		min-width: calc(2in * 8 / 6);
 		cursor: pointer;
 
 		&:hover {
