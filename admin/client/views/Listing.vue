@@ -115,7 +115,12 @@
 	<modal v-if="showAbandonModal" @confirm="reset" @cancel="showAbandonModal = false">
 		Are you sure you want to create a new listing?
 		<br>
-		This will delete your changes here!
+		This will delete unsaved changes here!
+	</modal>
+	<modal v-if="navCallback" @confirm="navCallback(); navCallback = undefined" @cancel="navCallback(false); navCallback = undefined">
+		Are you sure you want to leave?
+		<br>
+		This will delete unsaved changes here!
 	</modal>
 </template>
 
@@ -153,6 +158,8 @@ export default defineComponent({
 			showModal: false,
 			showAbandonModal: false,
 			resetCount: 0,
+			listener: (event: BeforeUnloadEvent) => {},
+			navCallback: undefined as any,
 		};
 	},
 	mounted() {
@@ -182,16 +189,18 @@ export default defineComponent({
 			// Creating a new listing
 			this.reset();
 		}
-
-		// Display confirmation dialog when navigating away with unsaved changes
-		window.addEventListener('beforeunload', (event) => {
+		this.listener = (event: BeforeUnloadEvent) => {
 			if (this.modified()) {
 				event.preventDefault();
 			}
-		});
+		}
+		window.addEventListener('beforeunload', this.listener);
 	},
 	unmounted() {
-		this.reset();
+		window.removeEventListener('beforeunload', this.listener);
+	},
+	beforeRouteLeave(to, from, next) {
+		this.navCallback = next;
 	},
 	methods: {
 		reset() {
