@@ -2,6 +2,7 @@
 require_once 'db.php';
 $db = new DatabaseWriter();
 set_include_path(__DIR__);
+set_time_limit(0);
 
 class Result implements JsonSerializable {
 	public function __construct(
