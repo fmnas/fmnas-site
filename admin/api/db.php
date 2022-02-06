@@ -219,7 +219,7 @@ class DatabaseWriter extends Database {
 		} else if (!$this->deletePet->bind_param("s", $key)) {
 			$error = "Binding $key to deletePet failed: {$this->db->error}";
 		} else if (!$this->deletePet->execute()) {
-				$error = "Executing insertAsset failed: {$this->db->error}";
+				$error = "Executing deletePet failed: {$this->db->error}";
 		} else if ($this->deletePet->affected_rows !== 1) {
 				$error = "deletePet affected {$this->deletePet->affected_rows} rows instead of 1";
 		}

@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 <template>
 	<h1>Adoptable {{ species || 'pets' }}</h1>
-	<router-link :to="{ name: 'new', params: { species: species }}">Add</router-link>
+	<router-link :to="{ name: 'new', params: { species: species }}" class="add">Add</router-link>
 	<table>
 		<thead>
 		<tr>
@@ -103,21 +103,32 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+$row-height: 0.75in;
+
 table {
-	--row-height: 0.75in;
 	width: 100%;
+	padding: 1em;
 }
 
 tbody tr {
-	height: var(--row-height);
+	height: $row-height;
 }
 
 td, img {
-	max-height: var(--row-height);
+	max-height: $row-height;
 }
 
 td.options a {
 	padding: 0.4em;
+}
+
+.add {
+	border: 1px solid green;
+	padding: 0.3em 0.6em;
+	margin: 0.4em;
+	color: green;
+	font-size: 120%;
+	border-radius: 0.2em;
 }
 </style>
