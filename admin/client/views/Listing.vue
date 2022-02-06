@@ -194,7 +194,9 @@ export default defineComponent({
 	},
 	beforeRouteEnter(to, from, next) {
 		next((vm: any) => {
-			vm.species = to.params.species as string | undefined;
+			if (to.params.species) {
+				vm.species = to.params.species as string;
+			}
 			vm.path = to.params.pet as string | undefined;
 			vm.load();
 		});
