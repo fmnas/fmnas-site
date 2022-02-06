@@ -125,7 +125,7 @@ import Photos from '../components/Photos.vue';
 import {defineComponent} from 'vue';
 import store from '../store';
 import {
-	getFullPathForPet, getPathForPet, partial, petAge, ucfirst, uploadDescription, validateDescription
+	getFullPathForPet, getPathForPet, partial, petAge, ucfirst, uploadDescription
 } from '../common';
 import {mapState} from 'vuex';
 import {Asset, Pet, Sex} from '../types';
@@ -213,8 +213,9 @@ export default defineComponent({
 		async save() {
 			// TODO [#185]: Display toasts for input validation
 			// TODO [#186]: Confirm before changing pet ID (maybe the intention is to create a new pet instead).
-			if (!validateDescription(this.description)) {
-				store.state.toast.error('Description is invalid (contains mismatched {{...}})');
+			if (this.description !== store.state.lastGoodDescription) {
+				console.error(store.state.parseError);
+				store.state.toast.error(`Description is invalid (check your handlebars syntax)\n${store.state.parseError}`);
 				return;
 			}
 			const promises = [...this.photoPromises];
