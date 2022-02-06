@@ -3,7 +3,10 @@
 		<form :class="validated ? 'validated' : ''" @submit.prevent="save" @invalid.capture="validated = true">
 			<div class="buttons">
 				<button class="save">Save</button>
-				<button class="delete" @click.prevent="deleteListing">Delete</button>
+				<button class="delete" @click.prevent="showModal = true">Delete</button>
+				<button class="new" @click.prevent="() => {this.modified() ? this.showAbandonModal = true : this.reset();}">
+					New
+				</button>
 			</div>
 			<ul>
 				<li class="id">
@@ -98,10 +101,20 @@
 			</tbody>
 		</table>
 	</section>
-<!--	<p>modified status: {{ modified() }}</p>-->
-<!--	<p>loading status: {{ loading }}</p>-->
+	<!--	<p>modified status: {{ modified() }}</p>-->
+	<!--	<p>loading status: {{ loading }}</p>-->
 	<photos v-model="pet.photos" @update:promises="photoPromises = $event"></photos>
 	<editor v-model="description" :context="this.pet"/>
+	<modal v-if="showModal" @confirm="deleteListing" @cancel="showModal = false">
+		Are you sure you want to delete this listing?
+		<br>
+		If the pet has been adopted, you should change the status to Adopted instead.
+	</modal>
+	<modal v-if="showAbandonModal" @confirm="reset" @cancel="showAbandonModal = false">
+		Are you sure you want to create a new listing?
+		<br>
+		This will delete your changes here!
+	</modal>
 </template>
 
 <script lang="ts">
@@ -113,30 +126,33 @@ import {getFullPathForPet, getPathForPet, partial, petAge, ucfirst, uploadDescri
 import {mapState} from 'vuex';
 import {Asset, Pet, Sex} from '../types';
 import ProfilePhoto from '../components/ProfilePhoto.vue';
+import Modal from '../components/Modal.vue';
 
 export default defineComponent({
 	name: 'Listing',
-	components: {ProfilePhoto, Editor, Photos},
+	components: {ProfilePhoto, Editor, Photos, Modal},
 	data() {
 		return {
-			species: this.$route.params.species as string,
-			path: this.$route.params.pet as string,
+			species: this.$route.params.species as string | undefined,
+			path: this.$route.params.pet as string | undefined,
 			pet: {} as Pet,
 			original: {} as Pet,
 			description: partial('default'),
-			originalDescription: '',
+			originalDescription: partial('default'),
 			loading: true,
 			sexInteracted: false,
 			validated: false,
 			profilePromise: null as Promise<Asset> | null,
 			photoPromises: [] as Promise<any>[],
+			showModal: false,
+			showAbandonModal: false,
 		};
 	},
-	created() {
+	mounted() {
 		if (this.species && this.path) {
 			// Updating an existing listing
 			// TODO [#39]: Add a loading indicator for listing editor
-			fetch((this.species && this.path) ? `/api/listings/${this.species}/${this.path}` : '/api/listings').then(res => {
+			fetch(`/api/listings/${this.species}/${this.path}`).then(res => {
 				if (!res.ok) {
 					throw res;
 				}
@@ -161,9 +177,7 @@ export default defineComponent({
 			});
 		} else {
 			// Creating a new listing
-			this.pet['species'] =
-				(Object.values(store.state.config.species)).find((s: any) => s['plural'] === this.species)?.['id'];
-			this.loading = false;
+			this.reset();
 		}
 
 		// Display confirmation dialog when navigating away with unsaved changes
@@ -174,6 +188,23 @@ export default defineComponent({
 		});
 	},
 	methods: {
+		reset() {
+			this.$router.push('/new');
+			this.path = undefined;
+			this.pet = {} as Pet;
+			this.original = {} as Pet;
+			this.description = partial('default');
+			this.originalDescription = partial('default');
+			this.loading = false;
+			this.sexInteracted = false;
+			this.validated = false;
+			this.profilePromise = null as Promise<Asset> | null;
+			this.photoPromises = [] as Promise<any>[];
+			this.showModal = false;
+			this.showAbandonModal = false;
+			this.pet['species'] =
+				(Object.values(store.state.config.species)).find((s: any) => s['plural'] === this.species)?.['id'];
+		},
 		async save() {
 			// Wait for async uploads
 			await this.profilePromise;
@@ -226,8 +257,18 @@ export default defineComponent({
 			this.sexInteracted = true;
 		},
 		deleteListing() {
-			// TODO [#167]: Allow deleting listings.
-			alert('Not yet implemented');
+			if (this.original?.id) {
+				// Deleting an existing listing.
+				fetch(`/api/listings/${this.original.id}`, {
+					method: 'DELETE',
+				}).then((res) => {
+					if (!res.ok) {
+						throw res;
+					}
+				});
+			}
+			this.showModal = false;
+			this.reset();
 		},
 		getFullPathForPet,
 		getPathForPet,
