@@ -65,7 +65,7 @@ function endpoint(?callable $get = null, ?callable $post = null, ?callable $put 
 		break;
 	case 'PUT':
 	case 'POST':
-		if (empty($data)) {
+		if (empty($data) && empty($_FILES)) {
 			$result = new Result(400, error: "No data provided");
 			break;
 		}

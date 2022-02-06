@@ -20,7 +20,7 @@ Promise.all([getConfig(), getPartials()]).then(([config, partials]) => {
 	let app = createApp(App);
 	app.config.errorHandler = (err: any, vm, info) => {
 		console.error(err, vm, info);
-		store.state.toast.error(err?.toString() ?? info);
+		store.state.toast.error(JSON.stringify({err: err, info: info}));
 	};
 	app.use(store).use(router).use(Toast, toastOptions).mount('#app');
 });

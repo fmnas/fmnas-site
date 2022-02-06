@@ -108,7 +108,9 @@ export async function uploadFile(file: File, pathPrefix: string = '', height: st
 		asset.path = pathPrefix + file.name;
 		await updateAsset(asset);
 	}
-	const res = await fetch(`/api/raw/${asset.key}?height=${height}`, {method: 'POST', body: file});
+	const formData = new FormData();
+	formData.append('file', file);
+	const res = await fetch(`/api/raw/${asset.key}?height=${height}`, {method: 'POST', body: formData});
 	checkResponse(res);
 	return asset;
 }
