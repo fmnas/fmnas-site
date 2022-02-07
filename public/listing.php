@@ -50,7 +50,7 @@ if (!($pet = $db->getPetByPath($path))) {
 					break;
 				}
 				/* @var $photo Asset */
-				echo $photo->imgTag(null, true, false, 640);
+				echo $photo->imgTag(null, true, false, 480);
 			}
 			?>
 		</aside>

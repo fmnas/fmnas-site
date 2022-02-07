@@ -109,7 +109,7 @@ export default defineComponent({
 				const localPath = URL.createObjectURL(file);
 				this.pendingPhotos.push({
 					localPath: localPath,
-					promise: uploadFile(file, this.prefix, 640).then((asset) => this.promote(localPath, asset)),
+					promise: uploadFile(file, this.prefix, 480).then((asset) => this.promote(localPath, asset)),
 				});
 			}
 			input.value = '';
