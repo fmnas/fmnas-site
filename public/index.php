@@ -18,25 +18,6 @@ style('home');
 pageHeader();
 ?>
 <div class="home">
-	<aside class="left">
-		<h2>Programs</h2>
-		<section>
-			<h3>Lost a pet?<br>Found a pet?</h3>
-			TODO: Lost/found section
-		</section>
-		<section>
-			<h3>Owner Surrenders</h3>
-			TODO: Owner surrender section
-		</section>
-		<section>
-			<h3>Stop the Cycle<br>Spay/Neuter Vouchers</h3>
-			TODO: Stop the cycle section
-		</section>
-		<section>
-			<h3>Fear No Feral</h3>
-			TODO: Fear No Feral section
-		</section>
-	</aside>
 	<article>
 		<aside class="warning">
 			All shelter visits by appointment only
@@ -77,6 +58,25 @@ pageHeader();
 			</section>
 		</section>
 	</article>
+	<aside class="left">
+		<h2>Programs</h2>
+		<section>
+			<h3>Lost a pet?<br>Found a pet?</h3>
+			TODO: Lost/found section
+		</section>
+		<section>
+			<h3>Owner Surrenders</h3>
+			TODO: Owner surrender section
+		</section>
+		<section>
+			<h3>Stop the Cycle<br>Spay/Neuter Vouchers</h3>
+			TODO: Stop the cycle section
+		</section>
+		<section>
+			<h3>Fear No Feral</h3>
+			TODO: Fear No Feral section
+		</section>
+	</aside>
 	<aside class="right">
 		<h2>Get Involved</h2>
 		<section>
