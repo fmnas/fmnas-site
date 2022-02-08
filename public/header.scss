@@ -1,8 +1,14 @@
 header > nav {
+	// TODO: Change the intrinsic heights of logo assets to 100px basis.
 	$height: 100px;
+	$padding: 0.4rem;
 	display: flex;
 	justify-content: space-evenly;
 	align-items: center;
+	border-bottom: 1px solid var(--border-color);
+	box-shadow: 0 1px 2px var(--shadow-color);
+	padding-top: $padding;
+	background-color: var(--background-color-3);
 	a.logo > img {
 		height: $height;
 	}
@@ -17,7 +23,7 @@ header > nav {
 			font-size: 18pt;
 			grid-row: 1;
 			margin: 0;
-			a {
+			a:not(:active) {
 				color: black !important;
 			}
 		}
@@ -44,6 +50,9 @@ header > nav {
 			font-size: 14pt;
 			text-transform: uppercase;
 			font: var(--heading-font);
+			a:not(:active) {
+				color: var(--accent-color) !important;
+			}
 		}
 	}
 	form.adopt {
@@ -54,12 +63,20 @@ header > nav {
 		text-align: center;
 		h2 {
 			margin: 0;
-			font: inherit !important;
+			font-size: 120%;
 		}
 		button {
 			font: inherit !important;
 			padding: 0.4rem;
 			margin-top: 0.4rem;
+			color: var(--accent-color);
+			background-color: var(--background-color-2);
+			border-radius: 3px;
+			border: 1px solid var(--accent-color);
+			box-shadow: -1px 1px 2px var(--shadow-color), 1px 1px 2px var(--shadow-color);
+			&:active {
+				box-shadow: -1px 1px 2px var(--shadow-color) inset, 1px 1px 2px var(--shadow-color) inset;
+			}
 		}
 	}
 	section.donate {
