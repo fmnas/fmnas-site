@@ -12,6 +12,16 @@ header > nav {
 	a.logo > img {
 		height: $height;
 	}
+	h1, h2 {
+		font: var(--heading-font);
+		a:not(:active) {
+			color: black !important;
+			&:hover {
+				color: var(--accent-color) !important;
+				text-decoration: none !important;
+			}
+		}
+	}
 	div.main {
 		display: grid;
 		height: $height;
@@ -19,17 +29,9 @@ header > nav {
 		align-items: center;
 		white-space: nowrap;
 		h1 {
-			font: var(--heading-font);
 			font-size: 18pt;
 			grid-row: 1;
 			margin: 0;
-			a:not(:active) {
-				color: black !important;
-				&:hover {
-					color: var(--accent-color) !important;
-					text-decoration: none !important;
-				}
-			}
 		}
 		div.contact {
 			grid-row: 2;

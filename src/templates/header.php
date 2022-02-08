@@ -18,7 +18,7 @@ function pageHeader(): void { ?>
 				</ul>
 			</div>
 			<form class="adopt" action="/application" method="POST">
-				<h2>Adopt a Pet</h2>
+				<h2><a href="/application">Adopt a Pet</a></h2>
 				<button type="submit">Apply Online Now</button>
 			</form>
 			<section class="donate">
