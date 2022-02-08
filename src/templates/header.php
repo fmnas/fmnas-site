@@ -1,32 +1,37 @@
 <?php
-require_once __DIR__ . "/logo.php";
-require_once __DIR__ . "/donate.php";
-require_once __DIR__ . "/adopt_button.php";
-require_once __DIR__ . "/adopted.php";
-function pageHeader(bool $isHome = false): void { ?>
+function pageHeader(): void { ?>
 	<header>
 		<nav>
-			<h1><?php logo(); ?></h1>
-			<?php if (!$isHome): ?>
-				<a class="return" href="/" title="Home">Return to the shelter home page</a>
-			<?php
-			endif;
-			if ($isHome):
-				?>
-				<ul>
+			<a href="/" class="logo"><img src="<?=assets()?>/logo.png"
+			srcset="<?=assets()?>/logo_small.png 1x, <?=assets()?>/logo_medium.png 2x, <?=assets()?>/logo_large.png 3x, <?=assets()?>/logo.png 4x"
+			alt=""></a>
+			<div class="main">
+				<h1><a href="/"><?=_G_shortname()?></a></h1>
+				<div class="contact">
+					<address><span><?=str_replace("\n","</span><span>", mb_substr(_G_address(), 0, -5))?></span></address>
+					<a class="tel" href="tel:<?=_G_phone_intl()?>"><?=_G_phone()?></a>
+				</div>
+				<ul class="social">
+					<li><a href="/">Home</a>
 					<li><a href="https://www.facebook.com/ForgetMeNotAnimalShelter/">Facebook</a>
 					<li><a href="/blog">Blog</a>
 				</ul>
-			<?php
-			endif;
-			?>
+			</div>
+			<form class="adopt" action="/application" method="POST">
+				<h2>Adopt a Pet</h2>
+				<button type="submit">Apply Online Now</button>
+			</form>
+			<section class="donate">
+				<form action="https://www.paypal.com/cgi-bin/webscr" method="post" class="paypal">
+					<input type="hidden" name="cmd" value="_s-xclick">
+					<input type="hidden" name="hosted_button_id" value="9649881">
+					<input type="image" src="https://www.paypal.com/en_US/i/btn/btn_donateCC_LG.gif" name="submit"
+							alt="Donate through PayPal">
+					<img src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
+				</form>
+				<a href="https://www.networkforgood.org/donation/ExpressDonation.aspx?ORGID2=91-1996344" class="nfg"><img
+							src="<?=assets()?>/networkforgoodlogo.gif" alt="Donate through Network For Good"></a>
+			</section>
 		</nav>
-		<div>
-			<?php
-			donate();
-			adopt_button();
-			?>
-		</div>
-		<?php adopted(); ?>
 	</header>
 <?php }
