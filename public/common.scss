@@ -10,6 +10,14 @@
 	--accent-color: #5021da;
 	--shadow-color: #0003;
 
+	@media print {
+		--background-color: #fff;
+		--background-color-2: #fff;
+		--background-color-3: #fff;
+		--border-color: #000;
+		--shadow-color: transparent;
+	}
+
 	--link-color: #066;
 	--visited-color: #39f;
 	--active-color: #f60;
@@ -17,6 +25,7 @@
 	--heading-font: 600 14pt 'Asap', sans-serif;
 	--body-font: 12pt 'Open Sans', sans-serif;
 	font: var(--body-font);
+	min-width: 330px;
 }
 
 body {
@@ -45,6 +54,13 @@ a {
 
 	&:hover {
 		text-decoration: underline;
+	}
+
+	@media print {
+		color: var(--text-color) !important;
+		&:not([href^='tel:']):not([href^='mailto:']) {
+			text-decoration: underline;
+		}
 	}
 }
 

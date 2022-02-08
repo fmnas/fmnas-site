@@ -22,12 +22,37 @@ header > nav {
 	display: flex;
 	justify-content: space-evenly;
 	align-items: center;
-	border-bottom: 1px solid var(--border-color);
-	box-shadow: 0 1px 2px var(--shadow-color);
 	padding-top: $padding;
-	background-color: var(--background-color-3);
-	a.logo > img {
-		height: $height;
+	width: 100%;
+	$row-gap: 1.5rem;
+	@media screen and (max-width: 539px) {
+		flex-direction: column;
+		div.main {
+			margin-bottom: $row-gap;
+		}
+		a.logo, section.donate {
+			display: none !important;
+		}
+	}
+	@media screen and (min-width: 540px) and (max-width: 999px) {
+		display: grid;
+		row-gap: $row-gap;
+		grid-template-columns: [start] 1fr [logo] max-content [info] max-content 1fr [end];
+		section.donate {
+			display: none !important;
+		}
+	}
+	@media screen and (min-width: 1000px) {
+		border-bottom: 1px solid var(--border-color);
+		box-shadow: 0 1px 2px var(--shadow-color);
+		background-color: var(--background-color-3);
+	}
+	a.logo {
+		grid-column: logo;
+		grid-row: 1;
+		img {
+			height: $height;
+		}
 	}
 	h1, h2 {
 		font: var(--heading-font);
@@ -45,6 +70,8 @@ header > nav {
 		justify-items: center;
 		align-items: center;
 		white-space: nowrap;
+		grid-column: info;
+		grid-row: 1;
 		h1 {
 			font-size: 18pt;
 			grid-row: 1;
@@ -60,6 +87,15 @@ header > nav {
 			}
 			span::after {
 				content: ' · ';
+			}
+			@media screen and (max-width: 449px) {
+				span:not(:first-of-type)::after {
+					display: none;
+				}
+				a.tel {
+					display: block;
+					text-align: center;
+				}
 			}
 		}
 		ul.social {
@@ -84,6 +120,8 @@ header > nav {
 		font-weight: bold;
 		white-space: nowrap;
 		text-align: center;
+		grid-row: 2;
+		grid-column: start / end;
 		h2 {
 			margin: 0;
 			font-size: 120%;
@@ -105,5 +143,18 @@ header > nav {
 	section.donate {
 		display: contents;
 	}
-	// TODO: Mobile style for header.
+	@media print {
+		justify-content: center;
+		form.adopt, section.donate, ul.social {
+			display: none !important;
+		}
+		div.main {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+		}
+		a {
+			text-decoration: none !important;
+		}
+	}
 }
