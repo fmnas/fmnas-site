@@ -42,6 +42,10 @@ header > nav {
 			margin: 0;
 			a:not(:active) {
 				color: black !important;
+				&:hover {
+					color: var(--accent-color) !important;
+					text-decoration: none !important;
+				}
 			}
 		}
 		div.contact {
