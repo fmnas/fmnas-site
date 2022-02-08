@@ -22,7 +22,7 @@ header > nav {
 	display: flex;
 	justify-content: space-evenly;
 	align-items: center;
-	padding-top: $padding;
+	padding: $padding;
 	width: 100%;
 	$row-gap: 1.5rem;
 	@media screen and (max-width: 539px) {
