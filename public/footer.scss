@@ -1,0 +1,17 @@
+footer {
+	$padding: 0.4rem;
+	padding: $padding;
+	width: 100%;
+	p {
+		max-width: 9in;
+		margin: 0 auto;
+	}
+	text-align: center;
+	font-size: 10pt;
+	font-style: italic;
+	@media screen and (min-width: 700px) {
+		border-top: 1px solid var(--border-color);
+		box-shadow: 0 -1px 3px var(--shadow-color);
+		background-color: var(--background-color-3);
+	}
+}
