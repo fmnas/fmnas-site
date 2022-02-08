@@ -1,0 +1,57 @@
+/*
+ * Copyright 2022 Google LLC
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+header, footer {
+	z-index: 3;
+}
+div.home {
+	--border-color: #ccc;
+	$padding: 0.4rem;
+	display: grid;
+	grid-column-gap: 3px;
+	grid-template-columns: [start] 1fr [left] minmax(2.5in, 3.5in) [center] minmax(5in, 9in) [right] minmax(2.5in, 3.5in) 1fr [end];
+	> aside.left {
+		grid-column: left;
+	}
+	> aside {
+		z-index: 2;
+		background-color: var(--background-color-2);
+		box-shadow: -1px 0 3px var(--shadow-color), 1px 0 3px var(--shadow-color);
+		border-left: 1px solid var(--border-color);
+		border-right: 1px solid var(--border-color);
+	}
+	> article {
+		grid-column: center;
+		background-color: var(--background-color);
+		z-index: 1;
+	}
+	> aside.right {
+		grid-column: right;
+	}
+	> * {
+		padding: $padding;
+	}
+	& + footer {
+		background-color: var(--background-color-3);
+		padding: $padding;
+		footer {
+			padding: 0;
+			border-top: none;
+			box-shadow: none;
+		}
+	}
+}

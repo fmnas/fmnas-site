@@ -25,6 +25,7 @@ header > nav {
 	padding: $padding;
 	width: 100%;
 	$row-gap: 1.5rem;
+	box-sizing: border-box;
 	@media screen and (max-width: 539px) {
 		a.logo {
 			display: none !important;
@@ -48,7 +49,7 @@ header > nav {
 	}
 	@media screen and (min-width: 700px) {
 		border-bottom: 1px solid var(--border-color);
-		box-shadow: 0 1px 2px var(--shadow-color);
+		box-shadow: 0 1px 3px var(--shadow-color);
 		background-color: var(--background-color-3);
 	}
 	h1, h2 {
@@ -135,9 +136,9 @@ header > nav {
 			background-color: var(--background-color-2);
 			border-radius: 3px;
 			border: 1px solid var(--accent-color);
-			box-shadow: -1px 1px 2px var(--shadow-color), 1px 1px 2px var(--shadow-color);
+			box-shadow: -1px 1px 3px var(--shadow-color), 1px 1px 3px var(--shadow-color);
 			&:active {
-				box-shadow: -1px 1px 2px var(--shadow-color) inset, 1px 1px 2px var(--shadow-color) inset;
+				box-shadow: -1px 1px 3px var(--shadow-color) inset, 1px 1px 3px var(--shadow-color) inset;
 			}
 		}
 	}
