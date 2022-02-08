@@ -1,7 +1,7 @@
 <?php /** @noinspection PhpUnusedParameterInspection */
 require_once "../../src/common.php";
 require_once "../../src/form.php";
-//require_once "$t/header.php";
+require_once "$t/header.php";
 require_once "$t/application_response.php";
 ini_set('upload_max_filesize', '10M');
 ini_set('max_file_uploads', '20');
@@ -22,10 +22,9 @@ $formConfig->confirm = function(array $formData): void {
 	<?php
 	style();
 	style("minheader", true);
-	// TODO [#64]: Use page header and make the min header printonly.
-	//	pageHeader();
+	pageHeader();
 	?>
-	<header data-if-config="minhead" data-hidden="false" class="" id="minimal_header">
+	<header data-if-config="minhead" id="minimal_header">
 		<a href="/">
 			<h1><?=_G_shortname()?></h1>
 			<div>
@@ -53,10 +52,10 @@ $formConfig->handler = function(FormException $e): void {
 	style();
 	emailLinks();
 	style("minheader", true);
-	//	pageHeader();
+	pageHeader();
 	?>
 	<article>
-		<header data-if-config="minhead" data-hidden="false" class="" id="minimal_header">
+		<header data-if-config="minhead" id="minimal_header">
 			<a href="/">
 				<h1><?=_G_shortname()?></h1>
 				<div>
@@ -324,9 +323,9 @@ function addressInput(string $label, string $prefix, bool $required = false): st
 </head>
 <body>
 <?php
-//ob_start();
-//pageHeader();
-//echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
+ob_start();
+pageHeader();
+echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 ?>
 <article>
 	<section id="thanks" data-if-config="main" data-rhs="false">
@@ -334,7 +333,7 @@ function addressInput(string $label, string $prefix, bool $required = false): st
 		application_response();
 		?>
 	</section>
-	<header data-if-config="minhead" data-hidden="false" class="" id="minimal_header">
+	<header data-if-config="minhead" id="minimal_header">
 		<a href="/">
 			<h1><?=_G_shortname()?></h1>
 			<div>

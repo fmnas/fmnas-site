@@ -8,7 +8,7 @@ $total-input-height: calc(#{forms.$line-height} + #{forms.$input-border} + #{for
 $paragraph-width: 40em;
 
 // Hide the link to the application in the header - we are already here!
-section.adopt {
+header form.adopt {
 	display: none;
 }
 
