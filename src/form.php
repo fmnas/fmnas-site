@@ -503,7 +503,7 @@ function collectForm(): void {
 			$selectors[] =
 					"*[$attribute]:not([data-hidden='0']):not([data-hidden='false']):not([data-hidden='false' i])";
 		}
-		echo "<style>" . implode(",", $selectors) . "{display: none;}</style>";
+		echo "<style>" . implode(",", $selectors) . "{display: none !important;}</style>";
 
 		// Stuff after the injected CSS.
 		if (!$after) {
