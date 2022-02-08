@@ -14,7 +14,7 @@ $db ??= new Database();
 <script src="/email.js.php"></script>
 <?php
 style();
-pageHeader(true);
+pageHeader();
 ?>
 <section id="listings">
 	<h2>Adoptable pets</h2>
