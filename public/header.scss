@@ -9,33 +9,30 @@ header > nav {
 	width: 100%;
 	$row-gap: 1.5rem;
 	@media screen and (max-width: 539px) {
+		a.logo {
+			display: none !important;
+		}
+	}
+	@media screen and (max-width: 699px) {
 		flex-direction: column;
 		div.main {
 			margin-bottom: $row-gap;
 		}
-		a.logo, section.donate {
-			display: none !important;
-		}
 	}
-	@media screen and (min-width: 540px) and (max-width: 999px) {
-		display: grid;
-		row-gap: $row-gap;
-		grid-template-columns: [start] 1fr [logo] max-content [info] max-content 1fr [end];
+	@media screen and (max-width: 860px) {
 		section.donate {
 			display: none !important;
 		}
 	}
-	@media screen and (min-width: 1000px) {
+	@media screen and (max-width: 1000px) {
+		.nfg {
+			display: none !important;
+		}
+	}
+	@media screen and (min-width: 700px) {
 		border-bottom: 1px solid var(--border-color);
 		box-shadow: 0 1px 2px var(--shadow-color);
 		background-color: var(--background-color-3);
-	}
-	a.logo {
-		grid-column: logo;
-		grid-row: 1;
-		img {
-			height: $height;
-		}
 	}
 	h1, h2 {
 		font: var(--heading-font);
@@ -53,8 +50,14 @@ header > nav {
 		justify-items: center;
 		align-items: center;
 		white-space: nowrap;
-		grid-column: info;
-		grid-row: 1;
+		grid-template-columns: [logo] max-content [info] max-content [end];
+		a.logo {
+			grid-column: logo;
+			grid-row: 1 / span 3;
+			img {
+				height: $height;
+			}
+		}
 		h1 {
 			font-size: 18pt;
 			grid-row: 1;
@@ -103,8 +106,6 @@ header > nav {
 		font-weight: bold;
 		white-space: nowrap;
 		text-align: center;
-		grid-row: 2;
-		grid-column: start / end;
 		h2 {
 			margin: 0;
 			font-size: 120%;
