@@ -1,11 +1,16 @@
-@use "header";
-@use "footer";
-@import url('https://fonts.googleapis.com/css2?family=Asap:wght@600&family=Open+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+@use 'header';
+@use 'footer';
+
+// https://fonts.google.com/share?selection.family=Asap:ital,wght@0,600;1,500%7COpen%20Sans:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700
+@import url('https://fonts.googleapis.com/css2?family=Asap:ital,wght@0,600;1,500&family=Open+Sans:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap');
 
 :root {
 	--background-color: #fff;
 	--background-color-2: #fcfcfc;
 	--background-color-3: #f0f0f0;
+	--warning-border: transparent;
+	--warning-background: linear-gradient(0deg, #a00 0%, #b00 50%, #a00 100%);
+	--warning-color: #fff;
 	--border-color: #666;
 	--text-color: #000;
 	--accent-color: #5021da;
@@ -99,4 +104,38 @@ p {
 
 .hidden {
 	display: none;
+}
+
+.warning {
+	$size: 50px;
+	$padding: 0.4rem;
+	padding: $padding;
+	min-height: calc(#{$size} + 2 * #{$padding});
+	box-sizing: border-box;
+	border-radius: $padding;
+	border: 2px solid var(--warning-border);
+	color: var(--warning-color);
+	background: var(--warning-background);
+	display: inline-grid;
+	grid-template-columns: $size 1fr;
+	font-weight: 600;
+	&>*:first-child {
+		display: contents;
+		&::before {
+			content: '\26a0 \fe0e';
+			font-size: $size;
+			-webkit-text-stroke: 0.2pt var(--warning-color);
+			color: var(--warning-color);
+			box-sizing: border-box;
+			line-height: 0.9 * $size;
+			height: $size;
+			width: $size;
+			margin-right: $padding;
+			grid-column: 1;
+			grid-row: 1 / span 100000000;
+		}
+	}
+	&>*:last-child {
+		margin-bottom: 0;
+	}
 }
