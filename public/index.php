@@ -75,22 +75,22 @@ pageHeader();
 		</section>
 		<section>
 			<h3>Owner Surrenders</h3>
-			TODO: Owner surrender section
+			TODO [#212]: Owner surrender section
 		</section>
 		<section>
 			<h3>Stop the Cycle<br>Spay/Neuter Vouchers</h3>
-			TODO: Stop the cycle section
+			TODO [#213]: Stop the cycle section
 		</section>
 		<section>
 			<h3>Fear No Feral</h3>
-			TODO: Fear No Feral section
+			TODO [#214]: Fear No Feral section
 		</section>
 	</aside>
 	<aside class="right">
 		<h2>Get Involved</h2>
 		<section>
 			<h3>Volunteer</h3>
-			TODO: Volunteer section.
+			TODO [#215]: Volunteer section.
 		</section>
 		<section class="donate">
 			<h3>Donate</h3>
