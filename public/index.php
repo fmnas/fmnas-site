@@ -103,9 +103,6 @@ pageHeader();
 	</aside>
 </div>
 <footer>
-	<aside class="logos">
-		TODO: Logos.
-	</aside>
 	<div class="f990">
 		View our IRS Form 990:
 		<ul>
@@ -127,6 +124,14 @@ pageHeader();
 			<li><a href="2005990.pdf">2005</a></li>
 		</ul>
 	</div>
+	<aside class="logos">
+		<ul>
+			<li><a href="//wafederation.org"><img src="/assets/WAFed.png" alt="2019 Member - The Washington Federation of Animal Care and Control Agencies"></a></li>
+			<li><a href="//petfinder.com/videos"><img src="/assets/pet-videos.gif" alt="Be a responsible pet parent - train your pet!"></a></li>
+			<li><a href="//hillspet.com/products/science-diet.html"><img src="/assets/hills.jpg" alt="We feed and recommend Hill's Science Diet." title="We feed HILL'S SCIENCE DIET exclusively.This premium diet is made possible by the generosity of Hill's Science Diet, and we thank them for their support."></a></li>
+			<li><a href="//adoptapet.com"><img src="https://images-origin.adoptapet.com/images/shelter-badges/Approved-Shelter_Blue-Badge.png" alt="Adopt-a-Pet.com Approved Shelter"></a></li>
+		</ul>
+	</aside>
 	<script src="f990.js"></script>
 	<?php footer(); ?>
 </footer>
