@@ -103,7 +103,7 @@ pageHeader();
 	</aside>
 </div>
 <footer>
-	<div class="f990">
+	<div class="f990 noprint">
 		View our IRS Form 990:
 		<ul>
 			<li><a href="2020990.pdf">2020</a></li>
@@ -124,7 +124,7 @@ pageHeader();
 			<li><a href="2005990.pdf">2005</a></li>
 		</ul>
 	</div>
-	<aside class="logos">
+	<aside class="logos noprint">
 		<ul>
 			<li><a href="//wafederation.org"><img src="/assets/WAFed.png" alt="2019 Member - The Washington Federation of Animal Care and Control Agencies"></a></li>
 			<li>Thanks to Petfinder:<br><a href="//petfinder.com/videos"><img src="/assets/pet-videos.gif" alt="Be a responsible pet parent - train your pet!"></a><br>Be a responsible pet parent &ndash; train your pet!</li>
