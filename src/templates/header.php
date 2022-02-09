@@ -30,7 +30,7 @@ function pageHeader(): void { ?>
 							alt="Donate through PayPal">
 					<img src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
 				</form>
-				<a href="https://www.networkforgood.org/donation/ExpressDonation.aspx?ORGID2=91-1996344" class="nfg"><img
+				<a href="https://www.networkforgood.org/donation/ExpressDonation.aspx?ORGID2=91-1996344" class="nfg darken"><img
 							src="<?=assets()?>/networkforgoodlogo.gif" alt="Donate through Network For Good"></a>
 			</section>
 		</nav>
