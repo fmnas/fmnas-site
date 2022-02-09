@@ -11,6 +11,7 @@ $db ??= new Database();
 <html lang="en-US">
 <title><?=_G_longname()?></title>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="/email.js.php"></script>
 <?php
 style();
