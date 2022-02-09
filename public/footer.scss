@@ -19,6 +19,7 @@ footer {
 	$padding: 0.4rem;
 	padding: $padding;
 	width: 100%;
+	box-sizing: border-box;
 	p {
 		max-width: 9in;
 		margin: 0 auto;
