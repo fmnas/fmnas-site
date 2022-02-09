@@ -33,4 +33,5 @@ button.addEventListener('mouseup', () => {
 	button.classList.remove('active');
 })
 button.classList.add('f990');
+button.classList.add('noprint');
 div.replaceWith(button);
