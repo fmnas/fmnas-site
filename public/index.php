@@ -95,7 +95,7 @@ pageHeader();
 		<section class="donate">
 			<h3>Donate</h3>
 			<p>We are an IRS-approved 501(c)3 charitable organization. Your donations are fully tax-deductible.
-			<p>Donate via PayPal<br>(one-time or monthly pledge):
+			<p><strong>Donate via PayPal</strong><br>(one-time or monthly pledge):
 			<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
 				<script>
 					function setid(os0sel) {
@@ -130,7 +130,7 @@ pageHeader();
 				<input src="https://www.paypal.com/en_US/i/btn/btn_donateCC_LG.gif" id="PayPalDonateInputImage" name="submit"
 						alt="PayPal - The safer, easier way to pay online!" type="image">
 			</form>
-			<p>Donate via Network for Good<br>(one-time or monthly pledge):
+			<p><strong>Donate via Network for Good</strong><br>(one-time or monthly pledge):
 				<a href="https://www.networkforgood.org/donation/ExpressDonation.aspx?ORGID2=91-1996344">
 					<img src="/assets/networkforgoodlogo.gif" alt="Network for Good">
 				</a>
