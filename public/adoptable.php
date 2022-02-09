@@ -35,8 +35,8 @@ function relativePath(string $basePath): string {
 <meta charset="utf-8">
 <?php
 style();
-style("adoptable");
-style("adoptable.generated"); // I hate this
+style("adoptable", false, "20220208");
+style("adoptable.generated", false, "20220208"); // I hate this
 emailLinks();
 ?>
 <script src="/email.js.php"></script>
