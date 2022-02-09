@@ -48,7 +48,9 @@ pageHeader();
 		</section>
 		<section class="transports">
 			<h2>Transport dates</h2>
-			<p>Can't come to Republic?</p>
+			<p><strong>Can't come to Republic? Don't let that stop you!</strong>
+			<br>We have monthly transports to both the Seattle area and Spokane, delivering adopted pets to their new owners.
+				If you can add a little to your donation to help us cover our volunteer driver's expenses, that would be great!
 			<section class="seattle">
 				<h3>Next Seattle area transport</h3>
 				<p>
