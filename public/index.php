@@ -15,14 +15,14 @@ $db ??= new Database();
 <script src="/email.js.php"></script>
 <?php
 style();
-style("home", false, 20220208);
+style("home");
 pageHeader();
 ?>
 <div class="home">
 	<article>
 		<aside class="warning">
 			<strong>All shelter visits for any reason must be done by appointment only.</strong>
-			<p>Call or email to make an appointment for a day/time that is convenient for you.
+			<p><a href="tel:<?=_G_phone_intl()?>">Call</a> or <a data-email="info">email</a> to make an appointment for a day/time that is convenient for you.
 		</aside>
 		<section class="listings">
 			<h2>Adoptable pets</h2>

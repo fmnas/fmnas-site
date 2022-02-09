@@ -47,9 +47,11 @@ body {
 	box-sizing: border-box;
 	display: flex;
 	flex-direction: column;
+
 	> *:not(header):not(footer) {
 		flex-grow: 1;
 	}
+
 	> header, > footer {
 		flex-grow: 0;
 	}
@@ -97,6 +99,7 @@ p {
 		display: none !important;
 	}
 }
+
 .noprint {
 	@media print {
 		display: none !important;
@@ -120,8 +123,23 @@ p {
 	display: inline-grid;
 	grid-template-columns: $size 1fr;
 	font-weight: 600;
-	&>*:first-child {
+
+	a {
+		color: inherit;
+		text-decoration: underline;
+
+		&:hover {
+			text-decoration: none;
+		}
+
+		&:active {
+			color: var(--active-color);
+		}
+	}
+
+	& > *:first-child {
 		display: contents;
+
 		&::before {
 			content: '\26a0 \fe0e';
 			font-size: $size;
@@ -136,7 +154,8 @@ p {
 			grid-row: 1 / span 100000000;
 		}
 	}
-	&>*:last-child {
+
+	& > *:last-child {
 		margin-bottom: 0;
 	}
 }
