@@ -175,7 +175,7 @@ pageHeader();
 	<aside class="logos noprint">
 		<ul>
 			<li><a href="//wafederation.org"><img src="/assets/WAFed.png"
-							alt="2019 Member - The Washington Federation of Animal Care and Control Agencies"></a></li>
+							alt="2019 Member - The Washington Federation of Animal Care and Control Agencies" class="darken"></a></li>
 			<li>Thanks to Petfinder:<br><a href="//petfinder.com/videos"><img src="/assets/pet-videos.gif"
 							alt="Be a responsible pet parent - train your pet!"></a><br>Be a responsible pet parent &ndash; train your
 				pet!
