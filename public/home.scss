@@ -23,12 +23,18 @@ div.home {
 	$padding: 0.4rem;
 	display: grid;
 	grid-template-columns: [start] 1fr [left] minmax(2.5in, 3.5in) [center] minmax(5in, 9in) [right] minmax(2.5in, 3.5in) 1fr [end];
+	text-align: center;
 	> aside.left {
 		grid-column: left;
 	}
 	> article {
 		grid-column: center;
 		background-color: var(--background-color);
+		aside.warning {
+			box-shadow: -1px 1px 3px var(--shadow-color), 1px 1px 3px var(--shadow-color);
+			padding: 1rem 1rem 1rem 0.5rem;
+			text-align: justify;
+		}
 	}
 	> aside.right {
 		grid-column: right;
