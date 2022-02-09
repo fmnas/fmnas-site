@@ -198,3 +198,15 @@ button.f990 {
 		box-shadow: -1px 1px 3px var(--shadow-color) inset, 1px 1px 3px var(--shadow-color) inset;
 	}
 }
+
+aside.logos > ul {
+	list-style-type: none;
+	padding: 0;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-around;
+	align-items: center;
+	img {
+		max-height: 100px;
+	}
+}
