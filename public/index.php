@@ -138,7 +138,7 @@ pageHeader();
 					<img src="/assets/networkforgoodlogo.gif" alt="Network for Good">
 				</a>
 			<p>You can help Forget Me Not when you start your Amazon shopping at
-				<strong><a href="https://smile.amazon.com/ch/91-1996344">smile.amazon.com</a></strong>
+				<strong><a href="https://smile.amazon.com/ch/91-1996344">smile.amazon.com</a></strong>.
 		</section>
 		<section class="adopted">
 			<figure>
