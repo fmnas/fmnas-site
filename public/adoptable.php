@@ -33,6 +33,7 @@ function relativePath(string $basePath): string {
 <html lang="en-US">
 <title><?=htmlspecialchars(ucfirst($species->plural()))?> for adoption at <?=_G_longname()?></title>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <?php
 style();
 style("adoptable", false, "20220208");
