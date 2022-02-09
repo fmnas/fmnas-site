@@ -14,7 +14,7 @@ $db ??= new Database();
 <script src="/email.js.php"></script>
 <?php
 style();
-style('home');
+style("home", false, 20220208);
 pageHeader();
 ?>
 <div class="home">
