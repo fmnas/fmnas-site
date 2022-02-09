@@ -97,7 +97,8 @@ table.listings {
 			}
 
 			&:not(.soon) th.name a {
-				border-bottom: 1pt solid var(--link-color);
+				text-decoration: underline;
+				text-decoration-thickness: 1pt;
 
 				&::after {
 					content: ' »';
@@ -107,16 +108,8 @@ table.listings {
 					content: ' (id#' attr(id) ') »';
 				}
 
-				&:visited {
-					border-bottom: 1pt solid var(--visited-color);
-				}
-
-				&:active {
-					border-bottom: 1pt solid var(--active-color);
-				}
-
 				&:hover {
-					border-bottom-width: 1.5pt;
+					text-decoration-thickness: 1.5pt;
 				}
 			}
 
