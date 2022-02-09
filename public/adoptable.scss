@@ -26,6 +26,7 @@ h2 {
 table.listings {
 	/* These need to be CSS variables for use by adoptable.generated.css */
 	--border-color: #ccc;
+	--adoptable-color: var(--background-color-2);
 	--pending-color: #ddd;
 	--info-color: var(--link-color);
 
@@ -48,6 +49,7 @@ table.listings {
 			min-width: calc(200px + 8em);
 			padding: 1em;
 			box-sizing: border-box;
+			--listing-background: var(--adoptable-color);
 
 			a:hover {
 				text-decoration: none;
@@ -86,6 +88,7 @@ table.listings {
 				border-left: 1px solid var(--border-color);
 				border-right: 1px solid var(--border-color);
 				min-height: 1.4em;
+				background-color: var(--listing-background);
 
 				&:first-child {
 					border-top: 1px solid var(--border-color);

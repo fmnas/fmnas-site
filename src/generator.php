@@ -88,17 +88,14 @@ function generate() {
 	}
 
 	if (count($displayedStatusSelectors)) {
-		// Display pending animals with a grey background
-		echo buildSelector($displayedStatusSelectors, " *");
-		echo "{background-color:var(--pending-color);}";
+
+		// Display pending animals with a grey background and move them to the end
+		echo buildSelector($displayedStatusSelectors);
+		echo "{order:3 !important;--listing-background:var(--pending-color) !important;}";
 
 		// Show status instead of fee
 		echo buildSelector($displayedStatusSelectors, ">td.fee>span");
 		echo "{display:none;}";
-
-		// Move them to the end
-		echo buildSelector($displayedStatusSelectors);
-		echo "{order:3 !important;}";
 
 		// Hide email link
 		echo buildSelector($displayedStatusSelectors, " .inquiry>a");
@@ -161,7 +158,7 @@ function generate() {
             }
             CSS;
 		echo buildSelector($hoverStatusSelectors, ">td.fee:hover::before");
-		echo "{opacity:0.9;transition:opacity 0.18s ease-out 0.18s;z-index:2;} ";
+		echo "{opacity:0.95;transition:opacity 0.18s ease-out 0.18s;z-index:2;} ";
 		echo buildSelector($hoverStatusSelectors, ">td.fee");
 		echo "{overflow:visible;position:relative;}";
 	}
