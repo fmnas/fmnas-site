@@ -69,7 +69,9 @@ pageHeader();
 		<h2>Programs</h2>
 		<section>
 			<h3>Lost a pet?<br>Found a pet?</h3>
-			TODO: Lost/found section
+			<p><strong>Check our <a href="https://www.facebook.com/ForgetMeNotAnimalShelter/">Facebook page</a> for recent
+					lost/found listings.</strong>
+			<p>To have your lost/found listed, please <a data-email="info">email us</a>, with photos if possible.</p>
 		</section>
 		<section>
 			<h3>Owner Surrenders</h3>
@@ -92,15 +94,59 @@ pageHeader();
 		</section>
 		<section class="donate">
 			<h3>Donate</h3>
-			TODO: Donate section.
+			<p>We are an IRS-approved 501(c)3 charitable organization. Your donations are fully tax-deductible.
+			<p>Donate via PayPal<br>(one-time or monthly pledge):
+			<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+				<script>
+					function setid(os0sel) {
+						if (os0sel === 'One-time donation') {
+							document.getElementById('PayPalDonateInputImage').src =
+									'https://www.paypal.com/en_US/i/btn/btn_donateCC_LG.gif';
+							document.getElementById('PayPalDonateButtonId').value = '9649881';
+						} else {
+							document.getElementById('PayPalDonateInputImage').src =
+									'https://www.paypalobjects.com/en_US/i/btn/btn_subscribeCC_LG.gif';
+							if (os0sel === '$10 Monthly Pledge') {
+								document.getElementById('PayPalDonateButtonId').value = '7PHTNETHY3ZXQ';
+							} else if (os0sel === '$25 Monthly Pledge') {
+								document.getElementById('PayPalDonateButtonId').value = 'KZB6B2GFG5TFQ';
+							} else if (os0sel === '$50 Monthly Pledge') {
+								document.getElementById('PayPalDonateButtonId').value = 'XXN48CQT7UEAS';
+							} else if (os0sel === '$100 Monthly Pledge') {
+								document.getElementById('PayPalDonateButtonId').value = 'H8YYWFDK4W3HY';
+							}
+						}
+					}
+				</script>
+				<input name="cmd" value="_s-xclick" type="hidden">
+				<input name="hosted_button_id" id="PayPalDonateButtonId" value="9649881" type="hidden">
+				<select name="os0" onchange="setid(this.value);">
+					<option value="One-time donation" selected="">One-time donation</option>
+					<option value="$10 Monthly Pledge">$10 Monthly Pledge</option>
+					<option value="$25 Monthly Pledge">$25 Monthly Pledge</option>
+					<option value="$50 Monthly Pledge">$50 Monthly Pledge</option>
+					<option value="$100 Monthly Pledge">$100 Monthly Pledge</option>
+				</select><br>
+				<input src="https://www.paypal.com/en_US/i/btn/btn_donateCC_LG.gif" id="PayPalDonateInputImage" name="submit"
+						alt="PayPal - The safer, easier way to pay online!" type="image">
+			</form>
+			<p>Donate via Network for Good<br>(one-time or monthly pledge):
+				<a href="https://www.networkforgood.org/donation/ExpressDonation.aspx?ORGID2=91-1996344">
+					<img src="/assets/networkforgoodlogo.gif" alt="Network for Good">
+				</a>
+			<p>You can help Forget Me Not when you start your Amazon shopping at
+				<strong><a href="https://smile.amazon.com/ch/91-1996344">smile.amazon.com</a></strong>
 		</section>
 		<section class="adopted">
-			<h3>Want updates on adopted pets?</h3>
-			TODO: Adopted section.
-		</section>
-		<section class="share">
-			<h3>Share</h3>
-			TODO: Share buttons.
+			<figure>
+				<figcaption>
+					Want to see updates on our already adopted pets?
+					<br>Check our
+					<a href="https://www.facebook.com/groups/135175210176154/" title="Adopted Pets">
+						Adopters and Supporters Facebook Group</a>!
+				</figcaption>
+				<a href="https://www.facebook.com/groups/135175210176154/" title="Adopted Pets"><img alt="Adopted Pets" src="/assets/adopted.jpg"></a>
+			</figure>
 		</section>
 	</aside>
 </div>

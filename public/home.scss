@@ -131,6 +131,48 @@ div.home {
 		grid-column: right;
 	}
 
+	> aside {
+		h2 {
+			font: var(--heading-font);
+			color: var(--accent-color);
+			font-size: 18pt;
+			margin: 0.4rem 0 0.2rem;
+		}
+		h3 {
+			font: var(--heading-font);
+			font-size: 16pt;
+			margin: 0.4rem 0;
+		}
+		section {
+			padding: 0.2rem 0 0.4rem;
+			&:not(:last-of-type) {
+				border-bottom: 1px solid var(--border-color);
+			}
+		}
+		p {
+			margin: 0;
+			strong {
+				font-weight: 600;
+			}
+		}
+		section.donate p {
+			margin-top: 0.8rem;
+			&:first-of-type {
+				margin: 0;
+				font-size: 11pt;
+				font-style: italic;
+			}
+		}
+		section.adopted figure {
+			display: flex;
+			align-items: center;
+			margin: 0.4em 0;
+			figcaption {
+				flex-grow: 2;
+			}
+		}
+	}
+
 	> * {
 		padding: $padding;
 		grid-row: 1;
