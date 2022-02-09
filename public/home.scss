@@ -212,8 +212,8 @@ div.home {
 	@media (max-width: calc(10in + 5px)) {
 		display: flex;
 		flex-direction: column;
-		> * {
-			margin: 1rem 0;
+		article {
+			margin-top: 1rem;
 		}
 	}
 	@media (min-width: calc(10in + 6px)) {
