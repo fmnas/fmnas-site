@@ -15,6 +15,7 @@
 	--text-color: #000;
 	--accent-color: #5021da;
 	--shadow-color: #0003;
+	--border-radius: 3px;
 
 	@media print {
 		--background-color: #fff;
@@ -112,7 +113,7 @@ p {
 	padding: $padding;
 	min-height: calc(#{$size} + 2 * #{$padding});
 	box-sizing: border-box;
-	border-radius: $padding;
+	border-radius: var(--border-radius);
 	border: 2px solid var(--warning-border);
 	color: var(--warning-color);
 	background: var(--warning-background);
