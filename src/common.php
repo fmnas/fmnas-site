@@ -139,6 +139,7 @@ require_once "$src/generated.php";
  * @param string|null $buster A cachebuster to use.
  */
 function style(string $name = "/common", bool $relative = false, ?string $buster = null): void {
+	global $root;
 	if (!startsWith($name, "/") && !$relative) {
 		$name = "/" . $name;
 	}
@@ -147,6 +148,8 @@ function style(string $name = "/common", bool $relative = false, ?string $buster
 	}
 	if ($buster !== null) {
 		$name .= "?buster=$buster";
+	} else if (!$relative) {
+		$name .= "?buster=" . filemtime("$root/public$name");
 	}
 	echo "<link rel=\"stylesheet\" href=\"" . htmlspecialchars($name) . "\">";
 }
