@@ -127,7 +127,7 @@ pageHeader();
 	<aside class="logos">
 		<ul>
 			<li><a href="//wafederation.org"><img src="/assets/WAFed.png" alt="2019 Member - The Washington Federation of Animal Care and Control Agencies"></a></li>
-			<li><a href="//petfinder.com/videos"><img src="/assets/pet-videos.gif" alt="Be a responsible pet parent - train your pet!"></a></li>
+			<li>Thanks to Petfinder:<br><a href="//petfinder.com/videos"><img src="/assets/pet-videos.gif" alt="Be a responsible pet parent - train your pet!"></a><br>Be a responsible pet parent &ndash; train your pet!</li>
 			<li><a href="//hillspet.com/products/science-diet.html"><img src="/assets/hills.jpg" alt="We feed and recommend Hill's Science Diet." title="We feed HILL'S SCIENCE DIET exclusively.This premium diet is made possible by the generosity of Hill's Science Diet, and we thank them for their support."></a></li>
 			<li><a href="//adoptapet.com"><img src="https://images-origin.adoptapet.com/images/shelter-badges/Approved-Shelter_Blue-Badge.png" alt="Adopt-a-Pet.com Approved Shelter"></a></li>
 		</ul>
