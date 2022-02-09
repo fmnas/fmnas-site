@@ -91,7 +91,9 @@ pageHeader();
 		<h2>Get Involved</h2>
 		<section>
 			<h3>Volunteer</h3>
-			TODO [#215]: Volunteer section.
+			<p>We always need <b>LOVE LOVE LOVE</b> for the fuzzballs! Want to brush a cat or walk a dog? We need you! You
+				can volunteer as little as 3 hours a month. Call <a href="tel:<?=_G_phone_intl()?>"><?=_G_phone()?></a> or email <a
+						data-email="info"></a>.
 		</section>
 		<section class="donate">
 			<h3>Donate</h3>
