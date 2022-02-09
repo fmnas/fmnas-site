@@ -200,7 +200,17 @@ button.f990 {
 	padding: 0.2em 0.4em;
 	margin: 0.4em;
 	font: inherit;
+	cursor: pointer;
+	background-color: var(--background-color);
+	color: var(--text-color);
+	border: 1px solid var(--border-color);
+	border-radius: var(--border-radius);
+	box-shadow: -1px 1px 3px var(--shadow-color), 1px 1px 3px var(--shadow-color);
 	select {
 		font: inherit;
+		cursor: hand;
+	}
+	&.active {
+		box-shadow: -1px 1px 3px var(--shadow-color) inset, 1px 1px 3px var(--shadow-color) inset;
 	}
 }

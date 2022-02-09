@@ -17,8 +17,20 @@ button.append(document.createTextNode('View our '), select, document.createTextN
 select.addEventListener('click', (e) => {
 	e.stopImmediatePropagation();
 });
+select.addEventListener('mousedown', (e) => {
+	e.stopImmediatePropagation();
+});
+select.addEventListener('mouseup', (e) => {
+	e.stopImmediatePropagation();
+});
 button.addEventListener('click', () => {
 	window.location.href = select.value;
 });
+button.addEventListener('mousedown', () => {
+	button.classList.add('active');
+});
+button.addEventListener('mouseup', () => {
+	button.classList.remove('active');
+})
 button.classList.add('f990');
 div.replaceWith(button);
