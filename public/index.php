@@ -127,6 +127,7 @@ pageHeader();
 			<li><a href="2005990.pdf">2005</a></li>
 		</ul>
 	</div>
+	<script src="f990.js"></script>
 	<?php footer(); ?>
 </footer>
 </html>
