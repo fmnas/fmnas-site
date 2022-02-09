@@ -8,14 +8,12 @@
 	--background-color: #fff;
 	--background-color-2: #fcfcfc;
 	--background-color-3: #f0f0f0;
-	--warning-border: transparent;
-	--warning-background: linear-gradient(0deg, #a00 0%, #b00 50%, #a00 100%);
-	--warning-color: #fff;
+
 	--border-color: #666;
+	--border-radius: 3px;
 	--text-color: #000;
 	--accent-color: #5021da;
 	--shadow-color: #0003;
-	--border-radius: 3px;
 
 	@media print {
 		--background-color: #fff;
@@ -111,18 +109,37 @@ p {
 }
 
 .warning {
+	--box-background: linear-gradient(0deg, #a00 0%, #b00 50%, #a00 100%);
+	--box-color: #fff;
+	--box-border: transparent;
+	--box-symbol: '\26a0 \fe0e';
+	--box-symbol-color: #fff;
+}
+
+.info {
+	--box-background: linear-gradient(0deg, #bbf 0%, #ccf 50%, #bbf 100%);
+	--box-color: #00b;
+	--box-border: #000;
+	--box-symbol: '\24d8 \fe0e';
+	--box-symbol-color: #00b;
+}
+
+.warning, .info {
 	$size: 50px;
 	$padding: 0.4rem;
+	margin: $padding;
 	padding: $padding;
 	min-height: calc(#{$size} + 2 * #{$padding});
 	box-sizing: border-box;
 	border-radius: var(--border-radius);
-	border: 2px solid var(--warning-border);
-	color: var(--warning-color);
-	background: var(--warning-background);
-	display: inline-grid;
+	border: 1px solid var(--box-border);
+	color: var(--box-color);
+	background: var(--box-background);
+	display: grid;
 	grid-template-columns: $size 1fr;
+	column-gap: $padding;
 	font-weight: 600;
+	box-shadow: 2px 2px 3px var(--shadow-color), -2px 2px 3px var(--shadow-color);
 
 	a {
 		color: inherit;
@@ -141,15 +158,14 @@ p {
 		display: contents;
 
 		&::before {
-			content: '\26a0 \fe0e';
+			content: var(--box-symbol);
 			font-size: $size;
-			-webkit-text-stroke: 0.2pt var(--warning-color);
-			color: var(--warning-color);
+			-webkit-text-stroke: 0.2pt var(--box-symbol-color);
+			color: var(--box-symbol-color);
 			box-sizing: border-box;
 			line-height: 0.9 * $size;
 			height: $size;
 			width: $size;
-			margin-right: $padding;
 			grid-column: 1;
 			grid-row: 1 / span 100000000;
 		}

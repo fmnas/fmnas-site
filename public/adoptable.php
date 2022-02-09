@@ -110,25 +110,20 @@ pageHeader();
 	?>
 	</tbody>
 </table>
-<section>
-	<p><strong>Adoption Fees</strong> include Vaccinations and Spay/Neuter!
-		<?php
-		foreach (_G_statuses() as $status) {
-			/* @var $status Status */
-			$description = (isset($status->description) && $status->description !== null) ? $status->description :
-					"";
-			if (isset($status->displayStatus) && $status->displayStatus && strlen(trim($description)) > 0) {
-				echo "<p><strong>{$status->name}:</strong><br>";
-				echo nl2br(htmlspecialchars($description), false);
-			}
+<section class="explanations">
+	<aside class="info"><strong>Adoption Fees</strong> include Vaccinations and Spay/Neuter!</aside>
+	<?php
+	foreach (_G_statuses() as $status) {
+		/* @var $status Status */
+		$description = (isset($status->description) && $status->description !== null) ? $status->description :
+				"";
+		if (isset($status->displayStatus) && $status->displayStatus && strlen(trim($description)) > 0) {
+			echo "<aside class=\"info\"><strong>{$status->name}:</strong><br>";
+			echo nl2br(htmlspecialchars($description), false);
+			echo "</aside>";
 		}
-		?>
-</section>
-<hr>
-<section>
-	<p>We always need <b>LOVE LOVE LOVE</b> for the fuzzballs! Want to brush a cat or walk a dog? We need you! You
-		can volunteer as little as 3 hours a month. Call <a href="tel:+15097752308">775-2308</a> or email <a
-				data-email></a>
+	}
+	?>
 </section>
 <?php footer(); ?>
 </html>
