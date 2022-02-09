@@ -130,7 +130,7 @@ pageHeader();
 				<input src="https://www.paypal.com/en_US/i/btn/btn_donateCC_LG.gif" id="PayPalDonateInputImage" name="submit"
 						alt="PayPal - The safer, easier way to pay online!" type="image">
 			</form>
-			<p><strong>Donate via Network for Good</strong><br>(one-time or monthly pledge):
+			<p><strong>Donate via Network for Good</strong><br>(one-time or monthly pledge):<br>
 				<a href="https://www.networkforgood.org/donation/ExpressDonation.aspx?ORGID2=91-1996344">
 					<img src="/assets/networkforgoodlogo.gif" alt="Network for Good">
 				</a>
