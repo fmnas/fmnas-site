@@ -77,6 +77,7 @@ div.home {
 
 		section.transports {
 			grid-template-columns: [start] 1fr [seattle] minmax(9.5rem, auto) [spokane] minmax(9.5rem, auto) 1fr [end];
+			margin-bottom: 1rem;
 			> p {
 				grid-column: start / end;
 				grid-row: 1;
