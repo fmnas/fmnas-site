@@ -181,6 +181,17 @@ div.home {
 			margin: 0 3px;
 		}
 	}
-
 }
 
+div.f990 > ul {
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
+	display: inline;
+	li {
+		display: inline;
+		&:not(:first-of-type)::before {
+			content: ' · ';
+		}
+	}
+}
