@@ -26,7 +26,7 @@ if (!($pet = $db->getPetByPath($path))) {
 	<script src="/email.js.php"></script>
 	<?php
 	style();
-	style("listing");
+	style("listing", false, "20220208");
 	emailLinks();
 	pageHeader();
 	?>
