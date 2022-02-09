@@ -35,7 +35,7 @@ pageHeader();
 
 				<li><a href="/<?=$species->plural()?>" draggable="false">
 						<h3>See our <?=$species->pluralWithYoung()?></h3>
-						<img src="/assets/<?=$species->plural()?>.jpg" alt="$species->plural()">
+						<img src="/assets/<?=$species->plural()?>.jpg" alt="<?=$species->plural()?>">
 					</a>
 					<?php else: ?>
 						<!-- Found zero adoptable <?=$species->plural()?> -->
