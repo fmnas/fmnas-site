@@ -219,11 +219,14 @@ button.f990 {
 aside.logos > ul {
 	list-style-type: none;
 	padding: 0;
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: space-around;
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr 1fr;
 	align-items: center;
 	img {
 		max-height: 100px;
+		max-width: 100%;
+	}
+	@media screen and (max-width: 400px) {
+		grid-template-columns: 1fr 1fr;
 	}
 }
