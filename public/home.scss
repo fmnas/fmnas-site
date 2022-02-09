@@ -6,7 +6,7 @@ div.home {
 	--border-color: #ccc;
 	$padding: 0.4rem;
 	display: grid;
-	grid-template-columns: [start] 1fr [left] minmax(2.5in, 3.5in) [center] minmax(5in, 9in) [right] minmax(2.5in, 3.5in) 1fr [end];
+	grid-template-columns: [start] 1fr [left] minmax(2.5in, 3.5in) [center] minmax(5in, 8.5in) [right] minmax(2.5in, 3.5in) 1fr [end];
 	text-align: center;
 
 	> article {
@@ -30,12 +30,12 @@ div.home {
 			padding: 0;
 			align-items: stretch;
 			justify-items: stretch;
-			grid-template-columns: repeat(auto-fit, minmax(9rem, auto));
 		}
 
 		section.listings > ul {
 			list-style-type: none;
 			column-gap: $column-gap;
+			grid-template-columns: repeat(auto-fit, minmax(9rem, auto));
 
 			> li {
 				display: contents;
@@ -76,9 +76,18 @@ div.home {
 		}
 
 		section.transports {
+			grid-template-columns: [start] 1fr [seattle] minmax(9.5rem, auto) [spokane] minmax(9.5rem, auto) 1fr [end];
 			> p {
-				grid-column: 1 / span 2;
+				grid-column: start / end;
 				grid-row: 1;
+				text-align: justify;
+				text-align-last: center;
+				-moz-text-align-last: center;
+				margin: 0 0.5rem;
+				> strong {
+					font: var(--heading-font);
+					font-style: italic;
+				}
 			}
 
 			> section {
@@ -100,6 +109,14 @@ div.home {
 				}
 				> p {
 					margin: 0;
+				}
+
+				&.spokane {
+					grid-column: spokane;
+				}
+
+				&.seattle {
+					grid-column: seattle;
 				}
 			}
 		}
