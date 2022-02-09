@@ -139,7 +139,7 @@ p {
 	grid-template-columns: $size 1fr;
 	column-gap: $padding;
 	font-weight: 600;
-	box-shadow: 2px 2px 3px var(--shadow-color), -2px 2px 3px var(--shadow-color);
+	box-shadow: -2px 2px 3px var(--shadow-color);
 
 	a {
 		color: inherit;
