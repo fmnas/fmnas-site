@@ -211,7 +211,7 @@ button.f990 {
 		font: inherit;
 		cursor: hand;
 	}
-	&.active {
+	&:active:not(.inactive) {
 		box-shadow: -1px 1px 3px var(--shadow-color) inset, 1px 1px 3px var(--shadow-color) inset;
 	}
 }

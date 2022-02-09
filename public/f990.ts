@@ -23,17 +23,14 @@ select.addEventListener('mousedown', (e) => {
 select.addEventListener('mouseup', (e) => {
 	e.stopImmediatePropagation();
 });
+select.addEventListener('mouseenter', () => {
+	button.classList.add('inactive');
+});
+select.addEventListener('mouseleave', () => {
+	button.classList.remove('inactive');
+})
 button.addEventListener('click', () => {
 	window.location.href = select.value;
-});
-button.addEventListener('mousedown', () => {
-	button.classList.add('active');
-});
-button.addEventListener('mouseup', () => {
-	button.classList.remove('active');
-});
-button.addEventListener('mouseout', () => {
-	button.classList.remove('active');
 });
 button.classList.add('f990');
 button.classList.add('noprint');
