@@ -20,8 +20,8 @@ pageHeader();
 <div class="home">
 	<article>
 		<aside class="warning">
-			All shelter visits by appointment only
-			TODO: Flesh out the warning
+			<strong>All shelter visits for any reason must be done by appointment only.</strong>
+			<p>Call or email to make an appointment for a day/time that is convenient for you.
 		</aside>
 		<section class="listings">
 			<h2>Adoptable pets</h2>
