@@ -33,7 +33,7 @@ pageHeader();
 				if ($species->species_count):
 				$displayedSpecies++; ?>
 
-				<li><a href="/<?=$species->plural()?>">
+				<li><a href="/<?=$species->plural()?>" draggable="false">
 						<h3>See our <?=$species->pluralWithYoung()?></h3>
 						<img src="/assets/<?=$species->plural()?>.jpg" alt="$species->plural()">
 					</a>
