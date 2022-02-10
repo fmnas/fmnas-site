@@ -13,9 +13,13 @@ header("HTTP/1.0 404 Not Found");
 			justify-content: center;
 			align-items: center;
 			background-color: #000;
+			text-align: center;
 		}
 	</style>
 	<img src="//http.cat/404" alt="404 Not Found">
+	<form action="/" method="POST">
+		<button type="submit">Return to the shelter homepage</button>
+	</form>
 <?php
 include_once __DIR__ . "/../common.php";
 log_err("404 error at path " . $path ?? $_SERVER["REQUEST_URI"]);
