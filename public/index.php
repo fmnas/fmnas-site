@@ -147,7 +147,7 @@ pageHeader();
 					<option value="$50 Monthly Pledge">$50 Monthly Pledge</option>
 					<option value="$100 Monthly Pledge">$100 Monthly Pledge</option>
 				</select><br>
-				<input src="https://www.paypal.com/en_US/i/btn/btn_donateCC_LG.gif" id="PayPalDonateInputImage" name="submit"
+				<input src="/assets/btn_donateCC_LG.gif" id="PayPalDonateInputImage" name="submit"
 						alt="PayPal - The safer, easier way to pay online!" type="image">
 			</form>
 			<p><strong>Donate via Network for Good</strong><br>(one-time or monthly pledge):<br>
