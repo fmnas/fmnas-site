@@ -113,7 +113,7 @@ div.home {
 			> p {
 				grid-column: start / end;
 				grid-row: 1;
-				@include center-justify;
+				@include center-justify.center-justify;
 				margin: 0.5rem;
 
 				> strong {
