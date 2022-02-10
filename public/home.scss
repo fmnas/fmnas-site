@@ -14,13 +14,20 @@ div.home {
 		grid-column: center;
 		background-color: var(--background-color);
 
-		aside.warning {
+		aside.warning, aside.info {
 			box-shadow: -1px 1px 3px var(--shadow-color), 1px 1px 3px var(--shadow-color);
 			padding: 1rem 1rem 1rem 0.5rem;
 			text-align: justify;
 			p {
 				margin: 0;
 			}
+			h3 {
+				font: var(--heading-font);
+			}
+		}
+
+		aside.info {
+			font-size: 11pt;
 		}
 
 		h2 {
@@ -135,6 +142,7 @@ div.home {
 	}
 
 	> aside {
+		font-size: 10.5pt;
 		h2 {
 			font: var(--heading-font);
 			color: var(--accent-color);
@@ -153,10 +161,15 @@ div.home {
 			}
 		}
 		p {
-			margin-bottom: 0;
+			&:last-of-type {
+				margin-bottom: 0;
+			}
 			strong {
 				font-weight: 600;
+				font-size: 12pt;
 			}
+			text-align: justify;
+			text-align-last: center;
 		}
 		section.donate p {
 			margin-top: 0.8rem;
