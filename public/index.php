@@ -25,6 +25,12 @@ pageHeader();
 			<p><a href="tel:<?=_G_phone_intl()?>">Call</a> or <a data-email="info">email</a> to make an appointment for a
 				day/time that is convenient for you.
 		</aside>
+		<aside class="info">
+			<h3>Lost a pet? Found a pet?</h3>
+			<p><strong>Check our <a href="https://www.facebook.com/ForgetMeNotAnimalShelter/">Facebook page</a> for recent
+					lost/found listings.</strong>
+			<p>To have your lost/found listed, please <a data-email="info">email us</a>, with photos if possible.</p>
+		</aside>
 		<section class="listings">
 			<h2>Adoptable pets</h2>
 			<ul>
@@ -70,12 +76,6 @@ pageHeader();
 	<aside class="left">
 		<h2>Programs</h2>
 		<section>
-			<h3>Lost a pet?<br>Found a pet?</h3>
-			<p><strong>Check our <a href="https://www.facebook.com/ForgetMeNotAnimalShelter/">Facebook page</a> for recent
-					lost/found listings.</strong>
-			<p>To have your lost/found listed, please <a data-email="info">email us</a>, with photos if possible.</p>
-		</section>
-		<section>
 			<h3>Owner Surrenders</h3>
 			Need to rehome a pet? Please email us at <a data-email="info"></a> or leave us a message at <a
 					href="tel:<?=_G_phone_intl()?>"><?=_G_phone()?></a>. We will get in touch to get all the information about
@@ -94,7 +94,7 @@ pageHeader();
 			<p>If you want some help, we want to help you.
 		</section>
 		<section>
-			<h3>Fear No Feral</h3>
+			<h3>Fear No Feral<br>Trap&ndash;Neuter&ndash;Return</h3>
 			<p>Do you have a colony of feral cats on your property? They are FABULOUS for keeping down vermin populations, but
 				without spay/neuter, you could be trading one problem for another. We can help! Our Fear No Feral
 				Trap-Neuter-Return program will provide traps, instructions, and pay all costs for spay/neuter, rabies
