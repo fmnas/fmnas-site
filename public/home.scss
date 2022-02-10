@@ -1,3 +1,5 @@
+@use 'center-justify';
+
 header, footer {
 	z-index: 2;
 }
@@ -18,9 +20,11 @@ div.home {
 			box-shadow: -1px 1px 3px var(--shadow-color), 1px 1px 3px var(--shadow-color);
 			padding: 1rem 1rem 1rem 0.5rem;
 			text-align: justify;
+
 			p {
 				margin: 0;
 			}
+
 			h3 {
 				font: var(--heading-font);
 			}
@@ -88,13 +92,13 @@ div.home {
 		section.transports {
 			grid-template-columns: [start] 1fr [seattle] minmax(9.5rem, auto) [spokane] minmax(9.5rem, auto) 1fr [end];
 			margin-bottom: 1rem;
+
 			> p {
 				grid-column: start / end;
 				grid-row: 1;
-				text-align: justify;
-				text-align-last: center;
-				-moz-text-align-last: center;
+				@include center-justify;
 				margin: 0.5rem;
+
 				> strong {
 					font: var(--heading-font);
 					font-style: italic;
@@ -118,6 +122,7 @@ div.home {
 					margin: 0;
 					font: var(--heading-font);
 				}
+
 				> p {
 					margin: 0;
 				}
@@ -143,52 +148,64 @@ div.home {
 
 	> aside {
 		font-size: 11pt;
+
 		h2 {
 			font: var(--heading-font);
 			color: var(--accent-color);
 			font-size: 18pt;
 			margin: 0.4rem 0 0.2rem;
 		}
+
 		h3 {
 			font: var(--heading-font);
 			font-size: 16pt;
 			margin: 0.4rem 0;
 		}
+
 		section {
 			padding: 0.2rem 0 0.4rem;
+
 			&:not(:last-of-type) {
 				border-bottom: 1px solid var(--border-color);
 			}
 		}
+
 		p {
 			&:last-of-type {
 				margin-bottom: 0;
 			}
+
 			strong {
 				font-weight: 600;
 				font-size: 12pt;
 			}
-			text-align: justify;
-			text-align-last: center;
+
+			@include center-justify.center-justify;
 		}
+
 		section.donate p {
 			margin: 0.8rem 0 0;
+
 			&:first-of-type {
 				margin: 0 auto;
 				font-size: 11pt;
 				font-style: italic;
 			}
+
 			&:last-of-type {
 				text-align: center;
 			}
 		}
+
 		section.donate input {
 			margin-top: 0.2rem;
 		}
+
 		section.adopted figure {
 			display: flex;
 			align-items: center;
 			margin: 0.4em 0;
+
 			figcaption {
 				flex-grow: 2;
 			}
@@ -236,8 +253,10 @@ div.f990 > ul {
 	padding: 0;
 	margin: 0;
 	display: inline;
+
 	li {
 		display: inline;
+
 		&:not(:first-of-type)::before {
 			content: ' · ';
 		}
@@ -254,10 +273,12 @@ button.f990 {
 	border: 1px solid var(--border-color);
 	border-radius: var(--border-radius);
 	box-shadow: -1px 1px 3px var(--shadow-color), 1px 1px 3px var(--shadow-color);
+
 	select {
 		font: inherit;
 		cursor: hand;
 	}
+
 	&:active:not(.inactive) {
 		box-shadow: -1px 1px 3px var(--shadow-color) inset, 1px 1px 3px var(--shadow-color) inset;
 	}
@@ -269,10 +290,12 @@ aside.logos > ul {
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr 1fr;
 	align-items: center;
+
 	img {
 		max-height: 100px;
 		max-width: 100%;
 	}
+
 	@media screen and (max-width: 400px) {
 		grid-template-columns: 1fr 1fr;
 	}
