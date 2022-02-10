@@ -22,7 +22,8 @@ pageHeader();
 	<article>
 		<aside class="warning">
 			<strong>All shelter visits for any reason must be done by appointment only.</strong>
-			<p><a href="tel:<?=_G_phone_intl()?>">Call</a> or <a data-email="info">email</a> to make an appointment for a day/time that is convenient for you.
+			<p><a href="tel:<?=_G_phone_intl()?>">Call</a> or <a data-email="info">email</a> to make an appointment for a
+				day/time that is convenient for you.
 		</aside>
 		<section class="listings">
 			<h2>Adoptable pets</h2>
@@ -84,7 +85,12 @@ pageHeader();
 		</section>
 		<section>
 			<h3>Fear No Feral</h3>
-			TODO [#214]: Fear No Feral section
+			<p>Do you have a colony of feral cats on your property? They are FABULOUS for keeping down vermin populations, but
+				without spay/neuter, you could be trading one problem for another. We can help! Our Fear No Feral
+				Trap-Neuter-Return program will provide traps, instructions, and pay all costs for spay/neuter, rabies
+				vaccination, and "ear-tipping" of the cats in your colony. Email us at <a data-email="info"></a> or leave a
+				message for our feral coordinator at <a href="tel:<?=_G_phone_intl()?>"><?=_G_phone()?></a>; let's keep your
+				ferals working for you without overwhelming you!
 		</section>
 	</aside>
 	<aside class="right">
@@ -92,7 +98,8 @@ pageHeader();
 		<section>
 			<h3>Volunteer</h3>
 			<p>We always need <b>LOVE LOVE LOVE</b> for the fuzzballs! Want to brush a cat or walk a dog? We need you! You
-				can volunteer as little as 3 hours a month. Call <a href="tel:<?=_G_phone_intl()?>"><?=_G_phone()?></a> or email <a
+				can volunteer as little as 3 hours a month. Call <a href="tel:<?=_G_phone_intl()?>"><?=_G_phone()?></a> or email
+				<a
 						data-email="info"></a>.
 		</section>
 		<section class="donate">
@@ -148,7 +155,8 @@ pageHeader();
 					<a href="https://www.facebook.com/groups/135175210176154/" title="Adopted Pets">
 						Adopters and Supporters Facebook Group</a>!
 				</figcaption>
-				<a href="https://www.facebook.com/groups/135175210176154/" title="Adopted Pets"><img alt="Adopted Pets" src="/assets/adopted.jpg"></a>
+				<a href="https://www.facebook.com/groups/135175210176154/" title="Adopted Pets"><img alt="Adopted Pets"
+							src="/assets/adopted.jpg"></a>
 			</figure>
 		</section>
 	</aside>
