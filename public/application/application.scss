@@ -16,6 +16,7 @@
  */
 
 @use '../forms';
+@use '../center-justify';
 
 $cutoff-width: 700px;
 $row-gap: 5px;
@@ -619,8 +620,7 @@ p > strong:first-child {
 		p.rented:not(.hidden) {
 			max-width: 40em;
 			display: inline-block;
-			text-align: justify;
-			text-align-last: center;
+			@include center-justify.center-justify;
 			font-style: italic;
 			font-size: 90%;
 		}
