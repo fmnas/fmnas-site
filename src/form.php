@@ -35,7 +35,7 @@
  * data-type="label-text" attribute as well, and the outer span element will have a data-input-type attribute with the
  * type of the corresponding input element if found.
  *
- * TODO [#73]:
+ * TODO [#73]: Replace datalist elements with ul elements (hidden by default).
  * All <datalist> elements will be removed unless they have an explicit falsy data-remove attribute, in which case they
  * will be replaced with <ul> elements. <option> elements therein will be replaced with <li> elements, and any contained
  * within an <optgroup> element will have a data-optgroup attribute with the optgroup label (the optgroup is removed).
@@ -1192,8 +1192,6 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
 		}
 		$button->parentNode?->replaceChild($span, $button);
 	}
-
-	// TODO [#73]: Replace datalist elements with ul elements (hidden by default).
 
 	// Mark all script elements with data-remove.
 	foreach (collectElements($dom, "script") as $script) {
