@@ -77,7 +77,7 @@ pageHeader();
 		<h2>Programs</h2>
 		<section>
 			<h3>Owner Surrenders</h3>
-			Need to rehome a pet? Please email us at <a data-email="info"></a> or leave us a message at <a
+			<p>Need to rehome a pet? Please email us at <a data-email="info"></a> or leave us a message at <a
 					href="tel:<?=_G_phone_intl()?>"><?=_G_phone()?></a>. We will get in touch to get all the information about
 			your pet, and to see how we can best help.
 		</section>
