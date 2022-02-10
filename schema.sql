@@ -121,7 +121,7 @@ VALUES (1, 'Adoptable', 0, 1, ''),
 
 ALTER TABLE assets
 	ADD PRIMARY KEY (id),
-	ADD KEY path (path(768));
+	ADD UNIQUE KEY path (path(768));
 
 ALTER TABLE config
 	ADD PRIMARY KEY (config_key);
