@@ -3,6 +3,7 @@
 
 // https://fonts.google.com/share?selection.family=Asap:ital,wght@0,600;1,500%7COpen%20Sans:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700
 @import url('https://fonts.googleapis.com/css2?family=Asap:ital,wght@0,600;1,500&family=Open+Sans:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 
 :root {
 	--background-color: #fff;
@@ -112,16 +113,18 @@ p {
 	--box-background: linear-gradient(0deg, #a00 0%, #b00 50%, #a00 100%);
 	--box-color: #fff;
 	--box-border: transparent;
-	--box-symbol: '\26a0 \fe0e';
+	--box-symbol: '\e002';
 	--box-symbol-color: #fff;
+	--box-symbol-scale: 0.9;
 }
 
 .info {
 	--box-background: linear-gradient(0deg, #ccf 0%, #ddf 50%, #ccf 100%);
 	--box-color: #00b;
 	--box-border: #000;
-	--box-symbol: '\24d8 \fe0e';
-	--box-symbol-color: #00b;
+	--box-symbol: '\e88e';
+	--box-symbol-color: #44b;
+	--box-symbol-scale: 1;
 }
 
 .warning, .info {
@@ -138,7 +141,6 @@ p {
 	display: grid;
 	grid-template-columns: $size 1fr;
 	column-gap: $padding;
-	font-weight: 600;
 	box-shadow: -2px 2px 3px var(--shadow-color);
 
 	a {
@@ -154,20 +156,29 @@ p {
 		}
 	}
 
+	> * {
+		grid-column: 2;
+	}
+
 	& > *:first-child {
 		display: contents;
+		> * {
+			grid-column: 2;
+		}
 
 		&::before {
 			content: var(--box-symbol);
-			font-size: $size;
-			-webkit-text-stroke: 0.2pt var(--box-symbol-color);
+			font-family: 'Material Icons', sans-serif;
+			font-size: calc(#{$size} * var(--box-symbol-scale));
+			font-weight: 400;
 			color: var(--box-symbol-color);
 			box-sizing: border-box;
 			line-height: 0.9 * $size;
-			height: $size;
+			height: 0;
 			width: $size;
 			grid-column: 1;
-			grid-row: 1 / span 100000000;
+			grid-row: 1;
+			text-align: center;
 		}
 	}
 
