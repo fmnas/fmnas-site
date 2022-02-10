@@ -81,7 +81,15 @@ pageHeader();
 		</section>
 		<section>
 			<h3>Stop the Cycle<br>Spay/Neuter Vouchers</h3>
-			TODO [#213]: Stop the cycle section
+			<p>Our Stop the Cycle program has both spay/neuter vouchers to help lower income residents in Ferry County with
+				the cost, and a litter rehoming service! With the litter rehoming service, we also provide spay/neuter vouchers
+				for the parent cats or dogs, regardless of family income.
+			<p>For 2022, we also have some limited funding for spay assistance available to residents of Stevens and Okanogan
+				counties (while funds last)!
+			<p>Request voucher assistance before it's too late, OR request a spot in our Stop the Cycle litter program, by
+				emailing us at <a data-email="info"></a> or leaving us a message at <a
+						href="tel:<?=_G_phone_intl()?>"><?=_G_phone()?></a>.
+			<p>If you want some help, we want to help you.
 		</section>
 		<section>
 			<h3>Fear No Feral</h3>
