@@ -195,6 +195,9 @@ div.home {
 				font-size: 11pt;
 				font-style: italic;
 			}
+			&:last-of-type {
+				text-align: center;
+			}
 		}
 		section.donate input {
 			margin-top: 0.2rem;
