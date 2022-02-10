@@ -12,6 +12,7 @@ header("HTTP/1.0 404 Not Found");
 			margin: 0;
 			justify-content: center;
 			align-items: center;
+			background-color: #000;
 		}
 	</style>
 	<img src="//http.cat/404" alt="404 Not Found">
