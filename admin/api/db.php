@@ -3,15 +3,14 @@ require_once "../../src/common.php";
 require_once "$src/db.php";
 
 class DatabaseWriter extends Database {
-	private mysqli_stmt $addHistoryEntry; // TODO [#5]: add version history
 	private mysqli_stmt $setConfigValue;
 	private mysqli_stmt $insertAsset;
 	private mysqli_stmt $updateAsset;
 	private mysqli_stmt $insertPet;
-	private mysqli_stmt $updatePet;
 	private mysqli_stmt $deletePet;
 	private mysqli_stmt $deletePhotos;
 	private mysqli_stmt $insertPhoto;
+	private mysqli_stmt $clearConflictingAssets;
 
 	public function __construct() {
 		parent::__construct();
@@ -70,6 +69,14 @@ class DatabaseWriter extends Database {
 		} else {
 			$this->insertPhoto = $insertPhoto;
 		}
+
+		if (!($clearConflictingAssets = $this->db->prepare("
+			UPDATE assets SET path=NULL where path=?
+		"))) {
+			log_err("Failed to prepare clearConflictingAssets: {$this->db->error}");
+		} else {
+			$this->clearConflictingAssets = $clearConflictingAssets;
+		}
 	}
 
 	public function setConfigValue(string $key, string $value): ?string {
@@ -100,17 +107,21 @@ class DatabaseWriter extends Database {
 			$error = "Failed to begin transaction";
 		} else if (!$this->insertAsset->bind_param("sss", $path, $data, $type)) {
 			$error = "Binding $path,$data,$type to insertAsset failed: {$this->db->error}";
-		} else {
-			if (!$this->insertAsset->execute()) {
-				$error = "Executing insertAsset failed: {$this->db->error}";
-			} else if ($this->insertAsset->affected_rows !== 1) {
-					$error = "insertAsset affected {$this->insertAsset->affected_rows} rows instead of 1";
-			}
+		} else if (!$this->clearConflictingAssets->bind_param("s", $path)) {
+			$error = "Binding $path to clearConflictingAssets failed: {$this->db->error}";
+		} else if (!$this->clearConflictingAssets->execute()) {
+			$error = "Executing clearConflictingAssets failed: {$this->db->error}";
+			// TODO: Invalidate any cached descriptions referencing the cleared assets.
+		} else if (!$this->insertAsset->execute()) {
+			$error = "Executing insertAsset failed: {$this->db->error}";
+		} else if ($this->insertAsset->affected_rows !== 1) {
+			$error = "insertAsset affected {$this->insertAsset->affected_rows} rows instead of 1";
 		}
 		$id = $this->db->insert_id;
 		if (!$error && $id === 0) {
 			$error = "Got insert id 0";
 		}
+
 		if ($error) {
 			log_err($error);
 			$this->db->rollback();
@@ -119,7 +130,8 @@ class DatabaseWriter extends Database {
 		return $this->db->commit() ? $id : "Failed to commit";
 	}
 
-	public function insertPet(array $pet): ?string {
+	public
+	function insertPet(array $pet): ?string {
 		$error = null;
 		$id = $pet['id'] ?? null;
 		if ($id === null) {
@@ -147,8 +159,10 @@ class DatabaseWriter extends Database {
 			}
 		}
 		if (!$error) {
-			if (!$this->insertPet->bind_param("ssissisiiii", $id, $name, $species, $breed, $dob, $sex, $fee, $photo, $description, $status, $plural)) {
-				$error = "Binding $id,$name,$species,$breed,$dob,$sex,$fee,$photo,$description,$status,$plural to insertPet failed: {$this->db->error}";
+			if (!$this->insertPet->bind_param("ssissisiiii", $id, $name, $species, $breed, $dob, $sex, $fee, $photo,
+					$description, $status, $plural)) {
+				$error =
+						"Binding $id,$name,$species,$breed,$dob,$sex,$fee,$photo,$description,$status,$plural to insertPet failed: {$this->db->error}";
 			} else if (!$this->insertPet->execute()) {
 				$error = "Executing insertPet failed: {$this->db->error}";
 			} else if (!$this->deletePhotos->bind_param("s", $id)) {
@@ -156,7 +170,7 @@ class DatabaseWriter extends Database {
 			} else if (!$this->deletePhotos->execute()) {
 				$error = "Executing deletePhotos failed: {$this->db->error}";
 			} else {
-				foreach($photos as $photo) {
+				foreach ($photos as $photo) {
 					if (!$photo || !$photo['key']) {
 						continue;
 					}
@@ -180,7 +194,8 @@ class DatabaseWriter extends Database {
 		return $this->db->commit() ? null : "Failed to commit";
 	}
 
-	public function updateAsset(int $key, array $value): ?string {
+	public
+	function updateAsset(int $key, array $value): ?string {
 		$error = null;
 		$path = ($value['path'] ?? null) ?: null;
 		$data = isset($value['data']) ? serialize($value['data']) : null;
@@ -193,7 +208,7 @@ class DatabaseWriter extends Database {
 			if (!$this->updateAsset->execute()) {
 				$error = "Executing updateAsset failed: {$this->db->error}";
 			} else if ($this->updateAsset->affected_rows !== 1) {
-					$error = "updateAsset affected {$this->updateAsset->affected_rows} rows instead of 1";
+				$error = "updateAsset affected {$this->updateAsset->affected_rows} rows instead of 1";
 			}
 		}
 		if ($error) {
@@ -204,16 +219,17 @@ class DatabaseWriter extends Database {
 		return $this->db->commit() ? null : "Failed to commit";
 	}
 
-	public function deletePet(string $key): ?string {
+	public
+	function deletePet(string $key): ?string {
 		$error = null;
 		if (!$this->db->begin_transaction()) {
 			$error = "Failed to begin transaction";
 		} else if (!$this->deletePet->bind_param("s", $key)) {
 			$error = "Binding $key to deletePet failed: {$this->db->error}";
 		} else if (!$this->deletePet->execute()) {
-				$error = "Executing deletePet failed: {$this->db->error}";
+			$error = "Executing deletePet failed: {$this->db->error}";
 		} else if ($this->deletePet->affected_rows !== 1) {
-				$error = "deletePet affected {$this->deletePet->affected_rows} rows instead of 1";
+			$error = "deletePet affected {$this->deletePet->affected_rows} rows instead of 1";
 		}
 		if ($error) {
 			log_err($error);
