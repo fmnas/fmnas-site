@@ -111,7 +111,7 @@ class DatabaseWriter extends Database {
 			$error = "Binding $path to clearConflictingAssets failed: {$this->db->error}";
 		} else if (!$this->clearConflictingAssets->execute()) {
 			$error = "Executing clearConflictingAssets failed: {$this->db->error}";
-			// TODO: Invalidate any cached descriptions referencing the cleared assets.
+			// TODO [$62049c6250e62a0009f55bbd]: Invalidate any cached descriptions referencing the cleared assets.
 		} else if (!$this->insertAsset->execute()) {
 			$error = "Executing insertAsset failed: {$this->db->error}";
 		} else if ($this->insertAsset->affected_rows !== 1) {
