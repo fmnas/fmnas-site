@@ -24,8 +24,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				</slot>
 			</div>
 			<div class="buttons">
-				<button class="confirm" @click="$emit('confirm')">Confirm</button>
-				<button class="cancel" @click="$emit('cancel')">Cancel</button>
+        <slot name="buttons">
+          <button class="confirm" @click="$emit('confirm')">Confirm</button>
+          <button class="cancel" @click="$emit('cancel')">Cancel</button>
+        </slot>
 			</div>
 		</article>
 	</div>
