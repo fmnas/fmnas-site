@@ -36,8 +36,8 @@ function relativePath(string $basePath): string {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <?php
 style();
-style("adoptable", false, "20220208");
-style("adoptable.generated", false, "20220208"); // I hate this
+style("adoptable");
+style("adoptable.generated");
 emailLinks();
 ?>
 <script src="/email.js.php"></script>
