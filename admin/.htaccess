@@ -19,9 +19,9 @@ AddOutputFilterByType DEFLATE application/x-javascript
 # route API requests
 RewriteEngine on
 RewriteCond %{REQUEST_FILENAME} !.php
-RewriteRule ^api/([^/]+)/?$ /api/$1.php [L,QSA]
-RewriteRule ^api/([^/]+)/(.+)/$ /api/$1.php?v=$2 [L,QSA]
-RewriteRule ^api/([^/]+)/(.+)$ /api/$1.php?v=$2 [L,QSA]
+RewriteRule ^api/([^/]+)/?$ /api/$1.php [L,QSA,B]
+RewriteRule ^api/([^/]+)/(.+)/$ /api/$1.php?v=$2 [L,QSA,B]
+RewriteRule ^api/([^/]+)/(.+)$ /api/$1.php?v=$2 [L,QSA,B]
 
 # route vue assets to dev server
 # RewriteRule ^assets/(.*)$ http://localhost:3000/assets/$1 [L] # dev.sh add
