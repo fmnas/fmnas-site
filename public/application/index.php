@@ -311,7 +311,7 @@ function addressInput(string $label, string $prefix, bool $required = false): st
 	<?php
 	style();
 	emailLinks();
-	style("application", true, "2201251555");
+	style("application", true);
 	style("minheader", true);
 	?>
 	<script src="events.js"></script>
