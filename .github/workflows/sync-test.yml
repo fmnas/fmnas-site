@@ -1,0 +1,25 @@
+name: Merge main into test
+on:
+  push:
+    branches:
+      - main
+jobs:
+  merge:
+    name: Merge main into test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for todo-issues
+        uses: lewagon/wait-on-check-action@master
+        with:
+          ref: test
+          check-name: 'Create issues from TODOs'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
+          allowed-conclusions: success,skipped,cancelled,failure
+      - name: Merge main into test
+        uses: devmasx/merge-branch@master
+        with:
+          type: now
+          from_branch: main
+          target_branch: test
+          github_token: ${{ secrets.GITHUB_TOKEN }}
