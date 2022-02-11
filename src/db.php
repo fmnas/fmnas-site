@@ -90,7 +90,7 @@ class Database {
 			$this->getPetById = $getPetById;
 		}
 
-		// @todo Rewrite getPhotos query
+		// TODO [#32]: Rewrite getPhotos query
 		if (!($getPhotos = $this->db->prepare("
 			SELECT assets.* FROM (
 				SELECT photos.photo FROM (
@@ -239,7 +239,7 @@ class Database {
 			return null;
 		}
 		$result = $this->getAssetByKey->get_result();
-		if ($result === null || $result->num_rows === 0) {
+		if ($result === false || $result->num_rows === 0) {
 			return null;
 		}
 		return self::createAsset($result->fetch_assoc());

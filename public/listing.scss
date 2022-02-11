@@ -1,0 +1,109 @@
+/*
+ * Copyright 2022 Google LLC
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+header a.return {
+	display: none;
+}
+
+a.return {
+	display: block;
+	width: 100%;
+	text-align: right;
+	font-size: 10pt;
+	margin-bottom: 0.25in;
+	@media print {
+		display: none;
+	}
+}
+
+h2 {
+	font: var(--heading-font);
+	font-size: 24pt;
+	text-align: center;
+	margin: 0;
+	color: var(--accent-color);
+}
+
+.listing {
+	li > strong:first-of-type {
+		font-weight: bold;
+		color: var(--accent-color);
+		display: inline;
+	}
+
+	.big {
+		font-size: 20pt;
+	}
+
+	p.big > strong {
+		text-transform: uppercase;
+	}
+
+	.apply button {
+		font-size: 18pt;
+		padding: 5pt;
+	}
+
+	img, iframe {
+		max-height: 640px;
+		max-width: 100%;
+	}
+
+	form.paypal {
+		display: inline-block;
+	}
+
+	a.im > img {
+		vertical-align: bottom;
+	}
+
+	aside.images {
+		width: 100%;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-around;
+		align-items: center;
+		margin-top: 1.5em;
+	}
+
+	section#description {
+		max-width: 14in;
+		margin: 1em auto;
+	}
+
+	p.subtitle {
+		text-align: center;
+		font-size: 18pt;
+		margin: 0.2em;
+	}
+
+	div.video {
+		width: 100%;
+
+		//noinspection CssOverwrittenProperties
+		iframe {
+			width: 853px;
+			height: 480px;
+			margin: 0 auto 1em;
+			display: block;
+			width: calc(1280px + 0.25em);
+			height: calc((1280px + 0.25em) * 9 / 16);
+			max-width: 95vw;
+			max-height: calc((100vw - 1em) * 9 / 16);
+		}
+	}
+}
