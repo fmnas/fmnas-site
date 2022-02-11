@@ -12,7 +12,7 @@ jobs:
         uses: lewagon/wait-on-check-action@master
         with:
           ref: test
-          check-name: 'Create issues from TODOs'
+          check-name: 'Sync TODOs'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           wait-interval: 10
           allowed-conclusions: success,skipped,cancelled,failure
