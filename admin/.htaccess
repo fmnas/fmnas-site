@@ -32,4 +32,10 @@ RewriteCond %{REQUEST_URI} !^/(api|assets)(/.*)?$
 RewriteRule ^.*$ /index.html [L] # dev.sh remove
 # RewriteRule ^.*$ /loader.html [L] # dev.sh add
 
-# Authentication for test site is taken from .htaccess-test at deployment.
+# TODO [#3]: OAuth authentication for admin site
+# Temporary password protection for development
+AuthName "Development Site"
+AuthType Basic
+AuthUserFile /home/kimgil5/newsite/secrets/.htpasswd
+# TODO [#61]: Use GitHub secret for htpasswd path
+Require valid-user
