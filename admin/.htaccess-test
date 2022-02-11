@@ -12,23 +12,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Depends on MongoDB Atlas instance using apps account SSO.
-name: Create issues from TODOs
-on:
-  push:
-    branches:
-      - test
-jobs:
-  todos:
-    name: Sync TODOs
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v1
-        with:
-          ref: 'test'
-      - name: Run todo-actions
-        uses: dtinth/todo-actions@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TODO_ACTIONS_MONGO_URL: ${{ secrets.TODO_ACTIONS_MONGO_URL }}
+# TODO [#3]: OAuth authentication for admin site
+# Temporary password protection for development
+AuthName "FMNAS Admin"
+AuthType Basic
+AuthUserFile /home/kimgil5/newsite/secrets/.htpasswd
+# TODO [#61]: Use GitHub secret for htpasswd path
+Require valid-user

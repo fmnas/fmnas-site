@@ -211,7 +211,7 @@ export default defineComponent({
 			if (this.species && this.path) {
 				// Updating an existing listing
 				// TODO [#39]: Add a loading indicator for listing editor
-				fetch(`/api/listings/${this.species}/${this.path}`).then(res => {
+				fetch(`/api/listings/${this.species}/${encodeURIComponent(this.path)}`).then(res => {
 					this.checkResponse(res);
 					return res.json();
 				}).then(data => {
