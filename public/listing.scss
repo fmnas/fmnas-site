@@ -58,9 +58,12 @@ h2 {
 		width: 100%;
 		display: flex;
 		flex-wrap: wrap;
-		justify-content: space-around;
+		justify-content: center;
 		align-items: center;
 		margin-top: 1.5em;
+		img {
+			margin: 0.5rem;
+		}
 	}
 
 	section#description {
@@ -71,7 +74,7 @@ h2 {
 	p.subtitle {
 		text-align: center;
 		font-size: 18pt;
-		margin: 0.2em;
+		margin: 0.2em auto;
 	}
 
 	div.video {
