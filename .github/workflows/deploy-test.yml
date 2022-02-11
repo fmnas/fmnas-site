@@ -76,6 +76,6 @@ jobs:
           host: ${{ secrets.TEST_SFTP_HOST }}
           username: ${{ secrets.TEST_SFTP_USER }}
           password: ${{ secrets.TEST_SFTP_PASS }}
-          script: rm ${{ secrets.TEST_SITE_ROOT }}/src/generated.php ${{ secrets.TEST_SITE_ROOT }}/public/assets/cache/*.html || echo "Error $!"
+          script: rm ${{ secrets.TEST_SITE_ROOT }}/src/generated.php ${{ secrets.TEST_SITE_ROOT }}/public/assets/cache/*.html || echo "Error $?"
       - name: Regenerate generated.php
         run: curl -u ${{ secrets.HTTP_CREDENTIALS }} ${{ secrets.TEST_SITE_URL }}
