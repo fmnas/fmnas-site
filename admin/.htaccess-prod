@@ -1,0 +1,11 @@
+# TODO [#3]: OAuth authentication for admin site
+# Temporary password protection for development
+AuthName "FMNAS Admin"
+AuthType Basic
+AuthUserFile /home/kimgil5/newsite/secrets/.htpasswd
+# TODO [#61]: Use GitHub secret for htpasswd path
+Require valid-user
+
+Header set Strict-Transport-Security "max-age=63072000"
+RewriteCond %{HTTPS} !=on
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=308]

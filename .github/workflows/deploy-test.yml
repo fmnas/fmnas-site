@@ -51,6 +51,8 @@ jobs:
           rm admin/.gitignore
       - name: Restrict access to test site
         run: cat public/.htaccess-test >> public/.htaccess
+      - name: Restrict access to admin site
+        run: cat admin/.htaccess-test >> admin/.htaccess
       - name: Enable error reporting on test site
         run: |
           echo "error_reporting(-1);" >> src/common.php
