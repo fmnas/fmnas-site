@@ -23,3 +23,4 @@ jobs:
           from_branch: main
           target_branch: test
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          message: 'Merge main into test'
