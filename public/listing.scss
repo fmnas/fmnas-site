@@ -1,15 +1,15 @@
-header a.return {
-	display: none;
-}
 
 a.return {
 	display: block;
 	width: 100%;
-	text-align: right;
+	text-align: center;
 	font-size: 10pt;
 	margin-bottom: 0.25in;
 	@media print {
 		display: none;
+	}
+	@media screen and (min-width: 700px) {
+		text-align: right;
 	}
 }
 
