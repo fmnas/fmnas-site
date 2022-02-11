@@ -98,7 +98,7 @@ class DatabaseWriter extends Database {
 		return $this->db->commit() ? null : "Failed to commit";
 	}
 
-	public function insertAsset(array $value): string|int {
+	private function insertAssetOneshot(array $value): string|int {
 		$error = null;
 		$path = ($value['path'] ?? null) ?: null;
 		$data = isset($value['data']) ? serialize($value['data']) : null;
@@ -130,8 +130,20 @@ class DatabaseWriter extends Database {
 		return $this->db->commit() ? $id : "Failed to commit";
 	}
 
-	public
-	function insertPet(array $pet): ?string {
+	public function insertAsset(array $value): string|int {
+		for ($i = 0; $i < 10; $i++) {
+			try {
+				if (is_numeric($result = $this->insertAssetOneshot($value))) {
+					break;
+				}
+			} catch (mysqli_sql_exception $e) {
+				$result = $e->getMessage();
+			}
+		}
+		return $result;
+	}
+
+	public function insertPet(array $pet): ?string {
 		$error = null;
 		$id = $pet['id'] ?? null;
 		if ($id === null) {
@@ -194,8 +206,7 @@ class DatabaseWriter extends Database {
 		return $this->db->commit() ? null : "Failed to commit";
 	}
 
-	public
-	function updateAsset(int $key, array $value): ?string {
+	public function updateAsset(int $key, array $value): ?string {
 		$error = null;
 		$path = ($value['path'] ?? null) ?: null;
 		$data = isset($value['data']) ? serialize($value['data']) : null;
@@ -219,8 +230,7 @@ class DatabaseWriter extends Database {
 		return $this->db->commit() ? null : "Failed to commit";
 	}
 
-	public
-	function deletePet(string $key): ?string {
+	public function deletePet(string $key): ?string {
 		$error = null;
 		if (!$this->db->begin_transaction()) {
 			$error = "Failed to begin transaction";
