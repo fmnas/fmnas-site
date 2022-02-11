@@ -1,0 +1,165 @@
+h2 {
+	font: var(--heading-font);
+	font-size: 20pt;
+	color: var(--accent-color);
+	text-align: center;
+}
+
+/* TODO [#62]: Use CSS Grid for adoptable page */
+table.listings {
+	/* These need to be CSS variables for use by adoptable.generated.css */
+	--border-color: #ccc;
+	--adoptable-color: var(--background-color-2);
+	--pending-color: #ddd;
+	--info-color: var(--link-color);
+
+	width: 100%;
+	display: block;
+
+	tbody {
+		display: flex;
+		justify-content: space-around;
+		flex-wrap: wrap;
+
+		@media print {
+			display: block;
+		}
+
+		/* Each listing */
+		tr {
+			float: left;
+			max-width: 50vw;
+			min-width: calc(200px + 8em);
+			padding: 1em;
+			box-sizing: border-box;
+			--listing-background: var(--adoptable-color);
+
+			a:hover {
+				text-decoration: none;
+			}
+
+			/* Applications pending & closed */
+			order: 1;
+
+			&.st_1.soon {
+				/* put in middle */
+				order: 2;
+
+				/* Hide the actual adoption fee for coming soon listings */
+				> td.fee > {
+					*::before {
+						content: 'Coming Soon';
+					}
+
+					span {
+						display: none;
+					}
+				}
+			}
+
+			/* Note: adoptable.generated.css adds order: 3 for pending & closed */
+
+			/* Individual data */
+			td, th {
+				display: block;
+				padding-left: 1em;
+				padding-right: 1em;
+				box-sizing: border-box;
+				width: 100%;
+				text-align: center;
+				vertical-align: middle;
+				border-left: 1px solid var(--border-color);
+				border-right: 1px solid var(--border-color);
+				min-height: 1.4em;
+				background-color: var(--listing-background);
+
+				&:first-child {
+					border-top: 1px solid var(--border-color);
+					border-radius: 1em 1em 0 0;
+					padding-top: 0.5em;
+				}
+
+				&:last-child {
+					border-bottom: 1px solid var(--border-color);
+					border-radius: 0 0 1em 1em;
+					padding-bottom: 0.5em;
+				}
+			}
+
+			th.name {
+				font-size: 18pt;
+
+				> a[id]:not([id=''])::after {
+					content: ' (id#' attr(id) ')';
+					font-size: 11pt;
+					vertical-align: 10%;
+				}
+			}
+
+			&:not(.soon) th.name a {
+				border-bottom: 1pt solid var(--link-color);
+
+				&::after {
+					content: ' »';
+				}
+
+				&[id]:not([id=''])::after {
+					content: ' (id#' attr(id) ') »';
+				}
+
+				&:visited {
+					border-bottom: 1pt solid var(--visited-color);
+				}
+
+				&:active {
+					border-bottom: 1pt solid var(--active-color);
+				}
+
+				&:hover {
+					border-bottom-width: 1.5pt;
+				}
+			}
+
+			td.fee {
+				color: red;
+
+				&::before {
+					white-space: pre-line;
+				}
+			}
+
+			td.img {
+				padding-left: 2em;
+				padding-right: 2em;
+				/* Ensures 2em margin either side of image but only 1em either side of name */
+
+				img {
+					display: block;
+					width: 200px;
+					height: 300px;
+					margin-left: auto;
+					margin-right: auto;
+				}
+			}
+
+			td.inquiry > a {
+				font-size: 10pt;
+				text-decoration: none;
+
+				&:hover {
+					text-decoration: underline;
+				}
+			}
+		}
+	}
+
+	/* thead is only present for a11y */
+	thead {
+		display: none;
+	}
+}
+
+section.explanations {
+	max-width: 10in;
+	margin: 0 auto;
+}

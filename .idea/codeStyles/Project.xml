@@ -65,9 +65,6 @@
       <option name="IMPORTS_WRAP" value="1" />
       <option name="UNION_TYPES_WRAP" value="1" />
     </TypeScriptCodeStyleSettings>
-    <VueCodeStyleSettings>
-      <option name="UNIFORM_INDENT" value="false" />
-    </VueCodeStyleSettings>
     <codeStyleSettings language="Blade">
       <indentOptions>
         <option name="INDENT_SIZE" value="2" />

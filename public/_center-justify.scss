@@ -1,0 +1,8 @@
+@mixin center-justify {
+	text-align: justify;
+	text-align-last: center;
+	-moz-text-align-last: center;
+	@supports not((text-align-last: center) or (-moz-text-align-last: center)) {
+		text-align: center;
+	}
+}
