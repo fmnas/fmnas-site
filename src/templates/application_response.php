@@ -28,4 +28,4 @@ function application_response(): void { ?>
 	<?=_G_fax()?> (fax)<br>
 	<a href="https://<?=_G_public_domain()?>/">https://<?=_G_public_domain()?></a><br>
 	like us on Facebook: <a href="https://www.facebook.com/ForgetMeNotAnimalShelter">https://www.facebook.com/ForgetMeNotAnimalShelter</a>
-<?php } // @todo Move remaining fields in response to config db
+<?php }

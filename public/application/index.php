@@ -1,7 +1,7 @@
 <?php /** @noinspection PhpUnusedParameterInspection */
 require_once "../../src/common.php";
 require_once "../../src/form.php";
-//require_once "$t/header.php";
+require_once "$t/header.php";
 require_once "$t/application_response.php";
 ini_set('upload_max_filesize', '10M');
 ini_set('max_file_uploads', '20');
@@ -22,10 +22,9 @@ $formConfig->confirm = function(array $formData): void {
 	<?php
 	style();
 	style("minheader", true);
-	// @todo Use page header and make the min header printonly.
-	//	pageHeader();
+	pageHeader();
 	?>
-	<header data-if-config="minhead" data-hidden="false" class="" id="minimal_header">
+	<header data-if-config="minhead" id="minimal_header">
 		<a href="/">
 			<h1><?=_G_shortname()?></h1>
 			<div>
@@ -53,10 +52,10 @@ $formConfig->handler = function(FormException $e): void {
 	style();
 	emailLinks();
 	style("minheader", true);
-	//	pageHeader();
+	pageHeader();
 	?>
 	<article>
-		<header data-if-config="minhead" data-hidden="false" class="" id="minimal_header">
+		<header data-if-config="minhead" id="minimal_header">
 			<a href="/">
 				<h1><?=_G_shortname()?></h1>
 				<div>
@@ -86,6 +85,8 @@ $formConfig->handler = function(FormException $e): void {
 					'<pre>' . print_r(get_defined_vars(), true) . '</pre>',
 					[]));
 };
+
+// TODO [#65]: Email the applicant a copy of their application as a PDF.
 
 $cwd = getcwd();
 $formConfig->emails = function(array $formData) use ($cwd): array {
@@ -149,7 +150,6 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 		}
 		return $total_size < 20 * 1048576;
 	};
-	$primaryEmail->replyTo = [$applicantEmail];
 
 	$secondaryEmail = new FormEmailConfig(
 			$shelterEmail,
@@ -311,7 +311,7 @@ function addressInput(string $label, string $prefix, bool $required = false): st
 	<?php
 	style();
 	emailLinks();
-	style("application", true, "220127");
+	style("application", true, "2201251555");
 	style("minheader", true);
 	?>
 	<script src="events.js"></script>
@@ -323,9 +323,9 @@ function addressInput(string $label, string $prefix, bool $required = false): st
 </head>
 <body>
 <?php
-//ob_start();
-//pageHeader();
-//echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
+ob_start();
+pageHeader();
+echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 ?>
 <article>
 	<section id="thanks" data-if-config="main" data-rhs="false">
@@ -333,7 +333,7 @@ function addressInput(string $label, string $prefix, bool $required = false): st
 		application_response();
 		?>
 	</section>
-	<header data-if-config="minhead" data-hidden="false" class="" id="minimal_header">
+	<header data-if-config="minhead" id="minimal_header">
 		<a href="/">
 			<h1><?=_G_shortname()?></h1>
 			<div>
@@ -345,7 +345,7 @@ function addressInput(string $label, string $prefix, bool $required = false): st
 	<form method="POST" enctype="multipart/form-data" id="application" data-if-config="main" data-hidden="false">
 		<h2 data-if-config="main" data-rhs="false" data-hidden="false">Adoption Application</h2>
 		<p data-if-config="weblink"><a data-href-config="path">View application on the web</a>
-			<?php // @todo Display a modal for application faq ?>
+			<?php // TODO [#143]: Display a modal for application faq ?>
 		<p data-remove="true" class="noprint">Please read the <a href="faq.php" target="_blank">application FAQ</a> before
 			filling this out.
 			<input type="hidden" name="form_id" value="application">
@@ -487,7 +487,7 @@ function addressInput(string $label, string $prefix, bool $required = false): st
 					</label>
 				</div>
 			</section>
-			<?php // @todo Get a particular pet from $_GET ?>
+			<?php // TODO [#145]: Get a particular pet from $_GET ?>
 			<section id="particular">
 				<p>Are you applying for a particular animal listed on our website?</p>
 				<div>

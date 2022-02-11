@@ -34,6 +34,8 @@
  * All <label> elements will be replaced with span elements. Any inner text will itself be in a span element with a
  * data-type="label-text" attribute as well, and the outer span element will have a data-input-type attribute with the
  * type of the corresponding input element if found.
+ *
+ * TODO [#73]: Replace datalist elements with ul elements (hidden by default).
  * All <datalist> elements will be removed unless they have an explicit falsy data-remove attribute, in which case they
  * will be replaced with <ul> elements. <option> elements therein will be replaced with <li> elements, and any contained
  * within an <optgroup> element will have a data-optgroup attribute with the optgroup label (the optgroup is removed).
@@ -214,7 +216,8 @@
  *    content: "☑ ";
  *  }
  *
- * @todo Add unit tests for the form processor and maybe split it into a separate repo.
+ * TODO [#69]: Add unit tests for the form processor.
+ * TODO [#70]: Split the form processor into a separate repo?
  * @noinspection GrazieInspection
  */
 
@@ -231,7 +234,7 @@ require "$phpmailer_path/src/PHPMailer.php";
 require "$phpmailer_path/src/SMTP.php";
 require "$html5_php_path/src/HTML5.php";
 
-// @todo Figure out how to get PSR-4 autoloading without composer.
+// TODO [#71]: Figure out how to get PSR-4 autoloading without composer.
 // Relevant: https://akrabat.com/using-composer-with-shared-hosting/
 require_once("$html5_php_path/src/HTML5/Elements.php");
 require_once("$html5_php_path/src/HTML5/Entities.php");
@@ -500,7 +503,7 @@ function collectForm(): void {
 			$selectors[] =
 					"*[$attribute]:not([data-hidden='0']):not([data-hidden='false']):not([data-hidden='false' i])";
 		}
-		echo "<style>" . implode(",", $selectors) . "{display: none;}</style>";
+		echo "<style>" . implode(",", $selectors) . "{display: none !important;}</style>";
 
 		// Stuff after the injected CSS.
 		if (!$after) {
@@ -628,7 +631,7 @@ function moveChildren(DOMElement $from, DOMElement $to): void {
 
 /**
  * Check truthiness of a string. Defined the same as in PHP, except "false" is falsy.
- * @todo Make "" truthy (doesn't seem to work?)
+ * TODO [#72]: Make "" truthy (doesn't seem to work?)
  * @param string $str A string
  * @return bool Whether the string is truthy.
  */
@@ -1189,8 +1192,6 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
 		}
 		$button->parentNode?->replaceChild($span, $button);
 	}
-
-	// @todo Replace datalist elements with ul elements (hidden by default).
 
 	// Mark all script elements with data-remove.
 	foreach (collectElements($dom, "script") as $script) {

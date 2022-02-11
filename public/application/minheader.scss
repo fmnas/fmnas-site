@@ -18,6 +18,7 @@
 #minimal_header {
 	display: inline-block;
 	text-align: center;
+	margin-top: 0.5rem;
 
 	a {
 		color: var(--text-color);
@@ -26,8 +27,8 @@
 
 	h1 {
 		display: block;
+		font: var(--heading-font);
 		font-size: x-large;
-		font-variant: small-caps;
 	}
 
 	div {

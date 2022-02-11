@@ -75,7 +75,7 @@ function generate() {
 			echo $sel . '>td.fee>*::before{content:"';
 			echo cssspecialchars($status->name);
 			echo '";}';
-			// @todo Render status text in fee cell on server side for a11y
+			// TODO [#76]: Render status text in fee cell on server side for a11y
 			if (isset($status->description) && strlen(trim($status->description)) > 0) {
 				$hoverStatusSelectors[] = $sel;
 
@@ -88,17 +88,14 @@ function generate() {
 	}
 
 	if (count($displayedStatusSelectors)) {
-		// Display pending animals with a grey background
-		echo buildSelector($displayedStatusSelectors, " *");
-		echo "{background-color:var(--pending-color);}";
+
+		// Display pending animals with a grey background and move them to the end
+		echo buildSelector($displayedStatusSelectors);
+		echo "{order:3 !important;--listing-background:var(--pending-color) !important;}";
 
 		// Show status instead of fee
 		echo buildSelector($displayedStatusSelectors, ">td.fee>span");
 		echo "{display:none;}";
-
-		// Move them to the end
-		echo buildSelector($displayedStatusSelectors);
-		echo "{order:3 !important;}";
 
 		// Hide email link
 		echo buildSelector($displayedStatusSelectors, " .inquiry>a");
@@ -161,11 +158,11 @@ function generate() {
             }
             CSS;
 		echo buildSelector($hoverStatusSelectors, ">td.fee:hover::before");
-		echo "{opacity:0.9;transition:opacity 0.18s ease-out 0.18s;z-index:2;} ";
+		echo "{opacity:0.95;transition:opacity 0.18s ease-out 0.18s;z-index:2;} ";
 		echo buildSelector($hoverStatusSelectors, ">td.fee");
 		echo "{overflow:visible;position:relative;}";
 	}
 	$output = ob_get_clean();
-	// @todo Minify adoptable.generated.css
+	// TODO [#77]: Minify adoptable.generated.css
 	file_put_contents(root() . "/public/adoptable.generated.css", $output);
 }
