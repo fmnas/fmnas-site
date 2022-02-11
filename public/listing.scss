@@ -15,18 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-header a.return {
-	display: none;
-}
 
 a.return {
 	display: block;
 	width: 100%;
-	text-align: right;
+	text-align: center;
 	font-size: 10pt;
 	margin-bottom: 0.25in;
 	@media print {
 		display: none;
+	}
+	@media screen and (min-width: 700px) {
+		text-align: right;
 	}
 }
 
@@ -78,8 +78,10 @@ h2 {
 		justify-content: center;
 		align-items: center;
 		margin-top: 1.5em;
+		line-height: 0;
 		img {
-			margin: 0.5rem;
+			padding: 0.5rem;
+			box-sizing: border-box;
 		}
 	}
 
