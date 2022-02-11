@@ -1,0 +1,9 @@
+{{>coming_soon}}
+
+Introducing {{name}} {{! Write the rest of the listing here }}
+
+{{>youtube id=''}}
+
+{{>single_kitten}} {{! Remove if not applicable }}
+
+{{>standard_info}}

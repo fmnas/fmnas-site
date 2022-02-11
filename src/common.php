@@ -2,6 +2,7 @@
 declare(strict_types = 1);
 @header("Content-Encoding: UTF-8");
 ini_set("pcre.jit", "0");
+set_include_path(__DIR__);
 
 use JetBrains\PhpStorm\Pure;
 
@@ -96,6 +97,13 @@ function src(): string {
 }
 
 /**
+ * @return string The absolute path to the cached assets directory
+ */
+#[Pure] function cached_assets(): string {
+	return root() . "/public/assets/cache";
+}
+
+/**
  * Global variables from the above functions
  */
 $assets = assets();
@@ -131,6 +139,7 @@ require_once "$src/generated.php";
  * @param string|null $buster A cachebuster to use.
  */
 function style(string $name = "/common", bool $relative = false, ?string $buster = null): void {
+	global $root;
 	if (!startsWith($name, "/") && !$relative) {
 		$name = "/" . $name;
 	}
@@ -139,6 +148,8 @@ function style(string $name = "/common", bool $relative = false, ?string $buster
 	}
 	if ($buster !== null) {
 		$name .= "?buster=$buster";
+	} else if (!$relative) {
+		$name .= "?buster=" . filemtime("$root/public$name");
 	}
 	echo "<link rel=\"stylesheet\" href=\"" . htmlspecialchars($name) . "\">";
 }

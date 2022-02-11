@@ -1,4 +1,5 @@
 @use '../forms';
+@use '../center-justify';
 
 $cutoff-width: 700px;
 $row-gap: 5px;
@@ -8,11 +9,11 @@ $total-input-height: calc(#{forms.$line-height} + #{forms.$input-border} + #{for
 $paragraph-width: 40em;
 
 // Hide the link to the application in the header - we are already here!
-section.adopt {
+header form.adopt {
 	display: none;
 }
 
-html {
+:root {
 	min-width: 480px;
 }
 
@@ -198,7 +199,7 @@ p > strong:first-child {
 	button.add, button.remove {
 		> span {
 			color: #0000;
-			// @todo uncomment once gradients can transition.
+			// TODO [#63]: uncomment once gradients can transition.
 			//background: radial-gradient(circle, var(--inner-color) 20%, var(--outer-color) 100%);
 			background-color: var(--inner-color);
 			-webkit-background-clip: text;
@@ -571,6 +572,7 @@ p > strong:first-child {
 
 			> span {
 				cursor: auto;
+				padding: 0 2.5vw;
 			}
 		}
 
@@ -602,8 +604,7 @@ p > strong:first-child {
 		p.rented:not(.hidden) {
 			max-width: 40em;
 			display: inline-block;
-			text-align: justify;
-			text-align-last: center;
+			@include center-justify.center-justify;
 			font-style: italic;
 			font-size: 90%;
 		}
@@ -852,11 +853,6 @@ article#application {
 	pre#vet_address {
 		margin: 0;
 		font: inherit;
-	}
-
-	pre {
-		white-space: pre-wrap;
-		text-align: left;
 	}
 
 	section.applicant span.explanatory {

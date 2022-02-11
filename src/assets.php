@@ -3,10 +3,10 @@ require_once "common.php";
 require_once "db.php";
 
 class Asset {
-	public string $key; // Database key & storage filename
+	public int $key; // Database key & storage filename
 	public ?string $path; // Canonical pathname
 	public ?array $data; // generic data associated with this asset
-	private ?string $type; // MIME type
+	public ?string $type; // MIME type
 	private ?string $contents;
 	private ?array $size; // intrinsic size of image
 
@@ -17,14 +17,9 @@ class Asset {
 	public function parse(array $context): string {
 		self::createCacheDirectory();
 
-		if (!$this->getType() != "text/x-handlebars-template") {
-			log_err("Warning: attempting to parse something with mime-type " . $this->getType() .
-					" (not text/x-handlebars-template)");
-		}
-
 		$filename = root() . "/public/assets/cache/$this->key.html";
 		if (file_exists($filename)) {
-			return file_get_contents($filename);
+			return file_get_contents($filename) . '<!-- Cached -->';
 		}
 
 		require_once "parser.php";
@@ -42,7 +37,7 @@ class Asset {
 	}
 
 	private static function createCacheDirectory(): void {
-		@mkdir(root() . "/public/assets/cache", 0755, true);
+		@mkdir(cached_assets(), 0755, true);
 	}
 
 	public function getType(): string {
@@ -115,17 +110,20 @@ class Asset {
 			$tag .= "<a href=\"$path\">";
 		}
 		$tag .= '<img';
-		if ($height !== 0 && $height < $this->size()[1]) {
-			$intrinsicWidth = $this->size()[0];
+		if ($height !== 0 && $height <= $this->size()[1]) {
 			$intrinsicHeight = $this->size()[1];
-			$ratio = $this->size()[0] / $this->size()[1];
-			$newWidth = round($ratio * $height);
 			$tag .= ' srcset="';
 			$currentScale = 1;
 			while ($currentScale * $height < $intrinsicHeight) {
 				$tag .= $this->cachedImage($currentScale * $height);
 				$tag .= " {$currentScale}x, ";
-				$currentScale += 0.5;
+				if ($currentScale < 2) {
+					$currentScale += 0.5;
+				} else if ($currentScale < 4) {
+					$currentScale += 1;
+				} else {
+					$currentScale *= 2;
+				}
 			}
 			$tag .= "$path " . $intrinsicHeight / $height . "x\"";
 		}

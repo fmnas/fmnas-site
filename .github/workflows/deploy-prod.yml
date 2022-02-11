@@ -26,6 +26,8 @@ jobs:
         run: npx sass --style=compressed public:public
       - name: Compile public site scripts
         run: npx tsc -p public
+      - name: Build admin client
+        run: npx vite build admin/client
       - name: Set config values
         run: |
           npx ts-node handleparse.ts secrets/config.php.hbs \
@@ -47,7 +49,9 @@ jobs:
       - name: Unignore config.php for upload
         run: echo '!secrets/config.php' >> .gitignore
       - name: Unignore compiled files for upload
-        run: sed -i -E "/\.(css|js)$/d" public/.gitignore
+        run: |
+          sed -i -E "/\.(css|js)$/d" public/.gitignore
+          rm admin/.gitignore
       - name: Commit changes to local branch
         run: |
           git config user.email "admin+automation@forgetmenotshelter.org"
@@ -61,3 +65,12 @@ jobs:
           ftp-username: ${{ secrets.PROD_SFTP_USER }}
           ftp-password: ${{ secrets.PROD_SFTP_PASS }}
           git-ftp-args: --insecure
+      - name: Delete generated.php and cached descriptions
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.PROD_SFTP_HOST }}
+          username: ${{ secrets.PROD_SFTP_USER }}
+          password: ${{ secrets.PROD_SFTP_PASS }}
+          script: rm ${{ secrets.PROD_SITE_ROOT }}/src/generated.php ${{ secrets.PROD_SITE_ROOT }}/public/assets/cache/*.html || echo "Error $?"
+      - name: Regenerate generated.php
+        run: curl ${{ secrets.PROD_SITE_URL }}

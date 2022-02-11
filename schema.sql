@@ -27,7 +27,7 @@ CREATE TABLE config
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci COMMENT ='Global configuration values; these are cached by the backend';
 
--- @todo Replace schema.sql with schema.sql.hbs
+-- TODO [#67]: Replace schema.sql with schema.sql.hbs
 INSERT INTO config
 VALUES ('address', '49&nbsp;W&nbsp;Curlew&nbsp;Lake&nbsp;Rd\nRepublic&nbsp;WA&nbsp;99166‑8742'),
        ('admin_domain', 'admin.fmnas.org'),
@@ -121,7 +121,7 @@ VALUES (1, 'Adoptable', 0, 1, ''),
 
 ALTER TABLE assets
 	ADD PRIMARY KEY (id),
-	ADD KEY path (path(768));
+	ADD UNIQUE KEY path (path(768));
 
 ALTER TABLE config
 	ADD PRIMARY KEY (config_key);

@@ -1,0 +1,6 @@
+# Authentication for test site
+AuthName "Test Site"
+AuthType Basic
+AuthUserFile /home/kimgil5/newsite/secrets/.htpasswd
+# TODO [#61]: Use GitHub secret for htpasswd path
+Require valid-user
