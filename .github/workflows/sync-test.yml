@@ -17,9 +17,11 @@ jobs:
           wait-interval: 10
           allowed-conclusions: success,skipped,cancelled,failure
       - name: Merge main into test
-        uses: devmasx/merge-branch@master
+        uses: vaultdragon/merge-branch@disable-fastforwards
         with:
           type: now
           from_branch: main
           target_branch: test
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          message: 'Merge main into test'
+          disable_fastforwards: true
