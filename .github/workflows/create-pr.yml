@@ -1,0 +1,18 @@
+name: Create PR on test branch push
+on:
+  push:
+    branches:
+      - test
+jobs:
+  createPullRequest:
+    name: Create PR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@main
+      - name: Create PR
+        uses: peter-evans/create-pull-request@
+        with:
+          branch: test
+          base: main
+          delete-branch: false
