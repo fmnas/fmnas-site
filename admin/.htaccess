@@ -1,8 +1,9 @@
 # prevent caching
-# TODO [#107]: Selectively allow caching for admin site.
 <IfModule mod_headers.c>
+	<FilesMatch "\.(js|css|html)$">
     Header set Cache-Control "no-cache"
     FileETag MTime Size
+  </FilesMatch>
 </IfModule>
 
 # compress text, html, javascript, css, xml:

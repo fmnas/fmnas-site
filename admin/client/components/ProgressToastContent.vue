@@ -15,20 +15,27 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<!DOCTYPE html>
-<html lang="en-US">
-<head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width,initial-scale=1.0">
-	<link rel="icon" href="/favicon.ico">
-	<link rel="stylesheet" href="/adoptable.css.php">
-	<script src="/formenter.js.php"></script>
-	<title>Local Deployment</title>
-</head>
-<body>
-<div id="app"></div>
-<script type="module" src="http://localhost:3000/@vite/client"></script>
-<script type="module" src="http://localhost:3000/main.ts"></script>
-</body>
-</html>
+<template>
+<strong>{{ flavor }}</strong>
+<progress :title="flavor" :max="count" :value="resolved">{{ resolved }}/{{ count }}</progress>
+</template>
+
+<script lang="ts">
+import {defineComponent} from 'vue';
+
+export default defineComponent({
+  name: 'ProgressToastContent',
+  props: ['flavor', 'resolved', 'count'],
+});
+</script>
+
+<style scoped lang="scss">
+  strong {
+    display: block;
+    text-align: center;
+  }
+  progress {
+    display: block;
+    width: 100%;
+  }
+</style>

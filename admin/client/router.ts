@@ -16,7 +16,7 @@
  */
 
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
-import Index from './views/Index.vue'
+import Index from './views/Home.vue'
 // import {r404} from '@/common'
 
 const routes: Array<RouteRecordRaw> = [
