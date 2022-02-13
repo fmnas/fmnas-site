@@ -112,7 +112,7 @@ CREATE TABLE statuses
 
 INSERT INTO statuses
 VALUES (1, 'Adoptable', 0, 1, ''),
-       (2, 'Adopted', NULL, 0, ''),
+       (2, 'Adopted', 1, 0, ''),
        (3, 'Adoption Pending', 1, 1,
         'We either have so many applications we are confident of finding the pet\'s new home from among them, OR the pet has been offered to an applicant who has accepted placement, and we will be delivering the pet on the next Seattle or Spokane trip.\r\n\r\nYou can submit an application for one of these pets if you\'d like to be a \"backup home\" should anything not work out with the prior applicants, but it\'s a longshot.'),
        (4, 'Applications Closed', 1, 1,

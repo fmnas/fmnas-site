@@ -19,7 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<form>
 		<label>
 			Transport date:
-			<input v-model="date" type="date">
+      <img :src="'/loading.png'" alt="Loading..." class="loading" v-show="loading">
+			<input v-model="date" type="date" v-show="!loading">
 			<!-- TODO [#28]: use a nicer date picker -->
 		</label>
 		<button v-if="date !== savedDate" type="button" @click="save()">Save</button>
@@ -37,6 +38,7 @@ export default defineComponent({
 		return {
 			date: null as string|null,
 			savedDate: null as string|null,
+      loading: true,
 		};
 	},
 	methods: {
@@ -51,7 +53,6 @@ export default defineComponent({
 		},
 	},
 	mounted() {
-		// TODO [#31]: Add a loading indicator for transport date editor
 		fetch('/api/config/transport_date', {
 			method: 'GET',
 		}).then(res => {
@@ -59,11 +60,14 @@ export default defineComponent({
 			return res.json();
 		}).then(data => {
 			this.date = this.savedDate = data;
+      this.loading = false;
 		});
 	},
 });
 </script>
 
-<style scoped>
-
+<style scoped lang="scss">
+img.loading {
+  height: 1em;
+}
 </style>

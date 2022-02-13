@@ -131,13 +131,14 @@ class DatabaseWriter extends Database {
 	}
 
 	public function insertAsset(array $value): string|int {
-		for ($i = 0; $i < 10; $i++) {
+		for ($i = 0; $i < 100; $i++) {
 			try {
 				if (is_numeric($result = $this->insertAssetOneshot($value))) {
 					break;
 				}
 			} catch (mysqli_sql_exception $e) {
 				$result = $e->getMessage();
+				usleep(100000);
 			}
 		}
 		return $result;
