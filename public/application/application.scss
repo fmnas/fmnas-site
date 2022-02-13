@@ -68,6 +68,7 @@ p > strong:first-child {
 	}
 
 	h4 {
+		font: var(--heading-font);
 		margin: 1rem;
 	}
 
@@ -109,7 +110,8 @@ p > strong:first-child {
 
 			h4 {
 				margin: 0;
-				font-weight: inherit;
+				font: inherit;
+				font-size: 14pt;
 				@media screen and (max-width: $cutoff-width) {
 					grid-column: 1/span 2 !important;
 					font-weight: bold;
