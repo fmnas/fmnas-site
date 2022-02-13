@@ -53,7 +53,7 @@ jobs:
       - name: Unignore config.php for upload
         run: echo '!secrets/config.php' >> .gitignore
       - name: Unignore vendor directory for upload
-        run: echo '!/vendor/' >> .gitignore
+        run: sed -i '!^/vendor/$!d' .gitignore
       - name: Unignore compiled files for upload
         run: |
           sed -i -E "/\.(css|js)$/d" public/.gitignore
