@@ -103,8 +103,6 @@
       </tbody>
     </table>
   </section>
-  <!--	<p>modified status: {{ modified() }}</p>-->
-  <!--	<p>loading status: {{ loading }}</p>-->
   <photos v-model="pet.photos" @update:promises="photoPromises = $event" :reset="resetCount"
       :prefix="getFullPathForPet(pet) + '/'"/>
   <editor v-model="description" :context="pet"/>
@@ -140,6 +138,11 @@
       <button @click="confirmOverwrite = false; showConfirmOverwriteModal = false;">Cancel</button>
     </template>
   </modal>
+  <Transition>
+    <div class="loading" v-if="loading">
+      <img :src="'/loading.png'" alt="Loading...">
+    </div>
+  </Transition>
 </template>
 
 <script lang="ts">
@@ -260,7 +263,6 @@ export default defineComponent({
       this.pet = {} as Pet;
       this.description = partial('default');
       store.state.lastGoodDescription = this.description;
-      this.loading = false;
       this.sexInteracted = false;
       this.validated = false;
       this.profilePromise = null;
@@ -275,38 +277,46 @@ export default defineComponent({
       this.pet.status = 1; // Default to adoptable
       this.resetCount++;
       this.$router.push('/new');
+      this.loading = false;
     },
     async save() {
       // TODO [#185]: Display toasts for input validation
-      if (this.pet.id && this.original.id && this.pet.name && this.original.name && this.pet.id !== this.original.id &&
-          this.pet.name !== this.original.name && !this.confirmOverwrite) {
-        this.showConfirmOverwriteModal = true;
-        return;
+      this.loading = true;
+      try {
+        if (this.pet.id && this.original.id && this.pet.name && this.original.name && this.pet.id !==
+            this.original.id &&
+            this.pet.name !== this.original.name && !this.confirmOverwrite) {
+          this.showConfirmOverwriteModal = true;
+          return;
+        }
+        if (store.state.parseError) {
+          console.error(store.state.parseError);
+          store.state.toast.error(`Description is invalid (check your handlebars syntax)\n${store.state.parseError}`);
+          return;
+        }
+        const promises = [...this.photoPromises];
+        if (this.profilePromise) {
+          promises.push(this.profilePromise);
+        }
+        promises.push(...(this.pet.photos ?? []).map(() => Promise.resolve())); // Resolved promises for photos already uploaded
+        console.log('Waiting for promises', promises, this.profilePromise, this.photoPromises);
+        // Wait for async uploads
+        this.reportProgress(promises, 'Uploading photos');
+        await Promise.all(promises);
+        if (!this.original?.id || this.description !== this.originalDescription) {
+          this.pet.description = await uploadDescription(this.description);
+        }
+        fetch(this.original?.id ? `/api/listings/${this.original.id}` : `/api/listings`, {
+          method: this.original?.id ? 'PUT' : 'POST',
+          body: JSON.stringify(this.pet),
+        }).then(res => {
+          this.checkResponse(res, 'Saved successfully');
+          this.updateAfterSave();
+        });
+      } catch (e) {
+        this.loading = false;
+        throw e;
       }
-      if (store.state.parseError) {
-        console.error(store.state.parseError);
-        store.state.toast.error(`Description is invalid (check your handlebars syntax)\n${store.state.parseError}`);
-        return;
-      }
-      const promises = [...this.photoPromises];
-      if (this.profilePromise) {
-        promises.push(this.profilePromise);
-      }
-      promises.push(...(this.pet.photos ?? []).map(() => Promise.resolve())); // Resolved promises for photos already uploaded
-      console.log('Waiting for promises', promises, this.profilePromise, this.photoPromises);
-      // Wait for async uploads
-      this.reportProgress(promises, 'Uploading photos');
-      await Promise.all(promises);
-      if (!this.original?.id || this.description !== this.originalDescription) {
-        this.pet.description = await uploadDescription(this.description);
-      }
-      fetch(this.original?.id ? `/api/listings/${this.original.id}` : `/api/listings`, {
-        method: this.original?.id ? 'PUT' : 'POST',
-        body: JSON.stringify(this.pet),
-      }).then(res => {
-        this.checkResponse(res, 'Saved successfully');
-        this.updateAfterSave();
-      });
     },
     updateAfterSave() {
       // Update original pet
@@ -325,6 +335,8 @@ export default defineComponent({
       this.profilePromise = null;
       // Clear saved "confirm overwrite" state
       this.confirmOverwrite = false;
+      // Clear loading state
+      this.loading = false;
     },
     modified() {
       // TODO [#196]: Weaken modified check so undefined == '' == null
@@ -518,7 +530,27 @@ div.buttons {
   justify-content: space-evenly;
 }
 
-td.img > a {
-
+div.loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 4;
+  background-color: #0006;
 }
+
+.v-enter-active, .v-leave-active {
+  transition: opacity 0.25s ease;
+}
+
+.v-enter-from, .v-leave-to {
+  opacity: 0;
+}
+
 </style>
