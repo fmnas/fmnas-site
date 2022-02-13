@@ -8,7 +8,7 @@
       <ul>
         <li>
           <h4>Bold and italic</h4>
-          <code>**bold text**, _italic text_,<br>*_bold and italic text_*</code>
+          <code>**bold text**, _italic text_,<br>**_bold and italic text_**</code>
           <p/>
           <div><strong>bold text</strong>, <em>italic text</em>, <strong><em>bold and italic text</em></strong></div>
         </li>
@@ -57,17 +57,7 @@
           <h4>Strikethrough</h4>
           <code>~~strikethrough text~~</code>
           <p/>
-          <div v-html="render(`~~strikethrough text~~`, {})"/>
-        </li>
-        <li>
-          <h4>Headings</h4>
-          <code v-html="`## Heading
-### Subheading
-#### Sub-subheading`"/>
-          <p>You can go up to ######</p>
-          <div v-html="render(`## Heading
-### Subheading
-#### Sub-subheading`, {})"/>
+          <div><s>strikethrough text</s></div>
         </li>
       </ul>
       <p>For complete references, see:<br>
@@ -115,13 +105,12 @@
 
 <script lang="ts">
 import {defineComponent} from 'vue';
-import {partial, renderDescription} from '../common';
+import {partial} from '../common';
 
 export default defineComponent({
   name: 'EditorHelp',
   methods: {
     partial,
-    render: renderDescription,
   }
 });
 </script>
