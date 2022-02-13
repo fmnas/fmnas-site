@@ -1,6 +1,7 @@
 <?php /** @noinspection PhpUnusedParameterInspection */
 require_once "../../src/common.php";
 require_once "../../src/form.php";
+require_once "../../src/db.php";
 require_once "$t/header.php";
 require_once "$t/application_response.php";
 ini_set('upload_max_filesize', '10M');
@@ -11,6 +12,7 @@ ini_set('memory_limit', '2048M');
 setlocale(LC_ALL, 'en_US.UTF-8');
 set_time_limit(300);
 $formConfig->method = HTTPMethod::POST;
+$db ??= new Database();
 $formConfig->confirm = function(array $formData): void {
 	?>
 	<!DOCTYPE html>
@@ -473,12 +475,11 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 					</label>
 				</div>
 			</section>
-			<?php // TODO [#145]: Get a particular pet from $_GET ?>
 			<section id="particular">
 				<p>Are you applying for a particular animal listed on our website?</p>
 				<div>
 					<label>
-						<input type="radio" name="particular" value="y" required> Yes
+						<input type="radio" name="particular" value="y" required<?=$_GET['pet'] ?? false ? ' checked' : ''?>> Yes
 					</label>
 					<label>
 						<input type="radio" name="particular" value="n" required> No
@@ -486,7 +487,9 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 				</div>
 				<label data-if="particular" data-rhs="y" data-hidden="false">
 					Please specify:
-					<input type="text" name="particular_specify">
+					<input type="text" name="particular_specify"
+							value="<?=(($_GET['pet'] ?? false) && $pet = $db->getPetById($_GET['pet'])) ?
+									$pet->id . ' ' . $pet->name : ''?>">
 				</label>
 			</section>
 		</section>
@@ -633,11 +636,14 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 		</section>
 	</form>
 	<script src="https://unpkg.com/filepond/dist/filepond.js"></script>
-	<script src="https://unpkg.com/filepond-plugin-image-exif-orientation/dist/filepond-plugin-image-exif-orientation.js"></script>
+	<script
+			src="https://unpkg.com/filepond-plugin-image-exif-orientation/dist/filepond-plugin-image-exif-orientation.js"></script>
 	<script src="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.js"></script>
 	<script src="https://unpkg.com/filepond-plugin-image-transform/dist/filepond-plugin-image-transform.js"></script>
-	<script src="https://unpkg.com/filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.js"></script>
-	<script src="https://unpkg.com/filepond-plugin-file-validate-size/dist/filepond-plugin-file-validate-size.js"></script>
+	<script
+			src="https://unpkg.com/filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.js"></script>
+	<script
+			src="https://unpkg.com/filepond-plugin-file-validate-size/dist/filepond-plugin-file-validate-size.js"></script>
 	<script>
 		// TODO [#66]: Asynchronous attachment upload
 		// TODO [#66]: Use image editor plugin
@@ -647,8 +653,8 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 		FilePond.registerPlugin(FilePondPluginFileValidateType);
 		FilePond.registerPlugin(FilePondPluginFileValidateSize);
 		const pond = FilePond.create(document.querySelector('input#images'), {
-			maxFileSize: "10MB",
-			maxTotalFileSize: "200MB",
+			maxFileSize: '10MB',
+			maxTotalFileSize: '200MB',
 			imagePreviewMinHeight: 0,
 			imagePreviewMaxHeight: 128,
 			storeAsFile: true,

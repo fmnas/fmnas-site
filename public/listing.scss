@@ -112,3 +112,14 @@ h2 {
 		}
 	}
 }
+
+form#bottom_form {
+	max-width: 95vw;
+	margin: 1rem auto;
+	font-size: 14pt;
+	font-style: italic;
+
+	button {
+		font: inherit;
+	}
+}
