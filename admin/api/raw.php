@@ -1,6 +1,5 @@
 <?php
 require_once 'api.php';
-// TODO [#207]: Allow browser to cache raw API GET requests.
 
 $writer = function(string $key, mixed $body) use ($db): Result {
 	if(isset($_FILES['file']['tmp_name'])) {
