@@ -3,6 +3,7 @@ declare(strict_types = 1);
 @header("Content-Encoding: UTF-8");
 ini_set("pcre.jit", "0");
 set_include_path(__DIR__);
+require_once __DIR__ . "/../vendor/autoload.php";
 
 use JetBrains\PhpStorm\Pure;
 
@@ -124,7 +125,7 @@ require_once "$secrets/config.php";
 
 /**
  * Generate and load the generated source with constants from database.
- * This can't be moved to a function because it uses the globals and PHP is PHP.
+ * This can"t be moved to a function because it uses the globals and PHP is PHP.
  */
 if (!file_exists("$src/generated.php")) {
 	require_once "$src/generator.php";
