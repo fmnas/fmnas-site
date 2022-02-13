@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   <modal v-if="showHelp">
     <editor-help/>
     <template #buttons>
-      <button class="confirm" @click="showHelp = false">Close</button>
+      <button @click="showHelp = false">Close</button>
     </template>
   </modal>
 </template>

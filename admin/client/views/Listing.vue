@@ -149,9 +149,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <br>
     What do you want to do?
     <template #buttons>
-      <button class="confirm" @click="confirmOverwrite = true; showConfirmOverwriteModal = false; save();">Overwrite</button>
-      <button class="confirm" @click="confirmOverwrite = false; showConfirmOverwriteModal = false; resetOriginal(); save();">Save both</button>
-      <button class="cancel" @click="confirmOverwrite = false; showConfirmOverwriteModal = false;">Cancel</button>
+      <button class="danger" @click="confirmOverwrite = true; showConfirmOverwriteModal = false; save();">Overwrite</button>
+      <button @click="confirmOverwrite = false; showConfirmOverwriteModal = false; resetOriginal(); save();">Save both</button>
+      <button @click="confirmOverwrite = false; showConfirmOverwriteModal = false;">Cancel</button>
     </template>
   </modal>
 </template>
