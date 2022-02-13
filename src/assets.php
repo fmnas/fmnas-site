@@ -1,6 +1,10 @@
 <?php
+
+use JetBrains\PhpStorm\Pure;
+
 require_once "common.php";
 require_once "db.php";
+require_once "resize.php";
 
 class Asset {
 	public int $key; // Database key & storage filename
@@ -36,38 +40,7 @@ class Asset {
 		return $parsed;
 	}
 
-	private static function createCacheDirectory(): void {
-		@mkdir(cached_assets(), 0755, true);
-	}
-
 	public function getType(): string {
-		// If type not already known, detect the most common types from file extension
-		if (!$this->type && $this->path) {
-			if (endsWith($this->path, [".jpg", ".jpeg", ".jfif"])) {
-				$this->type = "image/jpeg";
-			} else {
-				if (endsWith($this->path, ".png")) {
-					$this->type = "image/png";
-				} else {
-					if (endsWith($this->path, ".gif")) {
-						$this->type = "image/gif";
-					} else {
-						if (endsWith($this->path, ".pdf")) {
-							$this->type = "application/pdf";
-						} else {
-							if (endsWith($this->path, ".txt")) {
-								$this->type = "text/plain";
-							} else {
-								if (endsWith($this->path, [".htm", ".html"])) {
-									$this->type = "text/html";
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		// If above fails to detect type, detect it from the file itself
 		$this->type = $this->type ?: mime_content_type($this->absolutePath());
 		return $this->type;
 	}
@@ -76,7 +49,7 @@ class Asset {
 		$this->type = $type;
 	}
 
-	public function absolutePath(): string {
+	#[Pure] public function absolutePath(): string {
 		return stored_assets() . "/" . $this->key;
 	}
 
@@ -139,12 +112,12 @@ class Asset {
 	}
 
 	private function size(): array {
-		$this->size ??= @getimagesize($this->absolutePath()) ?: [0, 0];
+		$this->size ??= size($this->absolutePath());
 		return $this->size;
 	}
 
 	/**
-	 * Cache an image at the specified width if not already done
+	 * Cache an image at the specified height if not already done
 	 * @param int $height desired height or 0 for no scaling
 	 * @return string The path to the image, relative to root/public (e.g. "/assets/cache/1_0.jpg")
 	 */
@@ -161,66 +134,18 @@ class Asset {
 			$height = $intrinsicHeight;
 		}
 
-		$filename = "/assets/cache/" . $this->key . "_" . $height;
-		switch ($this->getType()) {
-		case "image/jpeg":
-			$filename .= ".jpg";
-			break;
-		case "image/png":
-			$filename .= ".png";
-			break;
-		case "image/gif":
-			$filename .= ".gif";
-			break;
-		}
+		$filename = "/assets/cache/" . $this->key . "_" . $height . ".jpg";
 		$absoluteTarget = root() . "/public$filename";
 		if (file_exists($absoluteTarget)) {
 			return $filename;
 		}
 
-		if ($height === $intrinsicHeight) {
-			if (!copy($this->absolutePath(), $absoluteTarget)) {
-				log_err("Failed to copy {$this->absolutePath()} to $absoluteTarget");
-				return "/assets/stored/$this->key";
-			}
+		try {
+			resize($this->absolutePath(), $absoluteTarget, $height);
 			return $filename;
-		}
-
-		switch ($this->getType()) {
-		case "image/jpeg":
-			$image = imagecreatefromjpeg($this->absolutePath());
-			break;
-		case "image/png":
-			$image = imagecreatefrompng($this->absolutePath());
-			break;
-		case "image/gif":
-			$image = imagecreatefromgif($this->absolutePath());
-			break;
-		default:
-			log_err("Don't know how to resize {$this->getType()}");
+		} catch (Exception $e) {
+			log_err(print_r($e, true));
 			return "/assets/stored/$this->key";
 		}
-
-		$scaled = imagescale($image, round($height * $ratio), $height, IMG_BICUBIC);
-
-		self::createCacheDirectory();
-		$success = false;
-		switch ($this->getType()) {
-		case "image/jpeg":
-			$success = imagejpeg($scaled, $absoluteTarget, 80);
-			break;
-		case "image/png":
-			$success = imagepng($scaled, $absoluteTarget, 9);
-			break;
-		case "image/gif":
-			$success = imagegif($scaled, $absoluteTarget);
-			break;
-		}
-		if (!$success) {
-			log_err("Failed to save image at $absoluteTarget");
-			return "/assets/stored/$this->key";
-		}
-
-		return $filename;
 	}
 }

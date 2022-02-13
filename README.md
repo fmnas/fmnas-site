@@ -25,7 +25,7 @@ To get a local server running, you will need:
 * Apache (or Litespeed, etc.)
   * Debian packages: `apache2 libapache2-mod-php`
 * PHP 8.1 and dependencies noted below
-  * Debian packages: `php php-gd php-mbstring php-mysql php-xml`
+  * Debian packages: `php php-gd php-mbstring php-mysql php-xml php-imagick`
 * curl
 * Node
   * I suggest using NVM and enabling [deep shell integration](https://github.com/nvm-sh/nvm#deeper-shell-integration) to
@@ -105,15 +105,16 @@ site. See the Workflow section above for more details.
 * Linux (any POSIX-compatible OS should work)
 * Apache (Litespeed or any other web server with .htaccess and PHP support should work)
 * PHP 8.1
-	* GD
-		* libJPEG
-		* libPNG
-	* mysqli
-	* mbstring
-	* php-xml
-	* Composer
-	* Needs shell access (with `shell_exec`) and the following executables in PATH:
-		* `curl` to request caching uploaded images
+  * ImageMagick
+  * GD
+    * libJPEG
+    * libPNG
+  * mysqli
+  * mbstring
+  * php-xml
+  * Composer
+  * Needs shell access (with `shell_exec`) and the following executables in PATH:
+    * `curl` to request caching uploaded images
 * MySQL or MariaDB
 
 #### Build
