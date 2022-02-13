@@ -23,17 +23,16 @@ see <https://www.gnu.org/licenses/>.
 To get a local server running, you will need:
 
 * Apache (or Litespeed, etc.)
-	* Debian packages: `apache2 libapache2-mod-php`
+  * Debian packages: `apache2 libapache2-mod-php`
 * PHP 8.1 and dependencies noted below
-	* Debian packages: `php php-gd php-mbstring php-mysql php-xml`
+  * Debian packages: `php php-gd php-mbstring php-mysql php-xml`
 * curl
-* wkhtmltopdf
 * Node
-	* I suggest using NVM and enabling [deep shell integration](https://github.com/nvm-sh/nvm#deeper-shell-integration) to
-	  avoid using the wrong node version.
+  * I suggest using NVM and enabling [deep shell integration](https://github.com/nvm-sh/nvm#deeper-shell-integration) to
+    avoid using the wrong node version.
+* Composer
 * You may want to install the faster Dart version of [Sass](https://sass-lang.com/install):
-	* install the [Dart SDK](https://dart.dev/get-dart) and run `dart pub global activate sass`
-	* Or with Homebrew: `brew install sass/sass/sass`
+  * install the [Dart SDK](https://dart.dev/get-dart) and run `dart pub global activate sass`
 
 ### Workflow
 
@@ -51,6 +50,16 @@ into `test`.
 After testing the changes in the live test site environment, create a pull request on GitHub to merge the branch into
 `main`.
 
+### Initial build
+
+After checking out the repository, run:
+
+* `npm install` for Node dependencies
+* `composer install` for PHP dependencies
+* `sass public:public` for public site stylesheets
+* `tsc -p public` for public site scripts
+* `vite build --mode development admin/client` for the admin site
+
 ### Watch and build
 
 The PHPStorm config includes file watchers to automatically build files. To do this manually, run:
@@ -58,7 +67,6 @@ The PHPStorm config includes file watchers to automatically build files. To do t
 * `sass -w public:public` for public site stylesheets
 * `tsc -w -p public` for public site scripts
 * `vite build -w --mode development admin/client` for the admin site
-	* Note that all three commands must be run before the admin site works properly.
 
 Prefix these commands with `npx` to use the local version of the CLIs from Node.
 
@@ -103,8 +111,7 @@ site. See the Workflow section above for more details.
 	* mysqli
 	* mbstring
 	* php-xml
-	* PHPMailer (tested with 6.4.1)
-	* [html5-php](https://github.com/Masterminds/html5-php) (tested with 2.7.5)
+	* Composer
 	* Needs shell access (with `shell_exec`) and the following executables in PATH:
 		* `curl` to request caching uploaded images
 * MySQL or MariaDB
@@ -121,9 +128,8 @@ On the build machine:
   * Run, for instance:
     ```shell
     npx ts-node handleparse.ts secrets/config.php.hbs --db_name=database --db_username=username --db_pass=password \
-    --db_host=localhost --phpmailer_path="/path/to/PHPMailer" --html5_php_path="/path/to/html5-php" \
-    --smtp_host=smtp.gmail.com --smtp_auth=true --smtp_security=tls --smtp_port=587 --smtp_username=me@gmail.com \
-    --smtp_password=password
+    --db_host=localhost --smtp_host=smtp.gmail.com --smtp_auth=true --smtp_security=tls --smtp_port=587 \
+    --smtp_username=me@gmail.com --smtp_password=password
     ```
   * Alternatively, copy `secrets/config_sample.php` to `secrets/config.php` and update the configuration values
     manually.

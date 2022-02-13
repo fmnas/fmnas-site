@@ -25,13 +25,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       <ul>
         <li>
           <h4>Bold and italic</h4>
-          <code>*bold text*, _italic text_,<br>*_bold and italic text_*</code>
+          <code>**bold text**, *italic text*,<br>***bold and italic text***</code>
           <p/>
           <div><strong>bold text</strong>, <em>italic text</em>, <strong><em>bold and italic text</em></strong></div>
         </li>
         <li>
           <h4>Links</h4>
-          <code>[click for google](https://google.com)</code>
+          <code>[click for google](<wbr>https://google.com)</code>
           <p/>
           <div><a href="https://google.com">click for google</a></div>
         </li>
@@ -74,17 +74,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           <h4>Strikethrough</h4>
           <code>~~strikethrough text~~</code>
           <p/>
-          <div v-html="render(`~~strikethrough text~~`, {})"/>
-        </li>
-        <li>
-          <h4>Headings</h4>
-          <code v-html="`## Heading
-### Subheading
-#### Sub-subheading`"/>
-          <p>You can go up to ######</p>
-          <div v-html="render(`## Heading
-### Subheading
-#### Sub-subheading`, {})"/>
+          <div><s>strikethrough text</s></div>
         </li>
       </ul>
       <p>For complete references, see:<br>
@@ -132,13 +122,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 <script lang="ts">
 import {defineComponent} from 'vue';
-import {partial, renderDescription} from '../common';
+import {partial} from '../common';
 
 export default defineComponent({
   name: 'EditorHelp',
   methods: {
     partial,
-    render: renderDescription,
   }
 });
 </script>

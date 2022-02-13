@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . "/../common.php";
 function application_response(): void { ?>
-	<p>Thank you for your adoption application; we will be reviewing it shortly
+	<p style="margin-top: 1em;">Thank you for your adoption application; we will be reviewing it shortly
 		(applications are reviewed Sunday through Thursday), and will contact you with any additional questions.
 		In the meantime, please provide any required supplemental information by responding to this message, or emailing
 		us

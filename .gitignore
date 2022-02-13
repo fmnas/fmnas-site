@@ -2,9 +2,6 @@ secrets/*
 !secrets/*.hbs
 
 /log
-/lib
-
-stored_assets/
 
 # Windows thumbnail cache files
 Thumbs.db
@@ -252,3 +249,7 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Composer
+composer.phar
+/vendor/
