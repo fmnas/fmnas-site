@@ -18,7 +18,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <template>
 	<h1>Adoptable {{ species || 'pets' }}</h1>
 	<router-link :to="{ name: 'new', params: { species: species }}" class="add">Add</router-link>
-  <div class="bulk">
+  <div class="loading" v-show="loading">
+    <img :src="'/loading.png'" alt="Loading...">
+  </div>
+  <div class="bulk" v-show="!loading">
     {{ countSelected() }} listing{{ countSelected() === 1 ? '' : 's' }} selected:
     <!--suppress XmlInvalidId no idea why this is firing -->
     <label for="status_selector">Set status to </label>
@@ -30,7 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     </select>&nbsp;
     <button @click="updateSelected()" :disabled="!countSelected()">Save</button>
   </div>
-	<table>
+	<table v-show="!loading">
 		<thead>
 		<tr>
       <th class="checkbox"></th>
@@ -83,11 +86,11 @@ export default defineComponent({
 	methods: {
 		getFullPathForPet: getFullPathForPet,
 		populate() {
+      this.loading = true;
 			let apiUrl = '/api/listings';
 			if (this.species) {
 				apiUrl += `/?species=${this.species}`;
 			}
-			// TODO [#30]: Add a loading indicator for listings
 			fetch(apiUrl, {
 				method: 'GET',
 			}).then(res => {
@@ -95,6 +98,7 @@ export default defineComponent({
 				return res.json();
 			}).then(data => {
 				this.listings = data;
+        this.loading = false;
 			});
 		},
     countSelected() {
@@ -136,6 +140,7 @@ export default defineComponent({
 	data() {
 		return {
 			listings: [] as Pet[],
+      loading: false,
 		};
 	},
 	watch: {
@@ -188,5 +193,11 @@ h1 {
 	font-size: 120%;
 	border-radius: 0.2em;
   display: inline-block;
+}
+
+div.loading {
+  img {
+    max-height: max-content;
+  }
 }
 </style>
