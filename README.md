@@ -27,7 +27,6 @@ To get a local server running, you will need:
 * PHP 8.1 and dependencies noted below
 	* Debian packages: `php php-gd php-mbstring php-mysql php-xml`
 * curl
-* wkhtmltopdf
 * Node
 	* I suggest using NVM and enabling [deep shell integration](https://github.com/nvm-sh/nvm#deeper-shell-integration) to
 	  avoid using the wrong node version.
