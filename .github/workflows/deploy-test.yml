@@ -36,6 +36,8 @@ jobs:
           cache: 'npm'
       - name: Install dev dependencies
         run: npm install
+      - name: Install PHP dependencies
+        uses: php-actions/composer@v6
       - name: Compile public site stylesheets
         run: npx sass --style=compressed public:public
       - name: Compile public site scripts
