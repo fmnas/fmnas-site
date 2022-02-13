@@ -36,6 +36,11 @@ jobs:
           cache: 'npm'
       - name: Install dev dependencies
         run: npm install
+      - name: Cache PHP dependencies
+        uses: actions/cache@v2
+        with:
+          path: /tmp/composer-cache
+          key: ${{ runner.os }}-${{ hashFiles('composer.lock') }}
       - name: Install PHP dependencies
         uses: php-actions/composer@v6
       - name: Compile public site stylesheets
