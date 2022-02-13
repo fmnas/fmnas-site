@@ -18,22 +18,22 @@ jobs:
       - name: Dump ASM
         run: ssh ${{ secrets.ASM_SSH_USER }}@${{ secrets.ASM_HOST }} "mysqldump -f --single-transaction -u ${{ secrets.ASM_DB_USER }} -p'${{ secrets.ASM_DB_PASS }}' ${{ secrets.ASM_DB }} | gzip -9" > asm-$(date +%Y%m%d).sql.gz
       - name: Upload to S3
-        run: rclone --s3-access-key-id=${{ secrets.S3_ACCESS_KEY }} --s3-secret-access-key=${{ secrets.S3_SECRET_ACCESS_KEY }} --s3-endpoint=${{ secrets.S3_ENDPOINT }} --s3-region=${{ secrets.S3_REGION }} copy asm-*.sql.gz :s3:${{ secrets.DATA_BUCKET }}/
+        run: rclone -vv --s3-access-key-id=${{ secrets.S3_ACCESS_KEY }} --s3-secret-access-key=${{ secrets.S3_SECRET_KEY }} --s3-endpoint=${{ secrets.S3_ENDPOINT }} --s3-region=${{ secrets.S3_REGION }} copy asm-*.sql.gz :s3:${{ secrets.DATA_BUCKET }}/
   backup_blog:
     runs-on: ubuntu-latest
     steps:
       - name: Install rclone
         run: sudo apt install -y rclone
       - name: Dump blog database
-        run: mysqldump -f --single-transaction -h ${{ secrets.DB_HOST }} -u ${{ secrets.DB_USER }} -p'${{ secrets.DB_PASS }}' ${{ secrets.BLOG_DB }} | gzip -9" > blog-$(date +%Y%m%d).sql.gz
+        run: mysqldump -f --single-transaction -h ${{ secrets.DB_HOST }} -u ${{ secrets.DB_USER }} -p'${{ secrets.DB_PASS }}' ${{ secrets.BLOG_DB }} | gzip -9 > blog-$(date +%Y%m%d).sql.gz
       - name: Upload database dump to S3
-        run: rclone --s3-access-key-id=${{ secrets.S3_ACCESS_KEY }} --s3-secret-access-key=${{ secrets.S3_SECRET_ACCESS_KEY }} --s3-endpoint=${{ secrets.S3_ENDPOINT }} --s3-region=${{ secrets.S3_REGION }} copy blog-*.sql.gz :s3:${{ secrets.DATA_BUCKET }}/
+        run: rclone -vv --s3-access-key-id=${{ secrets.S3_ACCESS_KEY }} --s3-secret-access-key=${{ secrets.S3_SECRET_KEY }} --s3-endpoint=${{ secrets.S3_ENDPOINT }} --s3-region=${{ secrets.S3_REGION }} copy blog-*.sql.gz :s3:${{ secrets.DATA_BUCKET }}/
       - name: Sync blog directory
-        run: rclone --sftp-host ${{ PROD_SFTP_HOST }} --sftp-user ${{ PROD_SFTP_USER }} --sftp-pass `rclone obscure '${{ PROD_SFTP_PASS }}'` --s3-access-key-id=${{ secrets.S3_ACCESS_KEY }} --s3-secret-access-key=${{ secrets.S3_SECRET_ACCESS_KEY }} --s3-endpoint=${{ secrets.S3_ENDPOINT }} --s3-region=${{ secrets.S3_REGION }} sync :sftp:${{ secrets.PROD_SITE_ROOT }}/public/blog/ :s3:${{ secrets.ASSETS_BUCKET }}/blog/
+        run: rclone -vv --sftp-host ${{ secrets.PROD_SFTP_HOST }} --sftp-user ${{ secrets.PROD_SFTP_USER }} --sftp-pass `rclone obscure '${{ secrets.PROD_SFTP_PASS }}'` --s3-access-key-id=${{ secrets.S3_ACCESS_KEY }} --s3-secret-access-key=${{ secrets.S3_SECRET_KEY }} --s3-endpoint=${{ secrets.S3_ENDPOINT }} --s3-region=${{ secrets.S3_REGION }} sync :sftp:${{ secrets.PROD_SITE_ROOT }}/public/blog/ :s3:${{ secrets.ASSETS_BUCKET }}/blog/
   backup_assets:
     runs-on: ubuntu-latest
     steps:
       - name: Install rclone
         run: sudo apt install -y rclone
       - name: Sync assets
-        run: rclone --sftp-host ${{ PROD_SFTP_HOST }} --sftp-user ${{ PROD_SFTP_USER }} --sftp-pass `rclone obscure '${{ PROD_SFTP_PASS }}'` --s3-access-key-id=${{ secrets.S3_ACCESS_KEY }} --s3-secret-access-key=${{ secrets.S3_SECRET_ACCESS_KEY }} --s3-endpoint=${{ secrets.S3_ENDPOINT }} --s3-region=${{ secrets.S3_REGION }} sync :sftp:${{ secrets.PROD_SITE_ROOT }}/public/assets/ :s3:${{ secrets.ASSETS_BUCKET }}/assets/
+        run: rclone -vv --sftp-host ${{ secrets.PROD_SFTP_HOST }} --sftp-user ${{ secrets.PROD_SFTP_USER }} --sftp-pass `rclone obscure '${{ secrets.PROD_SFTP_PASS }}'` --s3-access-key-id=${{ secrets.S3_ACCESS_KEY }} --s3-secret-access-key=${{ secrets.S3_SECRET_KEY }} --s3-endpoint=${{ secrets.S3_ENDPOINT }} --s3-region=${{ secrets.S3_REGION }} sync :sftp:${{ secrets.PROD_SITE_ROOT }}/public/assets/stored/ :s3:${{ secrets.ASSETS_BUCKET }}/assets/
