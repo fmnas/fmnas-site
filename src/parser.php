@@ -1,8 +1,5 @@
 <?php
 require_once __DIR__ . "/common.php";
-require_once __DIR__ . "/dependencies.php";
-Dependencies::parsedown();
-Dependencies::lightncandy();
 
 /**
  * Parse with Handlebars and Parsedown

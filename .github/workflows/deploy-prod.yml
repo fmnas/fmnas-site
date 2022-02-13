@@ -22,6 +22,13 @@ jobs:
           cache: 'npm'
       - name: Install dev dependencies
         run: npm install
+      - name: Cache PHP dependencies
+        uses: actions/cache@v2
+        with:
+          path: /tmp/composer-cache
+          key: ${{ runner.os }}-${{ hashFiles('composer.lock') }}
+      - name: Install PHP dependencies
+        uses: php-actions/composer@v6
       - name: Compile public site stylesheets
         run: npx sass --style=compressed public:public
       - name: Compile public site scripts
@@ -35,8 +42,6 @@ jobs:
           --db_username="${{ secrets.DB_USERNAME }}" \
           --db_pass="${{ secrets.DB_PASS }}" \
           --db_host="${{ secrets.DB_HOST }}" \
-          --phpmailer_path="${{ secrets.PHPMAILER_PATH }}" \
-          --html5_php_path="${{ secrets.HTML5_PHP_PATH }}" \
           --smtp_host="${{ secrets.SMTP_HOST }}" \
           --smtp_auth="${{ secrets.SMTP_AUTH }}" \
           --smtp_security="${{ secrets.SMTP_SECURITY }}" \
@@ -47,8 +52,12 @@ jobs:
         run: cat public/.htaccess-prod >> public/.htaccess
       - name: Restrict access to admin site
         run: cat admin/.htaccess-prod >> admin/.htaccess
+      - name: Disable error reporting on prod site
+        run: echo > src/common-test.php
       - name: Unignore config.php for upload
         run: echo '!secrets/config.php' >> .gitignore
+      - name: Unignore vendor directory for upload
+        run: sed -i '/\/vendor\//d' .gitignore
       - name: Unignore compiled files for upload
         run: |
           sed -i -E "/\.(css|js)$/d" public/.gitignore

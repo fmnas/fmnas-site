@@ -204,37 +204,13 @@
  * @noinspection GrazieInspection
  */
 
+// Intentionally not including common.php here so this can be independent of the rest of the site someday.
+require_once __DIR__ . "/../vendor/autoload.php";
 use JetBrains\PhpStorm\Pure;
 use Masterminds\HTML5;
 use PHPMailer\PHPMailer\PHPMailer;
 
 $pwd = getcwd();
-
-$phpmailer_path ??= '../src/PHPMailer';
-$html5_php_path ??= '../src/html5-php';
-require "$phpmailer_path/src/Exception.php";
-require "$phpmailer_path/src/PHPMailer.php";
-require "$phpmailer_path/src/SMTP.php";
-require "$html5_php_path/src/HTML5.php";
-
-// TODO [#71]: Figure out how to get PSR-4 autoloading without composer.
-// Relevant: https://akrabat.com/using-composer-with-shared-hosting/
-require_once("$html5_php_path/src/HTML5/Elements.php");
-require_once("$html5_php_path/src/HTML5/Entities.php");
-require_once("$html5_php_path/src/HTML5/Exception.php");
-require_once("$html5_php_path/src/HTML5/InstructionProcessor.php");
-require_once("$html5_php_path/src/HTML5/Parser/EventHandler.php");
-require_once("$html5_php_path/src/HTML5/Serializer/RulesInterface.php");
-require_once("$html5_php_path/src/HTML5/Parser/Scanner.php");
-require_once("$html5_php_path/src/HTML5/Parser/Tokenizer.php");
-require_once("$html5_php_path/src/HTML5/Parser/TreeBuildingRules.php");
-require_once("$html5_php_path/src/HTML5/Parser/UTF8Utils.php");
-require_once("$html5_php_path/src/HTML5/Serializer/HTML5Entities.php");
-require_once("$html5_php_path/src/HTML5/Serializer/OutputRules.php");
-require_once("$html5_php_path/src/HTML5/Serializer/Traverser.php");
-require_once("$html5_php_path/src/HTML5/Parser/DOMTreeBuilder.php");
-require_once("$html5_php_path/src/HTML5/Parser/ParseError.php");
-require_once("$html5_php_path/src/HTML5/Parser/CharacterReference.php");
 
 /**
  * The FormConfig class contains data that shall not be output to the browser
