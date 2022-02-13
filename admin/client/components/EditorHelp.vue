@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       <ul>
         <li>
           <h4>Bold and italic</h4>
-          <code>*bold text*, _italic text_,<br>*_bold and italic text_*</code>
+          <code>**bold text**, _italic text_,<br>*_bold and italic text_*</code>
           <p/>
           <div><strong>bold text</strong>, <em>italic text</em>, <strong><em>bold and italic text</em></strong></div>
         </li>
