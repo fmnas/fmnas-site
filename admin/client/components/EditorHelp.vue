@@ -14,7 +14,7 @@
         </li>
         <li>
           <h4>Links</h4>
-          <code>[click for google](https://google.com)</code>
+          <code>[click for google](<wbr>https://google.com)</code>
           <p/>
           <div><a href="https://google.com">click for google</a></div>
         </li>
