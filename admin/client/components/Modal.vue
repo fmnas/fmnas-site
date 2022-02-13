@@ -6,10 +6,10 @@
 					Are you sure?
 				</slot>
 			</div>
-			<div class="buttons">
+			<div class="modal buttons">
         <slot name="buttons">
-          <button class="confirm" @click="$emit('confirm')">Confirm</button>
-          <button class="cancel" @click="$emit('cancel')">Cancel</button>
+          <button class="danger" @click="$emit('confirm')">Confirm</button>
+          <button @click="$emit('cancel')">Cancel</button>
         </slot>
 			</div>
 		</article>
@@ -53,15 +53,20 @@ article.modal {
 div.buttons {
 	display: flex;
 	justify-content: space-evenly;
+}
+</style>
 
-	button {
-		margin-top: 1rem;
-		font-size: 120%;
-		padding: 0.2em 0.6em;
+<style lang="scss">
+// Scoped styles don't apply in slot
+div.modal.buttons {
+  button {
+    margin-top: 1rem;
+    font-size: 120%;
+    padding: 0.2em 0.6em;
 
-		&.confirm {
-			color: red;
-		}
-	}
+    &.danger {
+      color: red;
+    }
+  }
 }
 </style>
