@@ -18,5 +18,10 @@ export default defineConfig({
 		outDir: '../',
 		emptyOutDir: false,
 		target: 'es2015',
+		rollupOptions: {
+			external: [
+					'components/ProgressToastContent.vue',
+			],
+		},
 	},
 });
