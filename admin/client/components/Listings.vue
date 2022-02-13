@@ -18,9 +18,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <template>
 	<h1>Adoptable {{ species || 'pets' }}</h1>
 	<router-link :to="{ name: 'new', params: { species: species }}" class="add">Add</router-link>
+  <div class="bulk">
+    {{ countSelected() }} listing{{ countSelected() === 1 ? '' : 's' }} selected:
+    <!--suppress XmlInvalidId no idea why this is firing -->
+    <label for="status_selector">Set status to </label>
+    <select ref="status_selector" id="status_selector" :disabled="!countSelected()">
+      <option value=""></option>
+      <option v-for="status of config['statuses']" :value="status['key']" :key="status['key']">
+        {{ status['name'] }}
+      </option>
+    </select>&nbsp;
+    <button @click="updateSelected()" :disabled="!countSelected()">Save</button>
+  </div>
 	<table>
 		<thead>
 		<tr>
+      <th class="checkbox"></th>
 			<th class="photo">Photo</th>
 			<th class="id">ID</th>
 			<th class="name">Name</th>
@@ -36,6 +49,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<tbody>
 		<!-- TODO [#34]: Make listing metadata editable from table view -->
 		<tr v-for="listing of listings" :key="listing['id']">
+      <td class="checkbox"><input type="checkbox" v-model="listing.selected"></td>
 			<td class="photo"><img :alt="listing['name']" :src="`/api/raw/stored/${listing.photo?.key}`"></td>
 			<td class="id">{{ listing['id'] }}</td>
 			<td class="name">{{ listing['name'] }}</td>
@@ -60,6 +74,7 @@ import {mapState} from 'vuex';
 import { defineComponent } from 'vue';
 import {Pet} from '../types';
 import {responseChecker} from '../mixins';
+import store from '../store';
 
 export default defineComponent({
 	name: 'Listings',
@@ -81,7 +96,42 @@ export default defineComponent({
 			}).then(data => {
 				this.listings = data;
 			});
-		}
+		},
+    countSelected() {
+      let count = 0;
+      for (const listing of this.listings) {
+        if (listing.selected) {
+          count++;
+        }
+      }
+      return count;
+    },
+    updateSelected() {
+      const select = this.$refs.status_selector as HTMLSelectElement;
+      const targetStatus = parseInt(select.value);
+      select.value = '';
+      if (!targetStatus) {
+        store.state.toast.error('Please select a new status for these listings');
+        return;
+      }
+      for (const listing of this.listings) {
+        if (listing.selected) {
+          const originalStatus = listing.status;
+          listing.status = targetStatus;
+          fetch(`/api/listings/${listing.id}`, {
+            method: 'PUT',
+            body: JSON.stringify(listing),
+          }).then(res => {
+            try {
+              this.checkResponse(res);
+              listing.selected = false;
+            } catch (e: any) {
+              listing.status = originalStatus;
+            }
+          });
+        }
+      }
+    }
 	},
 	data() {
 		return {
@@ -123,6 +173,13 @@ td.options a {
 	padding: 0.4em;
 }
 
+h1 {
+  font: var(--heading-font);
+  margin: 0.5rem;
+  color: var(--accent-color);
+  font-size: 22pt;
+}
+
 .add {
 	border: 1px solid green;
 	padding: 0.3em 0.6em;
@@ -130,5 +187,6 @@ td.options a {
 	color: green;
 	font-size: 120%;
 	border-radius: 0.2em;
+  display: inline-block;
 }
 </style>
