@@ -131,7 +131,7 @@ class DatabaseWriter extends Database {
 	}
 
 	public function insertAsset(array $value): string|int {
-		for ($i = 0; $i < 10; $i++) {
+		for ($i = 0; $i < 100; $i++) {
 			try {
 				if (is_numeric($result = $this->insertAssetOneshot($value))) {
 					break;
