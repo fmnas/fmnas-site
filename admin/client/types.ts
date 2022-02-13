@@ -39,6 +39,7 @@ export interface Pet {
 	description?: Asset;
 	status: number;
 	plural?: boolean;
+	selected?: boolean;
 }
 
 export interface Asset {

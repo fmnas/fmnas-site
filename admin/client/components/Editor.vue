@@ -7,7 +7,7 @@
   <modal v-if="showHelp">
     <editor-help/>
     <template #buttons>
-      <button class="confirm" @click="showHelp = false">Close</button>
+      <button @click="showHelp = false">Close</button>
     </template>
   </modal>
 </template>

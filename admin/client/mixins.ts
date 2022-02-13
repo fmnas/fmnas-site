@@ -1,4 +1,5 @@
 import store from './store';
+import ProgressToastContent from './components/ProgressToastContent.vue';
 
 const errorToastOptions = {
 	timeout: 0,
@@ -11,7 +12,7 @@ const successToastOptions = {
 export const checkResponse = (res: Response, confirmation = null as null | string) => {
 	if (!res.ok) {
 		if (res.status === 418) {
-			store.state.toast.error("API request rejected by Apache modsecurity.");
+			store.state.toast.error('API request rejected by Apache modsecurity.');
 			throw res;
 		}
 		res.json().then(
@@ -34,7 +35,6 @@ export const responseChecker = {
 export const progressBar = {
 	methods: {
 		reportProgress(promises: Promise<any>[], flavor = 'Progress', id = 'progress') {
-			// TODO [#184]: Display an actual progress bar rather than just a counter.
 			store.state.toast.dismiss(id);
 			store.state.progress[id] = {
 				count: promises.length,
@@ -47,7 +47,14 @@ export const progressBar = {
 					console.log(`Reporting to toast ${id}: ${resolved}/${count}`);
 					store.state.toast.update(id,
 						{
-							content: `${flavor}: ${resolved}/${count}`,
+							content: {
+								component: ProgressToastContent,
+								props: {
+									flavor: flavor,
+									resolved: resolved,
+									count: count,
+								}
+							}
 						});
 					if (resolved == count) {
 						store.state.toast.dismiss(id);
