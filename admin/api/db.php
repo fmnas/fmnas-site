@@ -138,6 +138,7 @@ class DatabaseWriter extends Database {
 				}
 			} catch (mysqli_sql_exception $e) {
 				$result = $e->getMessage();
+				usleep(100000);
 			}
 		}
 		return $result;
