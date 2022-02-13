@@ -39,7 +39,8 @@
           <fieldset id="sexes" :class="sexInteracted || validated ? 'validated' : ''">
             <label v-for="sex of config['sexes']" :key="sex['key']">
               <input v-model="pet['sex']" :value="sex['key']" name="sex" required type="radio">
-              <abbr :title="ucfirst(sex['name'])" @click.prevent="sexClick(sex)">{{
+              <abbr :title="ucfirst(sex['name'])" @click.prevent="(e: Event) => {sexClick(sex); e.target.blur();}"
+                  @keyup.enter="sexClick(sex); $refs.fee.focus();" @keyup.space="sexClick(sex);" tabindex="0">{{
                   sex['name'][0].toUpperCase()
                 }}</abbr>
             </label>
@@ -47,7 +48,7 @@
         </li>
         <li class="fee">
           <label for="fee">Fee</label>
-          <input id="fee" v-model="pet['fee']" name="fee" type="text">
+          <input id="fee" v-model="pet['fee']" name="fee" type="text" ref="fee">
         </li>
         <li class="status">
           <!--suppress XmlInvalidId no idea why this is firing -->
@@ -132,8 +133,10 @@
     <br>
     What do you want to do?
     <template #buttons>
-      <button class="danger" @click="confirmOverwrite = true; showConfirmOverwriteModal = false; save();">Overwrite</button>
-      <button @click="confirmOverwrite = false; showConfirmOverwriteModal = false; resetOriginal(); save();">Save both</button>
+      <button class="danger" @click="confirmOverwrite = true; showConfirmOverwriteModal = false; save();">Overwrite
+      </button>
+      <button @click="confirmOverwrite = false; showConfirmOverwriteModal = false; resetOriginal(); save();">Save both
+      </button>
       <button @click="confirmOverwrite = false; showConfirmOverwriteModal = false;">Cancel</button>
     </template>
   </modal>
@@ -376,6 +379,10 @@ export default defineComponent({
   box-shadow: inset 0 0 0 1px var(--border-color);
   border-radius: var(--border-radius);
   outline: none;
+  &:focus, &:focus-visible {
+    outline: 2px solid var(--focus-color);
+    transition: outline 0s;
+  }
 }
 
 .metadata {
@@ -446,7 +453,7 @@ section.metadata {
 
 .metadata input:focus, .metadata select:focus, fieldset#sexes input:checked + abbr, fieldset#sexes input + abbr:hover,
 .metadata button:hover {
-  box-shadow: inset 0 0 2px 1px var(--focus-color);
+  box-shadow: inset 0 0 2px 1px var(--focus-color), inset 2px 2px 3px var(--shadow-color);
 }
 
 /* user-invalid isn't ready yet */
