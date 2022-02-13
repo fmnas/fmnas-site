@@ -170,6 +170,3 @@ function log_err(string $msg = "") {
 function emailLinks(): void {
 	echo '<script src="/email.js.php"></script>';
 }
-
-$phpmailer_path = Config::$phpmailer_path;
-$html5_php_path = Config::$html5_php_path;

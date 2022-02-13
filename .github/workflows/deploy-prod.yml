@@ -56,8 +56,6 @@ jobs:
           --db_username="${{ secrets.DB_USERNAME }}" \
           --db_pass="${{ secrets.DB_PASS }}" \
           --db_host="${{ secrets.DB_HOST }}" \
-          --phpmailer_path="${{ secrets.PHPMAILER_PATH }}" \
-          --html5_php_path="${{ secrets.HTML5_PHP_PATH }}" \
           --smtp_host="${{ secrets.SMTP_HOST }}" \
           --smtp_auth="${{ secrets.SMTP_AUTH }}" \
           --smtp_security="${{ secrets.SMTP_SECURITY }}" \

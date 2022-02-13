@@ -2,9 +2,6 @@ secrets/*
 !secrets/*.hbs
 
 /log
-/lib
-
-stored_assets/
 
 # Windows thumbnail cache files
 Thumbs.db
