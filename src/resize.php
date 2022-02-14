@@ -14,7 +14,7 @@ function size(string $path): array {
 		$image = new Imagick($path);
 		return [$image->getImageWidth(), $image->getImageHeight()];
 	} catch (ImagickException $e) {
-		// TODO: Try getting size on a remote server.
+		// TODO [#264]: Try getting size on a remote server.
 		throw new ImageResizeException($e);
 	}
 }
@@ -37,7 +37,7 @@ function resize(string $source, string $target, int $height = 480): void {
 		$image->setImageCompressionQuality(80);
 		$image->writeImage($target);
 	} catch (ImagickException $e) {
-		// TODO: Try resizing on a remote server.
+		// TODO [#265]: Try resizing on a remote server.
 		throw new ImageResizeException($e);
 	}
 }
