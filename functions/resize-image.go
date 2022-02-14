@@ -59,6 +59,7 @@ func ResizeImage(w http.ResponseWriter, r *http.Request) {
 	if err := omw.ReadImageBlob(b); err != nil {
 		http.Error(w, "Error reading image", http.StatusBadRequest)
 		log.Printf("Error reading image: %v", err)
+		return
 	}
 
 	mw := omw.Clone()
@@ -69,16 +70,19 @@ func ResizeImage(w http.ResponseWriter, r *http.Request) {
 	if err := mw.ResizeImage(nw, nh, imagick.FILTER_LANCZOS, 1); err != nil {
 		http.Error(w, "Error resizing image", http.StatusInternalServerError)
 		log.Printf("Error resizing image: %v", err)
+		return
 	}
 
 	if err := mw.SetImageCompression(imagick.COMPRESSION_JPEG); err != nil {
 		http.Error(w, "Error setting compression type", http.StatusInternalServerError)
 		log.Printf("Error setting compression type: %v", err)
+		return
 	}
 
 	if err := mw.SetImageCompressionQuality(90); err != nil {
 		http.Error(w, "Error setting compression quality", http.StatusInternalServerError)
 		log.Printf("Error setting compression quality: %v", err)
+		return
 	}
 
 	out := mw.GetImageBlob()
