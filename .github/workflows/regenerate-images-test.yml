@@ -1,0 +1,22 @@
+name: Regenerate image cache (test site)
+on:
+  push:
+    branches:
+      - test
+    paths:
+      - 'src/resize.php'
+jobs:
+  regenerate:
+    name: Regenerate image cache
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for site deployment
+        uses: lewagon/wait-on-check-action@master
+        with:
+          ref: test
+          check-name: 'Deploy test website'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
+          allowed-conclusions: success
+      - name: Request image regeneration
+        run: curl -u ${{ secrets.HTTP_CREDENTIALS }} ${{ secrets.TEST_IMAGES_API }}
