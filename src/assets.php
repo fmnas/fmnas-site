@@ -19,8 +19,6 @@ class Asset {
 	 * @return string HTML code
 	 */
 	public function parse(array $context): string {
-		self::createCacheDirectory();
-
 		$filename = root() . "/public/assets/cache/$this->key.html";
 		if (file_exists($filename)) {
 			return file_get_contents($filename) . '<!-- Cached -->';
