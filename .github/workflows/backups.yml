@@ -39,7 +39,7 @@ jobs:
       - name: Install rclone
         run: sudo apt install -y rclone
       - name: Dump blog database
-        run: mysqldump -f --single-transaction -h ${{ secrets.DB_HOST }} -u ${{ secrets.DB_USER }} -p'${{ secrets.DB_PASS }}' ${{ secrets.BLOG_DB }} | gzip -9 > blog-$(date +%Y%m%d).sql.gz
+        run: mysqldump -f --single-transaction -h ${{ secrets.DB_HOST }} -u ${{ secrets.DB_USERNAME }} -p'${{ secrets.DB_PASS }}' ${{ secrets.BLOG_DB }} | gzip -9 > blog-$(date +%Y%m%d).sql.gz
       - name: Upload database dump to S3
         run: rclone -vv --s3-access-key-id=${{ secrets.S3_ACCESS_KEY }} --s3-secret-access-key=${{ secrets.S3_SECRET_KEY }} --s3-endpoint=${{ secrets.S3_ENDPOINT }} --s3-region=${{ secrets.S3_REGION }} copy blog-*.sql.gz :s3:${{ secrets.DATA_BUCKET }}/
       - name: Sync blog directory
