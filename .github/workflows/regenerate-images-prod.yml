@@ -12,23 +12,25 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Depends on MongoDB Atlas instance using apps account SSO.
-name: Create issues from TODOs
+name: Regenerate image cache (prod site)
 on:
   push:
     branches:
-      - test
+      - main
+    paths:
+      - 'src/resize.php'
 jobs:
-  todos:
-    name: Sync TODOs
+  regenerate:
+    name: Regenerate image cache
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v1
+      - name: Wait for site deployment
+        uses: lewagon/wait-on-check-action@master
         with:
-          ref: 'test'
-      - name: Run todo-actions
-        uses: dtinth/todo-actions@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TODO_ACTIONS_MONGO_URL: ${{ secrets.TODO_ACTIONS_MONGO_URL }}
+          ref: main
+          check-name: 'Deploy prod website'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
+          allowed-conclusions: success
+      - name: Request image regeneration
+        run: curl -u ${{ secrets.HTTP_CREDENTIALS }} ${{ secrets.PROD_IMAGES_API }}

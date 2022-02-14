@@ -304,11 +304,13 @@ export default defineComponent({
             this.original.id &&
             this.pet.name !== this.original.name && !this.confirmOverwrite) {
           this.showConfirmOverwriteModal = true;
+          this.loading = false;
           return;
         }
         if (store.state.parseError) {
           console.error(store.state.parseError);
           store.state.toast.error(`Description is invalid (check your handlebars syntax)\n${store.state.parseError}`);
+          this.loading = false;
           return;
         }
         const promises = [...this.photoPromises];
@@ -330,6 +332,23 @@ export default defineComponent({
           this.checkResponse(res, 'Saved successfully');
           this.updateAfterSave();
         });
+        // Attempt updating paths to images (failing is ok)
+        for (const photo of this.pet.photos ?? []) {
+          if (!photo.path?.startsWith(getFullPathForPet(this.pet))) {
+            const segments = photo.path?.split('/');
+            if (!segments?.[0]) {
+              continue;
+            }
+            const filename = segments[segments.length - 1];
+            const newPath = getFullPathForPet(this.pet) + '/' + filename;
+            console.log(`Updating path for photo ${photo.key} from ${photo.path} to ${newPath}`);
+            // noinspection ES6MissingAwait
+            fetch(`/api/assets/${photo.key}`, {
+              method: 'PUT',
+              body: JSON.stringify(photo),
+            });
+          }
+        }
       } catch (e) {
         this.loading = false;
         throw e;
