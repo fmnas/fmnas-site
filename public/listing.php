@@ -55,18 +55,18 @@ if (!($pet = $db->getPetByPath($path))) {
 			}
 			?>
 		</aside>
+		<section id="description">
 		<?php
 		if ($pet->description !== null) {
-			echo '<section id="description">';
 			echo $pet->description->parse((array) $pet);
-			echo '</section>';
 		}
 		?>
 		<form action="/application" method="GET" id="bottom_form">
-			If you would like to more about, or think you might like to adopt, <?=$pet->name?>,
+			If you would like to know more about, or think you might like to adopt, <?=$pet->name?>,
 			<button>Apply Online Now</button> or email us at: <a data-email="adopt+<?=$pet->id?>">Adopt <?=$pet->name?>!</a>
 			<input type="hidden" name="pet" value="<?=$pet->id?>" id="hidden_id">
 		</form>
+		</section>
 	</article>
 	<?php
 	footer();
