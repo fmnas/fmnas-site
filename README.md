@@ -23,16 +23,16 @@ see <https://www.gnu.org/licenses/>.
 To get a local server running, you will need:
 
 * Apache (or Litespeed, etc.)
-  * Debian packages: `apache2 libapache2-mod-php`
+	* Debian packages: `apache2 libapache2-mod-php`
 * PHP 8.1 and dependencies noted below
-  * Debian packages: `php php-gd php-mbstring php-mysql php-xml php-imagick`
+	* Debian packages: `php php-gd php-mbstring php-mysql php-xml php-imagick`
 * curl
 * Node
-  * I suggest using NVM and enabling [deep shell integration](https://github.com/nvm-sh/nvm#deeper-shell-integration) to
-    avoid using the wrong node version.
+	* I suggest using NVM and enabling [deep shell integration](https://github.com/nvm-sh/nvm#deeper-shell-integration) to
+	  avoid using the wrong node version.
 * Composer
 * You may want to install the faster Dart version of [Sass](https://sass-lang.com/install):
-  * install the [Dart SDK](https://dart.dev/get-dart) and run `dart pub global activate sass`
+	* install the [Dart SDK](https://dart.dev/get-dart) and run `dart pub global activate sass`
 
 ### Workflow
 
@@ -94,6 +94,17 @@ If the script is terminated abnormally, run it again so the cleanup steps run.
 GitHub Actions are used to automatically deploy the `main` branch to the prod site and the `test` branch to the test
 site. See the Workflow section above for more details.
 
+The following workflow files are present in .github/workflows:
+
+* backups.yml - Nightly backups of the ASM database and blog (not tracked on GitHub) to our Scaleway bucket.
+* deploy-functions.yml - Deploys Google Cloud Functions from functions/.
+* deploy-{prod,test}.yml - Builds and deploys the website to Dreamhost, and regenerates src/generated.php.
+* regenerate-images-{prod,test}.yml - Calls the API to regenerate cached images when the image scaling code (
+  src/resize.php) changes.
+* sync-test.yml - Merges `main` back into `test` after a PR is merged, so you can `git pull` test and be up to date with
+  the merge commit in `main`.
+* todo-issues.yml - Creates issues from TODOs added in `test`, and closes issues for removed TODOs.
+
 ### Manual deployment
 
 #### Requirements (build server/local machine)
@@ -105,16 +116,16 @@ site. See the Workflow section above for more details.
 * Linux (any POSIX-compatible OS should work)
 * Apache (Litespeed or any other web server with .htaccess and PHP support should work)
 * PHP 8.1
-  * ImageMagick
-  * GD
-    * libJPEG
-    * libPNG
-  * mysqli
-  * mbstring
-  * php-xml
-  * Composer
-  * Needs shell access (with `shell_exec`) and the following executables in PATH:
-    * `curl` to request caching uploaded images
+	* ImageMagick
+	* GD
+		* libJPEG
+		* libPNG
+	* mysqli
+	* mbstring
+	* php-xml
+	* Composer
+	* Needs shell access (with `shell_exec`) and the following executables in PATH:
+		* `curl` to request caching uploaded images
 * MySQL or MariaDB
 
 #### Build
@@ -126,20 +137,20 @@ On the build machine:
 * Build the scripts for the public site: `npx tsc -p public`
 * Build the admin site client: `npx vite build admin/client`
 * Set the config values in config.php.
-  * Run, for instance:
-    ```shell
-    npx ts-node handleparse.ts secrets/config.php.hbs --db_name=database --db_username=username --db_pass=password \
-    --db_host=localhost --smtp_host=smtp.gmail.com --smtp_auth=true --smtp_security=tls --smtp_port=587 \
-    --smtp_username=me@gmail.com --smtp_password=password
-    ```
-  * Alternatively, copy `secrets/config_sample.php` to `secrets/config.php` and update the configuration values
-    manually.
+	* Run, for instance:
+	  ```shell
+		npx ts-node handleparse.ts secrets/config.php.hbs --db_name=database --db_username=username --db_pass=password \
+		--db_host=localhost --smtp_host=smtp.gmail.com --smtp_auth=true --smtp_security=tls --smtp_port=587 \
+		--smtp_username=me@gmail.com --smtp_password=password
+		```
+	* Alternatively, copy `secrets/config_sample.php` to `secrets/config.php` and update the configuration values
+	  manually.
 * Update the public web templates in the `src/templates` and `src/errors` directories as desired.
-  * The current templates rely on the presence of `/assets/adopted.jpg` and `/assets/logo.png` in the public site.
+	* The current templates rely on the presence of `/assets/adopted.jpg` and `/assets/logo.png` in the public site.
 
 #### Deploy
 
-For initial deployment, import `schema.sql` into the MySQL database
+For initial deployment, import `schema.sql` into the MySQL database.
 
 Upload the project and all built files to the web server.
 
