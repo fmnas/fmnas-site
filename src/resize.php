@@ -50,7 +50,7 @@ function resize(string $source, string $target, int $height = 480): void {
 		$newWidth = (int) ($image->getImageWidth() / $image->getImageHeight() * $height);
 		$image->resizeImage($newWidth, $height, Imagick::FILTER_LANCZOS, 1);
 		$image->setImageCompression(Imagick::COMPRESSION_JPEG);
-		$image->setImageCompressionQuality(80);
+		$image->setImageCompressionQuality(90);
 		$image->writeImage($target);
 	} catch (ImagickException $e) {
 		// TODO [#265]: Try resizing on a remote server.
