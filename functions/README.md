@@ -15,6 +15,10 @@ These functions are deployed by the deploy-functions GitHub Actions workflow.
 This resizes images in cases (such as HEIC and WebP) where the ImageMagick version on Dreamhost is too outdated to read
 the original image or otherwise fails.
 
+```shell
+curl -v -F height=200 -F 'image=in.jpg' https://us-central1-fmnas-automation.cloudfunctions.net/resize-image > out.jpg
+```
+
 ### image-size
 
 This gets the size of an image in cases (such as HEIC and WebP) where the ImageMagick version on Dreamhost is too

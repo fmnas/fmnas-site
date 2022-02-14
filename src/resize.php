@@ -46,8 +46,7 @@ function size(string $path): array {
  */
 function resize(string $source, string $target, int $height = 480): void {
 	try {
-		$original = new Imagick($source);
-		$image = clone $original;
+		$image = new Imagick($source);
 		$newWidth = (int) ($image->getImageWidth() / $image->getImageHeight() * $height);
 		$image->resizeImage($newWidth, $height, Imagick::FILTER_LANCZOS, 1);
 		$image->setImageCompression(Imagick::COMPRESSION_JPEG);
