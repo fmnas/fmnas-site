@@ -1,4 +1,4 @@
-module fmnas.org/functions
+module github.com/fmnas/fmnas-site/functions
 
 go 1.16
 
