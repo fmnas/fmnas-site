@@ -128,7 +128,6 @@ class Asset {
 		}
 
 		$intrinsicHeight = $this->size()[1];
-		$ratio = $this->size()[0] / $this->size()[1];
 
 		if ($height === 0 || $height >= $intrinsicHeight) {
 			$height = $intrinsicHeight;
