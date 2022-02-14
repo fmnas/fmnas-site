@@ -76,7 +76,7 @@ func ResizeImage(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Error setting compression type: %v", err)
 	}
 
-	if err := mw.SetImageCompressionQuality(80); err != nil {
+	if err := mw.SetImageCompressionQuality(90); err != nil {
 		http.Error(w, "Error setting compression quality", http.StatusInternalServerError)
 		log.Printf("Error setting compression quality: %v", err)
 	}
