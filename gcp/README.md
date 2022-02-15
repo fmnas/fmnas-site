@@ -30,8 +30,7 @@ gcloud artifacts docker images list us-central1-docker.pkg.dev/fmnas-automation/
 ### Testing
 
 ```shell
-curl -v -F height=200 -F 'image=@/path/to/in.jpg' \
-	https://us-central1-fmnas-automation.cloudfunctions.net/resize-image > out.jpg
+curl -v -F height=200 -F 'image=@/path/to/in.jpg' https://resize-image-test.gcp.forgetmenotshelter.org > out.jpg
 ```
 
 ## image-size
