@@ -54,6 +54,10 @@ jobs:
       - name: Authorize Docker push
         if: steps.changed-files.outputs.any_changed == 'true'
         run: gcloud auth configure-docker ${{ secrets.GCP_REGION }}-docker.pkg.dev
+      - name: Enable Docker caching
+        if: steps.changed-files.outputs.any_changed == 'true'
+        uses: satackey/action-docker-layer-caching@v0.0.11
+        continue-on-error: true
       - name: Build container
         if: steps.changed-files.outputs.any_changed == 'true'
         run: docker build -t ${{ secrets.RESIZE_IMAGE_REPO }}/resize-image:test gcp/resize-image
