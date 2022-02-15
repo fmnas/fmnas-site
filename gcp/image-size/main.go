@@ -1,13 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"gopkg.in/gographics/imagick.v3/imagick"
 	"log"
 	"net/http"
 	"os"
-	"strconv"
-
-	"gopkg.in/gographics/imagick.v3/imagick"
 )
 
 func main() {
@@ -63,60 +62,20 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h1 := r.PostFormValue("height")
-	h2, err := strconv.Atoi(h1)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Error parsing supplied height %v", h1), http.StatusBadRequest)
-		log.Printf("Error parsing supplied height %v", h1)
-		return
-	}
-	nh := uint(h2)
-
 	imagick.Initialize()
 	defer imagick.Terminate()
-	omw := imagick.NewMagickWand()
-	if err := omw.ReadImageBlob(b); err != nil {
+	mw := imagick.NewMagickWand()
+	if err := mw.ReadImageBlob(b); err != nil {
 		http.Error(w, "Error reading image", http.StatusBadRequest)
 		log.Printf("Error reading image: %v", err)
 		return
 	}
 
-	mw := omw.Clone()
 	ow := mw.GetImageWidth()
 	oh := mw.GetImageHeight()
-	if oh < nh {
-		nh = oh
-	}
-	nw := ow * nh / oh
 
-	if err := mw.ResizeImage(nw, nh, imagick.FILTER_LANCZOS); err != nil {
-		http.Error(w, "Error resizing image", http.StatusInternalServerError)
-		log.Printf("Error resizing image: %v", err)
-		return
-	}
-
-	if err := mw.SetImageCompression(imagick.COMPRESSION_JPEG); err != nil {
-		http.Error(w, "Error setting compression type", http.StatusInternalServerError)
-		log.Printf("Error setting compression type: %v", err)
-		return
-	}
-
-	if err := mw.SetImageCompressionQuality(90); err != nil {
-		http.Error(w, "Error setting compression quality", http.StatusInternalServerError)
-		log.Printf("Error setting compression quality: %v", err)
-		return
-	}
-
-	if err := mw.SetFormat("jpg"); err != nil {
-		http.Error(w, "Error setting format", http.StatusInternalServerError)
-		log.Printf("Error setting format: %v", err)
-		return
-	}
-
-	out := mw.GetImageBlob()
-
-	w.Header().Set("Content-Type", "image/jpeg")
-	if _, err := w.Write(out); err != nil {
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(map[string]uint{"width": ow, "height": oh}); err != nil {
 		http.Error(w, "Error writing response", http.StatusInternalServerError)
 		log.Printf("Error writing response: %v", err)
 	}

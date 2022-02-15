@@ -40,9 +40,10 @@ Dreamhost is too outdated to read the image or otherwise fails.
 
 ## Granting roles to the service account
 
-The service account needs the `roles/run.admin` and `roles/artifactregistry.admin` roles:
+The service account needs the `roles/run.admin`, `roles/artifactregistry.admin`, and `roles/iam.serviceAccountUser` roles:
 
 ```shell
 gcloud projects add-iam-policy-binding fmnas-automation --member="serviceAccount:github-actions@fmnas-automation.iam.gserviceaccount.com" --role=roles/run.admin
 gcloud projects add-iam-policy-binding fmnas-automation --member="serviceAccount:github-actions@fmnas-automation.iam.gserviceaccount.com" --role=roles/artifactregistry.admin
+gcloud projects add-iam-policy-binding fmnas-automation --member="serviceAccount:github-actions@fmnas-automation.iam.gserviceaccount.com" --role=roles/iam.serviceAccountUser
 ```
