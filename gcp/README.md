@@ -37,3 +37,12 @@ curl -v -F height=200 -F 'image=@/path/to/in.jpg' https://resize-image-test.gcp.
 
 This Cloud Run container gets the size of an image in cases (such as HEIC and WebP) where the ImageMagick version on 
 Dreamhost is too outdated to read the image or otherwise fails.
+
+## Granting roles to the service account
+
+The service account needs the `roles/run.developer` and `roles/artifactregistry.repoAdmin` roles:
+
+```shell
+gcloud projects add-iam-policy-binding fmnas-automation --member="serviceAccount:github-actions@fmnas-automation.iam.gserviceaccount.com" --role=roles/run.developer
+gcloud projects add-iam-policy-binding fmnas-automation --member="serviceAccount:github-actions@fmnas-automation.iam.gserviceaccount.com" --role=roles/artifactregistry.repoAdmin
+```

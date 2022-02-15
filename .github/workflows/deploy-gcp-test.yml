@@ -46,9 +46,6 @@ jobs:
         with:
           workload_identity_provider: ${{ secrets.GCP_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
-          # The service account needs the roles:
-          #   roles/run.admin
-          #   roles/artifactregistry.repoAdmin
       - name: Setup Cloud SDK
         if: steps.changed-files.outputs.any_changed == 'true'
         uses: google-github-actions/setup-gcloud@v0
