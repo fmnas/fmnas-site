@@ -37,21 +37,21 @@ function size(string $path): array {
 }
 
 /**
- * Resize an image to a specific height, maintaining the aspect ratio.
+ * Resize an image to a given maximum height, maintaining the aspect ratio.
  * @param string $source The absolute path of the original image.
  * @param string $target The absolute path at which to save the resized image.
- * @param int $height The new height of the image.
+ * @param int $height The new max height of the image.
  * @return void
  * @throws ImageResizeException
  */
 function resize(string $source, string $target, int $height = 480): void {
 	try {
-		$original = new Imagick($source);
-		$image = clone $original;
-		$newWidth = (int) ($image->getImageWidth() / $image->getImageHeight() * $height);
-		$image->resizeImage($newWidth, $height, Imagick::FILTER_LANCZOS, 1);
+		$image = new Imagick($source);
+		$newHeight = min($image->getImageHeight(), $height);
+		$newWidth = (int) ($image->getImageWidth() / $image->getImageHeight() * $newHeight);
+		$image->resizeImage($newWidth, $newHeight, Imagick::FILTER_LANCZOS, 1);
 		$image->setImageCompression(Imagick::COMPRESSION_JPEG);
-		$image->setImageCompressionQuality(80);
+		$image->setImageCompressionQuality(90);
 		$image->writeImage($target);
 	} catch (ImagickException $e) {
 		// TODO [#265]: Try resizing on a remote server.

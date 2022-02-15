@@ -115,7 +115,7 @@ $root = root();
 $secrets = secrets();
 
 /**
- * Dummy definitions for use by PhpStorm
+ * Dummy definitions for use by IntelliJ
  */
 $root ??= __DIR__ . "..";
 $src ??= "$root/src";
