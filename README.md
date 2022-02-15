@@ -128,6 +128,9 @@ The following workflow files are present in .github/workflows:
 * `RESIZE_IMAGE_REPO`: The Artifact Registry repository for `resize-image` (`us-central1-docker.pkg.dev/fmnas-automation/resize-image-docker`)
 * `RESIZE_IMAGE_TEST_ENDPOINT`: The HTTPS endpoint mapped to `resize-image-test` (`https://resize-image-test.gcp.forgetmenotshelter.org`)
 * `RESIZE_IMAGE_PROD_ENDPOINT`: The HTTPS endpoint mapped to `resize-image` (`https://resize-image.gcp.forgetmenotshelter.org`)
+* `IMAGE_SIZE_REPO`: The Artifact Registry repository for `image-size` (`us-central1-docker.pkg.dev/fmnas-automation/image-size-docker`)
+* `IMAGE_SIZE_TEST_ENDPOINT`: The HTTPS endpoint mapped to `image-size-test` (`https://image-size-test.gcp.forgetmenotshelter.org`)
+* `IMAGE_SIZE_PROD_ENDPOINT`: The HTTPS endpoint mapped to `image-size` (`https://image-size.gcp.forgetmenotshelter.org`)
 
 ##### Org secrets
 
