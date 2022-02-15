@@ -203,7 +203,9 @@ On the build machine:
 	  ```shell
 		npx ts-node handleparse.ts secrets/config.php.hbs --db_name=database --db_username=username --db_pass=password \
 		--db_host=localhost --smtp_host=smtp.gmail.com --smtp_auth=true --smtp_security=tls --smtp_port=587 \
-		--smtp_username=me@gmail.com --smtp_password=password
+		--smtp_username=me@gmail.com --smtp_password=password \
+		--image_size_endpoint=https://image-size.gcp.forgetmenotshelter.org \
+		--resize_image_endpoint=https://resize-image.gcp.forgetmenotshelter.org
 		```
 	* Alternatively, copy `secrets/config_sample.php` to `secrets/config.php` and update the configuration values
 	  manually.

@@ -4,6 +4,7 @@
 		"masterminds/html5": "^2.7",
 		"erusev/parsedown": "^1.7",
 		"zordius/lightncandy": "dev-master",
-		"ext-fileinfo": "*"
+		"ext-fileinfo": "*",
+		"ext-imagick": "*"
 	}
 }
