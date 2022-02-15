@@ -31,7 +31,7 @@ RUN go mod download
 
 COPY . ./
 RUN go build -v -o server
-# TODO [$620b4dadfae1ab000cc55331]: Statically link C libs into go binary so we don't have to install them again below.
+# TODO [#272]: Statically link C libs into go binary so we don't have to install them again below.
 
 FROM debian:bullseye-slim
 RUN set -x && apt update && \
