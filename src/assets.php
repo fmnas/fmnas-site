@@ -118,7 +118,6 @@ class Asset {
 			$this->size ??= size($this->absolutePath());
 		} catch (ImageResizeException $e) {
 			log_err($e->getMessage());
-			var_dump($e);
 			return [1, 1];
 		}
 		return $this->size;

@@ -31,7 +31,7 @@ function remoteSize(string $path): array {
 		curl_close($curl);
 		$result = json_decode($json);
 		if ($result === null || !isset($result->width) || !isset($result->height)) {
-			throw new ImageResizeException("Error decoding JSON $json");
+			throw new ImageResizeException("$json");
 		}
 		return [$result->width, $result->height];
 	} else {
