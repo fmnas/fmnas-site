@@ -26,6 +26,10 @@ class Asset {
 
 		require_once "parser.php";
 		$raw = $this->fetch();
+		if ($raw === null) {
+			log_err("Failed to fetch asset with key $this->key");
+			return "Failed to fetch asset with key $this->key";
+		}
 		if (!($parsed = parse($raw, $context))) {
 			log_err("Failed to parse asset with key $this->key");
 			return $raw;
