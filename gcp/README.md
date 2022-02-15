@@ -32,7 +32,7 @@ gcloud artifacts docker images list us-central1-docker.pkg.dev/fmnas-automation/
 ```shell
 curl -v -F height=200 -F 'image=@/path/to/in.jpg' https://resize-image-test.gcp.forgetmenotshelter.org > out.jpg
 ```
-
+ 
 ## image-size
 
 This Cloud Run container gets the size of an image in cases (such as HEIC and WebP) where the ImageMagick version on 
