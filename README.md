@@ -105,6 +105,64 @@ The following workflow files are present in .github/workflows:
   the merge commit in `main`.
 * todo-issues.yml - Creates issues from TODOs added in `test`, and closes issues for removed TODOs.
 
+#### Secrets
+
+* `TEST_SFTP_HOST`: The SFTP host for deploying the test site (`fmnas.org`)
+* `TEST_SFTP_USER`: The SSH user for `TEST_SFTP_HOST`
+* `TEST_SFTP_PASS`: The SSH password for `TEST_SFTP_USER`
+* `TEST_SITE_ROOT`: The absolute path to the test site root on `TEST_SFTP_HOST` (one level above `public`, with no trailing slash)
+* `PROD_SFTP_HOST`: The SFTP host for deploying the prod site (`forgetmenotshelter.org`)
+* `PROD_SFTP_USER`: The SSH user for `PROD_SFTP_HOST`
+* `PROD_SFTP_PASS`: The SSH password for `PROD_SFTP_USER`
+* `PROD_SITE_ROOT`: The absolute path to the test site root on `TEST_SFTP_HOST` (one level above `public`, with no trailing slash)
+* `TEST_DB_NAME`: The MySQL database for the test site (`fmnas_testing`)
+* `PROD_DB_NAME`: The MySQL database for the prod site (`fmnas`)
+* `DB_USERNAME`: The MySQL user for `TEST_DB_NAME` and `PROD_DB_NAME`
+* `DB_PASS`: The MySQL password for `DB_USERNAME`
+* `DB_HOST`: The MySQL server (`mysql.forgetmenotshelter.org`)
+* `HTTP_CREDENTIALS`: The HTTP basic auth credentials to get into the test site and `regen_images` endpoint (`username:password`)
+* `TEST_SITE_URL`: The URL of the test site (`http://fmnas.org/`)
+* `PROD_SITE_URL`: The URL of the prod site (`https://forgetmenotshelter.org/`)
+* `TEST_IMAGES_API`: The URL to the test site `regen_images` endpoint (`https://admin.fmnas.org/api/regen_images`)
+* `PROD_IMAGES_API`: The URL to the prod site `regen_images` endpoint (`https://admin.forgetmenotshelter.org/api/regen_images`)
+* `RESIZE_IMAGE_REPO`: The Artifact Registry repository for `resize-image` (`us-central1-docker.pkg.dev/fmnas-automation/resize-image-docker`)
+* `RESIZE_IMAGE_TEST_ENDPOINT`: The HTTPS endpoint mapped to `resize-image-test` (`https://resize-image-test.gcp.forgetmenotshelter.org`)
+* `RESIZE_IMAGE_PROD_ENDPOINT`: The HTTPS endpoint mapped to `resize-image` (`https://resize-image.gcp.forgetmenotshelter.org`)
+
+##### Org secrets
+
+* `SMTP_HOST`: The SMTP host to use when sending email (`smtp.gmail.com`)
+* `SMTP_AUTH`: Whether `SMTP_HOST` requires auth (`true`)
+* `SMTP_SECURITY`: Security type for `SMTP_HOST` (`tls`)
+* `SMTP_PORT`: The port for `SMTP_HOST` (`587`)
+* `SMTP_USERNAME`: The username for `SMTP_HOST`
+  * FMNAS: Use the apps account
+* `SMTP_PASSWORD`: The password for `SMTP_HOST`
+* `TODO_ACTIONS_MONGO_URL`: The [MongoDB](https://cloud.mongodb.com/v2/) connector URL for todo-actions (`mongodb+srv://...`)
+  * FMNAS: Google log in with the apps account, use the FMNASGitHubTodos database
+* `ASM_HOST`: The SSH hostname for the ASM server
+* `ASM_SSH_KEY`: A private key to get into `ASM_HOST`
+* `ASM_KNOWN_HOSTS`: Known hosts entry for `ASM_HOST`
+* `ASM_SSH_USER`: The SSH user for `ASM_HOST`
+* `ASM_DB_USER`: The MySQL user for ASM on `ASM_HOST`
+* `ASM_DB_PASS`: The MySQL password for `ASM_DB_USER`
+* `ASM_DB`: The MySQL database for ASM on `ASM_HOST`
+* `S3_PROVIDER`: The S3 provider for backups (`Scaleway`)
+* `S3_ACCESS_KEY`: The access key for `S3_PROVIDER`
+* `S3_SECRET_KEY`: The secret key for `S3_PROVIDER`
+* `S3_REGION`: The bucket region for `S3_PROVIDER` (`fr-par`)
+* `S3_ENDPOINT`: The endpoint for `S3_BUCKET` (`s3.fr-par.scw.cloud`)
+* `ASSETS_BUCKET`: The assets bucket name (`fmnas-assets`)
+* `DATA_BUCKET`: The data bucket name (`fmnas-data`)
+  * This should have a lifecycle rule to delete old backups
+* `BLOG_DB`: The blog database name on `DB_HOST`
+* `GCP_IDENTITY_PROVDER`: The GCP identity provider for [Workload Identity Federation](https://github.com/google-github-actions/auth#setup) (`projects/602944024639/locations/global/workloadIdentityPools/github-actions/providers/github-actions-provider`)
+* `GCP_SERVICE_ACCOUNT`: The GCP service account for [Workload Identity Federation](https://github.com/google-github-actions/auth#setup) (`github-actions@fmnas-automation.iam.gserviceaccount.com`)
+* `GCP_PROJECT`: The GCP project name (`fmnas-automation`) 
+
+##### Repo secrets
+
+
 ### Manual deployment
 
 #### Requirements (build server/local machine)
