@@ -1,10 +1,20 @@
 <?php
 require_once 'api.php';
 
+// This endpoint is for raw asset data. For metadata, use the assets endpoint.
+
 $writer = function(string $key, mixed $body) use ($db): Result {
-	if(isset($_FILES['file']['tmp_name'])) {
-		$body = file_get_contents($_FILES['file']['tmp_name']);
+	var_dump($_FILES);
+	if (!isset($_FILES['file'])) {
+		return new Result(400, error: "No file provided");
 	}
+	if ($error = $_FILES['file']['error'] ?? 'none') {
+		return new Result(500, error: "File upload error $error");
+	}
+	if(!($_FILES['file']['tmp_name'] ?? false)) {
+		return new Result(500, error: "No tmp_name for file");
+	}
+	$body = file_get_contents($_FILES['file']['tmp_name']);
 	$asset = $db->getAssetByKey(intval($key));
 	if ($asset === null) {
 		return new Result(404, error: "Metadata not found for asset $key");
@@ -26,7 +36,6 @@ $writer = function(string $key, mixed $body) use ($db): Result {
 	return new Result(204);
 };
 
-// This endpoint is for raw asset data. For metadata, use the assets endpoint.
 endpoint(...[
 		'get' => $reject,
 		'get_value' => function($value) use ($db): Result {

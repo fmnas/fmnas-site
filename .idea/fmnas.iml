@@ -32,5 +32,11 @@
     <orderEntry type="library" name="filepond-plugin-file-validate-size" level="application" />
     <orderEntry type="library" name="filepond-plugin-image-transform" level="application" />
     <orderEntry type="library" name="filepond-plugin-file-validate-type" level="application" />
+    <orderEntry type="library" name="filepond" level="application" />
+    <orderEntry type="library" name="filepond-plugin-image-exif-orientation" level="application" />
+    <orderEntry type="library" name="filepond-plugin-image-preview" level="application" />
+    <orderEntry type="library" name="filepond-plugin-image-transform" level="application" />
+    <orderEntry type="library" name="filepond-plugin-file-validate-type" level="application" />
+    <orderEntry type="library" name="filepond-plugin-file-validate-size" level="application" />
   </component>
 </module>

@@ -4,13 +4,9 @@ require_once "../../src/form.php";
 require_once "../../src/db.php";
 require_once "$t/header.php";
 require_once "$t/application_response.php";
-ini_set('upload_max_filesize', '10M');
-ini_set('max_file_uploads', '20');
-ini_set('file_uploads', true);
-ini_set('post_max_size', '200M');
 ini_set('memory_limit', '2048M');
 setlocale(LC_ALL, 'en_US.UTF-8');
-set_time_limit(300);
+set_time_limit(1200);
 $formConfig->method = HTTPMethod::POST;
 $db ??= new Database();
 $formConfig->confirm = function(array $formData): void {
@@ -609,7 +605,7 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 			<input type="file" id="images" name="images[]" accept="image/*,application/pdf" capture="environment"
 					multiple>
 			<span class="limits explanatory" data-remove="true">
-            (max. 10 MB each, 200 MB total)
+            (max. 64 MB each, 512 MB total)
 			</span>
 			<ul class="thumbnails" data-if-config="thumbnails">
 				<li data-foreach="images" data-as="image">
@@ -653,8 +649,8 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 		FilePond.registerPlugin(FilePondPluginFileValidateType);
 		FilePond.registerPlugin(FilePondPluginFileValidateSize);
 		const pond = FilePond.create(document.querySelector('input#images'), {
-			maxFileSize: '10MB',
-			maxTotalFileSize: '200MB',
+			maxFileSize: '64MB',
+			maxTotalFileSize: '512MB',
 			imagePreviewMinHeight: 0,
 			imagePreviewMaxHeight: 128,
 			storeAsFile: true,
