@@ -28,21 +28,21 @@ jobs:
             .github/workflows/deploy-gcp-test.yml
       - name: Authenticate to Google Cloud
         if: steps.changed-files.outputs.any_changed == 'true'
-        uses: 'google-github-actions/auth@v0'
+        uses: google-github-actions/auth@v0
         with:
           workload_identity_provider: ${{ secrets.GCP_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
           # The service account needs the roles:
-          #   roles/run.developer
+          #   roles/run.admin
           #   roles/artifactregistry.repoAdmin
       - name: Setup Cloud SDK
         if: steps.changed-files.outputs.any_changed == 'true'
-        uses: 'google-github-actions/setup-gcloud@v0'
+        uses: google-github-actions/setup-gcloud@v0
         with:
           project_id: ${{ secrets.GCP_PROJECT }}
       - name: Authorize Docker
         if: steps.changed-files.outputs.any_changed == 'true'
-        run: gcloud auth configure-docker
+        run: gcloud auth configure-docker ${{ secrets.GCP_REGION }}-docker.pkg.dev
       - name: Build container
         if: steps.changed-files.outputs.any_changed == 'true'
         run: docker build -t ${{ secrets.RESIZE_IMAGE_REPO }}/resize-image:test gcp/resize-image
@@ -52,9 +52,9 @@ jobs:
       - name: Deploy to Cloud Run
         if: steps.changed-files.outputs.any_changed == 'true'
         id: deploy
-        uses: 'google-github-actions/deploy-cloudrun@v0'
+        uses: google-github-actions/deploy-cloudrun@v0
         with:
-          service: 'resize-image-test'
+          service: resize-image-test
           image: ${{ secrets.RESIZE_IMAGE_REPO }}/resize-image:test
       - name: Clean up old versions
         if: steps.changed-files.outputs.any_changed == 'true'
