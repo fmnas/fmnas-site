@@ -152,7 +152,6 @@ class Asset {
 			return $filename;
 		} catch (Exception $e) {
 			log_err(print_r($e, true));
-			var_dump($e);
 			return "/assets/stored/$this->key";
 		}
 	}

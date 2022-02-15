@@ -38,10 +38,8 @@ function remoteSize(string $path): array {
 	}
 	curl_setopt_array($curl, [
 			CURLOPT_URL => Config::$image_size_endpoint,
-			CURLOPT_HEADER => true,
 			CURLOPT_POST => true,
-			CURLOPT_HTTPHEADER => ["Content-Type: multipart/form-data"],
-			CURLOPT_POSTFIELDS => ["image" => "@$path"],
+			CURLOPT_POSTFIELDS => ["image" => new CURLFile($path)],
 			CURLOPT_INFILESIZE => filesize($path),
 			CURLOPT_RETURNTRANSFER => true,
 	]);
@@ -49,10 +47,10 @@ function remoteSize(string $path): array {
 	if (!curl_errno($curl)) {
 		curl_close($curl);
 		$result = json_decode($json);
-		if ($result === null || !isset($result['width']) || !isset($result['height'])) {
+		if ($result === null || !isset($result->width) || !isset($result->height)) {
 			throw new ImageResizeException("Error decoding JSON $json");
 		}
-		return [$result['width'], $result['height']];
+		return [$result->width, $result->height];
 	} else {
 		curl_close($curl);
 		throw new ImageResizeException("cURL Error: " . curl_error($curl) . "\n$json");
@@ -89,10 +87,8 @@ function remoteResize(string $source, string $target, int $height = 480): void {
 	}
 	curl_setopt_array($curl, [
 		CURLOPT_URL => Config::$resize_image_endpoint,
-		CURLOPT_HEADER => true,
 		CURLOPT_POST => true,
-		CURLOPT_HTTPHEADER => ["Content-Type: multipart/form-data"],
-		CURLOPT_POSTFIELDS => ["image" => "@$source", "height" => $height],
+		CURLOPT_POSTFIELDS => ["image" => new CURLFile($source), "height" => $height],
 		CURLOPT_INFILESIZE => filesize($source),
 		CURLOPT_RETURNTRANSFER => true,
 	]);

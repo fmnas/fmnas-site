@@ -78,6 +78,8 @@ jobs:
         run: |
           sed -i -E "/\.(css|js)$/d" public/.gitignore
           rm admin/.gitignore
+      - name: Remove tester.php
+        run: rm public/tester.php
       - name: Commit changes to local branch
         run: |
           git config user.email "admin+automation@forgetmenotshelter.org"
