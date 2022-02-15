@@ -37,7 +37,7 @@ function remoteSize(string $path): array {
 		throw new ImageResizeException("Failed to initialize cURL");
 	}
 	curl_setopt_array($curl, [
-			CURLOPT_URL => Config::$resize_image_endpoint,
+			CURLOPT_URL => Config::$image_size_endpoint,
 			CURLOPT_HEADER => true,
 			CURLOPT_POST => true,
 			CURLOPT_HTTPHEADER => ["Content-Type: multipart/form-data"],
