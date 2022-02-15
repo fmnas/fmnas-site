@@ -36,7 +36,7 @@ To get a local server running, you will need:
 
 ### Workflow
 
-The repository includes configs for PHPStorm/IntelliJ.
+The repository includes configs for IntelliJ/PHPStorm.
 
 The `main` branch contains the stable [prod site](https://forgetmenotshelter.org), while the `test` branch contains the
 unstable [test site](http://fmnas.org).
@@ -62,7 +62,7 @@ After checking out the repository, run:
 
 ### Watch and build
 
-The PHPStorm config includes file watchers to automatically build files. To do this manually, run:
+The IntelliJ config includes file watchers to automatically build files. To do this manually, run:
 
 * `sass -w public:public` for public site stylesheets
 * `tsc -w -p public` for public site scripts

@@ -4,7 +4,7 @@ These are Google Cloud Platform services used for tasks that DreamHost can't han
 
 ## Development
 
-A GoLand/IntelliJ config is included in the fmnas-site project.
+An IntelliJ/GoLand config is included in the fmnas-site project.
 
 These functions are deployed by the deploy-gcp GitHub Actions workflow.
 

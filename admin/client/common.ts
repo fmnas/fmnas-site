@@ -17,7 +17,7 @@
 
 import store from './store';
 import * as Handlebars from 'handlebars';
-// @ts-ignore types not coming in in PHPStorm for some reason
+// @ts-ignore types not coming in in IntelliJ for some reason
 import {marked} from 'marked';
 import {Asset, Config, Pet} from './types';
 import {checkResponse} from './mixins';
