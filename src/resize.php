@@ -16,11 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 require_once __DIR__ . '/../secrets/config.php';
 
 class ImageResizeException extends Exception {
 }
+
+// TODO: Google Cloud authentication for remote functions
+// https://github.com/googleapis/google-auth-library-php
+// https://cloud.google.com/docs/authentication/production#auth-cloud-implicit-php
 
 /**
  * Run size with the remote image-size endpoint.
