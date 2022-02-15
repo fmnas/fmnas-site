@@ -1,15 +1,34 @@
-package fmnas
+package main
 
 import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 
-	"gopkg.in/gographics/imagick.v2/imagick"
+	"gopkg.in/gographics/imagick.v3/imagick"
 )
 
-func ResizeImage(w http.ResponseWriter, r *http.Request) {
+func main() {
+	log.Print("starting server...")
+	http.HandleFunc("/", handler)
+
+	// Determine port for HTTP service.
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+		log.Printf("defaulting to port %s", port)
+	}
+
+	// Start HTTP server.
+	log.Printf("listening on port %s", port)
+	if err := http.ListenAndServe(":"+port, nil); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func handler(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseMultipartForm(20 << 20); err != nil {
 		http.Error(w, "Unable to parse request", http.StatusBadRequest)
 		log.Printf("Error parsing request: %v", err)
@@ -65,9 +84,12 @@ func ResizeImage(w http.ResponseWriter, r *http.Request) {
 	mw := omw.Clone()
 	ow := mw.GetImageWidth()
 	oh := mw.GetImageHeight()
+	if oh < nh {
+		nh = oh
+	}
 	nw := ow * nh / oh
 
-	if err := mw.ResizeImage(nw, nh, imagick.FILTER_LANCZOS, 1); err != nil {
+	if err := mw.ResizeImage(nw, nh, imagick.FILTER_LANCZOS); err != nil {
 		http.Error(w, "Error resizing image", http.StatusInternalServerError)
 		log.Printf("Error resizing image: %v", err)
 		return
@@ -82,6 +104,12 @@ func ResizeImage(w http.ResponseWriter, r *http.Request) {
 	if err := mw.SetImageCompressionQuality(90); err != nil {
 		http.Error(w, "Error setting compression quality", http.StatusInternalServerError)
 		log.Printf("Error setting compression quality: %v", err)
+		return
+	}
+
+	if err := mw.SetFormat("jpg"); err != nil {
+		http.Error(w, "Error setting format", http.StatusInternalServerError)
+		log.Printf("Error setting format: %v", err)
 		return
 	}
 
