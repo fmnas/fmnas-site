@@ -158,7 +158,8 @@ The following workflow files are present in .github/workflows:
 * `BLOG_DB`: The blog database name on `DB_HOST`
 * `GCP_IDENTITY_PROVDER`: The GCP identity provider for [Workload Identity Federation](https://github.com/google-github-actions/auth#setup) (`projects/602944024639/locations/global/workloadIdentityPools/github-actions/providers/github-actions-provider`)
 * `GCP_SERVICE_ACCOUNT`: The GCP service account for [Workload Identity Federation](https://github.com/google-github-actions/auth#setup) (`github-actions@fmnas-automation.iam.gserviceaccount.com`)
-* `GCP_PROJECT`: The GCP project name (`fmnas-automation`) 
+* `GCP_PROJECT`: The GCP project name (`fmnas-automation`)
+* `GCP_REGION`: The GCP project region (`us-central1`)
 
 ##### Repo secrets
 
