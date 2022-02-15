@@ -140,16 +140,3 @@ export async function uploadDescription(body: string): Promise<Asset> {
 	checkResponse(res);
 	return asset;
 }
-
-export function uploadFiles(files: FileList | null, pathPrefix: string = ''): Promise<Asset>[] {
-	const promises = [];
-	for (const file of files ?? []) {
-		promises.push(uploadFile(file, pathPrefix));
-	}
-	return promises;
-}
-
-function validateLine(line: string): boolean {
-	return (line.match(/{{/g)?.length ?? 0) <= (line.match(/}}/g)?.length ?? 0) && // Catch {{x
-	       !line.match(/{{([^}'"]|}(?!}))*('([^'}]|}(?!}))*|"([^"}]|}(?!}))*)}}/g)?.length; // Catch {{x y='}}
-}
