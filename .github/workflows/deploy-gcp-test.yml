@@ -40,7 +40,7 @@ jobs:
         uses: google-github-actions/setup-gcloud@v0
         with:
           project_id: ${{ secrets.GCP_PROJECT }}
-      - name: Authorize Docker
+      - name: Authorize Docker push
         if: steps.changed-files.outputs.any_changed == 'true'
         run: gcloud auth configure-docker ${{ secrets.GCP_REGION }}-docker.pkg.dev
       - name: Build container
