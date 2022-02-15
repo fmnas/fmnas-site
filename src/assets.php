@@ -110,7 +110,12 @@ class Asset {
 	}
 
 	private function size(): array {
-		$this->size ??= size($this->absolutePath());
+		try {
+			$this->size ??= size($this->absolutePath());
+		} catch (ImageResizeException $e) {
+			log_err($e->getMessage());
+			return [1, 1];
+		}
 		return $this->size;
 	}
 
