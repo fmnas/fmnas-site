@@ -38,10 +38,10 @@ jobs:
         run: gcloud auth configure-docker
       - name: Build container
         if: steps.changed-files.outputs.any_changed == 'true'
-        run: docker build -t ${{ RESIZE_IMAGE_REPO }}/resize-image:test gcp/resize-image
+        run: docker build -t ${{ secrets.RESIZE_IMAGE_REPO }}/resize-image:test gcp/resize-image
       - name: Push to Artifact Registry
         if: steps.changed-files.outputs.any_changed == 'true'
-        run: docker push ${{ RESIZE_IMAGE_REPO }}/resize-image:test
+        run: docker push ${{ secrets.RESIZE_IMAGE_REPO }}/resize-image:test
       - name: Deploy to Cloud Run
         if: steps.changed-files.outputs.any_changed == 'true'
         id: deploy
@@ -52,9 +52,9 @@ jobs:
       - name: Clean up old versions
         if: steps.changed-files.outputs.any_changed == 'true'
         run: |
-          gcloud artifacts docker images list ${{ RESIZE_IMAGE_REPO }}/resize-image --include-tags |
+          gcloud artifacts docker images list ${{ secrets.RESIZE_IMAGE_REPO }}/resize-image --include-tags |
             awk '$3 ~ /^2/ { print $2 }' | 
-            xargs -I % gcloud artifacts docker images delete ${{ RESIZE_IMAGE_REPO }}/resize-image@%
+            xargs -I % gcloud artifacts docker images delete ${{ secrets.RESIZE_IMAGE_REPO }}/resize-image@%
       - name: Get deployment URL
         if: steps.changed-files.outputs.any_changed == 'true'
         run: echo ${{ steps.deploy.outputs.url }}
