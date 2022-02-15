@@ -113,12 +113,6 @@ async function updateAsset(asset: Asset): Promise<void> {
 	checkResponse(res);
 }
 
-async function getAsset(key: number): Promise<Asset> {
-	const res = await fetch(`/api/assets/${key}`);
-	checkResponse(res);
-	return res.json();
-}
-
 // TODO [#163]: Make file upload promises observables with progress.
 export async function uploadFile(file: File, pathPrefix: string = '', height: string | number = ''): Promise<Asset> {
 	const asset = await createAsset(file.type, pathPrefix + file.name);

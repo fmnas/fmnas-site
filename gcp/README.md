@@ -6,7 +6,7 @@ These are Google Cloud Platform services used for tasks that DreamHost can't han
 
 An IntelliJ/GoLand config is included in the fmnas-site project.
 
-These functions are deployed by the deploy-gcp GitHub Actions workflow.
+These functions are deployed by the deploy-gcp-{prod,test} GitHub Actions workflows.
 
 ## resize-image
 
@@ -20,16 +20,18 @@ cd gcp/resize-image
 gcloud auth configure-docker us-central1-docker.pkg.dev
 docker build -t us-central1-docker.pkg.dev/fmnas-automation/resize-image-docker/resize-image:test .
 docker push us-central1-docker.pkg.dev/fmnas-automation/resize-image-docker/resize-image:test
-gcloud run deploy resize-image-test --image us-central1-docker.pkg.dev/fmnas-automation/resize-image-docker/resize-image:test
-gcloud artifacts docker images list us-central1-docker.pkg.dev/fmnas-automation/resize-image-docker/resize-image --include-tags | \
-  awk '$3 ~ /^2/ { print $2 }' | \
-  xargs -I % gcloud artifacts docker images delete us-central1-docker.pkg.dev/fmnas-automation/resize-image-docker/resize-image@%
+gcloud run deploy resize-image-test \
+  --image us-central1-docker.pkg.dev/fmnas-automation/resize-image-docker/resize-image:test
+gcloud artifacts docker images list us-central1-docker.pkg.dev/fmnas-automation/resize-image-docker/resize-image \
+  --include-tags | awk '$3 ~ /^2/ { print $2 }' | xargs -I % gcloud artifacts docker images delete \
+  us-central1-docker.pkg.dev/fmnas-automation/resize-image-docker/resize-image@%
 ```
 
 ### Testing
 
 ```shell
-curl -v -F height=200 -F 'image=@/path/to/in.jpg' https://us-central1-fmnas-automation.cloudfunctions.net/resize-image > out.jpg
+curl -v -F height=200 -F 'image=@/path/to/in.jpg' \
+	https://us-central1-fmnas-automation.cloudfunctions.net/resize-image > out.jpg
 ```
 
 ## image-size

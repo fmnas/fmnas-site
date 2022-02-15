@@ -97,7 +97,7 @@ site. See the Workflow section above for more details.
 The following workflow files are present in .github/workflows:
 
 * backups.yml - Nightly backups of the ASM database and blog (not tracked on GitHub) to our Scaleway bucket.
-* deploy-gcp.yml - Deploys Google Cloud Platform services from gcp/.
+* deploy-gcp-{prod,test}.yml - Deploys Google Cloud Platform services from gcp/.
 * deploy-{prod,test}.yml - Builds and deploys the website to Dreamhost, and regenerates src/generated.php.
 * regenerate-images-{prod,test}.yml - Calls the API to regenerate cached images when the image scaling code (
   src/resize.php) changes.
