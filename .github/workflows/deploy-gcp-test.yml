@@ -18,11 +18,11 @@ jobs:
         uses: actions/checkout@main
         with:
           ref: test
+          fetch-depth: 2
       - name: Test changed files
         id: changed-files
         uses: tj-actions/changed-files@v15
         with:
-          fetch-depth: 2
           files: |
             gcp/resize-image/**
             .github/workflows/deploy-gcp-test.yml
