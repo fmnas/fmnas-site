@@ -43,7 +43,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	f, fh, err := r.FormFile("image")
 	if err != nil {
-		http.Error(w, "Error extracting image from request", http.StatusBadRequest)
+		http.Error(w, fmt.Sprintf("Error extracting image from request: %v", err), http.StatusBadRequest)
 		log.Printf("Error extracting image from request: %v", err)
 		return
 	}
