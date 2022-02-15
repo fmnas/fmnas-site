@@ -325,6 +325,7 @@ export default defineComponent({
             const filename = segments[segments.length - 1];
             const newPath = getFullPathForPet(this.pet) + '/' + filename;
             console.log(`Updating path for photo ${photo.key} from ${photo.path} to ${newPath}`);
+            photo.path = newPath;
             // noinspection ES6MissingAwait
             fetch(`/api/assets/${photo.key}`, {
               method: 'PUT',

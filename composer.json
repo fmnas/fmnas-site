@@ -1,8 +1,15 @@
 {
-    "require": {
-        "phpmailer/phpmailer": "^6.5",
-        "masterminds/html5": "^2.7",
-        "erusev/parsedown": "^1.7",
-        "zordius/lightncandy": "dev-master"
-    }
+	"require": {
+		"phpmailer/phpmailer": "^6.5",
+		"masterminds/html5": "^2.7",
+		"erusev/parsedown": "^1.7",
+		"zordius/lightncandy": "dev-master",
+		"ext-fileinfo": "*",
+		"ext-imagick": "*",
+		"ext-curl": "*",
+		"ext-mbstring": "*",
+		"ext-mysqli": "*",
+		"ext-gd": "*",
+		"ext-xml": "*"
+	}
 }

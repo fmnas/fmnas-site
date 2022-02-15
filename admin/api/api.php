@@ -59,26 +59,26 @@ function endpoint(?callable $get = null, ?callable $post = null, ?callable $put 
 	$v = isset($_GET['v']);
 	$value = $v ? $_GET['v'] : null;
 	try {
-	switch ($method) {
-	case 'GET':
-		$result = call($v ? $get_value : $get, $value);
-		break;
-	case 'PUT':
-	case 'POST':
-		if (empty($data) && empty($_FILES)) {
-			$result = new Result(400, error: "No data provided");
+		switch ($method) {
+		case 'GET':
+			$result = call($v ? $get_value : $get, $value);
+			break;
+		case 'PUT':
+		case 'POST':
+			if (empty($data) && empty($_FILES)) {
+				$result = new Result(400, error: "No data provided");
+				break;
+			}
+			if ($method === 'PUT') {
+				$result = call($v ? $put_value : $put, $value, $data);
+			} else {
+				$result = call($v ? $post_value : $post, $value, $data);
+			}
+			break;
+		case 'DELETE': // Delete
+			$result = call($v ? $delete_value : $delete, $value);
 			break;
 		}
-		if ($method === 'PUT') {
-			$result = call($v ? $put_value : $put, $value, $data);
-		} else {
-			$result = call($v ? $post_value : $post, $value, $data);
-		}
-		break;
-	case 'DELETE': // Delete
-		$result = call($v ? $delete_value : $delete, $value);
-		break;
-	}
 	} catch (Exception $e) {
 		$result = new Result(500, print_r($e, true));
 	}
