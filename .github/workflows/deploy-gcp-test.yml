@@ -20,6 +20,7 @@ on:
       - test
     paths:
       - 'gcp/**'
+      - '.github/workflows/deploy-gcp-test.yml'
 jobs:
   resize-image:
     name: 'GCP: Deploy resize-image-test'
@@ -38,6 +39,7 @@ jobs:
           fetch-depth: 2
           files: |
             gcp/resize-image/**
+            .github/workflows/deploy-gcp-test.yml
       - name: Setup Cloud SDK
         if: steps.changed-files.outputs.any_changed == 'true'
         uses: 'google-github-actions/setup-gcloud@v0'
