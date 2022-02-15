@@ -4,7 +4,7 @@ require_once __DIR__ . '/../secrets/config.php';
 class ImageResizeException extends Exception {
 }
 
-// TODO: Google Cloud authentication for remote functions
+// TODO [$620c08a836f12e0008ab1343]: Google Cloud authentication for remote functions
 // https://github.com/googleapis/google-auth-library-php
 // https://cloud.google.com/docs/authentication/production#auth-cloud-implicit-php
 
