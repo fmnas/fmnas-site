@@ -46,7 +46,7 @@ jobs:
       - name: Deploy to Cloud Run
         if: steps.changed-files.outputs.any_changed == 'true'
         id: deploy
-        uses: 'google-github-actions/deploy-cloudrun@vo'
+        uses: 'google-github-actions/deploy-cloudrun@v0'
         with:
           service: 'resize-image-test'
           image: ${{ secrets.RESIZE_IMAGE_REPO }}/resize-image:test
