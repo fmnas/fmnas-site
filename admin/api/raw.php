@@ -4,17 +4,9 @@ require_once 'api.php';
 // This endpoint is for raw asset data. For metadata, use the assets endpoint.
 
 $writer = function(string $key, mixed $body) use ($db): Result {
-	var_dump($_FILES);
-	if (!isset($_FILES['file'])) {
-		return new Result(400, error: "No file provided");
+	if(isset($_FILES['file'])) {
+		$body = file_get_contents($_FILES['file']['tmp_name']);
 	}
-	if ($error = $_FILES['file']['error'] ?? 'none') {
-		return new Result(500, error: "File upload error $error");
-	}
-	if(!($_FILES['file']['tmp_name'] ?? false)) {
-		return new Result(500, error: "No tmp_name for file");
-	}
-	$body = file_get_contents($_FILES['file']['tmp_name']);
 	$asset = $db->getAssetByKey(intval($key));
 	if ($asset === null) {
 		return new Result(404, error: "Metadata not found for asset $key");
