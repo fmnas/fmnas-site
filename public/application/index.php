@@ -642,7 +642,7 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 			src="https://unpkg.com/filepond-plugin-file-validate-size/dist/filepond-plugin-file-validate-size.js"></script>
 	<script>
 		// TODO [#66]: Asynchronous attachment upload
-		// TODO [#66]: Use image editor plugin
+		// TODO: Use image editor plugin
 		FilePond.registerPlugin(FilePondPluginImageExifOrientation);
 		FilePond.registerPlugin(FilePondPluginImagePreview);
 		FilePond.registerPlugin(FilePondPluginImageTransform);
