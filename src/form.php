@@ -1349,7 +1349,7 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
 }
 
 /** @noinspection PhpObjectFieldsAreOnlyWrittenInspection
- * Seems PHPStorm isn't smart enough to deal with this being read only from a registered shutdown function.
+ * Seems IntelliJ isn't smart enough to deal with this being read only from a registered shutdown function.
  * (Can't really blame it)
  */
 $formConfig = new FormConfig();
