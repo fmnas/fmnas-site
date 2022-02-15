@@ -40,16 +40,20 @@ jobs:
           files: |
             gcp/resize-image/**
             .github/workflows/deploy-gcp-test.yml
+      - name: Authenticate to Google Cloud
+        if: steps.changed-files.outputs.any_changed == 'true'
+        uses: 'google-github-actions/auth@v0'
+        with:
+          workload_identity_provider: ${{ secrets.GCP_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          # The service account needs the roles:
+          #   roles/run.developer
+          #   roles/artifactregistry.repoAdmin
       - name: Setup Cloud SDK
         if: steps.changed-files.outputs.any_changed == 'true'
         uses: 'google-github-actions/setup-gcloud@v0'
         with:
           project_id: ${{ secrets.GCP_PROJECT }}
-          workload_identify_provider: ${{ secrets.GCP_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
-        # The service account needs the roles:
-        #   roles/run.developer
-        #   roles/artifactregistry.repoAdmin
       - name: Authorize Docker
         if: steps.changed-files.outputs.any_changed == 'true'
         run: gcloud auth configure-docker
