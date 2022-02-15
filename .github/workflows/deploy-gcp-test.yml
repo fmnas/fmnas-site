@@ -18,9 +18,6 @@ on:
   push:
     branches:
       - test
-    paths:
-      - 'gcp/**'
-      - '.github/workflows/deploy-gcp-test.yml'
   workflow_dispatch:
 jobs:
   resize-image:
