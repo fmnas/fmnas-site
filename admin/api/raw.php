@@ -18,8 +18,10 @@
 
 require_once 'api.php';
 
+// This endpoint is for raw asset data. For metadata, use the assets endpoint.
+
 $writer = function(string $key, mixed $body) use ($db): Result {
-	if(isset($_FILES['file']['tmp_name'])) {
+	if(isset($_FILES['file'])) {
 		$body = file_get_contents($_FILES['file']['tmp_name']);
 	}
 	$asset = $db->getAssetByKey(intval($key));
@@ -43,7 +45,6 @@ $writer = function(string $key, mixed $body) use ($db): Result {
 	return new Result(204);
 };
 
-// This endpoint is for raw asset data. For metadata, use the assets endpoint.
 endpoint(...[
 		'get' => $reject,
 		'get_value' => function($value) use ($db): Result {

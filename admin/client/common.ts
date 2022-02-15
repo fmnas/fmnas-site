@@ -17,7 +17,7 @@
 
 import store from './store';
 import * as Handlebars from 'handlebars';
-// @ts-ignore types not coming in in PHPStorm for some reason
+// @ts-ignore types not coming in in IntelliJ for some reason
 import {marked} from 'marked';
 import {Asset, Config, Pet} from './types';
 import {checkResponse} from './mixins';
@@ -113,12 +113,6 @@ async function updateAsset(asset: Asset): Promise<void> {
 	checkResponse(res);
 }
 
-async function getAsset(key: number): Promise<Asset> {
-	const res = await fetch(`/api/assets/${key}`);
-	checkResponse(res);
-	return res.json();
-}
-
 // TODO [#163]: Make file upload promises observables with progress.
 export async function uploadFile(file: File, pathPrefix: string = '', height: string | number = ''): Promise<Asset> {
 	const asset = await createAsset(file.type, pathPrefix + file.name);
@@ -139,17 +133,4 @@ export async function uploadDescription(body: string): Promise<Asset> {
 	const res = await fetch(`/api/raw/${asset.key}`, {method: 'POST', body: JSON.stringify(body)});
 	checkResponse(res);
 	return asset;
-}
-
-export function uploadFiles(files: FileList | null, pathPrefix: string = ''): Promise<Asset>[] {
-	const promises = [];
-	for (const file of files ?? []) {
-		promises.push(uploadFile(file, pathPrefix));
-	}
-	return promises;
-}
-
-function validateLine(line: string): boolean {
-	return (line.match(/{{/g)?.length ?? 0) <= (line.match(/}}/g)?.length ?? 0) && // Catch {{x
-	       !line.match(/{{([^}'"]|}(?!}))*('([^'}]|}(?!}))*|"([^"}]|}(?!}))*)}}/g)?.length; // Catch {{x y='}}
 }
