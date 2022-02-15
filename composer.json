@@ -5,6 +5,11 @@
 		"erusev/parsedown": "^1.7",
 		"zordius/lightncandy": "dev-master",
 		"ext-fileinfo": "*",
-		"ext-imagick": "*"
+		"ext-imagick": "*",
+		"ext-curl": "*",
+		"ext-mbstring": "*",
+		"ext-mysqli": "*",
+		"ext-gd": "*",
+		"ext-xml": "*"
 	}
 }
