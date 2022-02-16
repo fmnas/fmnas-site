@@ -50,6 +50,10 @@ table.listings {
 				box-shadow: -2px 2px 3px var(--shadow-color);
 				cursor: pointer;
 
+				td.fee {
+					cursor: auto;
+				}
+
 				&.active {
 					box-shadow: -2px 2px 3px var(--shadow-color) inset;
 
@@ -77,6 +81,7 @@ table.listings {
 					margin: 0;
 					width: 100%;
 					list-style-type: none;
+					z-index: 1;
 
 					li {
 						width: 50%;
@@ -121,30 +126,85 @@ table.listings {
 				}
 			}
 
-			a:hover {
-				text-decoration: none;
-			}
-
-			/* Applications pending & closed */
 			order: 1;
 
-			&.st_1.soon {
-				/* put in middle */
+			&.soon {
 				order: 2;
+			}
 
-				/* Hide the actual adoption fee for coming soon listings */
-				> td.fee > {
-					*::before {
-						content: 'Coming Soon';
+			&.displayStatus {
+				order: 3;
+				background-color: var(--pending-color);
+			}
+
+			&.displayStatus.explain td.fee {
+				position: relative;
+				overflow: visible !important;
+				$cutoff: 450px; // sync with CUTOFF_WIDTH in adoptable.ts
+				z-index: 1;
+
+				span.fee::after {
+					content: '\e8fd';
+					font-family: 'Material Icons', sans-serif;
+					font-size: 110%;
+					vertical-align: -11%;
+					color: var(--info-color);
+					margin-left: 0.38ex;
+				}
+
+				aside.explanation {
+					display: block;
+					position: absolute;
+					color: var(--text-color);
+					font-size: 10pt;
+					background-color: #fffffff6;
+					--width: calc(100% + min(1vw, 20%));
+					width: var(--width);
+					left: calc((var(--width) - 100%) / -2);
+					top: 1.5rem;
+					white-space: normal;
+					text-align: justify;
+					text-align-last: center;
+					padding: 0.5em;
+					border: 1px solid var(--border-color);
+					box-shadow: -2px 2px 3px var(--shadow-color);
+					border-radius: 1em;
+					box-sizing: border-box;
+					z-index: -1;
+					opacity: 0;
+					transition: opacity 200ms ease-out, z-index 0s 200ms;
+					pointer-events: none;
+
+					&.hidden {
+						display: none;
 					}
 
-					span {
+					@media (max-width: $cutoff - 1px) {
 						display: none;
 					}
 				}
+
+				@media (min-width: $cutoff) {
+					span.fee:hover::after {
+						content: '\e887';
+					}
+
+					span.fee:hover ~ aside.explanation, aside.explanation:hover {
+						z-index: 2;
+						opacity: 1;
+						transition: opacity 200ms ease-in;
+						pointer-events: auto;
+					}
+				}
+
+				span.fee:active::after {
+					content: '\e887';
+				}
 			}
 
-			/* Note: adoptable.generated.css adds order: 3 for pending & closed */
+			a:hover {
+				text-decoration: none;
+			}
 
 			// Cells moved to the last-row table.
 			&.yote {
@@ -173,7 +233,7 @@ table.listings {
 		min-height: 1.4em;
 		transform: scaleX(var(--x-scale));
 		transform-origin: left;
-
+		z-index: 1;
 
 		&:first-child {
 			padding-top: 0.5em;
@@ -264,5 +324,34 @@ table.listings {
 section.explanations {
 	max-width: 10in;
 	margin: 0 auto;
-}
+	> aside {
+		z-index: 2;
 
+		> div.close {
+			display: none;
+		}
+
+		&.shown {
+			position: fixed;
+			bottom: 2vw;
+			left: 2vw;
+			width: 96vw;
+			z-index: 2;
+			margin: 0;
+			> div.close {
+				display: block;
+				position: absolute;
+				z-index: 3;
+				top: 2vw;
+				right: 2vw;
+				cursor: pointer;
+				font-family: 'Material Icons', sans-serif;
+				font-size: 120%;
+				&:active {
+					color: var(--active-color);
+				}
+			}
+			font-size: 11pt;
+		}
+	}
+}
