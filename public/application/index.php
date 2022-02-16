@@ -344,7 +344,7 @@ function addressInput(string $label, string $prefix, bool $required = false): st
 	<?php
 	style();
 	emailLinks();
-	style("application", true);
+	style("application", true, "20220215");
 	style("minheader", true);
 	?>
 	<script src="events.js"></script>
