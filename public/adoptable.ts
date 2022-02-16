@@ -11,8 +11,13 @@ function addEventListeners(link: Element) {
 		listing.classList.add('active');
 		e.preventDefault();
 	});
+	listing.addEventListener('touchstart', (e) => {
+		listing.classList.add('active');
+		e.preventDefault();
+	});
 	listing.addEventListener('mouseup', () => listing.classList.remove('active'));
 	listing.addEventListener('mouseout', () => listing.classList.remove('active'));
+	listing.addEventListener('touchend', () => listing.classList.remove('active'));
 	listing.querySelector('td.inquiry')?.addEventListener('click', (e) => e.stopPropagation());
 	listing.querySelector('td.fee')?.addEventListener('click', (e) => e.stopPropagation());
 }
