@@ -125,6 +125,10 @@ pageHeader();
 		<td class="inquiry"><a data-email></a></td>
 	</tbody>
 </table>
+<table class="listings last-row">
+	<tbody></tbody>
+</table>
+<script src="/adoptable.js"></script>
 <section class="explanations">
 	<aside class="info"><strong>Adoption Fees</strong> include Vaccinations and Spay/Neuter!</aside>
 	<?php

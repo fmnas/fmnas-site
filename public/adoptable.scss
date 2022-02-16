@@ -22,7 +22,6 @@ h2 {
 	text-align: center;
 }
 
-/* TODO [#62]: Use CSS Grid for adoptable page */
 table.listings {
 	/* These need to be CSS variables for use by adoptable.generated.css */
 	--border-color: #ccc;
@@ -32,6 +31,10 @@ table.listings {
 
 	width: 100%;
 	display: block;
+
+	&.secondary tbody {
+		grid-template-columns: repeat(auto-fit, minmax(0, 300px));
+	}
 
 	tbody {
 		display: grid;
@@ -58,6 +61,10 @@ table.listings {
 
 			&.pair {
 				grid-column-end: span 2;
+				a {
+					width: 100%;
+					// TODO: Reduce width of a in bonded pairs to reduce underline width.
+				}
 				ul {
 					position: relative;
 					display: inline-block;
@@ -81,6 +88,10 @@ table.listings {
 								padding-left: var(--inner-padding);
 								text-align: left;
 
+								&:not(a:not([href]) li) {
+									padding-right: 1.5em;
+								}
+
 								&::before {
 									display: block;
 									position: absolute;
@@ -94,6 +105,10 @@ table.listings {
 							}
 						}
 					}
+				}
+				td.img img:not(ul img) {
+					max-width: calc(400px + #{$gap});
+					max-height: 300px;
 				}
 			}
 
@@ -121,96 +136,6 @@ table.listings {
 			}
 
 			/* Note: adoptable.generated.css adds order: 3 for pending & closed */
-
-			/* Individual data */
-			td, th {
-				display: block;
-				padding-left: 1em;
-				padding-right: 1em;
-				box-sizing: border-box;
-				width: 100%;
-				text-align: center;
-				vertical-align: middle;
-				border-left: 1px solid var(--border-color);
-				border-right: 1px solid var(--border-color);
-				min-height: 1.4em;
-				background-color: var(--listing-background);
-
-				&:first-child {
-					border-top: 1px solid var(--border-color);
-					border-radius: 1em 1em 0 0;
-					padding-top: 0.5em;
-				}
-
-				&:last-child {
-					border-bottom: 1px solid var(--border-color);
-					border-radius: 0 0 1em 1em;
-					padding-bottom: 0.5em;
-				}
-			}
-
-			th.name {
-				font-size: 18pt;
-
-				> a[id]:not([id=''])::after, > a li[id]:not([id=''])::after {
-					content: ' (id#' attr(id) ')';
-					font-size: 11pt;
-					vertical-align: 10%;
-				}
-			}
-
-			&:not(.soon) th.name a {
-				border-bottom: 1pt solid var(--link-color);
-				// TODO: Prevent the bottom border on the link row of pair listings from extending all the way to both sides.
-
-				&:not(tr.pair a)::after {
-					content: ' »';
-				}
-
-				&[id]:not([id=''])::after, li[id]:not([id=''])::after {
-					content: ' (id#' attr(id) ') »';
-				}
-
-				&:visited {
-					border-bottom: 1pt solid var(--visited-color);
-				}
-
-				&:active {
-					border-bottom: 1pt solid var(--active-color);
-				}
-
-				&:hover {
-					border-bottom-width: 1.5pt;
-				}
-			}
-
-			td.fee {
-				color: red;
-
-				&::before {
-					white-space: pre-line;
-				}
-			}
-
-			td.img {
-				padding: 0 2vw;
-
-				img {
-					display: block;
-					max-width: 200px;
-					width: 100%;
-					margin: 0 auto;
-				}
-			}
-
-			td.inquiry > a {
-				font-size: 10pt;
-				text-decoration: none;
-
-				&:hover {
-					text-decoration: underline;
-				}
-			}
 		}
 	}
 
@@ -218,9 +143,122 @@ table.listings {
 	thead {
 		display: none;
 	}
+
+
+	/* Individual data */
+	td, th {
+		--x-scale: 1;
+		--y-scale: 1;
+		--border-width: 1px;
+		--vertical-border-width: calc(1px / var(--x-scale));
+		--x-border-radius: calc(1rem / var(--x-scale));
+		display: block;
+		padding-left: 1em;
+		padding-right: 1em;
+		box-sizing: border-box;
+		width: calc(100% / var(--x-scale));
+		text-align: center;
+		vertical-align: middle;
+		border-left: var(--vertical-border-width) solid var(--border-color);
+		border-right: var(--vertical-border-width) solid var(--border-color);
+		min-height: 1.4em;
+		background-color: var(--listing-background);
+		transform: scaleX(var(--x-scale));
+		transform-origin: left;
+
+
+		&:first-child {
+			border-top: var(--border-width) solid var(--border-color);
+			border-radius: var(--x-border-radius) var(--x-border-radius) 0 0 / 1rem 1rem 0 0;
+			padding-top: 0.5em;
+		}
+
+		&:last-child {
+			border-bottom: var(--border-width) solid var(--border-color);
+			padding-bottom: 0.5em;
+			border-radius: 0 0 var(--x-border-radius) var(--x-border-radius) / 0 0 1rem 1rem;
+		}
+
+		> * {
+			display: inline-block;
+			transform: scaleY(var(--y-scale));
+		}
+	}
+
+	th.name {
+		font-size: 18pt;
+
+		@media (min-width: 450px) {
+			> a[id]:not([id=''])::after, > a li[id]:not([id=''])::after {
+				content: ' (id#' attr(id) ')';
+				font-size: 61.111%;
+				vertical-align: 10%;
+			}
+		}
+	}
+
+	&:not(.soon) th.name a {
+		border-bottom: 1pt solid var(--link-color);
+
+		&:not(tr.pair a)::after {
+			content: ' »';
+		}
+
+		@media (min-width: 450px) {
+			&[id]:not([id=''])::after, li[id]:not([id=''])::after {
+				content: ' (id#' attr(id) ') »';
+			}
+		}
+
+		&:visited {
+			border-bottom: 1pt solid var(--visited-color);
+		}
+
+		&:active {
+			border-bottom: 1pt solid var(--active-color);
+		}
+
+		&:hover {
+			border-bottom-width: 1.5pt;
+			margin-bottom: -.5pt;
+		}
+	}
+
+	td.fee {
+		color: red;
+
+		&::before {
+			white-space: pre-line;
+		}
+	}
+
+	td.img {
+		padding: 0 1rem;
+
+		@media (max-width: 50rem) {
+			padding: 0 2vw;
+		}
+
+		img {
+			display: block;
+			max-width: 200px;
+			width: 100%;
+			margin: 0 auto;
+		}
+	}
+
+	td.inquiry > a {
+		font-size: 83%;
+		text-decoration: none;
+
+		&:hover {
+			text-decoration: underline;
+		}
+	}
 }
 
 section.explanations {
 	max-width: 10in;
 	margin: 0 auto;
 }
+
