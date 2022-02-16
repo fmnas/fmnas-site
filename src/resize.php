@@ -60,7 +60,7 @@ function size(string $path): array {
  * @return array<boolean|ImageResizeException> for each file, true for success and ImageResizeException for failure
  * @throws ImageResizeException
  */
-// TODO: Parallel resizing is much slower than it should be.
+// TODO [#279]: Parallel resizing is much slower than it should be.
 function resizeMultiple(array $files): array {
 	$results = [];
 	$curls = [];
