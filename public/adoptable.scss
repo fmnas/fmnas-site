@@ -28,21 +28,21 @@ table.listings {
 	--adoptable-color: var(--background-color-2);
 	--pending-color: #ddd;
 	--info-color: var(--link-color);
+	$gap: 1.2rem;
 
 	width: 100%;
 	display: block;
 
 	&.last-row tbody {
 		grid-template-columns: repeat(auto-fit, minmax(0, 300px));
-		margin-top: 0;
+		margin-top: $gap;
 	}
 
 	tbody {
 		display: grid;
-		$gap: 1.2rem;
 		grid-column-gap: $gap;
 		grid-row-gap: $gap;
-		margin: 1em 2vw;
+		margin: 1em 2vw 0;
 		grid-auto-flow: row dense;
 		grid-template-columns: minmax(0, 300px) repeat(auto-fill, minmax(0, 300px));
 		justify-content: center;
