@@ -77,6 +77,7 @@ $cwd = getcwd();
 $formConfig->emails = function(array $formData) use ($cwd): array {
 	$shelterEmail = new EmailAddress(_G_default_email_user() . '@' . _G_public_domain(), _G_shortname());
 	$applicantEmail = new EmailAddress(trim($formData['AEmail']), trim($formData['AName']));
+	$applicantFakeEmail = new EmailAddress('noreply@' . _G_public_domain(), trim($formData['AName']));
 
 	$hash = sha1(print_r($formData, true));
 	$path = "https://" . _G_public_domain() . "/application/received/$hash.html";
@@ -96,6 +97,63 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 		return "$cwd/received";
 	};
 	$save->hashFilenames = HashOptions::SAVED_ONLY;
+	$save->filesConverter = function(array &$files) use (&$total_size): void {
+		$total_size = 0;
+		$filespecs = [];
+		$count = 0;
+		$heic_count = 0;
+		foreach ($files as $index=>&$file) {
+			if (!startsWith($file["type"], "image/")) {
+				$filespecs[$index] = null;
+				continue;
+			}
+			$filespec = new FileSpec();
+			$filespec->source = $file["tmp_name"];
+			$filespec->target = $file["tmp_name"] . ".jpg";
+			$filespec->height = 4320;
+			$filespecs[$index] = $filespec;
+			if (startsWith($file["type"], "image/hei")) {
+				$heic_count++;
+			}
+			$count++;
+		}
+		if ($count < 10 && $heic_count < 3) {
+			// Probably faster to do the resizing locally in this case.
+			foreach($filespecs as $index=>$filespec) {
+				try {
+					resize($filespec->source, $filespec->target, $filespec->height);
+					if ($files[$index]["type"] !== "image/jpeg") {
+						$files[$index]["type"] = "image/jpeg";
+						$files[$index]["name"] .= ".jpg";
+					}
+					$files[$index]["tmp_name"] = $filespec->target;
+					$files[$index]["size"] = filesize($filespec->target);
+				} catch (ImageResizeException $e) {
+					continue;
+				}
+			}
+		} else {
+			$results = resizeMultiple($filespecs);
+			foreach($results as $index=>$result) {
+				if ($result === true) {
+					if ($files[$index]["type"] !== "image/jpeg") {
+						$files[$index]["type"] = "image/jpeg";
+						$files[$index]["name"] .= ".jpg";
+					}
+					$files[$index]["tmp_name"] = $filespecs[$index]->target;
+					$files[$index]["size"] = filesize($files[$index]["tmp_name"]);
+				}
+			}
+		}
+		unset($file);
+		foreach ($files as $file) {
+			$total_size += $file["size"];
+		}
+		unset($file);
+		foreach ($files as &$file) {
+			$file["total_size"] = $total_size; // For use by attachFiles
+		}
+	};
 	$save->globalConversion = true;
 
 	$dump = new FormEmailConfig(
@@ -116,35 +174,14 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 	}
 
 	$primaryEmail = new FormEmailConfig(
-			$applicantEmail,
+			$applicantFakeEmail,
 			[$shelterEmail],
 			$primarySubject,
 			['main' => true, 'path' => $path, 'weblink' => true,
 					'outside_warn' => $outside_warn, 'outside_message' => $outside_message,]
 	);
-	$total_size = 0;
-	$primaryEmail->fileConverter = function(array &$file) use (&$total_size): void {
-		if (!startsWith($file["type"], "image/")) {
-			$total_size += $file["size"];
-			return;
-		}
-		// Attempt to convert to JPEG with max-height 4320.
-		$output_path = $file["tmp_name"] . ".resized.jpg";
-		try {
-			// TODO: Resize multiple uploaded attachments remotely and in parallel.
-			resize($file["tmp_name"], $output_path, 4320);
-			$file["tmp_name"] = $output_path;
-			$file["size"] = filesize($output_path);
-			$file["type"] = "image/jpeg";
-			$file["name"] .= ".resized.jpg";
-		} catch (ImageResizeException $e) {
-			// Silently ignore exceptions.
-		} finally {
-			$total_size += $file["size"];
-		}
-	};
-	$primaryEmail->attachFiles = function(array $metadata) use (&$total_size): bool {
-		return $total_size < 20 * 1048576;
+	$primaryEmail->attachFiles = function(array $metadata): bool {
+		return isset($metadata["total_size"]) && $metadata["total_size"] < 20 * 1048576;
 	};
 
 	$secondaryEmail = new FormEmailConfig(

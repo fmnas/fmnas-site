@@ -170,6 +170,8 @@
  * Note that this conversion takes place *before* FormEmailConfig::hashFilenames.
  * By default, this conversion is scoped to a single email. To use the converted files as the input files for subsequent
  * emails, set FormEmailConfig::globalConversion to true.
+ * You may also use FormEmailConfig::fileConverters to specify a converter that applies to the complete list of files
+ * rather than one file at a time (useful for parallel processing of files).
  * This should update $file["tmp_name"] if a new file is created.
  *
  * To validate files server-side before saving or attaching them, set $formConfig->fileValidator to a closure.
@@ -326,7 +328,7 @@ class FormEmailConfig {
 	public string|Closure $fileDir;
 
 	/**
-	 * Whether to attach uploaded files to the email.
+	 * Whether to attach an uploaded file to the email.
 	 * Can also be a closure that takes the file metadata array.
 	 * @param array file metadata array
 	 * @return bool
@@ -343,11 +345,18 @@ class FormEmailConfig {
 	public HashOptions|Closure $hashFilenames;
 
 	/**
-	 * Converter applied to files before hashFilenames.
+	 * Converter applied to each file before hashFilenames.
 	 * @param array &$metadata file metadata array
 	 * @return void
 	 */
 	public ?Closure $fileConverter;
+
+	/**
+	 * Converter applied to all files before fileConverter and hashFilenames are applied to each file.
+	 * @param array &$metadata array of file metadata arrays
+	 * @return void
+	 */
+	public ?Closure $filesConverter;
 
 	/**
 	 * Whether to apply $fileConverter to $_FILES instead of $files.
@@ -380,6 +389,7 @@ class FormEmailConfig {
 		$this->attachFiles = true;
 		$this->hashFilenames = HashOptions::NO;
 		$this->fileConverter = null;
+		$this->filesConverter = null;
 		$this->globalConversion = false;
 		$this->saveFile = "";
 	}
@@ -821,6 +831,10 @@ function applyFileConversions(FormEmailConfig $emailConfig): array {
 
 	foreach ($files as $inputName => &$fileArray) {
 		$transformed = transformFileArray($fileArray);
+		// Apply filesConverter.
+		if ($emailConfig->filesConverter !== null) {
+			($emailConfig->filesConverter)($transformed);
+		}
 		foreach ($transformed as $index => &$file) {
 			$file["input"] = $inputName;
 
