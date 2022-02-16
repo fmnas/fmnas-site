@@ -64,7 +64,7 @@ function size(string $path): array {
 function resizeMultiple(array $files): array {
 	$results = [];
 	$curls = [];
-	foreach ($files as $index=>$file) {
+	foreach ($files as $index => $file) {
 		if (!$file) {
 			$curls[$index] = null;
 			$results[$index] = new ImageResizeException("file is null");
@@ -77,10 +77,10 @@ function resizeMultiple(array $files): array {
 			continue;
 		}
 		curl_setopt_array($curl, [
-			CURLOPT_URL => Config::$resize_image_endpoint,
-			CURLOPT_POST => true,
-			CURLOPT_POSTFIELDS => ["image" => new CURLFile($file->source), "height" => $file->height],
-			CURLOPT_RETURNTRANSFER => true,
+				CURLOPT_URL => Config::$resize_image_endpoint,
+				CURLOPT_POST => true,
+				CURLOPT_POSTFIELDS => ["image" => new CURLFile($file->source), "height" => $file->height],
+				CURLOPT_RETURNTRANSFER => true,
 		]);
 		$curls[$index] = $curl;
 	}
@@ -89,7 +89,7 @@ function resizeMultiple(array $files): array {
 	if (!$multi) {
 		throw new ImageResizeException("Failed to initialize cURL");
 	}
-	foreach($curls as $curl) {
+	foreach ($curls as $curl) {
 		if ($curl !== null) {
 			curl_multi_add_handle($multi, $curl);
 		}
@@ -98,12 +98,12 @@ function resizeMultiple(array $files): array {
 	do {
 		curl_multi_exec($multi, $running);
 	} while ($running);
-	foreach($curls as $curl) {
+	foreach ($curls as $curl) {
 		if ($curl !== null) {
 			curl_multi_remove_handle($multi, $curl);
 		}
 	}
-	foreach($curls as $index=>$curl) {
+	foreach ($curls as $index => $curl) {
 		if ($curl === null) {
 			$results[$index] = new ImageResizeException("Failed to initialize cURL");
 			continue;
@@ -115,7 +115,8 @@ function resizeMultiple(array $files): array {
 				$results[$index] = true;
 			}
 		} else {
-			$results[$index] = new ImageResizeException("cURL Error: " . curl_error($curl) . "\n" . curl_multi_getcontent($curl));
+			$results[$index] =
+					new ImageResizeException("cURL Error: " . curl_error($curl) . "\n" . curl_multi_getcontent($curl));
 		}
 		curl_close($curl);
 	}
