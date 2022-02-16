@@ -17,19 +17,16 @@ button.append(document.createTextNode('View our '), select, document.createTextN
 select.addEventListener('click', (e) => {
 	e.stopImmediatePropagation();
 });
-select.addEventListener('mousedown', (e) => {
+select.addEventListener('pointerdown', (e) => {
 	e.stopImmediatePropagation();
 });
-select.addEventListener('mouseup', (e) => {
+select.addEventListener('pointerup', (e) => {
 	e.stopImmediatePropagation();
 });
-select.addEventListener('touchstart', (e) => {
-	e.stopImmediatePropagation();
-});
-select.addEventListener('mouseenter', () => {
+select.addEventListener('pointerenter', () => {
 	button.classList.add('inactive');
 });
-select.addEventListener('mouseleave', () => {
+select.addEventListener('pointerleave', () => {
 	button.classList.remove('inactive');
 });
 button.addEventListener('click', () => {
