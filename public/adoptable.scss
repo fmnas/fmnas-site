@@ -201,7 +201,7 @@ table.listings {
 		}
 	}
 
-	&:not(.soon) th.name a {
+	tr:not(.soon) th.name a {
 		border-bottom: 1pt solid var(--link-color);
 
 		&:not(tr.pair a)::after {

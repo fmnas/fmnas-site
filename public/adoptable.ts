@@ -1,7 +1,23 @@
 const MAX_CONDENSE = .75;
 const tbody: HTMLTableSectionElement = document.querySelector('table.listings tbody')!;
 const lastRow: HTMLTableSectionElement = document.querySelector('table.listings.last-row tbody')!;
-const resizer = () => {
+
+function addEventListeners(link: Element) {
+	const href = (link as HTMLAnchorElement).href;
+	const listing: HTMLTableRowElement = link.closest('tr')!;
+	listing.classList.add('linked');
+	listing.addEventListener('click', () => window.location.href = href);
+	listing.addEventListener('mousedown', (e) => {
+		listing.classList.add('active');
+		e.preventDefault();
+	});
+	listing.addEventListener('mouseup', () => listing.classList.remove('active'));
+	listing.addEventListener('mouseout', () => listing.classList.remove('active'));
+	listing.querySelector('td.inquiry')?.addEventListener('click', (e) => e.stopPropagation());
+	listing.querySelector('td.fee')?.addEventListener('click', (e) => e.stopPropagation());
+}
+
+function resizer() {
 	lastRow.replaceChildren();
 	tbody.querySelectorAll('tr').forEach((listing: HTMLTableRowElement) => {
 		listing.classList.remove('yote');
@@ -25,6 +41,7 @@ const resizer = () => {
 			cell.style.setProperty('overflow-x', 'hidden');
 		});
 	});
+
 	const gridColumns = window.getComputedStyle(tbody).getPropertyValue('grid-template-columns').split(' ').length;
 	let listings = [...tbody.querySelectorAll('tr')];
 	let totalSize = 0;
@@ -63,23 +80,11 @@ const resizer = () => {
 			index = byOrder[order]?.length - 1;
 		}
 	}
-};
+	lastRow.querySelectorAll('th.name a[href]').forEach(addEventListeners);
+}
 // TODO [#286]: Resizer miscalculates width when resizing after initial load in Firefox.
 
-tbody.querySelectorAll('th.name a[href]').forEach((link: Element) => {
-	const href = (link as HTMLAnchorElement).href;
-	const listing: HTMLTableRowElement = link.closest('tr')!;
-	listing.classList.add('linked');
-	listing.addEventListener('click', () => window.location.href = href);
-	listing.addEventListener('mousedown', (e) => {
-		listing.classList.add('active');
-		e.preventDefault();
-	});
-	listing.addEventListener('mouseup', () => listing.classList.remove('active'));
-	listing.addEventListener('mouseout', () => listing.classList.remove('active'));
-	listing.querySelector('td.inquiry')?.addEventListener('click', (e) => e.stopPropagation());
-	listing.querySelector('td.fee')?.addEventListener('click', (e) => e.stopPropagation());
-});
+tbody.querySelectorAll('th.name a[href]').forEach((link: Element) => {});
 
 resizer();
 window.addEventListener('resize', resizer);
