@@ -23,12 +23,15 @@ select.addEventListener('mousedown', (e) => {
 select.addEventListener('mouseup', (e) => {
 	e.stopImmediatePropagation();
 });
+select.addEventListener('touchstart', (e) => {
+	e.stopImmediatePropagation();
+});
 select.addEventListener('mouseenter', () => {
 	button.classList.add('inactive');
 });
 select.addEventListener('mouseleave', () => {
 	button.classList.remove('inactive');
-})
+});
 button.addEventListener('click', () => {
 	window.location.href = select.value;
 });
