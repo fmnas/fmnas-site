@@ -333,7 +333,7 @@ section.explanations {
 		}
 
 		&.shown {
-			// TODO [$620d81bd5c9c26000b86ffaa]: Fade in/out mobile tooltips.
+			// TODO [#287]: Fade in/out mobile tooltips.
 			position: fixed;
 			bottom: 2vw;
 			left: 2vw;
