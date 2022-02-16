@@ -2,6 +2,7 @@
 require_once "../../src/common.php";
 require_once "../../src/form.php";
 require_once "../../src/db.php";
+require_once "../../src/resize.php";
 require_once "$t/header.php";
 require_once "$t/application_response.php";
 ini_set('memory_limit', '2048M');
@@ -62,8 +63,8 @@ $formConfig->handler = function(FormException $e): void {
 	// Attempt to email the PHP context to Sean so he can fix it.
 	@sendEmail(
 			new FormEmailConfig(
-					new EmailAddress("admin@forgetmenotshelter.org"),
-					[new EmailAddress("sean@forgetmenotshelter.org")],
+					new EmailAddress("admin@" . _G_public_domain()),
+					[new EmailAddress("sean@" . _G_public_domain())],
 					"Application Error Context"),
 			new RenderedEmail(
 					'<pre>' . print_r(get_defined_vars(), true) . '</pre>',
@@ -121,17 +122,28 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 			['main' => true, 'path' => $path, 'weblink' => true,
 					'outside_warn' => $outside_warn, 'outside_message' => $outside_message,]
 	);
-	$primaryEmail->attachFiles = function(array $metadata): bool {
-		$total_size = 0;
-		foreach ($_FILES as $file_input) {
-			if (is_array($file_input["size"])) {
-				foreach ($file_input["size"] as $size) {
-					$total_size += $size;
-				}
-			} else {
-				$total_size += $file_input["size"];
-			}
+	$total_size = 0;
+	$primaryEmail->fileConverter = function(array &$file) use (&$total_size): void {
+		if (!startsWith($file["type"], "image/")) {
+			$total_size += $file["size"];
+			return;
 		}
+		// Attempt to convert to JPEG with max-height 4320.
+		$output_path = $file["tmp_name"] . ".resized.jpg";
+		try {
+			// TODO: Resize multiple uploaded attachments remotely and in parallel.
+			resize($file["tmp_name"], $output_path, 4320);
+			$file["tmp_name"] = $output_path;
+			$file["size"] = filesize($output_path);
+			$file["type"] = "image/jpeg";
+			$file["name"] .= ".resized.jpg";
+		} catch (ImageResizeException $e) {
+			// Silently ignore exceptions.
+		} finally {
+			$total_size += $file["size"];
+		}
+	};
+	$primaryEmail->attachFiles = function(array $metadata) use (&$total_size): bool {
 		return $total_size < 20 * 1048576;
 	};
 
