@@ -143,7 +143,7 @@ class Pet implements JsonSerializable {
 	public ?array $photos; // photo assets (array of Assets)
 	public ?Asset $description; // description asset
 	public Status $status;
-	public ?bool $plural; // TODO [#22]: Two animals in one listing?
+	// TODO [#22]: Two animals in one listing?
 
 	public function listed(): bool {
 		$description = $this->description?->fetch();
@@ -166,7 +166,6 @@ class Pet implements JsonSerializable {
 				"fee" => $this->fee,
 				"status" => $this->status->name,
 				"path" => $this->path,
-				"plural" => $this->plural,
 		];
 	}
 
@@ -174,7 +173,7 @@ class Pet implements JsonSerializable {
 		if (!isset($this->species) || $this->species === null) {
 			return '';
 		}
-		return $this->species->nameGivenDob($this->dob, $this->plural);
+		return $this->species->nameGivenDob($this->dob, false);
 	}
 
 	// Strings provided to listing description parser.
@@ -196,7 +195,6 @@ class Pet implements JsonSerializable {
 				"fee" => $this->fee,
 				"status" => $this->status?->key,
 				"path" => $this->path,
-				"plural" => $this->plural,
 				"photo" => $this->photo,
 				"photos" => $this->photos,
 				"description" => $this->description,
