@@ -91,7 +91,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       </tr>
       </thead>
       <tbody>
-      <tr :class="[`st_${pet['status']}`, listed() ? '' : ' soon']">
+      <tr :class="[`st_${pet['status']}`, listed() ? '' : 'soon',
+      statusInfo()?.displayStatus ? 'displayStatus' : '',
+      statusInfo()?.description?.trim() ? 'explain' : '']">
         <th class="name"><a
             :id="pet['id'] || '____'"
             :href="listed() ? `//${config['public_domain']}/${getFullPathForPet(pet)}` : null"
@@ -103,8 +105,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </td>
         <td class="age">{{ petAge(pet) || '&nbsp;' }}</td>
         <td class="fee">
-          <div></div>
-          <span>{{ pet['fee'] || '&nbsp;' }}</span>
+          <span class="fee">{{
+              statusInfo()?.displayStatus ?
+                  statusInfo()?.name :
+                  (listed() ? pet.fee ?? '' : 'Coming Soon')
+            }}</span>
+          <aside class="explanation"
+              v-if="statusInfo()?.displayStatus &&
+              statusInfo()?.description?.trim()">
+            {{ statusInfo()?.description }}
+          </aside>
         </td>
         <td class="img">
           <a>
@@ -171,7 +181,7 @@ import {
   getFullPathForPet, getPathForPet, partial, petAge, ucfirst, uploadDescription
 } from '../common';
 import {mapState} from 'vuex';
-import {Asset, Pet, Sex} from '../types';
+import {Asset, Pet, Sex, Status} from '../types';
 import ProfilePhoto from '../components/ProfilePhoto.vue';
 import Modal from '../components/Modal.vue';
 import {progressBar, responseChecker} from '../mixins';
@@ -393,6 +403,9 @@ export default defineComponent({
       return !this.description?.startsWith('{{>coming_soon}}') &&
              (this.description || this.pet['photos']?.length);
     },
+    statusInfo(): Status | undefined {
+      return this.config.statuses[this.pet.status];
+    },
     sexClick(sex: Sex) {
       // Allow deselecting a sex rather than just selecting one.
       this.pet['sex'] = this.pet['sex'] === sex['key'] ? undefined : sex['key'];
@@ -588,6 +601,10 @@ div.loading {
 
 .v-enter-from, .v-leave-to {
   opacity: 0;
+}
+
+table.listings tbody {
+  grid-template-columns: minmax(0, 300px) repeat(auto-fit, minmax(0, 300px));
 }
 
 </style>
