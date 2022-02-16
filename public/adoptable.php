@@ -108,21 +108,6 @@ pageHeader();
 		echo '<td class="inquiry"><a data-email></a></td>';
 	}
 	?>
-	<tr class="st_1 pair">
-		<th class="name">
-			<a href="leftpetrightpet"><ul><li id="LEFT">Left Pet<li id="RIGHT">Right Pet</ul></a>
-		</th>
-		<td class="sex">Male</td>
-		<td class="age">
-			<ul><li>Left age</li><li>Right age</li></ul>
-		</td>
-		<td class="fee">
-			<div></div>
-			<span></span></td>
-		<td class="img"><a href="leftpetrightpet"><img
-								srcset="/assets/cache/3792_300.jpg 1x, /assets/cache/3792_450.jpg 1.5x, /cats/abcxdefs/callie_lanczos2.jpg 1.6x"
-								src="/cats/abcxdefs/callie_lanczos2.jpg" alt="defs"></a></td>
-		<td class="inquiry"><a data-email></a></td>
 	</tbody>
 </table>
 <table class="listings last-row">
