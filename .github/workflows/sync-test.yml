@@ -30,6 +30,7 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           wait-interval: 10
           allowed-conclusions: success,skipped,cancelled,failure
+        continue-on-error: true
       - name: Merge main into test
         uses: vaultdragon/merge-branch@disable-fastforwards
         with:
