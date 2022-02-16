@@ -6,6 +6,7 @@
 
 const MAX_CONDENSE = .75;
 const tbody: HTMLTableSectionElement = document.querySelector('table.listings tbody')!;
+const lastRow: HTMLTableSectionElement = document.querySelector('table.listings.last-row tbody')!;
 const resizer = () => tbody.querySelectorAll('tr').forEach((listing: HTMLTableRowElement) => {
 	const referenceRow: HTMLTableCellElement = listing.querySelector('td.img')!;
 	const referenceWidth: number = referenceRow.clientWidth;
@@ -27,7 +28,8 @@ const resizer = () => tbody.querySelectorAll('tr').forEach((listing: HTMLTableRo
 		cell.style.setProperty('overflow-x', 'hidden');
 	});
 	// TODO: Yeet last row into a separate grid.
-	const gridColumns = window.getComputedStyle(tbody).getPropertyValue("grid-template-columns").split(' ').length;
+	const gridColumns = window.getComputedStyle(tbody).getPropertyValue('grid-template-columns').split(' ').length;
+
 });
 resizer();
 window.addEventListener('resize', resizer);
