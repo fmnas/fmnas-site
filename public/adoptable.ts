@@ -45,18 +45,19 @@ const resizer = () => {
 	let index = byOrder[maxOrder]?.length - 1;
 	console.log(byOrder, maxOrder);
 	while (yote++ < lastRowCount && order >= 0) {
-		const listing = byOrder[order]?.[index--];
+		const listing = byOrder[order]?.[index];
 		if (!listing) {
 			break;
 		}
 		if (listing.classList.contains('pair')) {
 			++yote;
 		}
+		console.log(`Yeeting row with order ${order} and index ${index}, ${yote} now yote`);
 		const clone = listing.cloneNode(true);
 		lastRow.appendChild(clone);
 		listing.classList.add('yote');
-		if (index === 0) {
-			while (!byOrder[--order] && order);
+		if (--index < 0) {
+			while (!byOrder[--order]?.length && order > 0);
 			index = byOrder[order]?.length - 1;
 		}
 	}
