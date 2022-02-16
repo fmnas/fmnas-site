@@ -31,7 +31,7 @@ class DatabaseWriter extends Database {
 		}
 
 		if (!($insertAsset = $this->db->prepare("
-			INSERT INTO assets VALUES(NULL, ?, ?, ?)
+			INSERT INTO assets (id, path, data, type) VALUES(NULL, ?, ?, ?)
 			"))) {
 			log_err("Failed to prepare insertAsset: {$this->db->error}");
 		} else {
@@ -47,7 +47,8 @@ class DatabaseWriter extends Database {
 		}
 
 		if (!($insertPet = $this->db->prepare("
-			REPLACE INTO pets VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, DEFAULT, DEFAULT)
+			REPLACE INTO pets (id, name, species, breed, dob, sex, fee, photo, description, status, plural, legacy_path, path)
+			VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, DEFAULT, DEFAULT)
 			"))) {
 			log_err("Failed to prepare insertPet: {$this->db->error}");
 		} else {
@@ -63,7 +64,7 @@ class DatabaseWriter extends Database {
 		}
 
 		if (!($insertPhoto = $this->db->prepare("
-			INSERT INTO photos VALUES(?, ?)
+			INSERT INTO photos (pet, photo) VALUES(?, ?)
 			"))) {
 			log_err("Failed to prepare insertPhoto: {$this->db->error}");
 		} else {
