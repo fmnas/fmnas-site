@@ -579,11 +579,11 @@ p > strong:first-child {
 		}
 	}
 
-	// About your home
-	section#about_home {
+	section#adoption_information, section#about_home {
 		label.textarea {
 			display: flex;
 			flex-direction: column;
+			margin-top: 1rem;
 
 			> textarea {
 				align-self: center;
@@ -597,6 +597,10 @@ p > strong:first-child {
 				padding: 0 2.5vw;
 			}
 		}
+	}
+
+	// About your home
+	section#about_home {
 
 		div.residence_grid {
 			display: grid; // inline-grid jumps around when the rented paragraph is shown for some reason
