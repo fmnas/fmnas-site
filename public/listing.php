@@ -24,6 +24,7 @@ if (!($pet = $db->getPetByPath($path))) {
 	<meta charset="utf-8">
 	<meta name="robots" content="<?=$pet->status->listed ? "index" : "noindex"?>">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="canonical" href="https://<?=_G_public_domain() . '/' . $pet->species?->plural . '/' . $pet->path?>">
 	<script src="/email.js.php"></script>
 	<?php
 	style();
