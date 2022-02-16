@@ -12,6 +12,8 @@ if ($asset !== null) {
 		require_once "$src/errors/404.php";
 	}
 	header("Content-Type: " . $asset->getType());
+	$canonical = 'https://' . _G_public_domain() . '/' . $asset->path;
+	header("Link: <$canonical>; rel=\"canonical\"");
 
 	// Allow caching of images
 	if (startsWith($asset->getType(), "image/")) {

@@ -349,6 +349,7 @@ function addressInput(string $label, string $prefix, bool $required = false): st
 	?>
 	<script src="events.js"></script>
 	<script src="/formenter.js"></script>
+	<link rel="canonical" href="https://<?=_G_public_domain()?>/application">
 	<link href="https://unpkg.com/filepond/dist/filepond.css" rel="stylesheet" data-remove="true">
 	<link
 			href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css"

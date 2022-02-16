@@ -27,6 +27,7 @@ require_once "$t/header.php";
 	<meta charset="UTF-8">
 	<meta name="robots" content="nofollow">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="canonical" href="https://<?=_G_public_domain()?>/application/faq.php">
 	<script src="/email.js.php"></script>
 	<?php
 	style();
