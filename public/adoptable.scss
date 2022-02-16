@@ -15,7 +15,7 @@ table.listings {
 	width: 100%;
 	display: block;
 
-	&.secondary tbody {
+	&.last-row tbody {
 		grid-template-columns: repeat(auto-fit, minmax(0, 300px));
 	}
 
@@ -44,10 +44,12 @@ table.listings {
 
 			&.pair {
 				grid-column-end: span 2;
+
 				a {
 					width: 100%;
 					// TODO: Reduce width of a in bonded pairs to reduce underline width.
 				}
+
 				ul {
 					position: relative;
 					display: inline-block;
@@ -55,13 +57,16 @@ table.listings {
 					margin: 0;
 					width: 100%;
 					list-style-type: none;
+
 					li {
 						width: 50%;
 						display: inline-block;
 						box-sizing: border-box;
+
 						&:not(td.img li) {
 							$ampersand-width: 1.1em;
 							--inner-padding: calc(#{$ampersand-width} / 2 + 0.1em);
+
 							&:first-of-type {
 								padding-right: var(--inner-padding);
 								text-align: right;
@@ -89,6 +94,7 @@ table.listings {
 						}
 					}
 				}
+
 				td.img img:not(ul img) {
 					max-width: calc(400px + #{$gap});
 					max-height: 300px;
