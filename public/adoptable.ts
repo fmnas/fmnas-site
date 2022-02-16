@@ -29,18 +29,6 @@ const resizer = () => {
 	let listings = [...tbody.querySelectorAll('tr')];
 	let totalSize = 0;
 	listings.forEach((cell: HTMLTableRowElement) => totalSize += cell.classList.contains('pair') ? 2 : 1);
-	const yeet = (listing: HTMLTableRowElement) => {
-		if (listing.classList.contains('pair')) {
-			++yote;
-		}
-		const clone = listing.cloneNode(true);
-		lastRow.appendChild(clone);
-		listing.classList.add('yote');
-	};
-	if (totalSize < gridColumns) {
-		listings.forEach(yeet);
-		return;
-	}
 	const lastRowCount = totalSize % gridColumns;
 	const byOrder: HTMLTableRowElement[][] = [];
 	let maxOrder = 0;
@@ -61,7 +49,12 @@ const resizer = () => {
 		if (!listing) {
 			break;
 		}
-		yeet(listing);
+		if (listing.classList.contains('pair')) {
+			++yote;
+		}
+		const clone = listing.cloneNode(true);
+		lastRow.appendChild(clone);
+		listing.classList.add('yote');
 		if (index === 0) {
 			while (!byOrder[--order] && order);
 			index = byOrder[order]?.length - 1;
