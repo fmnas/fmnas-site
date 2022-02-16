@@ -131,7 +131,7 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 		// Attempt to convert to JPEG with max-height 4320.
 		$output_path = $file["tmp_name"] . ".resized.jpg";
 		try {
-			// TODO [$620c420275ed250008f3d655]: Resize multiple uploaded attachments remotely and in parallel.
+			// TODO [#278]: Resize multiple uploaded attachments remotely and in parallel.
 			resize($file["tmp_name"], $output_path, 4320);
 			$file["tmp_name"] = $output_path;
 			$file["size"] = filesize($output_path);
