@@ -34,6 +34,7 @@ table.listings {
 
 	&.last-row tbody {
 		grid-template-columns: repeat(auto-fit, minmax(0, 300px));
+		margin-top: 0;
 	}
 
 	tbody {
@@ -41,7 +42,7 @@ table.listings {
 		$gap: 1.2rem;
 		grid-column-gap: $gap;
 		grid-row-gap: $gap;
-		margin: 2vw;
+		margin: 1em 2vw;
 		grid-auto-flow: row dense;
 		grid-template-columns: minmax(0, 300px) repeat(auto-fill, minmax(0, 300px));
 		justify-content: center;
@@ -142,6 +143,11 @@ table.listings {
 			}
 
 			/* Note: adoptable.generated.css adds order: 3 for pending & closed */
+
+			// Cells moved to the last-row table.
+			&.yote {
+				display: none;
+			}
 		}
 	}
 
