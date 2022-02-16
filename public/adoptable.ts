@@ -82,7 +82,7 @@ function setupMobileTooltips() {
 function setupDesktopTooltips() {
 	document.querySelectorAll('tr.explain span.fee').forEach((feeText) => {
 		const span = feeText as HTMLSpanElement;
-		span.addEventListener('click', showMobileTooltip);
+		span.removeEventListener('click', showMobileTooltip);
 	});
 	document.querySelectorAll('section.explanations > aside').forEach((asideEl) => {
 		const aside = asideEl as HTMLElement;
