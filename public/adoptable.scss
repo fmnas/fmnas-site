@@ -18,7 +18,7 @@ table.listings {
 
 	&.last-row tbody {
 		grid-template-columns: repeat(auto-fit, minmax(0, min(300px, calc(49vw - #{$gap} / 2))));
-		margin-top: $gap;
+		margin: $gap 2vw;
 	}
 
 	tbody {
