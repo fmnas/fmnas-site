@@ -7,17 +7,12 @@ function addEventListeners(link: Element) {
 	const listing: HTMLTableRowElement = link.closest('tr')!;
 	listing.classList.add('linked');
 	listing.addEventListener('click', () => window.location.href = href);
-	listing.addEventListener('mousedown', (e) => {
+	listing.addEventListener('pointerdown', (e) => {
 		listing.classList.add('active');
 		e.preventDefault();
 	});
-	listing.addEventListener('touchstart', (e) => {
-		listing.classList.add('active');
-		e.preventDefault();
-	});
-	listing.addEventListener('mouseup', () => listing.classList.remove('active'));
-	listing.addEventListener('mouseout', () => listing.classList.remove('active'));
-	listing.addEventListener('touchend', () => listing.classList.remove('active'));
+	listing.addEventListener('pointerup', () => listing.classList.remove('active'));
+	listing.addEventListener('pointerout', () => listing.classList.remove('active'));
 	listing.querySelector('td.inquiry')?.addEventListener('click', (e) => e.stopPropagation());
 	listing.querySelector('td.fee')?.addEventListener('click', (e) => e.stopPropagation());
 }
@@ -89,7 +84,7 @@ function resizer() {
 }
 // TODO [#286]: Resizer miscalculates width when resizing after initial load in Firefox.
 
-tbody.querySelectorAll('th.name a[href]').forEach((link: Element) => {});
+tbody.querySelectorAll('th.name a[href]').forEach(addEventListeners);
 
 resizer();
 window.addEventListener('resize', resizer);
