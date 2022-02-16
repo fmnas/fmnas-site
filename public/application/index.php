@@ -117,7 +117,7 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 			}
 			$count++;
 		}
-		if ($count < 10 && $heic_count < 3) {
+		if ($count < 30 && $heic_count < 5) {
 			// Probably faster to do the resizing locally in this case.
 			foreach($filespecs as $index=>$filespec) {
 				try {
