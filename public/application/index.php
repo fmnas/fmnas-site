@@ -110,7 +110,7 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 			$filespec = new FileSpec();
 			$filespec->source = $file["tmp_name"];
 			$filespec->target = $file["tmp_name"] . ".jpg";
-			$filespec->height = 4320;
+			$filespec->height = 8640;
 			$filespecs[$index] = $filespec;
 			if (startsWith($file["type"], "image/hei")) {
 				$heic_count++;

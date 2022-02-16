@@ -534,7 +534,7 @@ p > strong:first-child {
 				grid-column: right;
 			}
 
-			label[for='other_specify'], div.other>span[data-type='label'][data-input-type='text'] {
+			label[for='other_specify'], div.other > span[data-type='label'][data-input-type='text'] {
 				display: none;
 			}
 
@@ -584,7 +584,6 @@ p > strong:first-child {
 
 	// About your home
 	section#about_home {
-
 		div.residence_grid {
 			display: grid; // inline-grid jumps around when the rented paragraph is shown for some reason
 			row-gap: $row-gap;
