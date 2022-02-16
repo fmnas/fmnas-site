@@ -537,6 +537,12 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 									$pet->id . ' ' . $pet->name : ''?>">
 				</label>
 			</section>
+			<section id="qualities">
+				<label class="textarea">
+					<span>What qualities and characteristics do you desire in your new pet?</span>
+					<textarea name="qualities" required></textarea>
+				</label>
+			</section>
 		</section>
 		<section id="about_home">
 			<h3>About your home</h3>
