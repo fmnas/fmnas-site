@@ -14,20 +14,6 @@ if (!isset($species)) {
 }
 /* @var $species Species */
 /* @var $path string */
-
-/**
- * @param string $basePath A path such as Cats/C1411Autumn
- * @return string A path such as C1411Autumn or /Cats/C1411Autumn
- */
-function relativePath(string $basePath): string {
-	global $path;
-	$p = trim($path, "/") . "/";
-	if (startsWith($p, $basePath)) {
-		return substr($basePath, strlen($p));
-	}
-	return "/$basePath";
-}
-
 ?>
 <!DOCTYPE html>
 <html lang="en-US">
@@ -37,7 +23,6 @@ function relativePath(string $basePath): string {
 <?php
 style();
 style("adoptable");
-style("adoptable.generated");
 emailLinks();
 ?>
 <script src="/email.js.php"></script>
@@ -77,6 +62,12 @@ pageHeader();
 		if (!$listed) {
 			echo ' soon';
 		}
+		if ($pet->status->displayStatus) {
+			echo ' displayStatus';
+			if (trim($pet->status->description ?? '')) {
+				echo ' explain';
+			}
+		}
 		echo '">';
 
 		echo '<th class="name"><a';
@@ -95,9 +86,15 @@ pageHeader();
 		echo $pet->age();
 		echo '</time></td>';
 
-		echo '<td class="fee"><div></div><span>';
-		echo $pet->fee;
-		echo '</span></td>';
+		echo '<td class="fee"><span class="fee">';
+		echo $pet->status->displayStatus ? $pet->status->name : ($listed ? $pet->fee : 'Coming Soon');
+		echo '</span>';
+		if ($pet->status->displayStatus && trim($pet->status->description ?? '')) {
+			echo '<aside class="explanation">';
+			echo nl2br(htmlspecialchars($pet->status->description));
+			echo '</aside>';
+		}
+		echo '</td>';
 
 		echo '<td class="img"><a';
 		echo $href;
@@ -123,7 +120,7 @@ pageHeader();
 		$description = (isset($status->description) && $status->description !== null) ? $status->description :
 				"";
 		if (isset($status->displayStatus) && $status->displayStatus && strlen(trim($description)) > 0) {
-			echo "<aside class=\"info\"><strong>{$status->name}:</strong><br>";
+			echo "<aside class=\"info st_" . $status->key . "\"><strong>{$status->name}:</strong><br>";
 			echo nl2br(htmlspecialchars($description), false);
 			echo "</aside>";
 		}
