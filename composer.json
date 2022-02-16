@@ -10,6 +10,7 @@
 		"ext-mbstring": "*",
 		"ext-mysqli": "*",
 		"ext-gd": "*",
-		"ext-xml": "*"
+		"ext-dom": "*",
+		"ext-ctype": "*"
 	}
 }

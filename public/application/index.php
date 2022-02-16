@@ -2,6 +2,7 @@
 require_once "../../src/common.php";
 require_once "../../src/form.php";
 require_once "../../src/db.php";
+require_once "../../src/resize.php";
 require_once "$t/header.php";
 require_once "$t/application_response.php";
 ini_set('memory_limit', '2048M');
@@ -62,8 +63,8 @@ $formConfig->handler = function(FormException $e): void {
 	// Attempt to email the PHP context to Sean so he can fix it.
 	@sendEmail(
 			new FormEmailConfig(
-					new EmailAddress("admin@" . _G_admin_domain()),
-					[new EmailAddress("sean@" . _G_admin_domain())],
+					new EmailAddress("admin@" . _G_public_domain()),
+					[new EmailAddress("sean@" . _G_public_domain())],
 					"Application Error Context"),
 			new RenderedEmail(
 					'<pre>' . print_r(get_defined_vars(), true) . '</pre>',
@@ -76,6 +77,7 @@ $cwd = getcwd();
 $formConfig->emails = function(array $formData) use ($cwd): array {
 	$shelterEmail = new EmailAddress(_G_default_email_user() . '@' . _G_public_domain(), _G_shortname());
 	$applicantEmail = new EmailAddress(trim($formData['AEmail']), trim($formData['AName']));
+	$applicantFakeEmail = new EmailAddress('noreply@' . _G_public_domain(), trim($formData['AName']));
 
 	$hash = sha1(print_r($formData, true));
 	$path = "https://" . _G_public_domain() . "/application/received/$hash.html";
@@ -95,6 +97,63 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 		return "$cwd/received";
 	};
 	$save->hashFilenames = HashOptions::SAVED_ONLY;
+	$save->filesConverter = function(array &$files) use (&$total_size): void {
+		$total_size = 0;
+		$filespecs = [];
+		$count = 0;
+		$heic_count = 0;
+		foreach ($files as $index=>&$file) {
+			if (!startsWith($file["type"], "image/")) {
+				$filespecs[$index] = null;
+				continue;
+			}
+			$filespec = new FileSpec();
+			$filespec->source = $file["tmp_name"];
+			$filespec->target = $file["tmp_name"] . ".jpg";
+			$filespec->height = 4320;
+			$filespecs[$index] = $filespec;
+			if (startsWith($file["type"], "image/hei")) {
+				$heic_count++;
+			}
+			$count++;
+		}
+		if ($count < 30 && $heic_count < 5) {
+			// Probably faster to do the resizing locally in this case.
+			foreach($filespecs as $index=>$filespec) {
+				try {
+					resize($filespec->source, $filespec->target, $filespec->height);
+					if ($files[$index]["type"] !== "image/jpeg") {
+						$files[$index]["type"] = "image/jpeg";
+						$files[$index]["name"] .= ".jpg";
+					}
+					$files[$index]["tmp_name"] = $filespec->target;
+					$files[$index]["size"] = filesize($filespec->target);
+				} catch (ImageResizeException $e) {
+					continue;
+				}
+			}
+		} else {
+			$results = resizeMultiple($filespecs);
+			foreach($results as $index=>$result) {
+				if ($result === true) {
+					if ($files[$index]["type"] !== "image/jpeg") {
+						$files[$index]["type"] = "image/jpeg";
+						$files[$index]["name"] .= ".jpg";
+					}
+					$files[$index]["tmp_name"] = $filespecs[$index]->target;
+					$files[$index]["size"] = filesize($files[$index]["tmp_name"]);
+				}
+			}
+		}
+		unset($file);
+		foreach ($files as $file) {
+			$total_size += $file["size"];
+		}
+		unset($file);
+		foreach ($files as &$file) {
+			$file["total_size"] = $total_size; // For use by attachFiles
+		}
+	};
 	$save->globalConversion = true;
 
 	$dump = new FormEmailConfig(
@@ -115,24 +174,14 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 	}
 
 	$primaryEmail = new FormEmailConfig(
-			$applicantEmail,
+			$applicantFakeEmail,
 			[$shelterEmail],
 			$primarySubject,
 			['main' => true, 'path' => $path, 'weblink' => true,
 					'outside_warn' => $outside_warn, 'outside_message' => $outside_message,]
 	);
 	$primaryEmail->attachFiles = function(array $metadata): bool {
-		$total_size = 0;
-		foreach ($_FILES as $file_input) {
-			if (is_array($file_input["size"])) {
-				foreach ($file_input["size"] as $size) {
-					$total_size += $size;
-				}
-			} else {
-				$total_size += $file_input["size"];
-			}
-		}
-		return $total_size < 20 * 1048576;
+		return isset($metadata["total_size"]) && $metadata["total_size"] < 20 * 1048576;
 	};
 
 	$secondaryEmail = new FormEmailConfig(

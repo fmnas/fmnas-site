@@ -40,7 +40,6 @@ function remoteSize(string $path): array {
 			CURLOPT_URL => Config::$image_size_endpoint,
 			CURLOPT_POST => true,
 			CURLOPT_POSTFIELDS => ["image" => new CURLFile($path)],
-			CURLOPT_INFILESIZE => filesize($path),
 			CURLOPT_RETURNTRANSFER => true,
 	]);
 	$json = curl_exec($curl);
@@ -73,6 +72,75 @@ function size(string $path): array {
 }
 
 /**
+ * Resize multiple images remotely and in parallel.
+ * @param array<FileSpec> $files
+ * @return array<boolean|ImageResizeException> for each file, true for success and ImageResizeException for failure
+ * @throws ImageResizeException
+ */
+// TODO [#279]: Parallel resizing is much slower than it should be.
+function resizeMultiple(array $files): array {
+	$results = [];
+	$curls = [];
+	foreach ($files as $index => $file) {
+		if (!$file) {
+			$curls[$index] = null;
+			$results[$index] = new ImageResizeException("file is null");
+			continue;
+		}
+		/** @var $file FileSpec */
+		$curl = curl_init();
+		if (!$curl) {
+			$curls[$index] = null;
+			continue;
+		}
+		curl_setopt_array($curl, [
+				CURLOPT_URL => Config::$resize_image_endpoint,
+				CURLOPT_POST => true,
+				CURLOPT_POSTFIELDS => ["image" => new CURLFile($file->source), "height" => $file->height],
+				CURLOPT_RETURNTRANSFER => true,
+		]);
+		$curls[$index] = $curl;
+	}
+	$multi = curl_multi_init();
+	/** @noinspection PhpConditionAlreadyCheckedInspection */
+	if (!$multi) {
+		throw new ImageResizeException("Failed to initialize cURL");
+	}
+	foreach ($curls as $curl) {
+		if ($curl !== null) {
+			curl_multi_add_handle($multi, $curl);
+		}
+	}
+	$running = null;
+	do {
+		curl_multi_exec($multi, $running);
+	} while ($running);
+	foreach ($curls as $curl) {
+		if ($curl !== null) {
+			curl_multi_remove_handle($multi, $curl);
+		}
+	}
+	foreach ($curls as $index => $curl) {
+		if ($curl === null) {
+			$results[$index] = new ImageResizeException("Failed to initialize cURL");
+			continue;
+		}
+		if (!curl_errno($curl)) {
+			if (!file_put_contents($files[$index]->target, curl_multi_getcontent($curl))) {
+				$results[$index] = new ImageResizeException("Failed to write file");
+			} else {
+				$results[$index] = true;
+			}
+		} else {
+			$results[$index] =
+					new ImageResizeException("cURL Error: " . curl_error($curl) . "\n" . curl_multi_getcontent($curl));
+		}
+		curl_close($curl);
+	}
+	return $results;
+}
+
+/**
  * Run resize with the remote resize-image endpoint.
  * @param string $source The absolute path of the original image.
  * @param string $target The absolute path at which to save the resized image.
@@ -81,24 +149,13 @@ function size(string $path): array {
  * @throws ImageResizeException
  */
 function remoteResize(string $source, string $target, int $height = 480): void {
-	$curl = curl_init();
-	if (!$curl) {
-		throw new ImageResizeException("Failed to initialize cURL");
-	}
-	curl_setopt_array($curl, [
-		CURLOPT_URL => Config::$resize_image_endpoint,
-		CURLOPT_POST => true,
-		CURLOPT_POSTFIELDS => ["image" => new CURLFile($source), "height" => $height],
-		CURLOPT_INFILESIZE => filesize($source),
-		CURLOPT_RETURNTRANSFER => true,
-	]);
-	$result = curl_exec($curl);
-	if (!curl_errno($curl)) {
-		file_put_contents($target, $result);
-		curl_close($curl);
-	} else {
-		curl_close($curl);
-		throw new ImageResizeException("cURL Error: " . curl_error($curl) . "\n$result");
+	$filespec = new FileSpec();
+	$filespec->source = $source;
+	$filespec->target = $target;
+	$filespec->height = $height;
+	$result = resizeMultiple([$filespec])[0];
+	if ($result !== true) {
+		throw $result;
 	}
 }
 
@@ -122,4 +179,10 @@ function resize(string $source, string $target, int $height = 480): void {
 	} catch (ImagickException $e) {
 		remoteResize($source, $target, $height);
 	}
+}
+
+class FileSpec {
+	public string $source;
+	public string $target;
+	public int $height;
 }
