@@ -84,9 +84,23 @@ function setupDesktopTooltips() {
 		const span = feeText as HTMLSpanElement;
 		span.removeEventListener('click', showMobileTooltip);
 	});
-	document.querySelectorAll('section.explanations > aside').forEach((asideEl) => {
-		const aside = asideEl as HTMLElement;
-		aside.click();
+	document.querySelectorAll('section.explanations > aside > div.close').forEach((close) => {
+		const closeButton = close as HTMLDivElement;
+		closeButton.click();
+	});
+	document.querySelectorAll('tr.explain').forEach((rowEl) => {
+		const listing = rowEl as HTMLTableRowElement;
+		const cell: HTMLTableCellElement = listing.querySelector('td.fee')!;
+		const span: HTMLSpanElement = cell.querySelector('span.fee')!
+		const explanation: HTMLElement = cell.querySelector('aside.explanation')!
+		const show = () => cell.classList.add('active');
+		const hide = (e: Event) => {
+			cell.classList.remove('active');
+			e.stopPropagation();
+		};
+		span.addEventListener('pointerenter', show);
+		cell.addEventListener('pointerleave', hide);
+		explanation.addEventListener('click', hide);
 	});
 }
 

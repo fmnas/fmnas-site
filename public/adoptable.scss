@@ -189,8 +189,8 @@ table.listings {
 					box-sizing: border-box;
 					z-index: -1;
 					opacity: 0;
-					transition: opacity 200ms ease-out, z-index 0s 200ms;
-					pointer-events: none;
+					transition: opacity 200ms ease-out, z-index 0s 200ms, visibility 0s 200ms;
+					visibility: hidden;
 
 					&.hidden {
 						display: none;
@@ -201,21 +201,22 @@ table.listings {
 					}
 				}
 
+				span.fee:hover::after {
+					content: '\e887';
+				}
+
 				@media (min-width: $cutoff) {
-					span.fee:hover::after {
+					&.active span.fee::after {
 						content: '\e887';
 					}
 
-					span.fee:hover ~ aside.explanation, aside.explanation:hover {
+					&.active aside.explanation {
 						z-index: 2;
 						opacity: 1;
 						transition: opacity 200ms ease-in;
-						pointer-events: auto;
+						cursor: default;
+						visibility: visible;
 					}
-				}
-
-				span.fee:active::after {
-					content: '\e887';
 				}
 			}
 
@@ -349,12 +350,15 @@ section.explanations {
 		}
 
 		&.shown {
+			// TODO: Fade in/out mobile tooltips.
 			position: fixed;
 			bottom: 2vw;
 			left: 2vw;
 			width: 96vw;
 			z-index: 2;
 			margin: 0;
+			font-size: 11pt;
+
 			> div.close {
 				display: block;
 				position: absolute;
@@ -368,7 +372,6 @@ section.explanations {
 					color: var(--active-color);
 				}
 			}
-			font-size: 11pt;
 		}
 	}
 }
