@@ -47,8 +47,8 @@ class DatabaseWriter extends Database {
 		}
 
 		if (!($insertPet = $this->db->prepare("
-			REPLACE INTO pets (id, name, species, breed, dob, sex, fee, photo, description, status, plural, legacy_path, path)
-			VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, DEFAULT, DEFAULT)
+			REPLACE INTO pets (id, name, species, breed, dob, sex, fee, photo, description, status, legacy_path, path)
+			VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, DEFAULT, DEFAULT)
 			"))) {
 			log_err("Failed to prepare insertPet: {$this->db->error}");
 		} else {
@@ -160,7 +160,6 @@ class DatabaseWriter extends Database {
 		$photo = isset($pet['photo']) ? ($pet['photo']['key'] ?? null) : null;
 		$description = isset($pet['description']) ? ($pet['description']['key'] ?? null) : null;
 		$status = $pet['status'] ?? 1;
-		$plural = $pet['plural'] ?? 0;
 		$photos = $pet['photos'] ?? [];
 		if (!$this->db->begin_transaction()) {
 			$error = "Failed to begin transaction";
@@ -173,10 +172,10 @@ class DatabaseWriter extends Database {
 			}
 		}
 		if (!$error) {
-			if (!$this->insertPet->bind_param("ssissisiiii", $id, $name, $species, $breed, $dob, $sex, $fee, $photo,
-					$description, $status, $plural)) {
+			if (!$this->insertPet->bind_param("ssissisiii", $id, $name, $species, $breed, $dob, $sex, $fee, $photo,
+					$description, $status)) {
 				$error =
-						"Binding $id,$name,$species,$breed,$dob,$sex,$fee,$photo,$description,$status,$plural to insertPet failed: {$this->db->error}";
+						"Binding $id,$name,$species,$breed,$dob,$sex,$fee,$photo,$description,$status to insertPet failed: {$this->db->error}";
 			} else if (!$this->insertPet->execute()) {
 				$error = "Executing insertPet failed: {$this->db->error}";
 			} else if (!$this->deletePhotos->bind_param("s", $id)) {
