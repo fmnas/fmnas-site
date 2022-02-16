@@ -42,6 +42,9 @@ table.listings {
 			--listing-background: var(--adoptable-color);
 			white-space: nowrap;
 			$line-height: 1.1em;
+			border: 1px solid var(--border-color);
+			border-radius: 1rem;
+			background: var(--listing-background);
 
 			&.pair {
 				grid-column-end: span 2;
@@ -144,9 +147,6 @@ table.listings {
 	td, th {
 		--x-scale: 1;
 		--y-scale: 1;
-		--border-width: 1px;
-		--vertical-border-width: calc(1px / var(--x-scale));
-		--x-border-radius: calc(1rem / var(--x-scale));
 		display: block;
 		padding-left: 1em;
 		padding-right: 1em;
@@ -154,24 +154,17 @@ table.listings {
 		width: calc(100% / var(--x-scale));
 		text-align: center;
 		vertical-align: middle;
-		border-left: var(--vertical-border-width) solid var(--border-color);
-		border-right: var(--vertical-border-width) solid var(--border-color);
 		min-height: 1.4em;
-		background-color: var(--listing-background);
 		transform: scaleX(var(--x-scale));
 		transform-origin: left;
 
 
 		&:first-child {
-			border-top: var(--border-width) solid var(--border-color);
-			border-radius: var(--x-border-radius) var(--x-border-radius) 0 0 / 1rem 1rem 0 0;
 			padding-top: 0.5em;
 		}
 
 		&:last-child {
-			border-bottom: var(--border-width) solid var(--border-color);
 			padding-bottom: 0.5em;
-			border-radius: 0 0 var(--x-border-radius) var(--x-border-radius) / 0 0 1rem 1rem;
 		}
 
 		> * {
