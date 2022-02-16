@@ -130,6 +130,7 @@ pageHeader();
 	<?php
 	foreach (_G_statuses() as $status) {
 		/* @var $status Status */
+		/** @noinspection PhpConditionAlreadyCheckedInspection */
 		$description = (isset($status->description) && $status->description !== null) ? $status->description :
 				"";
 		if (isset($status->displayStatus) && $status->displayStatus && strlen(trim($description)) > 0) {
