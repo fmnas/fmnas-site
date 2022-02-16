@@ -34,9 +34,14 @@ table.listings {
 	display: block;
 
 	tbody {
-		display: flex;
-		justify-content: space-around;
-		flex-wrap: wrap;
+		display: grid;
+		$gap: 1.2rem;
+		grid-column-gap: $gap;
+		grid-row-gap: $gap;
+		margin: 2vw;
+		grid-auto-flow: row dense;
+		grid-template-columns: minmax(0, 300px) repeat(auto-fill, minmax(0, 300px));
+		justify-content: center;
 
 		@media print {
 			display: block;
@@ -44,12 +49,53 @@ table.listings {
 
 		/* Each listing */
 		tr {
-			float: left;
-			max-width: 50vw;
-			min-width: calc(200px + 8em);
-			padding: 1em;
+			display: block;
+			width: 100%;
 			box-sizing: border-box;
 			--listing-background: var(--adoptable-color);
+			white-space: nowrap;
+			$line-height: 1.1em;
+
+			&.pair {
+				grid-column-end: span 2;
+				ul {
+					position: relative;
+					display: inline-block;
+					padding: 0;
+					margin: 0;
+					width: 100%;
+					list-style-type: none;
+					li {
+						width: 50%;
+						display: inline-block;
+						box-sizing: border-box;
+						&:not(td.img li) {
+							$ampersand-width: 1.1em;
+							--inner-padding: calc(#{$ampersand-width} / 2 + 0.1em);
+							&:first-of-type {
+								padding-right: var(--inner-padding);
+								text-align: right;
+							}
+
+							&:nth-of-type(2) {
+								padding-left: var(--inner-padding);
+								text-align: left;
+
+								&::before {
+									display: block;
+									position: absolute;
+									top: 0;
+									left: calc(50% - #{$ampersand-width} / 2);
+									width: $ampersand-width;
+									height: $line-height;
+									text-align: center;
+									content: '&';
+								}
+							}
+						}
+					}
+				}
+			}
 
 			a:hover {
 				text-decoration: none;
@@ -106,7 +152,7 @@ table.listings {
 			th.name {
 				font-size: 18pt;
 
-				> a[id]:not([id=''])::after {
+				> a[id]:not([id=''])::after, > a li[id]:not([id=''])::after {
 					content: ' (id#' attr(id) ')';
 					font-size: 11pt;
 					vertical-align: 10%;
@@ -115,12 +161,13 @@ table.listings {
 
 			&:not(.soon) th.name a {
 				border-bottom: 1pt solid var(--link-color);
+				// TODO: Prevent the bottom border on the link row of pair listings from extending all the way to both sides.
 
-				&::after {
+				&:not(tr.pair a)::after {
 					content: ' »';
 				}
 
-				&[id]:not([id=''])::after {
+				&[id]:not([id=''])::after, li[id]:not([id=''])::after {
 					content: ' (id#' attr(id) ') »';
 				}
 
@@ -146,16 +193,13 @@ table.listings {
 			}
 
 			td.img {
-				padding-left: 2em;
-				padding-right: 2em;
-				/* Ensures 2em margin either side of image but only 1em either side of name */
+				padding: 0 2vw;
 
 				img {
 					display: block;
-					width: 200px;
-					height: 300px;
-					margin-left: auto;
-					margin-right: auto;
+					max-width: 200px;
+					width: 100%;
+					margin: 0 auto;
 				}
 			}
 
