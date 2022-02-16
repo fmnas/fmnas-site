@@ -62,9 +62,9 @@ export interface Config {
 	public_domain: string;
 	shortname: string;
 	transport_date: string;
-	species: Species[];
-	sexes: Sex[];
-	statuses: Status[];
+	species: Record<number, Species>;
+	sexes: Record<number, Sex>;
+	statuses: Record<number, Status>;
 }
 
 export interface PendingPhoto {

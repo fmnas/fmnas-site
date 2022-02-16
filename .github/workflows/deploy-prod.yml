@@ -29,6 +29,8 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('composer.lock') }}
       - name: Install PHP dependencies
         uses: php-actions/composer@v6
+        with:
+          args: --ignore-platform-reqs
       - name: Compile public site stylesheets
         run: npx sass --style=compressed public:public
       - name: Compile public site scripts

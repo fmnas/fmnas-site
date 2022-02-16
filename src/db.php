@@ -352,7 +352,6 @@ class Database {
 		$p->status = _G_statuses()[$pet["status"]];
 		$p->breed = $pet["breed"];
 		$p->dob = $pet["dob"];
-		$p->plural = (bool) $pet["plural"];
 		return $p;
 	}
 
