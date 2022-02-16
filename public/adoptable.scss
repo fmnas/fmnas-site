@@ -46,6 +46,22 @@ table.listings {
 			border-radius: 1rem;
 			background: var(--listing-background);
 
+			&.linked {
+				box-shadow: -2px 2px 3px var(--shadow-color);
+				cursor: pointer;
+
+				&.active {
+					box-shadow: -2px 2px 3px var(--shadow-color) inset;
+
+					th.name {
+						> a, > a:visited {
+							color: var(--active-color);
+							border-bottom-color: var(--active-color);
+						}
+					}
+				}
+			}
+
 			&.pair {
 				grid-column-end: span 2;
 

@@ -57,11 +57,29 @@ const resizer = () => {
 		lastRow.appendChild(clone);
 		listing.classList.add('yote');
 		if (--index < 0) {
-			while (!byOrder[--order]?.length && order > 0);
+			do {
+				--order;
+			} while (!byOrder[order]?.length && order > 0);
 			index = byOrder[order]?.length - 1;
 		}
 	}
 };
+// TODO [#286]: Resizer miscalculates width when resizing after initial load in Firefox.
+
+tbody.querySelectorAll('th.name a[href]').forEach((link: Element) => {
+	const href = (link as HTMLAnchorElement).href;
+	const listing: HTMLTableRowElement = link.closest('tr')!;
+	listing.classList.add('linked');
+	listing.addEventListener('click', () => window.location.href = href);
+	listing.addEventListener('mousedown', (e) => {
+		listing.classList.add('active');
+		e.preventDefault();
+	});
+	listing.addEventListener('mouseup', () => listing.classList.remove('active'));
+	listing.addEventListener('mouseout', () => listing.classList.remove('active'));
+	listing.querySelector('td.inquiry')?.addEventListener('click', (e) => e.stopPropagation());
+	listing.querySelector('td.fee')?.addEventListener('click', (e) => e.stopPropagation());
+});
+
 resizer();
 window.addEventListener('resize', resizer);
-// TODO [#286]: Resizer miscalculates width when resizing after initial load in Firefox.
