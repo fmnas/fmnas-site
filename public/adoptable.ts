@@ -69,4 +69,4 @@ const resizer = () => {
 };
 resizer();
 window.addEventListener('resize', resizer);
-// TODO: Resizer miscalculates width when resizing after initial load in Firefox.
+// TODO [#286]: Resizer miscalculates width when resizing after initial load in Firefox.
