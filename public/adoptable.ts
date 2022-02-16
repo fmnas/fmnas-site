@@ -93,20 +93,28 @@ function setupDesktopTooltips() {
 		const cell: HTMLTableCellElement = listing.querySelector('td.fee')!;
 		const span: HTMLSpanElement = cell.querySelector('span.fee')!
 		const explanation: HTMLElement = cell.querySelector('aside.explanation')!
-		const show = () => cell.classList.add('active');
+		const show = (e: Event) => {
+			cell.classList.add('active');
+			e.stopPropagation();
+		};
 		const hide = (e: Event) => {
 			cell.classList.remove('active');
 			e.stopPropagation();
 		};
 		span.addEventListener('pointerenter', show);
-		cell.addEventListener('pointerleave', hide);
+		cell.addEventListener('mouseout', hide);
 		explanation.addEventListener('click', hide);
 	});
 }
 
 function resizer() {
 	// Scale data to fit the grid column.
-	lastRow.replaceChildren();
+	try {
+		lastRow.replaceChildren();
+	} catch (e: any) {
+		// replaceChildren not supported on safari
+		lastRow.innerHTML = '';
+	}
 	tbody.querySelectorAll('tr').forEach((listing: HTMLTableRowElement) => {
 		listing.classList.remove('yote');
 		const referenceRow: HTMLTableCellElement = listing.querySelector('td.img')!;
