@@ -110,11 +110,16 @@ pageHeader();
 	?>
 	</tbody>
 </table>
+<table class="listings last-row">
+	<tbody></tbody>
+</table>
+<script src="/adoptable.js"></script>
 <section class="explanations">
 	<aside class="info"><strong>Adoption Fees</strong> include Vaccinations and Spay/Neuter!</aside>
 	<?php
 	foreach (_G_statuses() as $status) {
 		/* @var $status Status */
+		/** @noinspection PhpConditionAlreadyCheckedInspection */
 		$description = (isset($status->description) && $status->description !== null) ? $status->description :
 				"";
 		if (isset($status->displayStatus) && $status->displayStatus && strlen(trim($description)) > 0) {
