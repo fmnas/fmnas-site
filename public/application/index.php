@@ -62,8 +62,8 @@ $formConfig->handler = function(FormException $e): void {
 	// Attempt to email the PHP context to Sean so he can fix it.
 	@sendEmail(
 			new FormEmailConfig(
-					new EmailAddress("admin@forgetmenotshelter.org"),
-					[new EmailAddress("sean@forgetmenotshelter.org")],
+					new EmailAddress("admin@" . _G_admin_domain()),
+					[new EmailAddress("sean@" . _G_admin_domain())],
 					"Application Error Context"),
 			new RenderedEmail(
 					'<pre>' . print_r(get_defined_vars(), true) . '</pre>',
@@ -486,6 +486,12 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 					<input type="text" name="particular_specify"
 							value="<?=(($_GET['pet'] ?? false) && $pet = $db->getPetById($_GET['pet'])) ?
 									$pet->id . ' ' . $pet->name : ''?>">
+				</label>
+			</section>
+			<section id="qualities">
+				<label class="textarea">
+					<span>What qualities and characteristics do you desire in your new pet?</span>
+					<textarea name="qualities" required></textarea>
 				</label>
 			</section>
 		</section>
