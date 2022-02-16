@@ -54,7 +54,7 @@ const resizer = () => {
 	}
 	let yote = 0;
 	let order = maxOrder;
-	let index = byOrder[maxOrder].length - 1;
+	let index = byOrder[maxOrder]?.length - 1;
 	console.log(byOrder, maxOrder);
 	while (yote++ < lastRowCount && order >= 0) {
 		const listing = byOrder[order]?.[index--];
@@ -63,7 +63,8 @@ const resizer = () => {
 		}
 		yeet(listing);
 		if (index === 0) {
-			index = byOrder[--order].length - 1;
+			while (!byOrder[--order] && order);
+			index = byOrder[order]?.length - 1;
 		}
 	}
 };
