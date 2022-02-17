@@ -69,23 +69,52 @@ pageHeader();
 				echo ' explain';
 			}
 		}
+		if ($pet->bonded) {
+			echo ' pair';
+		}
 		echo '">';
 
 		echo '<th class="name"><a';
 		echo $href;
-		echo ' id="' . htmlspecialchars($pet->id) . '">';
-		echo htmlspecialchars($pet->name);
+		if ($pet->bonded) {
+			echo '><ul><li id="' . htmlspecialchars($pet->id) . '">';
+			echo htmlspecialchars($pet->name);
+			echo '<li id="' . htmlspecialchars($pet->friend?->id) . '">';
+			echo htmlspecialchars($pet->friend?->name);
+			echo '</li></ul>';
+		} else {
+			echo ' id="' . htmlspecialchars($pet->id) . '">';
+			echo htmlspecialchars($pet->name);
+		}
 		echo '</a></th>';
 
 		echo '<td class="sex">';
-		echo ucfirst(@($pet->sex->name) ?? "");
-		echo " " . $pet->breed;
+		if (($lsex = ucfirst(@($pet->sex->name) ?? "") . " " . $pet->breed) ===
+				($rsex = ucfirst(@($pet->friend->sex->name) ?? "") . " " . $pet->friend?->breed) ||
+				!$pet->bonded) {
+			echo $lsex;
+		} else {
+			echo "<ul><li>$lsex<li>$rsex</ul>";
+		}
 		echo '</td>';
 
 		echo '<td class="age">';
-		echo "<time datetime=\"{$pet->dob}\">";
-		echo $pet->age();
-		echo '</time></td>';
+		if (!$pet->friend?->dob || $pet->age() === $pet->friend->age()) {
+			echo "<time datetime=\"{$pet->dob}\">";
+			echo $pet->age();
+			echo '</time>';
+		} else {
+			echo '<ul><li>';
+			echo "<time datetime=\"{$pet->dob}\">";
+			echo $pet->age();
+			echo '</time>';
+			echo '<li>';
+			echo "<time datetime=\"{$pet->friend->dob}\">";
+			echo $pet->friend->age();
+			echo '</time>';
+			echo '</li></ul>';
+		}
+		echo '</td>';
 
 		echo '<td class="fee"><span class="fee">';
 		echo $pet->status->displayStatus ? $pet->status->name : ($listed ? $pet->fee : 'Coming Soon');
@@ -100,7 +129,15 @@ pageHeader();
 		echo '<td class="img"><a';
 		echo $href;
 		echo '>';
-		echo $pet->photo?->imgTag(htmlspecialchars($pet->name), false, false, 300);
+		if (!$pet->friend?->photo?->key || $pet->friend->photo->key === $pet->photo->key) {
+			echo $pet->photo?->imgTag($pet->name, false, false, 300);
+		} else {
+			echo '<ul><li>';
+			echo $pet->photo?->imgTag($pet->name, false, false, 300);
+			echo '<li>';
+			echo $pet->friend->photo?->imgTag($pet->friend->name, false, false, 300);
+			echo '</li></ul>';
+		}
 		echo '</a></td>';
 
 		echo '<td class="inquiry"><a data-email></a></td>';

@@ -105,6 +105,7 @@ class Asset {
 		$tag .= ' src="' . $path . '"';
 		if ($alt) {
 			$tag .= ' alt="' . htmlspecialchars($alt) . '"';
+			$tag .= ' title="' . htmlspecialchars($alt) . '"';
 		}
 		$tag .= '>';
 		if ($link) {
