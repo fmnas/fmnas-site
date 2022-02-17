@@ -53,8 +53,7 @@ pageHeader();
 		$href = "";
 		if ($listed) {
 			$href .= " href=\"/$path/";
-			$href .= htmlspecialchars($pet->id);
-			$href .= htmlspecialchars(str_replace(" ", "", $pet->name));
+			$href .= htmlspecialchars($pet->path);
 			$href .= '"';
 		}
 
