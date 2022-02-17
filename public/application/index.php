@@ -183,6 +183,7 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 	$primaryEmail->attachFiles = function(array $metadata): bool {
 		return isset($metadata["total_size"]) && $metadata["total_size"] < 20 * 1048576;
 	};
+	$primaryEmail->replyTo = [$applicantEmail];
 
 	$secondaryEmail = new FormEmailConfig(
 			$shelterEmail,
