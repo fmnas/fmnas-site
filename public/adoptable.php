@@ -117,7 +117,8 @@ pageHeader();
 		echo '</td>';
 
 		echo '<td class="fee"><span class="fee">';
-		echo $pet->status->displayStatus ? $pet->status->name : ($listed ? $pet->fee : 'Coming Soon');
+		echo $pet->status->displayStatus ? $pet->status->name :
+				($listed ? ($pet->fee . $pet->bonded ? '' : ' BONDED PAIR') : 'Coming Soon');
 		echo '</span>';
 		if ($pet->status->displayStatus && trim($pet->status->description ?? '')) {
 			echo '<aside class="explanation">';
