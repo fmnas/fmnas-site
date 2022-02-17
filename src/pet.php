@@ -143,7 +143,11 @@ class Pet implements JsonSerializable {
 	public ?array $photos; // photo assets (array of Assets)
 	public ?Asset $description; // description asset
 	public Status $status;
-	// TODO [#22]: Two animals in one listing?
+	public int $bonded;
+	public ?Pet $friend;
+	public ?string $adoption_date;
+	public ?int $order;
+	public ?string $modified;
 
 	public function listed(): bool {
 		$description = $this->description?->fetch();
@@ -166,6 +170,11 @@ class Pet implements JsonSerializable {
 				"fee" => $this->fee,
 				"status" => $this->status->name,
 				"path" => $this->path,
+				"bonded" => $this->bonded,
+				"friend" => $this->friend?->id,
+				"adoption_date" => $this->adoption_date,
+				"order" => $this->order,
+				"modified" => $this->modified,
 		];
 	}
 
@@ -198,6 +207,11 @@ class Pet implements JsonSerializable {
 				"photo" => $this->photo,
 				"photos" => $this->photos,
 				"description" => $this->description,
+				"bonded" => $this->bonded,
+				"friend" => $this->bonded === 1 ? $this->friend->jsonSerialize() : null,
+				"adoption_date" => $this->adoption_date,
+				"order" => $this->order,
+				"modified" => $this->modified,
 		];
 	}
 }
