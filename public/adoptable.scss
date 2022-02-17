@@ -122,7 +122,8 @@ table.listings {
 
 				td.img img:not(ul img) {
 					max-width: calc(400px + #{$gap});
-					max-height: 300px;
+					max-height: min(300px, calc(50vw - #{$gap}) * 3 / 2);
+					width: auto;
 				}
 			}
 
@@ -325,6 +326,7 @@ table.listings {
 section.explanations {
 	max-width: 10in;
 	margin: 0 auto;
+
 	> aside {
 		z-index: 2;
 
@@ -351,6 +353,7 @@ section.explanations {
 				cursor: pointer;
 				font-family: 'Material Icons', sans-serif;
 				font-size: 120%;
+
 				&:active {
 					color: var(--active-color);
 				}
