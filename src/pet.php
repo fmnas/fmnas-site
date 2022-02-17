@@ -194,7 +194,7 @@ class Pet implements JsonSerializable {
 
 	public function id(): string {
 		if ($this->bonded === 1) {
-			return $this->id . ' & ' . $this->friend->id;
+			return $this->id . $this->friend->id;
 		}
 		return $this->id;
 	}

@@ -127,7 +127,7 @@ export async function uploadDescription(body: string): Promise<Asset> {
 // Mirrors Pet::toArray() in the PHP implementation.
 export function getContext(pet: Pet): Record<string, string> {
 	let context: Record<string, string> = {
-		'id': pet.friend ? `${pet.id} & ${pet.friend!.id}` : pet.id,
+		'id': pet.friend ? `${pet.id}${pet.friend!.id}` : pet.id,
 		'name': pet.friend ? `${pet.name} & ${pet.friend.name}` : pet.name,
 		'species': 'TODO', // TODO: Add species to typescript context.
 	};
