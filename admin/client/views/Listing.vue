@@ -57,14 +57,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           <input id="dob" v-model="pet['dob']" :max="new Date().toISOString().split('T')[0]" name="dob"
               type="date">
           <label for="friend_dob" v-if="pet.friend"><abbr title="date of birth">DOB</abbr></label>
-          <input id="friend_dob" v-if="pet.friend" v-model="pet.friend.dob" :max="new Date().toISOString().split('T')[0]" name="dob"
+          <input id="friend_dob" v-if="pet.friend" v-model="pet.friend.dob"
+              :max="new Date().toISOString().split('T')[0]" name="dob"
               type="date">
         </li>
         <li class="sex">
           <label for="sexes">Sex</label>
           <fieldset id="sexes" :class="['sexes', sexInteracted || validated ? 'validated' : '']">
-            <label v-for="sex of config['sexes']" :key="sex['key']">
-              <input v-model="pet['sex']" :value="sex['key']" name="sex" required type="radio">
+            <label v-for="sex of config.sexes" :key="sex.key">
+              <input v-model="pet.sex" :value="sex.key" name="sex" required type="radio">
               <abbr :title="ucfirst(sex['name'])" @click.prevent="(e: Event) => {sexClick(sex); e.target.blur();}"
                   @keyup.enter="sexClick(sex); $refs.fee.focus();" @keyup.space="sexClick(sex);" tabindex="0">{{
                   sex['name'][0].toUpperCase()
@@ -72,11 +73,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             </label>
           </fieldset>
           <label for="friend_sexes" v-if="pet.friend">Sex</label>
-          <fieldset id="friend_sexes" v-if="pet.friend" :class="['sexes', sexInteracted || validated ? 'validated' : '']">
-            <label v-for="sex of config['sexes']" :key="sex['key']">
-              <input v-model="pet.friend.sex" :value="sex['key']" name="sex" required type="radio">
+          <fieldset id="friend_sexes" v-if="pet.friend"
+              :class="['sexes', sexInteracted || validated ? 'validated' : '']">
+            <label v-for="sex of config.sexes" :key="sex.key">
+              <input v-model="pet.friend.sex" :value="sex.key" name="friend_sex" required type="radio">
               <abbr :title="ucfirst(sex['name'])" @click.prevent="(e: Event) => {sexClick(sex, true); e.target.blur();}"
-                  @keyup.enter="sexClick(sex, true); $refs.fee.focus();" @keyup.space="sexClick(sex, true);" tabindex="0">{{
+                  @keyup.enter="sexClick(sex, true); $refs.fee.focus();" @keyup.space="sexClick(sex, true);"
+                  tabindex="0">{{
                   sex['name'][0].toUpperCase()
                 }}</abbr>
             </label>
@@ -466,7 +469,7 @@ export default defineComponent({
     },
     sexClick(sex: Sex, friend = false) {
       // Allow deselecting a sex rather than just selecting one.
-      const pet = friend ? this.pet : this.pet.friend!;
+      const pet = friend ? this.pet.friend! : this.pet;
       pet.sex = pet.sex === sex.key ? undefined : sex.key;
       this.sexInteracted = true;
     },
@@ -611,34 +614,50 @@ section.metadata {
       }
     }
 
-    fieldset.sexes input + abbr, .metadata button {
-      display: inline-block;
-      text-align: center;
-      transition: all 0.2s;
-    }
-
-    fieldset.sexes input:not(:checked):not(:invalid) + abbr:hover,
-    fieldset.sexes:not(.validated) input:not(:checked):invalid + abbr:hover,
-    button.save:hover {
-      background-color: var(--focus-color);
-      color: var(--background-color);
-    }
-
-    fieldset.sexes input:checked + abbr:hover, fieldset.sexes input + abbr:active, button.save:active {
-      box-shadow: inset 0 0 2px 1px var(--active-color);
-    }
-
-    fieldset.sexes input + abbr:active, .metadata button:active {
-      background-color: var(--active-color) !important;
-      color: var(--background-color) !important;
-      transition: none;
-    }
-
     > div.buttons {
       display: flex;
       justify-content: space-evenly;
       grid-column: 1 / span end;
     }
+  }
+
+  fieldset.sexes input + abbr, .metadata button {
+    display: inline-block;
+    text-align: center;
+    transition: all 0.2s;
+  }
+
+  fieldset.sexes input:not(:checked):not(:invalid) + abbr:hover,
+  fieldset.sexes:not(.validated) input:not(:checked):invalid + abbr:hover,
+  button.save:hover {
+    background-color: var(--focus-color);
+    color: var(--background-color);
+  }
+
+  fieldset.sexes input:checked + abbr:hover, fieldset.sexes input + abbr:active, button.save:active {
+    box-shadow: inset 0 0 2px 1px var(--active-color);
+  }
+
+  fieldset.sexes input + abbr:active, .metadata button:active {
+    background-color: var(--active-color) !important;
+    color: var(--background-color) !important;
+    transition: none;
+  }
+
+  input:focus, select:focus, fieldset.sexes input:checked + abbr, fieldset.sexes input + abbr:hover,
+  button:hover {
+    box-shadow: inset 0 0 2px 1px var(--focus-color), inset 2px 2px 3px var(--shadow-color);
+  }
+
+  /* user-invalid isn't ready yet */
+  &.validated input:invalid, fieldset.sexes.validated input:invalid + abbr {
+    color: var(--error-color);
+  }
+
+  &.validated input:invalid, &.validated select:invalid, fieldset.sexes.validated input:invalid + abbr,
+  button.delete:hover {
+    border: none;
+    box-shadow: inset 0 0 2px 1px var(--error-color);
   }
 
   &.pair form {
@@ -653,23 +672,6 @@ section.metadata {
     text-decoration: none;
   }
 }
-
-.metadata input:focus, .metadata select:focus, fieldset.sexes input:checked + abbr, fieldset.sexes input + abbr:hover,
-.metadata button:hover {
-  box-shadow: inset 0 0 2px 1px var(--focus-color), inset 2px 2px 3px var(--shadow-color);
-}
-
-/* user-invalid isn't ready yet */
-.validated input:invalid, fieldset.sexes.validated input:invalid + abbr {
-  color: var(--error-color);
-}
-
-.validated input:invalid, .validated select:invalid, fieldset.sexes.validated input:invalid + abbr,
-button.delete:hover {
-  border: none;
-  box-shadow: inset 0 0 2px 1px var(--error-color);
-}
-
 
 div.loading {
   position: fixed;
