@@ -174,7 +174,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             </ul>
           </a>
         </td>
-        <td class="inquiry"><a :href="`mailto:${config['default_email_user']}@${config['public_domain']}`"
+        <td class="inquiry"><a
+            :href="`mailto:${config['default_email_user']}+${pet.friend ? pet.id + pet.friend.id : pet.id}@${config['public_domain']}`"
             @click.prevent>
           Email to adopt {{ pet.friend ? `${pet.name} & ${pet.friend.name}` : pet.name }}!
         </a></td>
