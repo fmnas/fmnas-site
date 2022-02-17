@@ -404,7 +404,7 @@ export default defineComponent({
              (this.description || this.pet['photos']?.length);
     },
     statusInfo(): Status | undefined {
-      return this.config.statuses[this.pet.status];
+      return this.pet.status ? this.config.statuses[this.pet.status] : undefined;
     },
     sexClick(sex: Sex) {
       // Allow deselecting a sex rather than just selecting one.

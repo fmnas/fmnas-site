@@ -45,7 +45,7 @@ export interface Status {
 export interface Pet {
 	id: string;
 	name: string;
-	path: string;
+	path?: string;
 	species?: number;
 	breed?: string;
 	dob?: string;
@@ -54,9 +54,12 @@ export interface Pet {
 	photo?: Asset;
 	photos?: Asset[];
 	description?: Asset;
-	status: number;
-	plural?: boolean;
+	status?: number;
 	selected?: boolean;
+	bonded: number;
+	friend?: Pet;
+	adoption_date?: string;
+	order?: number;
 }
 
 export interface Asset {
