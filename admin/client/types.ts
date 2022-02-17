@@ -56,7 +56,6 @@ export interface Pet {
 	description?: Asset;
 	status?: number;
 	selected?: boolean;
-	bonded: number;
 	friend?: Pet;
 	adoption_date?: string;
 	order?: number;
