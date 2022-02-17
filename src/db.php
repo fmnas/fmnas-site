@@ -233,7 +233,7 @@ class Database {
 		$p->id = $pet["id"];
 		$p->name = $pet["name"];
 		$p->species = _G_species()[$pet["species"]];
-		$p->path = $pet["path"];
+		$p->path = $pet["listing_path"];
 		$p->sex = $pet["sex"] ? _G_sexes()[$pet["sex"]] : null;
 		$p->fee = $pet["fee"];
 		$p->photo = self::createAsset([
