@@ -16,7 +16,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <template>
-  <section class="metadata">
+  <section :class="['metadata', pet.friend ? 'pair' : '']">
     <form :class="validated ? 'validated' : ''" @submit.prevent="save" @invalid.capture="validated = true">
       <div class="buttons">
         <button class="save">Save</button>
@@ -29,10 +29,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <li class="id">
           <label for="id">ID</label>
           <input id="id" v-model="pet['id']" name="id" required type="text">
+          <label for="friend_id" v-if="pet.friend">ID</label>
+          <input id="friend_id" v-if="pet.friend" v-model="pet.friend.id" name="friend_id" required type="text">
         </li>
         <li class="name">
           <label for="name">Name</label>
           <input id="name" v-model="pet['name']" name="name" required type="text">
+          <label for="friend_name" v-if="pet.friend">Name</label>
+          <input id="friend_name" v-if="pet.friend" v-model="pet.friend.name" name="friend_name" required type="text">
         </li>
         <li class="species">
           <!--suppress XmlInvalidId no idea why this is firing -->
@@ -45,19 +49,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <li class="breed">
           <label for="breed">Breed/info</label>
           <input id="breed" v-model="pet['breed']" name="breed" type="text">
+          <label for="friend_breed" v-if="pet.friend">Breed/info</label>
+          <input id="friend_breed" v-if="pet.friend" v-model="pet.friend.breed" name="friend_breed" type="text">
         </li>
         <li class="dob">
           <label for="dob"><abbr title="date of birth">DOB</abbr></label>
           <input id="dob" v-model="pet['dob']" :max="new Date().toISOString().split('T')[0]" name="dob"
               type="date">
+          <label for="friend_dob" v-if="pet.friend"><abbr title="date of birth">DOB</abbr></label>
+          <input id="friend_dob" v-if="pet.friend" v-model="pet.friend.dob" :max="new Date().toISOString().split('T')[0]" name="dob"
+              type="date">
         </li>
         <li class="sex">
           <label for="sexes">Sex</label>
-          <fieldset id="sexes" :class="sexInteracted || validated ? 'validated' : ''">
+          <fieldset id="sexes" :class="['sexes', sexInteracted || validated ? 'validated' : '']">
             <label v-for="sex of config['sexes']" :key="sex['key']">
               <input v-model="pet['sex']" :value="sex['key']" name="sex" required type="radio">
               <abbr :title="ucfirst(sex['name'])" @click.prevent="(e: Event) => {sexClick(sex); e.target.blur();}"
                   @keyup.enter="sexClick(sex); $refs.fee.focus();" @keyup.space="sexClick(sex);" tabindex="0">{{
+                  sex['name'][0].toUpperCase()
+                }}</abbr>
+            </label>
+          </fieldset>
+          <label for="friend_sexes" v-if="pet.friend">Sex</label>
+          <fieldset id="friend_sexes" v-if="pet.friend" :class="['sexes', sexInteracted || validated ? 'validated' : '']">
+            <label v-for="sex of config['sexes']" :key="sex['key']">
+              <input v-model="pet.friend.sex" :value="sex['key']" name="sex" required type="radio">
+              <abbr :title="ucfirst(sex['name'])" @click.prevent="(e: Event) => {sexClick(sex, true); e.target.blur();}"
+                  @keyup.enter="sexClick(sex, true); $refs.fee.focus();" @keyup.space="sexClick(sex, true);" tabindex="0">{{
                   sex['name'][0].toUpperCase()
                 }}</abbr>
             </label>
@@ -118,10 +137,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           <span v-if="!pet.friend?.dob || petAge(pet) === petAge(pet.friend)">
             {{ petAge(pet) || '&nbsp;' }}
         </span>
-        <ul v-else>
-          <li>{{ petAge(pet) || '&nbsp;' }}</li>
-          <li>{{ petAge(pet.friend) || '&nbsp;' }}</li>
-        </ul>
+          <ul v-else>
+            <li>{{ petAge(pet) || '&nbsp;' }}</li>
+            <li>{{ petAge(pet.friend) || '&nbsp;' }}</li>
+          </ul>
         </td>
         <td class="fee">
           <span class="fee">{{
@@ -137,13 +156,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </td>
         <td class="img">
           <a>
-            <profile-photo v-if="!pet.friend || singlePhoto" v-model="pet.photo" v-model:promise="profilePromise" :reset="resetCount"
+            <profile-photo v-if="!pet.friend || singlePhoto" v-model="pet.photo" v-model:promise="profilePromise"
+                :reset="resetCount"
                 :prefix="getFullPathForPet(pet) + '/'"/>
             <ul v-else>
-            <li><profile-photo v-model="pet.photo" v-model:promise="profilePromise" :reset="resetCount"
-                :prefix="getFullPathForPet(pet) + '/'"/></li>
-            <li><profile-photo v-model="pet.friend.photo" v-model:promise="secondProfilePromise" :reset="resetCount"
-                :prefix="getFullPathForPet(pet) + '/'"/></li>
+              <li>
+                <profile-photo v-model="pet.photo" v-model:promise="profilePromise" :reset="resetCount"
+                    :prefix="getFullPathForPet(pet) + '/'"/>
+              </li>
+              <li>
+                <profile-photo v-model="pet.friend.photo" v-model:promise="secondProfilePromise" :reset="resetCount"
+                    :prefix="getFullPathForPet(pet) + '/'"/>
+              </li>
             </ul>
           </a>
         </td>
@@ -440,9 +464,10 @@ export default defineComponent({
     statusInfo(): Status | undefined {
       return this.pet.status ? this.config.statuses[this.pet.status] : undefined;
     },
-    sexClick(sex: Sex) {
+    sexClick(sex: Sex, friend = false) {
       // Allow deselecting a sex rather than just selecting one.
-      this.pet['sex'] = this.pet['sex'] === sex['key'] ? undefined : sex['key'];
+      const pet = friend ? this.pet : this.pet.friend!;
+      pet.sex = pet.sex === sex.key ? undefined : sex.key;
       this.sexInteracted = true;
     },
     deleteListing() {
@@ -485,7 +510,7 @@ export default defineComponent({
   }
 }
 
-.metadata {
+section.metadata {
   --label-width: 6em;
   --input-width: 14em;
   --input-padding-vertical: 0.3em;
@@ -497,126 +522,154 @@ export default defineComponent({
   --focus-color: var(--visited-color);
   --error-color: #f00;
 
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+
+  @media (max-width: 750px) {
+    flex-direction: column;
+  }
+
   form {
-    flex-shrink: 0;
+    flex-shrink: 1;
+    display: grid;
+    grid-template-columns: var(--label-width) minmax(5em, var(--input-width)) [end];
+    max-width: 100%;
+    align-items: center;
+    justify-items: stretch;
+    margin: var(--input-margin);
+
+    > ul {
+      list-style: none;
+      display: contents;
+
+      > li {
+        display: contents;
+
+        > label {
+          grid-column: 1;
+
+          &:nth-of-type(2) {
+            display: none;
+          }
+        }
+      }
+    }
+
+    input, option, select, button {
+      font-size: inherit;
+      font-family: inherit;
+      grid-column: 2;
+      padding: var(--input-padding);
+      margin: var(--input-margin);
+      @include input;
+
+      &:only-of-type {
+        grid-column: 2 / span end;
+      }
+
+      &:nth-of-type(2) {
+        grid-column: 3;
+      }
+    }
+
+    button {
+      width: 5em;
+      height: 1.5em;
+      background-color: inherit;
+
+
+      &.delete:hover {
+        box-shadow: inset 0 0 0 1px var(--error-color);
+      }
+
+      &.delete:active {
+        background-color: var(--error-color) !important;
+      }
+    }
+
+
+    fieldset.sexes {
+      display: flex;
+      justify-content: space-evenly;
+      border: none;
+      box-sizing: content-box;
+      margin: var(--input-margin);
+      padding: 0 var(--input-padding-horizontal);
+
+      input {
+        display: none;
+
+        & + abbr {
+          @include input;
+          --dimension: calc(1em + 2 * var(--input-padding-vertical));
+          width: calc(2 * var(--dimension));
+          height: var(--dimension);
+          line-height: var(--dimension);
+          user-select: none;
+        }
+      }
+    }
+
+    fieldset.sexes input + abbr, .metadata button {
+      display: inline-block;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    fieldset.sexes input:not(:checked):not(:invalid) + abbr:hover,
+    fieldset.sexes:not(.validated) input:not(:checked):invalid + abbr:hover,
+    button.save:hover {
+      background-color: var(--focus-color);
+      color: var(--background-color);
+    }
+
+    fieldset.sexes input:checked + abbr:hover, fieldset.sexes input + abbr:active, button.save:active {
+      box-shadow: inset 0 0 2px 1px var(--active-color);
+    }
+
+    fieldset.sexes input + abbr:active, .metadata button:active {
+      background-color: var(--active-color) !important;
+      color: var(--background-color) !important;
+      transition: none;
+    }
+
+    > div.buttons {
+      display: flex;
+      justify-content: space-evenly;
+      grid-column: 1 / span end;
+    }
+  }
+
+  &.pair form {
+    grid-template-columns: var(--label-width) minmax(5em, var(--input-width)) minmax(5em, var(--input-width)) [end];
   }
 
   table {
     width: auto;
   }
 
-  ul {
-    list-style: none;
-    padding: var(--input-padding);
-    margin: var(--input-margin);
-  }
-
-  li > label {
-    display: inline-block;
-    width: var(--label-width);
-  }
-
-  input, option, select, button {
-    font-size: inherit;
-    font-family: inherit;
-    padding: var(--input-padding);
-    margin: var(--input-margin);
-    width: var(--input-width);
-    @include input;
-  }
-
-  button {
-    width: 5em;
-    height: 1.5em;
-    background-color: inherit;
-  }
-
   abbr {
     text-decoration: none;
   }
-
-  button.delete:hover {
-    box-shadow: inset 0 0 0 1px var(--error-color);
-  }
-
-  button.delete:active {
-    background-color: var(--error-color) !important;
-  }
 }
 
-section.metadata {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-evenly;
-  align-items: center;
-}
-
-.metadata input:focus, .metadata select:focus, fieldset#sexes input:checked + abbr, fieldset#sexes input + abbr:hover,
+.metadata input:focus, .metadata select:focus, fieldset.sexes input:checked + abbr, fieldset.sexes input + abbr:hover,
 .metadata button:hover {
   box-shadow: inset 0 0 2px 1px var(--focus-color), inset 2px 2px 3px var(--shadow-color);
 }
 
 /* user-invalid isn't ready yet */
-.validated input:invalid, fieldset#sexes.validated input:invalid + abbr {
+.validated input:invalid, fieldset.sexes.validated input:invalid + abbr {
   color: var(--error-color);
 }
 
-.validated input:invalid, .validated select:invalid, fieldset#sexes.validated input:invalid + abbr,
+.validated input:invalid, .validated select:invalid, fieldset.sexes.validated input:invalid + abbr,
 button.delete:hover {
   border: none;
   box-shadow: inset 0 0 2px 1px var(--error-color);
 }
 
-fieldset#sexes {
-  display: inline-flex;
-  justify-content: space-evenly;
-  border: none;
-  box-sizing: content-box;
-  margin: var(--input-margin);
-  padding: 0 var(--input-padding-horizontal);
-  width: var(--input-width);
-
-  input {
-    display: none;
-
-    & + abbr {
-      @include input;
-      --dimension: calc(1em + 2 * var(--input-padding-vertical));
-      width: calc(2 * var(--dimension));
-      height: var(--dimension);
-      line-height: var(--dimension);
-      user-select: none;
-    }
-  }
-}
-
-fieldset#sexes input + abbr, .metadata button {
-  display: inline-block;
-  text-align: center;
-  transition: all 0.2s;
-}
-
-fieldset#sexes input:not(:checked):not(:invalid) + abbr:hover,
-fieldset#sexes:not(.validated) input:not(:checked):invalid + abbr:hover,
-button.save:hover {
-  background-color: var(--focus-color);
-  color: var(--background-color);
-}
-
-fieldset#sexes input:checked + abbr:hover, fieldset#sexes input + abbr:active, button.save:active {
-  box-shadow: inset 0 0 2px 1px var(--active-color);
-}
-
-fieldset#sexes input + abbr:active, .metadata button:active {
-  background-color: var(--active-color) !important;
-  color: var(--background-color) !important;
-  transition: none;
-}
-
-div.buttons {
-  display: flex;
-  justify-content: space-evenly;
-}
 
 div.loading {
   position: fixed;
@@ -645,4 +698,10 @@ table.listings tbody {
   grid-template-columns: minmax(0, 300px) repeat(auto-fit, minmax(0, 300px));
 }
 
+</style>
+
+<style lang="scss">
+:root {
+  min-width: 400px;
+}
 </style>
