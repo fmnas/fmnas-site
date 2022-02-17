@@ -62,6 +62,8 @@ table.listings {
 			border: 1px solid var(--border-color);
 			border-radius: 1rem;
 			background: var(--listing-background);
+			--side-padding: min(2vw, 1em);
+			padding: 0.5em var(--side-padding);
 
 			&.linked {
 				box-shadow: -2px 2px 3px var(--shadow-color);
@@ -101,29 +103,24 @@ table.listings {
 					z-index: 1;
 
 					li {
-						width: 50%;
+						width: calc(50% - #{$gap} / 2 - var(--side-padding));
 						display: inline-block;
 						box-sizing: border-box;
+
+						&:first-of-type {
+							margin-right: calc(#{$gap} + 2 * var(--side-padding));
+						}
 					}
 				}
 
 				th.name ul li {
-					$ampersand-width: 1.1em;
-					--inner-padding: calc(#{$ampersand-width} / 2 + 0.1em);
-
-					&:first-of-type {
-						padding-right: var(--inner-padding);
-					}
-
 					&:nth-of-type(2) {
-						padding-left: var(--inner-padding);
-
 						&::before {
 							display: block;
 							position: absolute;
 							top: 0;
-							left: calc(50% - #{$ampersand-width} / 2);
-							width: $ampersand-width;
+							left: calc(50% - #{$gap} / 2);
+							width: $gap;
 							height: $line-height;
 							text-align: center;
 							content: '&';
@@ -177,7 +174,7 @@ table.listings {
 					white-space: normal;
 					text-align: justify;
 					text-align-last: center;
-					padding: 0.5em;
+					padding: 0;
 					border: 1px solid var(--border-color);
 					box-shadow: -2px 2px 3px var(--shadow-color);
 					border-radius: 1em;
@@ -237,8 +234,6 @@ table.listings {
 		--x-scale: 1;
 		--y-scale: 1;
 		display: block;
-		padding-left: 1em;
-		padding-right: 1em;
 		box-sizing: border-box;
 		width: calc(100% / var(--x-scale));
 		text-align: center;
@@ -247,14 +242,6 @@ table.listings {
 		transform: scaleX(var(--x-scale));
 		transform-origin: left;
 		z-index: 1;
-
-		&:first-child {
-			padding-top: 0.5em;
-		}
-
-		&:last-child {
-			padding-bottom: 0.5em;
-		}
 
 		> * {
 			display: inline-block;
@@ -310,12 +297,6 @@ table.listings {
 	}
 
 	td.img {
-		padding: 0 1rem;
-
-		@media (max-width: 50rem) {
-			padding: 0 2vw;
-		}
-
 		img {
 			display: block;
 			max-width: 200px;
