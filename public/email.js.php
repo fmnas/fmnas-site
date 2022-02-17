@@ -9,6 +9,11 @@ document.addEventListener('DOMContentLoaded', function () {
 		let addr = `${user}@${domain}`;
 		if (emailLink.parentElement.classList.contains('inquiry')) {
 			let petName = emailLink.closest('tr').querySelector('th.name>*').textContent;
+			let pairList = emailLink.closest('tr').querySelector('th.name ul');
+			if (pairList) {
+				let names = pairList.querySelectorAll('li');
+				petName = names[0].textContent + ' & ' + names[1].textContent;
+			}
 			emailLink.innerHTML = `Email to adopt ${petName}!`;
 		}
 		emailLink.innerHTML = emailLink.innerHTML || addr;
