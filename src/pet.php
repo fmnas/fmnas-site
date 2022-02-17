@@ -48,7 +48,7 @@ class Species implements JsonSerializable {
 
 	/**
 	 * Get a printable version of the age such as "11 years" or "3 months"
-	 * @param string $dob Date of birth of the animal
+	 * @param string|null $dob Date of birth of the animal
 	 * @return string Printable version of the age
 	 */
 	public function age(?string $dob): string {
@@ -72,7 +72,7 @@ class Species implements JsonSerializable {
 	}
 
 	public function __get($key) {
-		return isset($this->values[$key]) ? $this->values[$key] : null;
+		return $this->values[$key] ?? null;
 	}
 
 	public function __set($key, $val) {

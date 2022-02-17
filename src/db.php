@@ -272,7 +272,7 @@ class Database {
 					"dsc_id" => null,
 					"dsc_path" => null,
 					"dsc_type" => null,
-					"path" => $pet["path"],
+					"listing_path" => $pet["listing_path"],
 					"status" => $pet["status"],
 					"order" => $pet["order"],
 					"adoption_date" => $pet["adoption_date"],
