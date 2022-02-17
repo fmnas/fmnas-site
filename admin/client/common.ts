@@ -117,3 +117,43 @@ export async function uploadDescription(body: string): Promise<Asset> {
 	checkResponse(res);
 	return asset;
 }
+
+// Mirrors Pet::toArray() in the PHP implementation.
+export function getContext(pet: Pet): Record<string, string> {
+	let context: Record<string, string> = {
+		'id': pet.friend ? `${pet.id} & ${pet.friend!.id}` : pet.id,
+		'name': pet.friend ? `${pet.name} & ${pet.friend.name}` : pet.name,
+		'species': 'TODO', // TODO: Add species to typescript context.
+	};
+	const conditionalAddPair = (key: string) => {
+		const p = pet as any;
+		if (p[key]) {
+			context[key] = '' + p[key];
+		}
+		if (p.friend && p.friend[key] && p[key] !== p.friend[key]) {
+			context[key] = `${p[key]} & ${p.friend[key]}`;
+		}
+	}
+	const conditionalAdd = (key: string) => {
+		const p = pet as any;
+		if (p[key]) {
+			context[key] = '' + p[key];
+		}
+	}
+	conditionalAddPair('breed');
+	conditionalAddPair('dob');
+	conditionalAddPair('sex');
+	conditionalAdd('fee');
+	conditionalAdd('path');
+	conditionalAdd('bonded');
+	conditionalAdd('adoption_date');
+	conditionalAdd('order');
+	conditionalAdd('modified');
+	if (pet.status) {
+		context.status = store.state.config.statuses[pet.status].name;
+	}
+	if (pet.friend) {
+		context.friend = pet.friend.id;
+	}
+	return context;
+}

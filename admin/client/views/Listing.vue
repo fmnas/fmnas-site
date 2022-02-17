@@ -115,7 +115,7 @@
   </section>
   <photos v-model="pet.photos" @update:promises="photoPromises = $event" :reset="resetCount"
       :prefix="getFullPathForPet(pet) + '/'"/>
-  <editor v-model="description" :context="pet"/>
+  <editor v-model="description" :context="getContext(pet)"/>
   <modal v-if="showModal" @confirm="deleteListing" @cancel="showModal = false">
     Are you sure you want to delete this listing?
     <br>
@@ -161,7 +161,7 @@ import Photos from '../components/Photos.vue';
 import {defineComponent} from 'vue';
 import store from '../store';
 import {
-  getFullPathForPet, getPathForPet, partial, petAge, ucfirst, uploadDescription
+  getFullPathForPet, getPathForPet, partial, petAge, ucfirst, uploadDescription, getContext
 } from '../common';
 import {mapState} from 'vuex';
 import {Asset, Pet, Sex, Status} from '../types';
@@ -410,6 +410,7 @@ export default defineComponent({
     getPathForPet,
     ucfirst,
     petAge,
+    getContext,
   },
   computed: mapState({
     config: (state: any) => state.config,
