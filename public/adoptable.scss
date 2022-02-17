@@ -104,35 +104,29 @@ table.listings {
 						width: 50%;
 						display: inline-block;
 						box-sizing: border-box;
+					}
+				}
 
-						&:not(td.img li) {
-							$ampersand-width: 1.1em;
-							--inner-padding: calc(#{$ampersand-width} / 2 + 0.1em);
+				th.name ul li {
+					$ampersand-width: 1.1em;
+					--inner-padding: calc(#{$ampersand-width} / 2 + 0.1em);
 
-							&:first-of-type {
-								padding-right: var(--inner-padding);
-								text-align: right;
-							}
+					&:first-of-type {
+						padding-right: var(--inner-padding);
+					}
 
-							&:nth-of-type(2) {
-								padding-left: var(--inner-padding);
-								text-align: left;
+					&:nth-of-type(2) {
+						padding-left: var(--inner-padding);
 
-								&:not(a:not([href]) li) {
-									padding-right: 1.5em;
-								}
-
-								&::before {
-									display: block;
-									position: absolute;
-									top: 0;
-									left: calc(50% - #{$ampersand-width} / 2);
-									width: $ampersand-width;
-									height: $line-height;
-									text-align: center;
-									content: '&';
-								}
-							}
+						&::before {
+							display: block;
+							position: absolute;
+							top: 0;
+							left: calc(50% - #{$ampersand-width} / 2);
+							width: $ampersand-width;
+							height: $line-height;
+							text-align: center;
+							content: '&';
 						}
 					}
 				}
@@ -288,7 +282,7 @@ table.listings {
 		}
 
 		@media (min-width: 450px) {
-			&[id]:not([id=''])::after, li[id]:not([id=''])::after {
+			&[id]:not([id=''])::after, li[id]:nth-of-type(2):not([id=''])::after {
 				content: ' (id#' attr(id) ') »';
 			}
 		}

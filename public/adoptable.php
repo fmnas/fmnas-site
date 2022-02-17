@@ -88,21 +88,13 @@ pageHeader();
 		echo '</a></th>';
 
 		echo '<td class="sex">';
-		if (($lsex = ucfirst(@($pet->sex->name) ?? "") . " " . $pet->breed) ===
-				($rsex = ucfirst(@($pet->friend->sex->name) ?? "") . " " . $pet->friend?->breed) ||
-				!$pet->bonded) {
-			echo $lsex;
-		} else {
-			echo "<ul><li>$lsex<li>$rsex</ul>";
-		}
+		echo $pet->bonded ? "<ul><li>" . ucfirst(@($pet->sex->name) ?? "") . " " . $pet->breed . "<li>" .
+				ucfirst(@($pet->friend->sex->name) ?? "") . " " . $pet->friend?->breed . "</ul>" :
+				ucfirst(@($pet->sex->name) ?? "") . " " . $pet->breed;
 		echo '</td>';
 
 		echo '<td class="age">';
-		if (!$pet->friend?->dob || $pet->age() === $pet->friend->age()) {
-			echo "<time datetime=\"{$pet->dob}\">";
-			echo $pet->species->age($pet->dob);
-			echo '</time>';
-		} else {
+		if ($pet->bonded) {
 			echo '<ul><li>';
 			echo "<time datetime=\"{$pet->dob}\">";
 			echo $pet->species->age($pet->dob);
@@ -112,12 +104,16 @@ pageHeader();
 			echo $pet->species->age($pet->friend->dob);
 			echo '</time>';
 			echo '</li></ul>';
+		} else {
+			echo "<time datetime=\"{$pet->dob}\">";
+			echo $pet->species->age($pet->dob);
+			echo '</time>';
 		}
 		echo '</td>';
 
 		echo '<td class="fee"><span class="fee">';
 		echo $pet->status->displayStatus ? $pet->status->name :
-				($listed ? ($pet->fee . $pet->bonded ? '' : ' BONDED PAIR') : 'Coming Soon');
+				($listed ? (($pet->bonded ? 'BONDED PAIR ' : '') . $pet->fee) : 'Coming Soon');
 		echo '</span>';
 		if ($pet->status->displayStatus && trim($pet->status->description ?? '')) {
 			echo '<aside class="explanation">';

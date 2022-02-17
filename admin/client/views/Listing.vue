@@ -128,7 +128,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </a>
         </th>
         <td class="sex">
-          <ul v-if="pet.friend && sexText(pet) !== sexText(pet.friend)">
+          <ul v-if="pet.friend">
             <li>{{ sexText(pet) || '&nbsp;' }}</li>
             <li>{{ sexText(pet.friend) || '&nbsp;' }}</li>
           </ul>
@@ -137,7 +137,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           </span>
         </td>
         <td class="age">
-          <span v-if="!pet.friend?.dob || petAge(pet) === petAge(pet.friend)">
+          <span v-if="!pet.friend">
             {{ petAge(pet) || '&nbsp;' }}
         </span>
           <ul v-else>
@@ -149,7 +149,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           <span class="fee">{{
               statusInfo()?.displayStatus ?
                   statusInfo()?.name :
-                  (listed() ? pet.fee ?? '' : 'Coming Soon')
+                  (listed() ? (pet.friend ? 'BONDED PAIR ' : '') + pet.fee ?? '' : 'Coming Soon')
             }}</span>
           <aside class="explanation"
               v-if="statusInfo()?.displayStatus &&
