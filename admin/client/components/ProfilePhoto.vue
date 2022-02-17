@@ -120,6 +120,11 @@ img {
 	background-clip: padding-box;
 	margin-top: 2px;
 
+  &:not([src]) {
+    width: 200px !important;
+    height: 300px;
+  }
+
 	&::before {
 		display: block;
 		width: 100%;
