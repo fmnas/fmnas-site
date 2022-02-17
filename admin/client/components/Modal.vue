@@ -60,9 +60,9 @@ div.buttons {
 // Scoped styles don't apply in slot
 div.modal.buttons {
   button {
-    margin-top: 1rem;
     font-size: 120%;
     padding: 0.2em 0.6em;
+    margin: 1rem 0.2em 0;
 
     &.danger {
       color: red;

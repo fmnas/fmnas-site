@@ -8,6 +8,16 @@
           New
         </button>
       </div>
+      <div class="bondage">
+        <label>
+          <input type="checkbox" :key="!!pet.friend" :checked="pet.friend" @click.prevent="toggleBondedPair">
+          Bonded pair
+        </label>
+        <label v-if="pet.friend">
+          <input type="checkbox" :key="singlePhoto" :checked="singlePhoto" @click.prevent="toggleSinglePhoto">
+          Combined photo
+        </label>
+      </div>
       <ul>
         <li class="id">
           <label for="id">ID</label>
@@ -185,6 +195,21 @@
     <br>
     This will delete unsaved changes here!
   </modal>
+  <modal v-if="confirmRemoveSecondPhoto"
+      @confirm="pet.friend.photo = undefined; singlePhoto = true; confirmRemoveSecondPhoto = false;"
+      @cancel="confirmRemoveSecondPhoto = false; singlePhoto = false;">
+    Are you sure you want to delete this image?<br>
+    <img :src="pet.friend.photo.localPath ?? `/api/raw/stored/${pet.friend.photo.key}`" :alt="pet.friend.name">
+  </modal>
+  <modal v-if="confirmSplitPair">
+    What do you want to do with {{ pet.friend.name }}?
+    <template #buttons>
+      <button class="danger" @click="deleteFriend()">Discard</button>
+      <button @click="splitPair(2)">Mark adopted</button>
+      <button @click="splitPair(pet.status)">Save as separate listing</button>
+      <button @click="confirmSplitPair = false;">Cancel</button>
+    </template>
+  </modal>
   <modal v-if="showConfirmOverwriteModal">
     You have modified the ID and name of an existing pet.
     <br>
@@ -250,6 +275,9 @@ export default defineComponent({
       confirmOverwrite: false,
       singlePhoto: false,
       secondProfilePromise: null as Promise<Asset> | null,
+      confirmRemoveSecondPhoto: false,
+      confirmSplitPair: false,
+      saveActions: [] as CallableFunction[],
     };
   },
   mounted() {
@@ -377,6 +405,7 @@ export default defineComponent({
         if (!this.original?.id || this.description !== this.originalDescription) {
           this.pet.description = await uploadDescription(this.description);
         }
+        this.saveActions.map((action) => action());
         fetch(this.original?.id ? `/api/listings/${this.original.id}` : `/api/listings`, {
           method: this.original?.id ? 'PUT' : 'POST',
           body: JSON.stringify(this.pet),
@@ -429,6 +458,8 @@ export default defineComponent({
       this.loading = false;
       // Update singlePhoto
       this.singlePhoto = !!this.pet.friend && !!this.pet.photo && !this.pet.friend.photo;
+      // Clear saveActions
+      this.saveActions = [];
     },
     modified() {
       // TODO [#196]: Weaken modified check so undefined == '' == null
@@ -477,6 +508,69 @@ export default defineComponent({
     ucfirst,
     petAge,
     getContext,
+    deleteFriend(): void {
+      this.confirmSplitPair = false;
+      this.pet.friend = undefined;
+      this.singlePhoto = false;
+      const originalId = this.original?.friend?.id;
+      this.original.friend = undefined;
+      if (originalId) {
+        // Deleting an existing listing.
+        this.saveActions.push(() =>
+            fetch(`/api/listings/${originalId}`, {
+              method: 'DELETE'
+            }).then((res) => {
+              this.checkResponse(res);
+            }));
+      }
+    },
+    splitPair(newStatus: number): void {
+      this.confirmSplitPair = false;
+      this.singlePhoto = false;
+      const originalId = this.original?.friend?.id;
+      const friend: Pet = this.pet.friend!;
+      friend.status = newStatus;
+      this.pet.friend = undefined;
+      this.original.friend = undefined;
+      this.saveActions.push(() => fetch(originalId ? `/api/listings/${originalId}` : `/api/listings`, {
+        method: originalId ? 'PUT' : 'POST',
+        body: JSON.stringify(friend),
+      }).then(res => {
+        this.checkResponse(res);
+      }));
+    },
+    toggleBondedPair(): void {
+      if (this.pet.friend) {
+        // Uncheck bonded pair.
+        if (this.pet.friend.id && this.pet.friend.name) {
+          this.confirmSplitPair = true;
+        } else {
+          this.pet.friend = undefined;
+          this.original.friend = undefined;
+          this.singlePhoto = false;
+        }
+      } else {
+        // Check bonded pair.
+        this.pet.friend = {} as Pet;
+        this.original.friend = {} as Pet;
+        this.pet.friend.species = this.pet.species;
+        this.original.friend.species = this.pet.species;
+      }
+    },
+    toggleSinglePhoto(): void {
+      if (!this.singlePhoto && this.pet.friend) {
+        // Check single photo.
+        if (this.pet.friend.photo) {
+          this.confirmRemoveSecondPhoto = true;
+        } else {
+          this.pet.friend.photo = undefined;
+          this.singlePhoto = true;
+        }
+      } else {
+        // Uncheck single photo.
+        this.singlePhoto = false;
+      }
+    },
   },
   computed: mapState({
     config: (state: any) => state.config,
@@ -598,7 +692,7 @@ section.metadata {
       }
     }
 
-    > div.buttons {
+    > div.buttons, > div.bondage {
       display: flex;
       justify-content: space-evenly;
       grid-column: 1 / span end;
