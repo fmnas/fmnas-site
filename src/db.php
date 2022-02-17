@@ -78,7 +78,7 @@ class Database {
 		}
 
 		if (!($getPetByPath = $this->db->prepare("
-			SELECT * FROM listings WHERE (path = ? OR legacy_path = ?) AND species = ?
+			SELECT * FROM listings WHERE (listing_path = ? OR legacy_path = ?) AND species = ?
 			LIMIT 1
 			"))) {
 			log_err("Failed to prepare getPetByPath: {$this->db->error}");
