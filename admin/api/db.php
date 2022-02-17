@@ -47,7 +47,7 @@ class DatabaseWriter extends Database {
 		}
 
 		if (!($insertPet = $this->db->prepare("
-			REPLACE INTO pets (id, name, species, breed, dob, sex, fee, photo, description, status, bonded, friend, adoption_date, order)
+			REPLACE INTO pets (id, name, species, breed, dob, sex, fee, photo, description, status, bonded, friend, adoption_date, `order`)
 			VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 			"))) {
 			log_err("Failed to prepare insertPet: {$this->db->error}");
