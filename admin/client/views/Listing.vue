@@ -93,17 +93,36 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       <tbody>
       <tr :class="[`st_${pet['status']}`, listed() ? '' : 'soon',
       statusInfo()?.displayStatus ? 'displayStatus' : '',
-      statusInfo()?.description?.trim() ? 'explain' : '']">
+      statusInfo()?.description?.trim() ? 'explain' : '',
+      pet.friend ? 'pair' : '']">
         <th class="name"><a
-            :id="pet['id'] || '____'"
+            :id="pet.friend ? null : pet.id || '____'"
             :href="listed() ? `//${config['public_domain']}/${getFullPathForPet(pet)}` : null"
-            @click.prevent>{{ pet['name'] || '&nbsp;' }}</a>
+            @click.prevent>{{ pet.friend ? '' : (pet.name || '&nbsp;') }}
+          <ul v-if="pet.friend">
+            <li :id="pet.id || '____'">{{ pet.name || '&nbsp;' }}</li>
+            <li :id="pet.friend.id || '____'">{{ pet.friend.name || '&nbsp;' }}</li>
+          </ul>
+        </a>
         </th>
-        <td class="sex">{{
-            `${ucfirst(config['sexes'][pet['sex']]?.['name'])} ${pet['breed'] || ''}` || '&nbsp;'
-          }}
+        <td class="sex">
+          <ul v-if="pet.friend && sexText(pet) !== sexText(pet.friend)">
+            <li>{{ sexText(pet) || '&nbsp;' }}</li>
+            <li>{{ sexText(pet.friend) || '&nbsp;' }}</li>
+          </ul>
+          <span v-else>
+            {{ sexText(pet) || '&nbsp;' }}
+          </span>
         </td>
-        <td class="age">{{ petAge(pet) || '&nbsp;' }}</td>
+        <td class="age">
+          <span v-if="!pet.friend?.dob || petAge(pet) === petAge(pet.friend)">
+            {{ petAge(pet) || '&nbsp;' }}
+        </span>
+        <ul v-else>
+          <li>{{ petAge(pet) || '&nbsp;' }}</li>
+          <li>{{ petAge(pet.friend) || '&nbsp;' }}</li>
+        </ul>
+        </td>
         <td class="fee">
           <span class="fee">{{
               statusInfo()?.displayStatus ?
@@ -118,13 +137,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </td>
         <td class="img">
           <a>
-            <profile-photo v-model="pet.photo" v-model:promise="profilePromise" :reset="resetCount"
+            <profile-photo v-if="!pet.friend || singlePhoto" v-model="pet.photo" v-model:promise="profilePromise" :reset="resetCount"
                 :prefix="getFullPathForPet(pet) + '/'"/>
+            <ul v-else>
+            <li><profile-photo v-model="pet.photo" v-model:promise="profilePromise" :reset="resetCount"
+                :prefix="getFullPathForPet(pet) + '/'"/></li>
+            <li><profile-photo v-model="pet.friend.photo" v-model:promise="secondProfilePromise" :reset="resetCount"
+                :prefix="getFullPathForPet(pet) + '/'"/></li>
+            </ul>
           </a>
         </td>
         <td class="inquiry"><a :href="`mailto:${config['default_email_user']}@${config['public_domain']}`"
             @click.prevent>
-          Email to adopt {{ pet['name'] }}!
+          Email to adopt {{ pet.friend ? `${pet.name} & ${pet.friend.name}` : pet.name }}!
         </a></td>
       </tr>
       </tbody>
@@ -212,6 +237,8 @@ export default defineComponent({
       suppressBeforeRouteEnter: false,
       showConfirmOverwriteModal: false,
       confirmOverwrite: false,
+      singlePhoto: false,
+      secondProfilePromise: null as Promise<Asset> | null,
     };
   },
   mounted() {
@@ -293,6 +320,8 @@ export default defineComponent({
       this.sexInteracted = false;
       this.validated = false;
       this.profilePromise = null;
+      this.secondProfilePromise = null;
+      this.singlePhoto = false;
       this.photoPromises = [];
       this.showModal = false;
       this.showAbandonModal = false;
@@ -327,8 +356,10 @@ export default defineComponent({
         if (this.profilePromise) {
           promises.push(this.profilePromise);
         }
+        if (this.secondProfilePromise) {
+          promises.push(this.secondProfilePromise);
+        }
         promises.push(...(this.pet.photos ?? []).map(() => Promise.resolve())); // Resolved promises for photos already uploaded
-        console.log('Waiting for promises', promises, this.profilePromise, this.photoPromises);
         // Wait for async uploads
         this.reportProgress(promises, 'Uploading photos');
         await Promise.all(promises);
@@ -380,10 +411,13 @@ export default defineComponent({
       // Clear promises
       this.photoPromises = [];
       this.profilePromise = null;
+      this.secondProfilePromise = null;
       // Clear saved "confirm overwrite" state
       this.confirmOverwrite = false;
       // Clear loading state
       this.loading = false;
+      // Update singlePhoto
+      this.singlePhoto = !!this.pet.friend && !!this.pet.photo && !this.pet.friend.photo;
     },
     modified() {
       // TODO [#196]: Weaken modified check so undefined == '' == null
@@ -422,6 +456,9 @@ export default defineComponent({
       }
       this.showModal = false;
       this.reset();
+    },
+    sexText(pet: Pet): string {
+      return pet['sex'] ? `${ucfirst(this.config['sexes'][pet['sex']]?.['name'])} ${pet['breed'] || ''}` : '';
     },
     getFullPathForPet,
     getPathForPet,

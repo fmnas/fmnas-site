@@ -38,7 +38,7 @@ export const getPathForPet = (pet: Pet) => {
 export const getFullPathForPet = (pet: Pet) => `${store.state.config.species[pet?.species as number]?.plural}/${getPathForPet(
 	pet)}`;
 export const petAge = (pet: Pet) => {
-	const dob = pet['dob'];
+	const dob = pet.dob;
 	if (!dob) {
 		return '\xa0'; // &nbsp;
 	}
