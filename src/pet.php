@@ -155,18 +155,21 @@ class Pet implements JsonSerializable {
 	}
 
 	public function __toString(): string {
+		if ($this->bonded === 1) {
+			return htmlspecialchars("$this->name $this->id & $this->friend");
+		}
 		return htmlspecialchars("$this->name $this->id");
 	}
 
 	public function toArray(): array {
 		return [
-				"id" => $this->id,
-				"name" => $this->name,
+				"id" => $this->id(),
+				"name" => $this->name(),
 				"species" => $this->species(),
-				"breed" => $this->breed,
-				"dob" => $this->dob,
+				"breed" => $this->breed(),
+				"dob" => $this->dob(),
 				"age" => $this->age(),
-				"sex" => $this->sex->name,
+				"sex" => $this->sex(),
 				"fee" => $this->fee,
 				"status" => $this->status->name,
 				"path" => $this->path,
@@ -179,19 +182,52 @@ class Pet implements JsonSerializable {
 	}
 
 	public function species(): string {
-		if (!isset($this->species) || $this->species === null) {
-			return '';
-		}
-		return $this->species->nameGivenDob($this->dob, false);
+		return $this->species?->nameGivenDob($this->dob, $this->bonded === 1) ?? '';
 	}
 
-	// Strings provided to listing description parser.
+	public function name(): string {
+		if ($this->bonded === 1) {
+			return $this->name . ' & ' . $this->friend->name;
+		}
+		return $this->name;
+	}
+
+	public function id(): string {
+		if ($this->bonded === 1) {
+			return $this->id . ' & ' . $this->friend->id;
+		}
+		return $this->id;
+	}
+
+	public function breed(): string {
+		if ($this->bonded !== 1 || $this->breed === $this->friend->breed) {
+			return $this->breed;
+		}
+		return $this->breed . ' & ' . $this->friend->breed;
+	}
+
+	public function dob(): string {
+		if ($this->bonded !== 1 || $this->dob === $this->friend->dob) {
+			return $this->dob;
+		}
+		return $this->dob . ' & ' . $this->friend->dob;
+	}
 
 	public function age(): string {
-		return $this->species->age($this->dob);
+		$leftAge = $this->species->age($this->dob);
+		$rightAge = $this->species->age($this->friend?->dob) ?: false;
+		if (!$rightAge || $leftAge === $rightAge) {
+			return $leftAge;
+		}
+		return $leftAge . ' & ' . $rightAge;
 	}
 
-	// Data provided to listing editor.
+	public function sex(): string {
+		if ($this->bonded !== 1 || $this->sex->key === $this->friend->sex->key) {
+			return $this->sex->name;
+		}
+		return $this->sex->name . ' & ' . $this->friend->sex->name;
+	}
 
 	public function jsonSerialize(): array {
 		return [
