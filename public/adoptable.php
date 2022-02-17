@@ -100,16 +100,16 @@ pageHeader();
 		echo '<td class="age">';
 		if (!$pet->friend?->dob || $pet->age() === $pet->friend->age()) {
 			echo "<time datetime=\"{$pet->dob}\">";
-			echo $pet->age();
+			echo $pet->species->age($pet->dob);
 			echo '</time>';
 		} else {
 			echo '<ul><li>';
 			echo "<time datetime=\"{$pet->dob}\">";
-			echo $pet->age();
+			echo $pet->species->age($pet->dob);
 			echo '</time>';
 			echo '<li>';
 			echo "<time datetime=\"{$pet->friend->dob}\">";
-			echo $pet->friend->age();
+			echo $pet->species->age($pet->friend->dob);
 			echo '</time>';
 			echo '</li></ul>';
 		}
