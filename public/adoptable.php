@@ -136,7 +136,8 @@ pageHeader();
 		}
 		echo '</a></td>';
 
-		echo '<td class="inquiry"><a data-email></a></td>';
+		echo '<td class="inquiry"><a data-email="adopt+' . htmlspecialchars($pet->id()) . '">Email to adopt ' .
+				htmlspecialchars($pet->name()) . '!</a></td>';
 	}
 	?>
 	</tbody>
