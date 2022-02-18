@@ -203,6 +203,7 @@ function resizer(useReference: boolean = true) {
 				}
 				if (listing.classList.contains('pair') && (lastRowCount - yote === 1)) {
 					// Don't yeet a pair if we only want 1 additional column.
+					// TODO: Yeet pairs in each order first.
 					continue;
 				}
 				if (listing.classList.contains('pair')) {
