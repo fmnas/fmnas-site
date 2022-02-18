@@ -342,6 +342,7 @@ export default defineComponent({
           event.preventDefault();
         }
       };
+      (window as any).resizer?.(false);
     },
     resetOriginal() {
       this.path = undefined;
