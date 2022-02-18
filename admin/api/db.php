@@ -73,7 +73,7 @@ class DatabaseWriter extends Database {
 		}
 
 		if (!($insertPhoto = $this->db->prepare("
-			INSERT INTO photos (pet, photo) VALUES(?, ?)
+			INSERT INTO photos (pet, photo, `order`) VALUES(?, ?, ?)
 			"))) {
 			log_err("Failed to prepare insertPhoto: {$this->db->error}");
 		} else {
@@ -218,12 +218,12 @@ class DatabaseWriter extends Database {
 			}
 		}
 		if (!$error) {
-			foreach ($photos as $photo) {
+			foreach ($photos as $index=>$photo) {
 				if (!$photo || !$photo['key']) {
 					continue;
 				}
-				// TODO [#162]: Add sort order to photos table.
-				if (!$this->insertPhoto->bind_param("ss", $id, $photo['key'])) {
+				$order = $index + 1;
+				if (!$this->insertPhoto->bind_param("ssi", $id, $photo['key'], $order)) {
 					$error = "Binding $id,{$photo['key']} to insertPhoto failed: {$this->db->error}";
 					break;
 				}
