@@ -154,7 +154,7 @@ class DatabaseWriter extends Database {
 		return $result;
 	}
 
-	// TODO [$620f07ea4904a50008de134a]: Refactor db inserts to use exceptions.
+	// TODO [#293]: Refactor db inserts to use exceptions.
 	public function insertPet(array $pet, bool $inner = false): ?string {
 		$error = null;
 		$id = $pet['id'] ?? null;
