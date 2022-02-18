@@ -11,6 +11,7 @@ class DatabaseWriter extends Database {
 	private mysqli_stmt $deletePhotos;
 	private mysqli_stmt $insertPhoto;
 	private mysqli_stmt $clearConflictingAssets;
+	private mysqli_stmt $setPair;
 
 	public function __construct() {
 		parent::__construct();
@@ -47,12 +48,20 @@ class DatabaseWriter extends Database {
 		}
 
 		if (!($insertPet = $this->db->prepare("
-			REPLACE INTO pets (id, name, species, breed, dob, sex, fee, photo, description, status, legacy_path, path)
-			VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, DEFAULT, DEFAULT)
+			REPLACE INTO pets (id, name, species, breed, dob, sex, fee, photo, description, status, bonded, friend, adoption_date, `order`)
+			VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 			"))) {
 			log_err("Failed to prepare insertPet: {$this->db->error}");
 		} else {
 			$this->insertPet = $insertPet;
+		}
+
+		if (!($setPair = $this->db->prepare("
+			UPDATE pets SET bonded=?, friend=? WHERE id=?
+		"))) {
+			log_err("Failed to prepare setPair: {$this->db->error}");
+		} else {
+			$this->setPair = $setPair;
 		}
 
 		if (!($deletePhotos = $this->db->prepare("
@@ -145,7 +154,8 @@ class DatabaseWriter extends Database {
 		return $result;
 	}
 
-	public function insertPet(array $pet): ?string {
+	// TODO [#293]: Refactor db inserts to use exceptions.
+	public function insertPet(array $pet, bool $inner = false): ?string {
 		$error = null;
 		$id = $pet['id'] ?? null;
 		if ($id === null) {
@@ -161,7 +171,13 @@ class DatabaseWriter extends Database {
 		$description = isset($pet['description']) ? ($pet['description']['key'] ?? null) : null;
 		$status = $pet['status'] ?? 1;
 		$photos = $pet['photos'] ?? [];
-		if (!$this->db->begin_transaction()) {
+		// bonded and friend will be set by setPair below
+		$bonded = 0;
+		$friend = null;
+		$adoption_date = $pet['adoption_date'] ?: null;
+		// order will be set by reorderPets
+		$order = null;
+		if (!($inner || $this->db->begin_transaction())) {
 			$error = "Failed to begin transaction";
 		} else {
 			if ($photo) {
@@ -172,30 +188,48 @@ class DatabaseWriter extends Database {
 			}
 		}
 		if (!$error) {
-			if (!$this->insertPet->bind_param("ssissisiii", $id, $name, $species, $breed, $dob, $sex, $fee, $photo,
-					$description, $status)) {
+			if (!$this->insertPet->bind_param("ssissisiiiissi", $id, $name, $species, $breed, $dob, $sex, $fee, $photo,
+					$description, $status, $bonded, $friend, $adoption_date, $order)) {
 				$error =
-						"Binding $id,$name,$species,$breed,$dob,$sex,$fee,$photo,$description,$status to insertPet failed: {$this->db->error}";
+						"Binding $id,$name,$species,$breed,$dob,$sex,$fee,$photo,$description,$status,$bonded,$friend,$adoption_date,$order to insertPet failed: {$this->db->error}";
 			} else if (!$this->insertPet->execute()) {
 				$error = "Executing insertPet failed: {$this->db->error}";
 			} else if (!$this->deletePhotos->bind_param("s", $id)) {
 				$error = "Failed to bind $id to deletePhotos: {$this->db->error}";
 			} else if (!$this->deletePhotos->execute()) {
 				$error = "Executing deletePhotos failed: {$this->db->error}";
-			} else {
-				foreach ($photos as $photo) {
-					if (!$photo || !$photo['key']) {
-						continue;
+			} else if ($pet['friend']) {
+				$error = $this->insertPet($pet['friend'], true);
+				if (!$error) {
+					// Set bonded and friends.
+					$friend_id = $pet['friend']['id'];
+					$left_bonded = 1;
+					$right_bonded = 2;
+					if (!$this->setPair->bind_param("iss", $left_bonded, $friend_id, $id)) {
+						$error = "Binding 1,$friend_id,$id to setPair failed: {$this->db->error}";
+					} else if (!$this->setPair->execute()) {
+						$error = "Executing setPair on left pet failed: {$this->db->error}";
+					} else if (!$this->setPair->bind_param("iss", $right_bonded, $id, $friend_id)) {
+						$error = "Binding 2,$id,$friend_id to setPair failed: {$this->db->error}";
+					} else if (!$this->setPair->execute()) {
+						$error = "Executing setPair on right pet failed: {$this->db->error}";
 					}
-					// TODO [#162]: Add sort order to photos table.
-					if (!$this->insertPhoto->bind_param("ss", $id, $photo['key'])) {
-						$error = "Binding $id,{$photo['key']} to insertPhoto failed: {$this->db->error}";
-						break;
-					}
-					if (!$this->insertPhoto->execute()) {
-						$error = "Inserting photo $id,{$photo['key']} failed: {$this->db->error}";
-						break;
-					}
+				}
+			}
+		}
+		if (!$error) {
+			foreach ($photos as $photo) {
+				if (!$photo || !$photo['key']) {
+					continue;
+				}
+				// TODO [#162]: Add sort order to photos table.
+				if (!$this->insertPhoto->bind_param("ss", $id, $photo['key'])) {
+					$error = "Binding $id,{$photo['key']} to insertPhoto failed: {$this->db->error}";
+					break;
+				}
+				if (!$this->insertPhoto->execute()) {
+					$error = "Inserting photo $id,{$photo['key']} failed: {$this->db->error}";
+					break;
 				}
 			}
 		}
@@ -203,6 +237,9 @@ class DatabaseWriter extends Database {
 			log_err($error);
 			$this->db->rollback();
 			return $error;
+		}
+		if ($inner) {
+			return null; // Don't commit the inner insert
 		}
 		return $this->db->commit() ? null : "Failed to commit";
 	}

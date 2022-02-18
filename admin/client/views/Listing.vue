@@ -1,5 +1,5 @@
 <template>
-  <section class="metadata">
+  <section :class="['metadata', pet.friend ? 'pair' : '']">
     <form :class="validated ? 'validated' : ''" @submit.prevent="save" @invalid.capture="validated = true">
       <div class="buttons">
         <button class="save">Save</button>
@@ -8,14 +8,28 @@
           New
         </button>
       </div>
+      <div class="bondage">
+        <label>
+          <input type="checkbox" :key="!!pet.friend" :checked="pet.friend" @click.prevent="toggleBondedPair">
+          Bonded pair
+        </label>
+        <label v-if="pet.friend">
+          <input type="checkbox" :key="singlePhoto" :checked="singlePhoto" @click.prevent="toggleSinglePhoto">
+          Combined photo
+        </label>
+      </div>
       <ul>
         <li class="id">
           <label for="id">ID</label>
           <input id="id" v-model="pet['id']" name="id" required type="text">
+          <label for="friend_id" v-if="pet.friend">ID</label>
+          <input id="friend_id" v-if="pet.friend" v-model="pet.friend.id" name="friend_id" required type="text">
         </li>
         <li class="name">
           <label for="name">Name</label>
           <input id="name" v-model="pet['name']" name="name" required type="text">
+          <label for="friend_name" v-if="pet.friend">Name</label>
+          <input id="friend_name" v-if="pet.friend" v-model="pet.friend.name" name="friend_name" required type="text">
         </li>
         <li class="species">
           <!--suppress XmlInvalidId no idea why this is firing -->
@@ -28,19 +42,37 @@
         <li class="breed">
           <label for="breed">Breed/info</label>
           <input id="breed" v-model="pet['breed']" name="breed" type="text">
+          <label for="friend_breed" v-if="pet.friend">Breed/info</label>
+          <input id="friend_breed" v-if="pet.friend" v-model="pet.friend.breed" name="friend_breed" type="text">
         </li>
         <li class="dob">
           <label for="dob"><abbr title="date of birth">DOB</abbr></label>
           <input id="dob" v-model="pet['dob']" :max="new Date().toISOString().split('T')[0]" name="dob"
               type="date">
+          <label for="friend_dob" v-if="pet.friend"><abbr title="date of birth">DOB</abbr></label>
+          <input id="friend_dob" v-if="pet.friend" v-model="pet.friend.dob"
+              :max="new Date().toISOString().split('T')[0]" name="dob"
+              type="date">
         </li>
         <li class="sex">
           <label for="sexes">Sex</label>
-          <fieldset id="sexes" :class="sexInteracted || validated ? 'validated' : ''">
-            <label v-for="sex of config['sexes']" :key="sex['key']">
-              <input v-model="pet['sex']" :value="sex['key']" name="sex" required type="radio">
+          <fieldset id="sexes" :class="['sexes', sexInteracted || validated ? 'validated' : '']">
+            <label v-for="sex of config.sexes" :key="sex.key">
+              <input v-model="pet.sex" :value="sex.key" name="sex" required type="radio">
               <abbr :title="ucfirst(sex['name'])" @click.prevent="(e: Event) => {sexClick(sex); e.target.blur();}"
                   @keyup.enter="sexClick(sex); $refs.fee.focus();" @keyup.space="sexClick(sex);" tabindex="0">{{
+                  sex['name'][0].toUpperCase()
+                }}</abbr>
+            </label>
+          </fieldset>
+          <label for="friend_sexes" v-if="pet.friend">Sex</label>
+          <fieldset id="friend_sexes" v-if="pet.friend"
+              :class="['sexes', sexInteracted || validated ? 'validated' : '']">
+            <label v-for="sex of config.sexes" :key="sex.key">
+              <input v-model="pet.friend.sex" :value="sex.key" name="friend_sex" required type="radio">
+              <abbr :title="ucfirst(sex['name'])" @click.prevent="(e: Event) => {sexClick(sex, true); e.target.blur();}"
+                  @keyup.enter="sexClick(sex, true); $refs.fee.focus();" @keyup.space="sexClick(sex, true);"
+                  tabindex="0">{{
                   sex['name'][0].toUpperCase()
                 }}</abbr>
             </label>
@@ -76,22 +108,41 @@
       <tbody>
       <tr :class="[`st_${pet['status']}`, listed() ? '' : 'soon',
       statusInfo()?.displayStatus ? 'displayStatus' : '',
-      statusInfo()?.description?.trim() ? 'explain' : '']">
+      statusInfo()?.description?.trim() ? 'explain' : '',
+      pet.friend ? 'pair' : '']">
         <th class="name"><a
-            :id="pet['id'] || '____'"
+            :id="pet.friend ? null : pet.id || '____'"
             :href="listed() ? `//${config['public_domain']}/${getFullPathForPet(pet)}` : null"
-            @click.prevent>{{ pet['name'] || '&nbsp;' }}</a>
+            @click.prevent>{{ pet.friend ? '' : (pet.name || '&nbsp;') }}
+          <ul v-if="pet.friend">
+            <li :id="pet.id || '____'">{{ pet.name || '&nbsp;' }}</li>
+            <li :id="pet.friend.id || '____'">{{ pet.friend.name || '&nbsp;' }}</li>
+          </ul>
+        </a>
         </th>
-        <td class="sex">{{
-            `${ucfirst(config['sexes'][pet['sex']]?.['name'])} ${pet['breed'] || ''}` || '&nbsp;'
-          }}
+        <td class="sex">
+          <ul v-if="pet.friend">
+            <li>{{ sexText(pet) || '&nbsp;' }}</li>
+            <li>{{ sexText(pet.friend) || '&nbsp;' }}</li>
+          </ul>
+          <span v-else>
+            {{ sexText(pet) || '&nbsp;' }}
+          </span>
         </td>
-        <td class="age">{{ petAge(pet) || '&nbsp;' }}</td>
+        <td class="age">
+          <span v-if="!pet.friend">
+            {{ petAge(pet) || '&nbsp;' }}
+        </span>
+          <ul v-else>
+            <li>{{ petAge(pet) || '&nbsp;' }}</li>
+            <li>{{ petAge(pet.friend) || '&nbsp;' }}</li>
+          </ul>
+        </td>
         <td class="fee">
           <span class="fee">{{
               statusInfo()?.displayStatus ?
                   statusInfo()?.name :
-                  (listed() ? pet.fee ?? '' : 'Coming Soon')
+                  (listed() ? (pet.friend ? 'BONDED PAIR ' : '') + pet.fee ?? '' : 'Coming Soon')
             }}</span>
           <aside class="explanation"
               v-if="statusInfo()?.displayStatus &&
@@ -101,13 +152,25 @@
         </td>
         <td class="img">
           <a>
-            <profile-photo v-model="pet.photo" v-model:promise="profilePromise" :reset="resetCount"
+            <profile-photo v-if="!pet.friend || singlePhoto" v-model="pet.photo" v-model:promise="profilePromise"
+                :reset="resetCount"
                 :prefix="getFullPathForPet(pet) + '/'"/>
+            <ul v-else>
+              <li>
+                <profile-photo v-model="pet.photo" v-model:promise="profilePromise" :reset="resetCount"
+                    :prefix="getFullPathForPet(pet) + '/'"/>
+              </li>
+              <li>
+                <profile-photo v-model="pet.friend.photo" v-model:promise="secondProfilePromise" :reset="resetCount"
+                    :prefix="getFullPathForPet(pet) + '/'"/>
+              </li>
+            </ul>
           </a>
         </td>
-        <td class="inquiry"><a :href="`mailto:${config['default_email_user']}@${config['public_domain']}`"
+        <td class="inquiry"><a
+            :href="`mailto:${config['default_email_user']}+${pet.friend ? pet.id + pet.friend.id : pet.id}@${config['public_domain']}`"
             @click.prevent>
-          Email to adopt {{ pet['name'] }}!
+          Email to adopt {{ pet.friend ? `${pet.name} & ${pet.friend.name}` : pet.name }}!
         </a></td>
       </tr>
       </tbody>
@@ -115,7 +178,7 @@
   </section>
   <photos v-model="pet.photos" @update:promises="photoPromises = $event" :reset="resetCount"
       :prefix="getFullPathForPet(pet) + '/'"/>
-  <editor v-model="description" :context="pet"/>
+  <editor v-model="description" :context="getContext(pet)"/>
   <modal v-if="showModal" @confirm="deleteListing" @cancel="showModal = false">
     Are you sure you want to delete this listing?
     <br>
@@ -131,6 +194,21 @@
     Are you sure you want to leave?
     <br>
     This will delete unsaved changes here!
+  </modal>
+  <modal v-if="confirmRemoveSecondPhoto"
+      @confirm="pet.friend.photo = undefined; singlePhoto = true; confirmRemoveSecondPhoto = false;"
+      @cancel="confirmRemoveSecondPhoto = false; singlePhoto = false;">
+    Are you sure you want to delete this image?<br>
+    <img :src="pet.friend.photo.localPath ?? `/api/raw/stored/${pet.friend.photo.key}`" :alt="pet.friend.name">
+  </modal>
+  <modal v-if="confirmSplitPair">
+    What do you want to do with {{ pet.friend.name }}?
+    <template #buttons>
+      <button class="danger" @click="deleteFriend()">Discard</button>
+      <button @click="splitPair(2)">Mark adopted</button>
+      <button @click="splitPair(pet.status)">Save as separate listing</button>
+      <button @click="confirmSplitPair = false;">Cancel</button>
+    </template>
   </modal>
   <modal v-if="showConfirmOverwriteModal">
     You have modified the ID and name of an existing pet.
@@ -161,10 +239,10 @@ import Photos from '../components/Photos.vue';
 import {defineComponent} from 'vue';
 import store from '../store';
 import {
-  getFullPathForPet, getPathForPet, partial, petAge, ucfirst, uploadDescription
+  getFullPathForPet, getPathForPet, partial, petAge, ucfirst, uploadDescription, getContext
 } from '../common';
 import {mapState} from 'vuex';
-import {Asset, Pet, Sex, Status} from '../types';
+import {Asset, PendingPhoto, Pet, Sex, Status} from '../types';
 import ProfilePhoto from '../components/ProfilePhoto.vue';
 import Modal from '../components/Modal.vue';
 import {progressBar, responseChecker} from '../mixins';
@@ -195,6 +273,11 @@ export default defineComponent({
       suppressBeforeRouteEnter: false,
       showConfirmOverwriteModal: false,
       confirmOverwrite: false,
+      singlePhoto: false,
+      secondProfilePromise: null as Promise<Asset> | null,
+      confirmRemoveSecondPhoto: false,
+      confirmSplitPair: false,
+      saveActions: [] as CallableFunction[],
     };
   },
   mounted() {
@@ -259,6 +342,8 @@ export default defineComponent({
           event.preventDefault();
         }
       };
+      (window as any).resizer?.(false);
+      setTimeout(() => (window as any).resizer?.(false), 1000);
     },
     resetOriginal() {
       this.path = undefined;
@@ -276,6 +361,8 @@ export default defineComponent({
       this.sexInteracted = false;
       this.validated = false;
       this.profilePromise = null;
+      this.secondProfilePromise = null;
+      this.singlePhoto = false;
       this.photoPromises = [];
       this.showModal = false;
       this.showAbandonModal = false;
@@ -310,14 +397,17 @@ export default defineComponent({
         if (this.profilePromise) {
           promises.push(this.profilePromise);
         }
+        if (this.secondProfilePromise) {
+          promises.push(this.secondProfilePromise);
+        }
         promises.push(...(this.pet.photos ?? []).map(() => Promise.resolve())); // Resolved promises for photos already uploaded
-        console.log('Waiting for promises', promises, this.profilePromise, this.photoPromises);
         // Wait for async uploads
         this.reportProgress(promises, 'Uploading photos');
         await Promise.all(promises);
         if (!this.original?.id || this.description !== this.originalDescription) {
           this.pet.description = await uploadDescription(this.description);
         }
+        this.saveActions.map((action) => action());
         fetch(this.original?.id ? `/api/listings/${this.original.id}` : `/api/listings`, {
           method: this.original?.id ? 'PUT' : 'POST',
           body: JSON.stringify(this.pet),
@@ -363,10 +453,15 @@ export default defineComponent({
       // Clear promises
       this.photoPromises = [];
       this.profilePromise = null;
+      this.secondProfilePromise = null;
       // Clear saved "confirm overwrite" state
       this.confirmOverwrite = false;
       // Clear loading state
       this.loading = false;
+      // Update singlePhoto
+      this.singlePhoto = !!this.pet.friend && !!this.pet.photo && !this.pet.friend.photo;
+      // Clear saveActions
+      this.saveActions = [];
     },
     modified() {
       // TODO [#196]: Weaken modified check so undefined == '' == null
@@ -387,11 +482,12 @@ export default defineComponent({
              (this.description || this.pet['photos']?.length);
     },
     statusInfo(): Status | undefined {
-      return this.config.statuses[this.pet.status];
+      return this.pet.status ? this.config.statuses[this.pet.status] : undefined;
     },
-    sexClick(sex: Sex) {
+    sexClick(sex: Sex, friend = false) {
       // Allow deselecting a sex rather than just selecting one.
-      this.pet['sex'] = this.pet['sex'] === sex['key'] ? undefined : sex['key'];
+      const pet = friend ? this.pet.friend! : this.pet;
+      pet.sex = pet.sex === sex.key ? undefined : sex.key;
       this.sexInteracted = true;
     },
     deleteListing() {
@@ -406,14 +502,98 @@ export default defineComponent({
       this.showModal = false;
       this.reset();
     },
+    sexText(pet: Pet): string {
+      return pet['sex'] ? `${ucfirst(this.config['sexes'][pet['sex']]?.['name'])} ${pet['breed'] || ''}` : '';
+    },
     getFullPathForPet,
     getPathForPet,
     ucfirst,
     petAge,
+    getContext,
+    deleteFriend(): void {
+      this.confirmSplitPair = false;
+      this.pet.friend = undefined;
+      this.singlePhoto = false;
+      const originalId = this.original?.friend?.id;
+      this.original.friend = undefined;
+      if (originalId) {
+        // Deleting an existing listing.
+        this.saveActions.push(() =>
+            fetch(`/api/listings/${originalId}`, {
+              method: 'DELETE'
+            }).then((res) => {
+              this.checkResponse(res);
+            }));
+      }
+    },
+    splitPair(newStatus: number): void {
+      this.confirmSplitPair = false;
+      this.singlePhoto = false;
+      const originalId = this.original?.friend?.id;
+      const friend: Pet = this.pet.friend!;
+      friend.status = newStatus;
+      this.pet.friend = undefined;
+      this.original.friend = undefined;
+      this.saveActions.push(() => fetch(originalId ? `/api/listings/${originalId}` : `/api/listings`, {
+        method: originalId ? 'PUT' : 'POST',
+        body: JSON.stringify(friend),
+      }).then(res => {
+        this.checkResponse(res);
+      }));
+    },
+    toggleBondedPair(): void {
+      if (this.pet.friend) {
+        // Uncheck bonded pair.
+        if (this.pet.friend.id && this.pet.friend.name) {
+          this.confirmSplitPair = true;
+        } else {
+          this.pet.friend = undefined;
+          this.original.friend = undefined;
+          this.singlePhoto = false;
+        }
+      } else {
+        // Check bonded pair.
+        this.pet.friend = {} as Pet;
+        this.original.friend = {} as Pet;
+        this.pet.friend.species = this.pet.species;
+        this.original.friend.species = this.pet.species;
+      }
+    },
+    toggleSinglePhoto(): void {
+      if (!this.singlePhoto && this.pet.friend) {
+        // Check single photo.
+        if (this.pet.friend.photo) {
+          this.confirmRemoveSecondPhoto = true;
+        } else {
+          this.pet.friend.photo = undefined;
+          this.singlePhoto = true;
+        }
+      } else {
+        // Uncheck single photo.
+        this.singlePhoto = false;
+      }
+    },
   },
-  computed: mapState({
-    config: (state: any) => state.config,
-  }),
+  computed: {
+    ...mapState({
+      config: (state: any) => state.config,
+    }),
+    sameDescription() {
+      return this.originalDescription === this.description;
+    }
+
+  },
+  watch: {
+    pet: {
+      handler() {
+        (window as any).resizer?.(false);
+      },
+      deep: true,
+    },
+    sameDescription() {
+      (window as any).resizer?.(false);
+    }
+  },
 });
 </script>
 
@@ -430,7 +610,7 @@ export default defineComponent({
   }
 }
 
-.metadata {
+section.metadata {
   --label-width: 6em;
   --input-width: 14em;
   --input-padding-vertical: 0.3em;
@@ -442,125 +622,152 @@ export default defineComponent({
   --focus-color: var(--visited-color);
   --error-color: #f00;
 
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+
+  @media (max-width: 750px) {
+    flex-direction: column;
+  }
+
   form {
-    flex-shrink: 0;
+    flex-shrink: 1;
+    display: grid;
+    grid-template-columns: var(--label-width) minmax(5em, var(--input-width)) [end];
+    max-width: 100%;
+    align-items: center;
+    justify-items: stretch;
+    margin: var(--input-margin);
+
+    > ul {
+      list-style: none;
+      display: contents;
+
+      > li {
+        display: contents;
+
+        > label {
+          grid-column: 1;
+
+          &:nth-of-type(2) {
+            display: none;
+          }
+        }
+      }
+    }
+
+    input, option, select, button {
+      font-size: inherit;
+      font-family: inherit;
+      grid-column: 2;
+      padding: var(--input-padding);
+      margin: var(--input-margin);
+      @include input;
+
+      &:only-of-type {
+        grid-column: 2 / span end;
+      }
+
+      &:nth-of-type(2) {
+        grid-column: 3;
+      }
+    }
+
+    button {
+      width: 5em;
+      height: 1.5em;
+      background-color: inherit;
+
+
+      &.delete:hover {
+        box-shadow: inset 0 0 0 1px var(--error-color);
+      }
+
+      &.delete:active {
+        background-color: var(--error-color) !important;
+      }
+    }
+
+
+    fieldset.sexes {
+      display: flex;
+      justify-content: space-evenly;
+      border: none;
+      box-sizing: content-box;
+      margin: var(--input-margin);
+      padding: 0 var(--input-padding-horizontal);
+
+      input {
+        display: none;
+
+        & + abbr {
+          @include input;
+          --dimension: calc(1em + 2 * var(--input-padding-vertical));
+          width: calc(2 * var(--dimension));
+          height: var(--dimension);
+          line-height: var(--dimension);
+          user-select: none;
+        }
+      }
+    }
+
+    > div.buttons, > div.bondage {
+      display: flex;
+      justify-content: space-evenly;
+      grid-column: 1 / span end;
+    }
+  }
+
+  fieldset.sexes input + abbr, .metadata button {
+    display: inline-block;
+    text-align: center;
+    transition: all 0.2s;
+  }
+
+  fieldset.sexes input:not(:checked):not(:invalid) + abbr:hover,
+  fieldset.sexes:not(.validated) input:not(:checked):invalid + abbr:hover,
+  button.save:hover {
+    background-color: var(--focus-color);
+    color: var(--background-color);
+  }
+
+  fieldset.sexes input:checked + abbr:hover, fieldset.sexes input + abbr:active, button.save:active {
+    box-shadow: inset 0 0 2px 1px var(--active-color);
+  }
+
+  fieldset.sexes input + abbr:active, .metadata button:active {
+    background-color: var(--active-color) !important;
+    color: var(--background-color) !important;
+    transition: none;
+  }
+
+  input:focus, select:focus, fieldset.sexes input:checked + abbr, fieldset.sexes input + abbr:hover,
+  button:hover {
+    box-shadow: inset 0 0 2px 1px var(--focus-color), inset 2px 2px 3px var(--shadow-color);
+  }
+
+  /* user-invalid isn't ready yet */
+  &.validated input:invalid, fieldset.sexes.validated input:invalid + abbr {
+    color: var(--error-color);
+  }
+
+  &.validated input:invalid, &.validated select:invalid, fieldset.sexes.validated input:invalid + abbr,
+  button.delete:hover {
+    border: none;
+    box-shadow: inset 0 0 2px 1px var(--error-color);
+  }
+
+  &.pair form {
+    grid-template-columns: var(--label-width) minmax(5em, var(--input-width)) minmax(5em, var(--input-width)) [end];
   }
 
   table {
     width: auto;
   }
 
-  ul {
-    list-style: none;
-    padding: var(--input-padding);
-    margin: var(--input-margin);
-  }
-
-  li > label {
-    display: inline-block;
-    width: var(--label-width);
-  }
-
-  input, option, select, button {
-    font-size: inherit;
-    font-family: inherit;
-    padding: var(--input-padding);
-    margin: var(--input-margin);
-    width: var(--input-width);
-    @include input;
-  }
-
-  button {
-    width: 5em;
-    height: 1.5em;
-    background-color: inherit;
-  }
-
   abbr {
     text-decoration: none;
   }
-
-  button.delete:hover {
-    box-shadow: inset 0 0 0 1px var(--error-color);
-  }
-
-  button.delete:active {
-    background-color: var(--error-color) !important;
-  }
-}
-
-section.metadata {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-evenly;
-  align-items: center;
-}
-
-.metadata input:focus, .metadata select:focus, fieldset#sexes input:checked + abbr, fieldset#sexes input + abbr:hover,
-.metadata button:hover {
-  box-shadow: inset 0 0 2px 1px var(--focus-color), inset 2px 2px 3px var(--shadow-color);
-}
-
-/* user-invalid isn't ready yet */
-.validated input:invalid, fieldset#sexes.validated input:invalid + abbr {
-  color: var(--error-color);
-}
-
-.validated input:invalid, .validated select:invalid, fieldset#sexes.validated input:invalid + abbr,
-button.delete:hover {
-  border: none;
-  box-shadow: inset 0 0 2px 1px var(--error-color);
-}
-
-fieldset#sexes {
-  display: inline-flex;
-  justify-content: space-evenly;
-  border: none;
-  box-sizing: content-box;
-  margin: var(--input-margin);
-  padding: 0 var(--input-padding-horizontal);
-  width: var(--input-width);
-
-  input {
-    display: none;
-
-    & + abbr {
-      @include input;
-      --dimension: calc(1em + 2 * var(--input-padding-vertical));
-      width: calc(2 * var(--dimension));
-      height: var(--dimension);
-      line-height: var(--dimension);
-      user-select: none;
-    }
-  }
-}
-
-fieldset#sexes input + abbr, .metadata button {
-  display: inline-block;
-  text-align: center;
-  transition: all 0.2s;
-}
-
-fieldset#sexes input:not(:checked):not(:invalid) + abbr:hover,
-fieldset#sexes:not(.validated) input:not(:checked):invalid + abbr:hover,
-button.save:hover {
-  background-color: var(--focus-color);
-  color: var(--background-color);
-}
-
-fieldset#sexes input:checked + abbr:hover, fieldset#sexes input + abbr:active, button.save:active {
-  box-shadow: inset 0 0 2px 1px var(--active-color);
-}
-
-fieldset#sexes input + abbr:active, .metadata button:active {
-  background-color: var(--active-color) !important;
-  color: var(--background-color) !important;
-  transition: none;
-}
-
-div.buttons {
-  display: flex;
-  justify-content: space-evenly;
 }
 
 div.loading {
@@ -590,4 +797,10 @@ table.listings tbody {
   grid-template-columns: minmax(0, 300px) repeat(auto-fit, minmax(0, 300px));
 }
 
+</style>
+
+<style lang="scss">
+:root {
+  min-width: 400px;
+}
 </style>

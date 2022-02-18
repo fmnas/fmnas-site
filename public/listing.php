@@ -16,9 +16,9 @@ if (!($pet = $db->getPetByPath($path))) {
 	<!DOCTYPE html>
 	<html lang="en-US">
 	<title>
-		<?=htmlspecialchars($pet->name)?>, <?=$pet->species()?>
+		<?=htmlspecialchars($pet->name())?>, <?=$pet->species()?>
 		<?=$pet->status->listed ? "for adoption at" :
-				($pet->status->name == _G_statuses()[1]->name ? "adopted from" : "-")?>
+				($pet->status->key === 1 ? "adopted from" : "-")?>
 		<?=_G_longname()?>
 	</title>
 	<meta charset="utf-8">
@@ -28,7 +28,7 @@ if (!($pet = $db->getPetByPath($path))) {
 	<script src="/email.js.php"></script>
 	<?php
 	style();
-	style("listing", false, "20220208");
+	style("listing");
 	emailLinks();
 	pageHeader();
 	?>
@@ -38,12 +38,12 @@ if (!($pet = $db->getPetByPath($path))) {
 	<article class="listing">
 		<h2><?=$pet?></h2>
 		<p class="subtitle"><?php
-			echo $pet->age();
+			echo '<span>' . $pet->collapsedAge() . '</span>';
 			echo '&nbsp;&middot;&nbsp;';
-			echo $pet->status->name;
+			echo "<span>{$pet->status->name}</span>";
 			if ($pet->status->listed && !$pet->status->displayStatus) {
 				echo '&nbsp;&middot;&nbsp;';
-				echo $pet->fee;
+				echo "<span>$pet->fee</span>";
 			}
 			?>
 		<aside class="images">
@@ -57,16 +57,18 @@ if (!($pet = $db->getPetByPath($path))) {
 			?>
 		</aside>
 		<section id="description">
-		<?php
-		if ($pet->description !== null) {
-			echo $pet->description->parse((array) $pet);
-		}
-		?>
-		<form action="/application" method="GET" id="bottom_form">
-			If you would like to know more about, or think you might like to adopt, <?=$pet->name?>,
-			<button>Apply Online Now</button> or email us at: <a data-email="adopt+<?=$pet->id?>">Adopt <?=$pet->name?>!</a>
-			<input type="hidden" name="pet" value="<?=$pet->id?>" id="hidden_id">
-		</form>
+			<?php
+			if ($pet->description !== null) {
+				echo $pet->description->parse($pet->toArray());
+			}
+			?>
+			<form action="/application" method="GET" id="bottom_form">
+				If you would like to know more about, or think you might like to adopt, <?=htmlspecialchars($pet->name())?>,
+				<button>Apply Online Now</button>
+				or email us at: <a
+						data-email="adopt+<?=htmlspecialchars($pet->id())?>">Adopt <?=htmlspecialchars($pet->name())?>!</a>
+				<input type="hidden" name="pet" value="<?=htmlspecialchars($pet->id)?>" id="hidden_id">
+			</form>
 		</section>
 	</article>
 	<?php

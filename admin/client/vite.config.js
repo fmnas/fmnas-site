@@ -17,7 +17,7 @@ export default defineConfig({
 	build: {
 		outDir: '../',
 		emptyOutDir: false,
-		target: 'es2015',
+		target: 'es2020',
 		rollupOptions: {
 			external: [
 					'components/ProgressToastContent.vue',

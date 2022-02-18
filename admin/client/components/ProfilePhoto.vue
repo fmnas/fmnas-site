@@ -1,8 +1,8 @@
 <template>
-	<img :src="localPath ?? (photo ? `/api/raw/stored/${photo.key}` : null)"
-			:alt="photo ? 'Edit profile image' : 'Add profile image'"
-			:title="photo ? 'Edit profile image' : 'Add profile image'" @click="$refs.input.click()">
-	<input type="file" ref="input" @change="upload()" accept="image/*">
+  <img :src="localPath ?? (photo ? `/api/raw/stored/${photo.key}` : null)"
+      :alt="photo ? 'Edit profile image' : 'Add profile image'"
+      :title="photo ? 'Edit profile image' : 'Add profile image'" @click="$refs.input.click()">
+  <input type="file" ref="input" @change="upload()" accept="image/*">
 </template>
 
 <script lang="ts">
@@ -11,121 +11,126 @@ import {Asset} from '../types';
 import {uploadFile} from '../common';
 
 export default defineComponent({
-	name: 'ProfilePhoto',
-	props: {
-		modelValue: {
-			type: Object as PropType<Asset>,
-			required: false
-		},
-		promise: {
-			type: Object as PropType<Promise<Asset>>,
-			required: false
-		},
-		prefix: {
-			type: String,
-			required: false
-		},
-		reset: {
-			type: Number,
-			required: false,
-		}
-	},
-	data() {
-		return {
-			localPath: null as string | null,
-		};
-	},
-	watch: {
-		reset() {
-			// Reset local path on parent reset
-			this.localPath = null;
-		},
-	},
-	emits: ['update:modelValue', 'update:promise'],
-	computed: {
-		photo: {
-			get(): Asset | undefined {
-				return this.modelValue;
-			},
-			set(value: Asset | undefined): void {
-				this.$emit('update:modelValue', value);
-			},
-		},
-		prom: {
-			get(): Promise<Asset> | undefined {
-				return this.promise;
-			},
-			set(value: Promise<Asset>): void {
-				this.$emit('update:promise', value);
-			},
-		},
-	},
-	methods: {
-		upload(): void {
-			const input = this.$refs.input as HTMLInputElement;
-			if (input.files?.[0]) {
-				const localPath = URL.createObjectURL(input.files[0]);
-				this.localPath = localPath;
-				this.prom = uploadFile(input.files[0], this.prefix, 300).then((asset) => {
-					if (this.localPath === localPath) {
-						this.photo = asset;
-					}
-					return asset;
-				});
-			}
-			input.value = '';
-			input.files = null;
-		}
-	},
+  name: 'ProfilePhoto',
+  props: {
+    modelValue: {
+      type: Object as PropType<Asset>,
+      required: false
+    },
+    promise: {
+      type: Object as PropType<Promise<Asset>>,
+      required: false
+    },
+    prefix: {
+      type: String,
+      required: false
+    },
+    reset: {
+      type: Number,
+      required: false,
+    }
+  },
+  data() {
+    return {
+      localPath: null as string | null,
+    };
+  },
+  watch: {
+    reset() {
+      // Reset local path on parent reset
+      this.localPath = null;
+    },
+  },
+  emits: ['update:modelValue', 'update:promise'],
+  computed: {
+    photo: {
+      get(): Asset | undefined {
+        return this.modelValue;
+      },
+      set(value: Asset | undefined): void {
+        this.$emit('update:modelValue', value);
+      },
+    },
+    prom: {
+      get(): Promise<Asset> | undefined {
+        return this.promise;
+      },
+      set(value: Promise<Asset>): void {
+        this.$emit('update:promise', value);
+      },
+    },
+  },
+  methods: {
+    upload(): void {
+      const input = this.$refs.input as HTMLInputElement;
+      if (input.files?.[0]) {
+        const localPath = URL.createObjectURL(input.files[0]);
+        this.localPath = localPath;
+        this.prom = uploadFile(input.files[0], this.prefix, 300).then((asset) => {
+          if (this.localPath === localPath) {
+            this.photo = asset;
+          }
+          return asset;
+        });
+      }
+      input.value = '';
+      input.files = null;
+    }
+  },
 });
 </script>
 
 <style scoped lang="scss">
 input {
-	display: none;
+  display: none;
 }
 
 /* Make a missing profile image seem like a link */
 img {
-	vertical-align: center;
-	line-height: 318px;
-	box-sizing: border-box;
-	color: var(--link-color);
-	font-weight: bold;
-	cursor: pointer;
-	--stripe-1-color: transparent;
-	--stripe-2-color: rgba(0, 0, 0, 0.03);
-	--plus-url: url('/plus.svg.php?color=066');
-	background-image: var(--plus-url), linear-gradient(135deg, var(--stripe-1-color) 25%, var(--stripe-2-color) 25%, var(--stripe-2-color) 50%, var(--stripe-1-color) 50%, var(--stripe-1-color) 75%, var(--stripe-2-color) 75%, var(--stripe-2-color) 100%);
-	background-size: 20px 20px;
-	background-repeat: no-repeat, repeat;
-	background-position: bottom 152px center, center;
-	background-clip: padding-box;
-	margin-top: 2px;
+  vertical-align: center;
+  line-height: 318px;
+  box-sizing: border-box;
+  color: var(--link-color);
+  font-weight: bold;
+  cursor: pointer;
+  --stripe-1-color: transparent;
+  --stripe-2-color: rgba(0, 0, 0, 0.03);
+  --plus-url: url('/plus.svg.php?color=066');
+  background-image: var(--plus-url), linear-gradient(135deg, var(--stripe-1-color) 25%, var(--stripe-2-color) 25%, var(--stripe-2-color) 50%, var(--stripe-1-color) 50%, var(--stripe-1-color) 75%, var(--stripe-2-color) 75%, var(--stripe-2-color) 100%);
+  background-size: 20px 20px;
+  background-repeat: no-repeat, repeat;
+  background-position: bottom 152px center, center;
+  background-clip: padding-box;
+  margin-top: 2px;
 
   &:not([src]) {
-    width: 200px !important;
-    height: 300px;
+    width: 400px !important;
+
+    &:not(.pair a>img) {
+      width: 200px !important;
+    }
+
+    height: 300px !important;
   }
 
-	&::before {
-		display: block;
-		width: 100%;
-		height: 100%;
-	}
+  &::before {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
 
-	&:not([src]), &::before, &:hover {
-		outline: 2px dashed var(--link-color);
-	}
+  &:not([src]), &::before, &:hover {
+    outline: 2px dashed var(--link-color);
+  }
 
-	&:hover {
-		text-decoration: underline;
-	}
+  &:hover {
+    text-decoration: underline;
+  }
 
-	&:active, &:active::before {
-		color: var(--active-color);
-		outline-color: var(--active-color);
-		--plus-url: url('/plus.svg.php?color=f60');
-	}
+  &:active, &:active::before {
+    color: var(--active-color);
+    outline-color: var(--active-color);
+    --plus-url: url('/plus.svg.php?color=f60');
+  }
 }
 </style>

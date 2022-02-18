@@ -48,12 +48,12 @@ class Species implements JsonSerializable {
 
 	/**
 	 * Get a printable version of the age such as "11 years" or "3 months"
-	 * @param string $dob Date of birth of the animal
+	 * @param string|null $dob Date of birth of the animal
 	 * @return string Printable version of the age
 	 */
 	public function age(?string $dob): string {
 		if (!$dob) {
-			return "&nbsp;";
+			return '';
 		}
 		try {
 			$interval = (new DateTime())->diff(new DateTime($dob));
@@ -72,7 +72,7 @@ class Species implements JsonSerializable {
 	}
 
 	public function __get($key) {
-		return isset($this->values[$key]) ? $this->values[$key] : null;
+		return $this->values[$key] ?? null;
 	}
 
 	public function __set($key, $val) {
@@ -143,7 +143,11 @@ class Pet implements JsonSerializable {
 	public ?array $photos; // photo assets (array of Assets)
 	public ?Asset $description; // description asset
 	public Status $status;
-	// TODO [#22]: Two animals in one listing?
+	public int $bonded;
+	public ?Pet $friend;
+	public ?string $adoption_date;
+	public ?int $order;
+	public ?string $modified;
 
 	public function listed(): bool {
 		$description = $this->description?->fetch();
@@ -151,38 +155,86 @@ class Pet implements JsonSerializable {
 	}
 
 	public function __toString(): string {
+		if ($this->bonded === 1) {
+			return htmlspecialchars("$this->name $this->id & $this->friend");
+		}
 		return htmlspecialchars("$this->name $this->id");
 	}
 
 	public function toArray(): array {
 		return [
-				"id" => $this->id,
-				"name" => $this->name,
+				"id" => $this->id(),
+				"name" => $this->name(),
 				"species" => $this->species(),
-				"breed" => $this->breed,
-				"dob" => $this->dob,
+				"breed" => $this->breed(),
+				"dob" => $this->dob(),
 				"age" => $this->age(),
-				"sex" => $this->sex->name,
+				"sex" => $this->sex(),
 				"fee" => $this->fee,
 				"status" => $this->status->name,
 				"path" => $this->path,
+				"bonded" => $this->bonded,
+				"friend" => $this->friend?->id,
+				"adoption_date" => $this->adoption_date,
+				"order" => $this->order,
+				"modified" => $this->modified,
 		];
 	}
 
 	public function species(): string {
-		if (!isset($this->species) || $this->species === null) {
-			return '';
-		}
-		return $this->species->nameGivenDob($this->dob, false);
+		return $this->species?->nameGivenDob($this->dob, $this->bonded === 1) ?? '';
 	}
 
-	// Strings provided to listing description parser.
+	public function name(): string {
+		if ($this->bonded === 1) {
+			return $this->name . ' & ' . $this->friend->name;
+		}
+		return $this->name;
+	}
+
+	public function id(): string {
+		if ($this->bonded === 1) {
+			return $this->id . $this->friend->id;
+		}
+		return $this->id;
+	}
+
+	public function breed(): string {
+		if ($this->bonded !== 1 || $this->breed === $this->friend->breed) {
+			return $this->breed ?? '';
+		}
+		return ($this->breed ?? '') . ' & ' . ($this->friend->breed ?? '');
+	}
+
+	public function dob(): string {
+		if ($this->bonded !== 1 || $this->dob === $this->friend->dob) {
+			return $this->dob ?? '';
+		}
+		return ($this->dob ?? '') . ' & ' . ($this->friend->dob ?? '');
+	}
 
 	public function age(): string {
-		return $this->species->age($this->dob);
+		$leftAge = $this->species->age($this->dob);
+		$rightAge = $this->species->age($this->friend?->dob) ?: false;
+		if (!$rightAge || $leftAge === $rightAge) {
+			return $leftAge;
+		}
+		return $leftAge . ' & ' . $rightAge;
 	}
 
-	// Data provided to listing editor.
+	public function collapsedAge(): string {
+		return preg_replace(
+				['/^([^&]+) & \1$/', '/^([0-9]+) (months?|years?) old & ([0-9]+) \2 old$/'],
+				['\1', '\1 & \ \2\3 old'],
+				$this->age());
+	}
+
+	public function sex(): string {
+		if ($this->bonded !== 1 || $this->sex?->key === $this->friend->sex?->key) {
+			return ($this->sex?->name ?? '');
+		}
+		return ($this->sex?->name ?? '') . ' & ' . ($this->friend->sex?->name ?? '');
+	}
 
 	public function jsonSerialize(): array {
 		return [
@@ -198,6 +250,11 @@ class Pet implements JsonSerializable {
 				"photo" => $this->photo,
 				"photos" => $this->photos,
 				"description" => $this->description,
+				"bonded" => $this->bonded,
+				"friend" => $this->bonded === 1 ? $this->friend->jsonSerialize() : null,
+				"adoption_date" => $this->adoption_date,
+				"order" => $this->order,
+				"modified" => $this->modified,
 		];
 	}
 }
