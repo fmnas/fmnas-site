@@ -64,6 +64,7 @@ export default defineComponent({
       height: 100%;
       box-sizing: border-box;
       padding: $padding;
+      vertical-align: middle;
 
       &.img {
         width: $image-width;
