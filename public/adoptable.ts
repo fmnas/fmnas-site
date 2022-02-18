@@ -96,7 +96,7 @@ function setupDesktopTooltips() {
 			e.stopPropagation();
 		};
 		span.addEventListener('pointerenter', show);
-		cell.addEventListener('mouseout', hide);
+		cell.addEventListener('mouseleave', hide);
 		explanation.addEventListener('click', hide);
 	});
 }
