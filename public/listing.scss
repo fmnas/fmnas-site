@@ -95,6 +95,10 @@ h2 {
 		text-align: center;
 		font-size: 18pt;
 		margin: 0.2em auto;
+
+		> span {
+			display: inline-block;
+		}
 	}
 
 	div.video {

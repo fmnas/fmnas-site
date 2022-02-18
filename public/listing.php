@@ -38,12 +38,12 @@ if (!($pet = $db->getPetByPath($path))) {
 	<article class="listing">
 		<h2><?=$pet?></h2>
 		<p class="subtitle"><?php
-			echo $pet->collapsedAge();
+			echo '<span>' . $pet->collapsedAge() . '</span>';
 			echo '&nbsp;&middot;&nbsp;';
-			echo $pet->status->name;
+			echo "<span>{$pet->status->name}</span>";
 			if ($pet->status->listed && !$pet->status->displayStatus) {
 				echo '&nbsp;&middot;&nbsp;';
-				echo $pet->fee;
+				echo "<span>$pet->fee</span>";
 			}
 			?>
 		<aside class="images">
