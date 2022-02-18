@@ -22,8 +22,12 @@
         <li class="id">
           <label for="id">ID</label>
           <input id="id" v-model="pet['id']" name="id" required type="text">
-          <label for="friend_id" v-if="pet.friend">ID</label>
-          <input id="friend_id" v-if="pet.friend" v-model="pet.friend.id" name="friend_id" required type="text">
+          <!--suppress XmlInvalidId -->
+          <label for="friend_id">ID</label>
+          <auto-complete id="friend_id" v-if="pet.friend" v-model="pet.friend.id" name="friend_id" required
+              :suggestions="friendSuggestions" @complete="searchFriends($event)" appendTo="self"
+              completeOnFocus="true" delay="100">
+          </auto-complete>
         </li>
         <li class="name">
           <label for="name">Name</label>
@@ -34,7 +38,7 @@
         <li class="species">
           <!--suppress XmlInvalidId no idea why this is firing -->
           <label for="species_input">Species</label>
-          <select id="species_input" v-model="pet['species']" name="species" required>
+          <select id="species_input" v-model="pet['species']" name="species" required class="span">
             <option value=""></option>
             <option v-for="s of config['species']" :value="s['id']" :key="s['id']">{{ ucfirst(s['name']) }}</option>
           </select>
@@ -80,12 +84,12 @@
         </li>
         <li class="fee">
           <label for="fee">Fee</label>
-          <input id="fee" v-model="pet['fee']" name="fee" type="text" ref="fee">
+          <input id="fee" v-model="pet['fee']" name="fee" type="text" ref="fee" class="span">
         </li>
         <li class="status">
           <!--suppress XmlInvalidId no idea why this is firing -->
           <label for="status">Status</label>
-          <select id="status" v-model="pet['status']" name="status" required>
+          <select id="status" v-model="pet['status']" name="status" required class="span">
             <option value=""></option>
             <option v-for="status of config['statuses']" :value="status['key']" :key="status['key']">
               {{ status['name'] }}
@@ -246,10 +250,11 @@ import {Asset, PendingPhoto, Pet, Sex, Status} from '../types';
 import ProfilePhoto from '../components/ProfilePhoto.vue';
 import Modal from '../components/Modal.vue';
 import {progressBar, responseChecker} from '../mixins';
+import AutoComplete from 'primevue/autocomplete';
 
 export default defineComponent({
   name: 'Listing',
-  components: {ProfilePhoto, Editor, Photos, Modal},
+  components: {ProfilePhoto, Editor, Photos, Modal, AutoComplete},
   mixins: [responseChecker, progressBar],
   data() {
     return {
@@ -278,6 +283,7 @@ export default defineComponent({
       confirmRemoveSecondPhoto: false,
       confirmSplitPair: false,
       saveActions: [] as CallableFunction[],
+      friendSuggestions: ['A', 'B', 'C'],
     };
   },
   mounted() {
@@ -573,6 +579,10 @@ export default defineComponent({
         this.singlePhoto = false;
       }
     },
+    searchFriends(event: any) {
+      console.log(event);
+      this.friendSuggestions = ['a', 'b', 'c'];
+    },
   },
   computed: {
     ...mapState({
@@ -597,7 +607,7 @@ export default defineComponent({
 });
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 @mixin input {
   box-sizing: content-box;
   border: none;
@@ -639,6 +649,14 @@ section.metadata {
     justify-items: stretch;
     margin: var(--input-margin);
 
+    @mixin metadata-input {
+      @include input;
+      font-size: inherit;
+      font-family: inherit;
+      padding: var(--input-padding);
+      margin: var(--input-margin);
+    }
+
     > ul {
       list-style: none;
       display: contents;
@@ -646,30 +664,60 @@ section.metadata {
       > li {
         display: contents;
 
-        > label {
+        * {
+          grid-column: 2;
+        }
+
+        > label:first-child {
           grid-column: 1;
 
-          &:nth-of-type(2) {
+          ~ label {
             display: none;
+
+            + *, + * > * {
+              grid-column: 3;
+            }
+          }
+
+          ~ *.span {
+            grid-column: 2 / span end;
+          }
+
+          ~ span.p-inputwrapper {
+            position: relative;
+            padding: var(--input-margin);
+            input {
+              @include metadata-input;
+              max-width: 100%;
+              margin: 0;
+              box-sizing: border-box;
+              box-shadow: none;
+              border: 1px solid var(--border-color);
+
+              &:focus-visible + div.p-autocomplete-panel {
+                box-shadow: 0 2px var(--focus-color), -2px 0 var(--focus-color), 2px 0 var(--focus-color);
+              }
+            }
+            &[aria-expanded="true"] input {
+              border-radius: var(--border-radius) var(--border-radius) 0 0;
+            }
+            div.p-autocomplete-panel {
+              background: var(--background-color);
+              box-sizing: border-box;
+              min-width: 0;
+              width: calc(100% - 2 * var(--input-margin));
+              border-radius: 0 0 var(--border-radius) var(--border-radius);
+              border: 1px solid var(--border-color);
+              border-top: none;
+              top: calc(100% - var(--input-margin)) !important;
+              margin: 0 var(--input-margin);
+            }
+          }
+
+          ~ *:not(label):not(fieldset.sexes):not(span.p-inputwrapper) {
+            @include metadata-input;
           }
         }
-      }
-    }
-
-    input, option, select, button {
-      font-size: inherit;
-      font-family: inherit;
-      grid-column: 2;
-      padding: var(--input-padding);
-      margin: var(--input-margin);
-      @include input;
-
-      &:only-of-type {
-        grid-column: 2 / span end;
-      }
-
-      &:nth-of-type(2) {
-        grid-column: 3;
       }
     }
 
@@ -677,7 +725,7 @@ section.metadata {
       width: 5em;
       height: 1.5em;
       background-color: inherit;
-
+      @include metadata-input;
 
       &.delete:hover {
         box-shadow: inset 0 0 0 1px var(--error-color);
@@ -797,9 +845,6 @@ table.listings tbody {
   grid-template-columns: minmax(0, 300px) repeat(auto-fit, minmax(0, 300px));
 }
 
-</style>
-
-<style lang="scss">
 :root {
   min-width: 400px;
 }
