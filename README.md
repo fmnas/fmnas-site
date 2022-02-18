@@ -256,9 +256,12 @@ resulting HTML is cached (TODO); the cached assets are automatically deleted whe
 interface, but must be manually deleted if changes are made to the asset or corresponding database records outside the
 admin interface.
 
-The client-side editor is [Toast UI Editor](https://ui.toast.com/tui-editor/).
+<!-- The admin interface WYSIWYG editor is [Toast UI Editor](https://ui.toast.com/tui-editor/).-->
 
 The layout templates in `src/templates` are written in vanilla PHP/HTML.
+
+The public site targets ES2019 and Chrome 79/Safari 11.1/Firefox 75.  
+The admin site targets ES2020 and Chrome 80/Firefox 74.
 
 ### Server-side dependencies
 
