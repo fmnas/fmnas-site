@@ -8,6 +8,7 @@
 		"vue": "^3.2.29",
 		"vue-router": "^4.0.0-0",
 		"vue-toastification": "^2.0.0-rc.5",
+		"vuedraggable": "^4.1.0",
 		"vuex": "^4.0.0-0"
 	},
 	"name": "fmnas-site",
