@@ -27,66 +27,90 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       </div>
       <div class="bondage">
         <label>
-          <input type="checkbox" :key="!!pet.friend" :checked="pet.friend" @click.prevent="toggleBondedPair">
+          <input type="checkbox" :key="!!pet.friend" :checked="pet.friend" @click.prevent="toggleBondedPair"
+              autocomplete="off">
           Bonded pair
         </label>
         <label v-if="pet.friend">
-          <input type="checkbox" :key="singlePhoto" :checked="singlePhoto" @click.prevent="toggleSinglePhoto">
+          <input type="checkbox" :key="singlePhoto" :checked="singlePhoto" @click.prevent="toggleSinglePhoto"
+              autocomplete="off">
           Combined photo
         </label>
+        <button v-if="pet.friend" @click.prevent="swapFriend">Swap</button>
       </div>
       <ul>
         <li class="id">
           <label for="id">ID</label>
-          <input id="id" v-model="pet['id']" name="id" required type="text">
-          <label for="friend_id" v-if="pet.friend">ID</label>
-          <input id="friend_id" v-if="pet.friend" v-model="pet.friend.id" name="friend_id" required type="text">
+          <input id="id" v-model="pet['id']" name="id" required type="text" autocomplete="off">
+          <label for="friend_id">ID</label>
+          <input id="friend_id" v-if="pet.friend && pet.friend.name" v-model="pet.friend.id" name="friend_id" required
+              type="text" autocomplete="off">
+          <auto-complete id="friend_id" v-if="pet.friend && !pet.friend.name" v-model="pet.friend.id" name="friend_id"
+              required :suggestions="friendSuggestions" @complete="searchListings($event.query)" appendTo="self"
+              completeOnFocus="true" delay="100" field="id" @item-select="setFriend($event.value)">
+            <template #item="slotProps">
+              <pet-dropdown-entry :pet="slotProps.item"/>
+            </template>
+          </auto-complete>
         </li>
         <li class="name">
           <label for="name">Name</label>
-          <input id="name" v-model="pet['name']" name="name" required type="text">
+          <input id="name" v-model="pet['name']" name="name" required type="text" autocomplete="off">
           <label for="friend_name" v-if="pet.friend">Name</label>
-          <input id="friend_name" v-if="pet.friend" v-model="pet.friend.name" name="friend_name" required type="text">
+          <input id="friend_name" v-if="pet.friend && pet.friend.id" v-model="pet.friend.name" name="friend_name"
+              required type="text" autocomplete="off">
+          <auto-complete id="friend_name" v-if="pet.friend && !pet.friend.id" v-model="pet.friend.name"
+              name="friend_id" required :suggestions="friendSuggestions" @complete="searchListings($event.query)"
+              appendTo="self" completeOnFocus="true" delay="100" field="name" @item-select="setFriend($event.value)">
+            <template #item="slotProps">
+              <pet-dropdown-entry :pet="slotProps.item"/>
+            </template>
+          </auto-complete>
         </li>
         <li class="species">
-          <!--suppress XmlInvalidId no idea why this is firing -->
+          <!--suppress XmlInvalidId -->
           <label for="species_input">Species</label>
-          <select id="species_input" v-model="pet['species']" name="species" required>
+          <select id="species_input" v-model="pet['species']" name="species" required class="span" autocomplete="off"
+              @change="fetchListings">
             <option value=""></option>
             <option v-for="s of config['species']" :value="s['id']" :key="s['id']">{{ ucfirst(s['name']) }}</option>
           </select>
         </li>
         <li class="breed">
           <label for="breed">Breed/info</label>
-          <input id="breed" v-model="pet['breed']" name="breed" type="text">
+          <input id="breed" v-model="pet['breed']" name="breed" type="text" autocomplete="off">
           <label for="friend_breed" v-if="pet.friend">Breed/info</label>
-          <input id="friend_breed" v-if="pet.friend" v-model="pet.friend.breed" name="friend_breed" type="text">
+          <input id="friend_breed" v-if="pet.friend" v-model="pet.friend.breed" name="friend_breed" type="text"
+              autocomplete="off">
         </li>
         <li class="dob">
           <label for="dob"><abbr title="date of birth">DOB</abbr></label>
           <input id="dob" v-model="pet['dob']" :max="new Date().toISOString().split('T')[0]" name="dob"
-              type="date">
+              type="date" autocomplete="off">
           <label for="friend_dob" v-if="pet.friend"><abbr title="date of birth">DOB</abbr></label>
           <input id="friend_dob" v-if="pet.friend" v-model="pet.friend.dob"
               :max="new Date().toISOString().split('T')[0]" name="dob"
-              type="date">
+              type="date" autocomplete="off">
         </li>
         <li class="sex">
+          <!--suppress XmlInvalidId -->
           <label for="sexes">Sex</label>
           <fieldset id="sexes" :class="['sexes', sexInteracted || validated ? 'validated' : '']">
             <label v-for="sex of config.sexes" :key="sex.key">
-              <input v-model="pet.sex" :value="sex.key" name="sex" required type="radio">
+              <input v-model="pet.sex" :value="sex.key" name="sex" required type="radio" autocomplete="off">
               <abbr :title="ucfirst(sex['name'])" @click.prevent="(e: Event) => {sexClick(sex); e.target.blur();}"
                   @keyup.enter="sexClick(sex); $refs.fee.focus();" @keyup.space="sexClick(sex);" tabindex="0">{{
                   sex['name'][0].toUpperCase()
                 }}</abbr>
             </label>
           </fieldset>
+          <!--suppress XmlInvalidId -->
           <label for="friend_sexes" v-if="pet.friend">Sex</label>
           <fieldset id="friend_sexes" v-if="pet.friend"
               :class="['sexes', sexInteracted || validated ? 'validated' : '']">
             <label v-for="sex of config.sexes" :key="sex.key">
-              <input v-model="pet.friend.sex" :value="sex.key" name="friend_sex" required type="radio">
+              <input v-model="pet.friend.sex" :value="sex.key" name="friend_sex" required type="radio"
+                  autocomplete="off">
               <abbr :title="ucfirst(sex['name'])" @click.prevent="(e: Event) => {sexClick(sex, true); e.target.blur();}"
                   @keyup.enter="sexClick(sex, true); $refs.fee.focus();" @keyup.space="sexClick(sex, true);"
                   tabindex="0">{{
@@ -97,12 +121,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </li>
         <li class="fee">
           <label for="fee">Fee</label>
-          <input id="fee" v-model="pet['fee']" name="fee" type="text" ref="fee">
+          <input id="fee" v-model="pet['fee']" name="fee" type="text" ref="fee" class="span">
         </li>
         <li class="status">
           <!--suppress XmlInvalidId no idea why this is firing -->
           <label for="status">Status</label>
-          <select id="status" v-model="pet['status']" name="status" required>
+          <select id="status" v-model="pet['status']" name="status" required class="span" autocomplete="off">
             <option value=""></option>
             <option v-for="status of config['statuses']" :value="status['key']" :key="status['key']">
               {{ status['name'] }}
@@ -159,7 +183,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           <span class="fee">{{
               statusInfo()?.displayStatus ?
                   statusInfo()?.name :
-                  (listed() ? (pet.friend ? 'BONDED PAIR ' : '') + pet.fee ?? '' : 'Coming Soon')
+                  (listed() ? (pet.friend ? 'BONDED PAIR ' : '') + (pet.fee ?? '') : 'Coming Soon')
             }}</span>
           <aside class="explanation"
               v-if="statusInfo()?.displayStatus &&
@@ -263,10 +287,20 @@ import {Asset, PendingPhoto, Pet, Sex, Status} from '../types';
 import ProfilePhoto from '../components/ProfilePhoto.vue';
 import Modal from '../components/Modal.vue';
 import {progressBar, responseChecker} from '../mixins';
+import AutoComplete from 'primevue/autocomplete';
+import PetDropdownEntry from '../components/PetDropdownEntry.vue';
+
+interface SearchResults {
+  all: Pet[],
+  idAndNamePrefix: Pet[],
+  idPrefix: Pet[],
+  namePrefix: Pet[],
+  nameContains: Pet[],
+}
 
 export default defineComponent({
   name: 'Listing',
-  components: {ProfilePhoto, Editor, Photos, Modal},
+  components: {PetDropdownEntry, ProfilePhoto, Editor, Photos, Modal, AutoComplete},
   mixins: [responseChecker, progressBar],
   data() {
     return {
@@ -295,6 +329,11 @@ export default defineComponent({
       confirmRemoveSecondPhoto: false,
       confirmSplitPair: false,
       saveActions: [] as CallableFunction[],
+      friendSuggestions: undefined as Pet[] | undefined,
+      listings: undefined as Promise<Pet[]> | undefined,
+      cachedSearchResults: {} as Record<string, SearchResults>,
+      cachedQueries: [] as Set<string>[], // cached queries bucketed by length
+      futureListings: [] as Pet[],
     };
   },
   mounted() {
@@ -361,6 +400,7 @@ export default defineComponent({
       };
       (window as any).resizer?.(false);
       setTimeout(() => (window as any).resizer?.(false), 1000);
+      this.fetchListings();
     },
     resetOriginal() {
       this.path = undefined;
@@ -454,6 +494,7 @@ export default defineComponent({
         this.loading = false;
         throw e;
       }
+      this.fetchListings();
     },
     updateAfterSave() {
       // Update original pet
@@ -477,8 +518,9 @@ export default defineComponent({
       this.loading = false;
       // Update singlePhoto
       this.singlePhoto = !!this.pet.friend && !!this.pet.photo && !this.pet.friend.photo;
-      // Clear saveActions
+      // Clear saveActions and futureListings
       this.saveActions = [];
+      this.futureListings = [];
     },
     modified() {
       // TODO [#196]: Weaken modified check so undefined == '' == null
@@ -551,6 +593,7 @@ export default defineComponent({
       friend.status = newStatus;
       this.pet.friend = undefined;
       this.original.friend = undefined;
+      this.futureListings.push(friend);
       this.saveActions.push(() => fetch(originalId ? `/api/listings/${originalId}` : `/api/listings`, {
         method: originalId ? 'PUT' : 'POST',
         body: JSON.stringify(friend),
@@ -590,6 +633,107 @@ export default defineComponent({
         this.singlePhoto = false;
       }
     },
+    fetchListings(): void {
+      let species = undefined as string | undefined;
+      if (this.pet.species) {
+        species = (Object.values(store.state.config.species)).find((s: any) => s.id === this.pet.species)?.plural;
+      } else if (this.species) {
+        species = this.species;
+      }
+      this.listings = fetch(species ? `/api/listings/?species=${species}` : '/api/listings').then((res) => {
+        this.cachedSearchResults = {};
+        this.cachedQueries = [];
+        return res.ok ? res.json() : [];
+      }).then(
+          (results: Pet[]) => results.filter((pet) => pet && pet.id !== this.pet.id && pet.id !== this.pet.friend?.id).sort((a: Pet, b: Pet) => -(a.modified?.localeCompare(b.modified ?? '') ?? 0)));
+    },
+    async searchListings(queryMixedCase: string, preferName: boolean = false) {
+      const query = queryMixedCase.toUpperCase();
+      // console.log(`Searching for ${query}`);
+      if (this.listings === undefined) {
+        console.error('Listings is undefined while trying to search');
+        return;
+      }
+      let listings = [...await this.listings, ...this.futureListings];
+      const reorder = (results: SearchResults): Pet[] =>
+          preferName ?
+              [...results.idAndNamePrefix, ...results.namePrefix, ...results.idPrefix, ...results.nameContains] :
+              [...results.idAndNamePrefix, ...results.idPrefix, ...results.namePrefix, ...results.nameContains]
+      ;
+      if (this.cachedSearchResults[query]) {
+        // console.log('Cache hit');
+        this.friendSuggestions = reorder(this.cachedSearchResults[query]);
+        return;
+      }
+      for (let len = query.length; len >= 0; --len) {
+        // Narrow down the list in subsequent iterations prefixed by a cached query.
+        const prefix = query.slice(0, len);
+        if (this.cachedQueries[len]?.has(prefix)) {
+          // console.log(`starting with results for ${prefix}`);
+          listings = this.cachedSearchResults[prefix].all;
+          break;
+        }
+      }
+      const results: SearchResults = {
+        all: [],
+        idAndNamePrefix: [],
+        idPrefix: [],
+        namePrefix: [],
+        nameContains: [],
+      };
+      for (const listing of listings) {
+        if (listing.friend) {
+          // Don't include listings that are already paired.
+          continue;
+        }
+        const nameUpper = listing.name.toUpperCase();
+        const idPrefix = listing.id.toUpperCase().startsWith(query);
+        const namePrefix = nameUpper.startsWith(query);
+        if (idPrefix && namePrefix) {
+          results.idAndNamePrefix.push(listing);
+          results.all.push(listing);
+        } else if (idPrefix) {
+          results.idPrefix.push(listing);
+          results.all.push(listing);
+        } else if (namePrefix) {
+          results.namePrefix.push(listing);
+          results.all.push(listing);
+        } else if (nameUpper.indexOf(query) !== -1) {
+          results.nameContains.push(listing);
+          results.all.push(listing);
+        }
+      }
+      this.cachedSearchResults[query] = results;
+      this.cachedQueries[query.length] ??= new Set<string>();
+      this.cachedQueries[query.length].add(query);
+      this.friendSuggestions = reorder(results);
+      console.log(`Found ${this.friendSuggestions.length} results`);
+    },
+    setFriend(friend: Pet) {
+      this.original.friend = friend;
+      this.pet.friend = friend;
+    },
+    swapFriend() {
+      const newMain = this.pet.friend!;
+      const newFriend = this.pet;
+      if (this.singlePhoto) {
+        newMain.photo = newFriend.photo;
+        newFriend.photo = undefined;
+      }
+      newFriend.friend = undefined;
+      newMain.friend = newFriend;
+      newMain.description = newFriend.description;
+      newMain.status = newFriend.status;
+      newMain.fee = newFriend.fee;
+      newMain.photos = newFriend.photos;
+      newFriend.photos = undefined;
+      newFriend.description = undefined;
+      const newOriginalFriend = this.original;
+      this.original = this.original.friend ?? newMain as Pet;
+      this.original.friend = newOriginalFriend;
+      this.original.friend.friend = undefined;
+      this.pet = newMain;
+    },
   },
   computed: {
     ...mapState({
@@ -614,9 +758,9 @@ export default defineComponent({
 });
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 @mixin input {
-  box-sizing: content-box;
+  box-sizing: border-box;
   border: none;
   box-shadow: inset 0 0 0 1px var(--border-color);
   border-radius: var(--border-radius);
@@ -638,6 +782,7 @@ section.metadata {
   --border-color: #aaa;
   --focus-color: var(--visited-color);
   --error-color: #f00;
+  --input-height: calc(1.2em + 2 * var(--input-padding-vertical));
 
   display: flex;
   justify-content: space-evenly;
@@ -650,11 +795,21 @@ section.metadata {
   form {
     flex-shrink: 1;
     display: grid;
+    grid-auto-rows: calc(var(--input-height) + 2 * var(--input-margin));
     grid-template-columns: var(--label-width) minmax(5em, var(--input-width)) [end];
     max-width: 100%;
     align-items: center;
     justify-items: stretch;
     margin: var(--input-margin);
+
+    @mixin metadata-input {
+      @include input;
+      font-size: inherit;
+      font-family: inherit;
+      padding: var(--input-padding);
+      margin: var(--input-margin);
+      height: var(--input-height);
+    }
 
     > ul {
       list-style: none;
@@ -663,30 +818,67 @@ section.metadata {
       > li {
         display: contents;
 
-        > label {
+        * {
+          grid-column: 2;
+        }
+
+        > label:first-child {
           grid-column: 1;
 
-          &:nth-of-type(2) {
+          ~ label {
             display: none;
+
+            + *, + * > * {
+              grid-column: 3;
+            }
+          }
+
+          ~ *.span {
+            grid-column: 2 / span end;
+          }
+
+          ~ span.p-inputwrapper {
+            position: relative;
+            padding: var(--input-margin);
+
+            input {
+              @include metadata-input;
+              max-width: 100%;
+              margin: 0;
+              box-sizing: border-box;
+              box-shadow: none;
+              border: 1px solid var(--border-color);
+
+              &:focus-visible + div.p-autocomplete-panel {
+                box-shadow: 0 2px var(--focus-color), -2px 0 var(--focus-color), 2px 0 var(--focus-color);
+              }
+            }
+
+            &[aria-expanded='true'] input {
+              border-radius: var(--border-radius) var(--border-radius) 0 0;
+            }
+
+            div.p-autocomplete-panel {
+              background: var(--background-color);
+              box-sizing: border-box;
+              min-width: 0;
+              width: calc(100% - 2 * var(--input-margin));
+              border-radius: 0 0 var(--border-radius) var(--border-radius);
+              border: 1px solid var(--border-color);
+              border-top: none;
+              top: calc(100% - var(--input-margin)) !important;
+              margin: 0 var(--input-margin);
+            }
+
+            .p-autocomplete-loader {
+              right: calc(var(--input-padding-horizontal) + var(--input-margin));
+            }
+          }
+
+          ~ *:not(label):not(fieldset.sexes):not(span.p-inputwrapper) {
+            @include metadata-input;
           }
         }
-      }
-    }
-
-    input, option, select, button {
-      font-size: inherit;
-      font-family: inherit;
-      grid-column: 2;
-      padding: var(--input-padding);
-      margin: var(--input-margin);
-      @include input;
-
-      &:only-of-type {
-        grid-column: 2 / span end;
-      }
-
-      &:nth-of-type(2) {
-        grid-column: 3;
       }
     }
 
@@ -694,7 +886,7 @@ section.metadata {
       width: 5em;
       height: 1.5em;
       background-color: inherit;
-
+      @include metadata-input;
 
       &.delete:hover {
         box-shadow: inset 0 0 0 1px var(--error-color);
@@ -732,6 +924,7 @@ section.metadata {
       display: flex;
       justify-content: space-evenly;
       grid-column: 1 / span end;
+      align-items: center;
     }
   }
 
@@ -814,9 +1007,6 @@ table.listings tbody {
   grid-template-columns: minmax(0, 300px) repeat(auto-fit, minmax(0, 300px));
 }
 
-</style>
-
-<style lang="scss">
 :root {
   min-width: 400px;
 }

@@ -59,6 +59,7 @@ export interface Pet {
 	friend?: Pet;
 	adoption_date?: string;
 	order?: number;
+	modified?: string;
 }
 
 export interface Asset {
