@@ -53,7 +53,7 @@ class Species implements JsonSerializable {
 	 */
 	public function age(?string $dob): string {
 		if (!$dob) {
-			return "&nbsp;";
+			return '';
 		}
 		try {
 			$interval = (new DateTime())->diff(new DateTime($dob));
