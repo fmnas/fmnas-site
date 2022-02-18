@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <template>
   <div class="entry">
     <div class="img">
-      <img :src="`/api/raw/stored/${pet.photo?.key}`" alt="">
+      <img :src="`/api/raw/cached/${pet.photo?.key}_64.jpg`" alt="">
     </div>
     <div class="details">
       <span class="id">{{ pet.id }}</span>
@@ -44,7 +44,7 @@ export default defineComponent({
 
 <style scoped lang="scss">
   div.entry {
-    $height: 0.5in;
+    $height: 64px;
     $image-width: $height * 2 / 3;
     $padding: 0.2em;
     height: $height;

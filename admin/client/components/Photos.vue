@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <template>
 	<ul>
 		<li v-for="photo of photos">
-			<img :src="photo.localPath ?? `/api/raw/stored/${photo.key}`" :alt="photo.path" :title="photo.path"
+			<img :src="photo.localPath ?? `/api/raw/cached/${photo.key}_192.jpg`" :alt="photo.path" :title="photo.path"
 					@click="select(photo)">
 		</li>
 		<li v-for="photo of pendingPhotos">
@@ -32,7 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<modal v-if="selectedPhoto" @cancel="selectedPhoto = null" @confirm="remove(selectedPhoto)">
 		Are you sure you want to delete this image?
 		<br>
-		<img :src="selectedPhoto.localPath ?? `/api/raw/stored/${selectedPhoto.key}`"
+		<img :src="selectedPhoto.localPath ?? `/api/raw/cached/${selectedPhoto.key}_480.jpg`"
 				:alt="selectedPhoto.path ?? 'Pending upload'" :title="selectedPhoto.path ?? 'Pending upload'"
 				class="modal">
 	</modal>
@@ -150,8 +150,8 @@ ul {
 	padding: 0;
 
 	li > img {
-		height: 2in;
-		min-width: calc(2in * 8 / 6);
+		height: 192px;
+		min-width: 256px;
 		cursor: pointer;
 
 		&:hover {
