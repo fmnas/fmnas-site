@@ -19,6 +19,7 @@
               autocomplete="off">
           Combined photo
         </label>
+        <button v-if="pet.friend" @click.prevent="swapFriend">Swap</button>
       </div>
       <ul>
         <li class="id">
@@ -29,7 +30,7 @@
               type="text" autocomplete="off">
           <auto-complete id="friend_id" v-if="pet.friend && !pet.friend.name" v-model="pet.friend.id" name="friend_id"
               required :suggestions="friendSuggestions" @complete="searchListings($event.query)" appendTo="self"
-              completeOnFocus="true" delay="100" field="id" @item-select="pet.friend = $event.value">
+              completeOnFocus="true" delay="100" field="id" @item-select="setFriend($event.value)">
             <template #item="slotProps">
               <pet-dropdown-entry :pet="slotProps.item"/>
             </template>
@@ -43,14 +44,14 @@
               required type="text" autocomplete="off">
           <auto-complete id="friend_name" v-if="pet.friend && !pet.friend.id" v-model="pet.friend.name"
               name="friend_id" required :suggestions="friendSuggestions" @complete="searchListings($event.query)"
-              appendTo="self" completeOnFocus="true" delay="100" field="name" @item-select="pet.friend = $event.value">
+              appendTo="self" completeOnFocus="true" delay="100" field="name" @item-select="setFriend($event.value)">
             <template #item="slotProps">
               <pet-dropdown-entry :pet="slotProps.item"/>
             </template>
           </auto-complete>
         </li>
         <li class="species">
-          <!--suppress XmlInvalidId no idea why this is firing -->
+          <!--suppress XmlInvalidId -->
           <label for="species_input">Species</label>
           <select id="species_input" v-model="pet['species']" name="species" required class="span" autocomplete="off"
               @change="fetchListings">
@@ -75,6 +76,7 @@
               type="date" autocomplete="off">
         </li>
         <li class="sex">
+          <!--suppress XmlInvalidId -->
           <label for="sexes">Sex</label>
           <fieldset id="sexes" :class="['sexes', sexInteracted || validated ? 'validated' : '']">
             <label v-for="sex of config.sexes" :key="sex.key">
@@ -85,6 +87,7 @@
                 }}</abbr>
             </label>
           </fieldset>
+          <!--suppress XmlInvalidId -->
           <label for="friend_sexes" v-if="pet.friend">Sex</label>
           <fieldset id="friend_sexes" v-if="pet.friend"
               :class="['sexes', sexInteracted || validated ? 'validated' : '']">
@@ -686,6 +689,30 @@ export default defineComponent({
       this.friendSuggestions = reorder(results);
       console.log(`Found ${this.friendSuggestions.length} results`);
     },
+    setFriend(friend: Pet) {
+      this.original.friend = friend;
+      this.pet.friend = friend;
+    },
+    swapFriend() {
+      const newMain = this.pet.friend!;
+      const newFriend = this.pet;
+      if (this.singlePhoto) {
+        newMain.photo = newFriend.photo;
+        newFriend.photo = undefined;
+      }
+      newFriend.friend = undefined;
+      newMain.friend = newFriend;
+      newMain.description = newFriend.description;
+      newMain.status = newFriend.status;
+      newMain.fee = newFriend.fee;
+      newMain.photos = newFriend.photos;
+      newFriend.photos = undefined;
+      newFriend.description = undefined;
+      const newOriginalFriend = this.original;
+      this.original = this.original.friend ?? {} as Pet;
+      this.original.friend = newOriginalFriend;
+      this.pet = newMain;
+    },
   },
   computed: {
     ...mapState({
@@ -876,6 +903,7 @@ section.metadata {
       display: flex;
       justify-content: space-evenly;
       grid-column: 1 / span end;
+      align-items: center;
     }
   }
 
