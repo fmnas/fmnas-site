@@ -55,7 +55,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       <tr :class="index % 2 ? 'odd' : 'even'" @click="listing.selected = !listing.selected">
         <td class="checkbox" :rowspan="listing.friend ? 2 : 1"><input type="checkbox" v-model="listing.selected"
             @click.stop></td>
-        <td class="photo" :rowspan="!listing.friend || listing.friend.photo ? 1 : 2"><img :alt="listing['name']"
+        <td class="photo" :rowspan="!listing.friend || listing.friend.photo ? 1 : 2"><img alt=""
             :src="`/api/raw/cached/${listing.photo?.key}_64.jpg`"></td>
         <td class="id">{{ listing['id'] }}</td>
         <td class="name">{{ listing['name'] }}</td>
@@ -79,7 +79,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </td>
       </tr>
       <tr v-if="listing.friend" :class="index % 2 ? 'odd' : 'even'" @click="listing.selected = !listing.selected">
-        <td class="photo" v-if="listing.friend.photo"><img :alt="listing.friend.name"
+        <td class="photo" v-if="listing.friend.photo"><img alt=""
             :src="`/api/raw/cached/${listing.friend.photo.key}_64.jpg`"></td>
         <td class="id">{{ listing.friend.id }}</td>
         <td class="name">{{ listing.friend.name }}</td>
