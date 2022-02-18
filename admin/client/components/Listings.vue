@@ -1,6 +1,6 @@
 <template>
-	<h1>Adoptable {{ species || 'pets' }}</h1>
-	<router-link :to="{ name: 'new', params: { species: species }}" class="add">Add</router-link>
+  <h1>Adoptable {{ species || 'pets' }}</h1>
+  <router-link :to="{ name: 'new', params: { species: species }}" class="add">Add</router-link>
   <div class="loading" v-show="loading">
     <img :src="'/loading.png'" alt="Loading...">
   </div>
@@ -16,43 +16,54 @@
     </select>&nbsp;
     <button @click="updateSelected()" :disabled="!countSelected()">Save</button>
   </div>
-	<table v-show="!loading">
-		<thead>
-		<tr>
+  <table v-show="!loading">
+    <thead>
+    <tr>
       <th class="checkbox"></th>
-			<th class="photo">Photo</th>
-			<th class="id">ID</th>
-			<th class="name">Name</th>
-			<th v-if="!species" class="species">Species</th>
-			<th class="breed">Breed</th>
-			<th class="dob">DOB</th>
-			<th class="sex">Sex</th>
-			<th class="fee">Fee</th>
-			<th class="status">Status</th>
-			<th class="options">Options</th>
-		</tr>
-		</thead>
-		<tbody>
-		<!-- TODO [#34]: Make listing metadata editable from table view -->
+      <th class="photo">Photo</th>
+      <th class="id">ID</th>
+      <th class="name">Name</th>
+      <th v-if="!species" class="species">Species</th>
+      <th class="breed">Breed</th>
+      <th class="dob">DOB</th>
+      <th class="sex">Sex</th>
+      <th class="fee">Fee</th>
+      <th class="status">Status</th>
+      <th class="options">Options</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- TODO [#34]: Make listing metadata editable from table view -->
     <template v-for="(listing, index) of listings" :key="listing.id">
       <tr :class="index % 2 ? 'odd' : 'even'" @click="listing.selected = !listing.selected">
-        <td class="checkbox" :rowspan="listing.friend ? 2 : 1"><input type="checkbox" v-model="listing.selected" @click.stop></td>
-        <td class="photo" :rowspan="!listing.friend || listing.friend.photo ? 1 : 2"><img :alt="listing['name']" :src="`/api/raw/stored/${listing.photo?.key}`"></td>
+        <td class="checkbox" :rowspan="listing.friend ? 2 : 1"><input type="checkbox" v-model="listing.selected"
+            @click.stop></td>
+        <td class="photo" :rowspan="!listing.friend || listing.friend.photo ? 1 : 2"><img :alt="listing['name']"
+            :src="`/api/raw/cached/${listing.photo?.key}_64.jpg`"></td>
         <td class="id">{{ listing['id'] }}</td>
         <td class="name">{{ listing['name'] }}</td>
-        <td v-if="!species" class="species" :rowspan="listing.friend ? 2 : 1">{{ config['species']?.[listing['species']]?.['name'] }}</td>
+        <td v-if="!species" class="species" :rowspan="listing.friend ? 2 : 1">
+          {{ config['species']?.[listing['species']]?.['name'] }}
+        </td>
         <td class="breed">{{ listing['breed'] }}</td>
         <td class="dob">{{ listing['dob'] }}</td> <!-- TODO [#36]: Display DOB as M/D/Y -->
         <td class="sex">{{ config.sexes[listing.sex]?.name }}</td>
-        <td class="fee" :rowspan="listing.friend ? 2 : 1">{{ listing['fee'] }}</td>
-        <td class="status" :rowspan="listing.friend ? 2 : 1">{{ config['statuses']?.[listing['status']]?.['name'] }}</td>
+        <td class="fee" :rowspan="listing.friend ? 2 : 1">{{
+            listing.friend ? `BONDED PAIR ${listing.fee ?? ''}` : listing.fee
+          }}
+        </td>
+        <td class="status" :rowspan="listing.friend ? 2 : 1">{{
+            config['statuses']?.[listing['status']]?.['name']
+          }}
+        </td>
         <td class="options" :rowspan="listing.friend ? 2 : 1" @click.stop>
           <router-link :to="{ path: '/' + getFullPathForPet(listing) }">Edit</router-link>
           <a :href="`//${config['public_domain']}/${getFullPathForPet(listing)}`">View</a>
         </td>
       </tr>
       <tr v-if="listing.friend" :class="index % 2 ? 'odd' : 'even'" @click="listing.selected = !listing.selected">
-        <td class="photo" v-if="listing.friend.photo"><img :alt="listing.friend.name" :src="`/api/raw/stored/${listing.friend.photo.key}`"></td>
+        <td class="photo" v-if="listing.friend.photo"><img :alt="listing.friend.name"
+            :src="`/api/raw/cached/${listing.friend.photo.key}_64.jpg`"></td>
         <td class="id">{{ listing.friend.id }}</td>
         <td class="name">{{ listing.friend.name }}</td>
         <td class="breed">{{ listing.friend.breed }}</td>
@@ -60,40 +71,42 @@
         <td class="sex">{{ config.sexes[listing.sex]?.name }}</td>
       </tr>
     </template>
-		</tbody>
-	</table>
+    </tbody>
+  </table>
 </template>
 
 <script lang="ts">
 import {getFullPathForPet} from '../common';
 import {mapState} from 'vuex';
-import { defineComponent } from 'vue';
+import {defineComponent} from 'vue';
 import {Pet} from '../types';
 import {responseChecker} from '../mixins';
 import store from '../store';
 
 export default defineComponent({
-	name: 'Listings',
-	props: ['species'],
-	mixins: [responseChecker],
-	methods: {
-		getFullPathForPet: getFullPathForPet,
-		populate() {
+  name: 'Listings',
+  props: ['species'],
+  mixins: [responseChecker],
+  methods: {
+    getFullPathForPet: getFullPathForPet,
+    populate() {
       this.loading = true;
-			let apiUrl = '/api/listings';
-			if (this.species) {
-				apiUrl += `/?species=${this.species}`;
-			}
-			fetch(apiUrl, {
-				method: 'GET',
-			}).then(res => {
-				this.checkResponse(res);
-				return res.json();
-			}).then(data => {
-				this.listings = data;
+      let apiUrl = '/api/listings';
+      if (this.species) {
+        apiUrl += `/?species=${this.species}&buster=1`;
+      } else {
+        apiUrl += '/?buster=1';
+      }
+      fetch(apiUrl, {
+        method: 'GET',
+      }).then(res => {
+        this.checkResponse(res);
+        return res.json();
+      }).then(data => {
+        this.listings = data;
         this.loading = false;
-			});
-		},
+      });
+    },
     countSelected() {
       let count = 0;
       for (const listing of this.listings) {
@@ -129,39 +142,39 @@ export default defineComponent({
         }
       }
     }
-	},
-	data() {
-		return {
-			listings: [] as Pet[],
+  },
+  data() {
+    return {
+      listings: [] as Pet[],
       loading: false,
-		};
-	},
-	watch: {
-		species() {
-			this.populate();
-		}
-	},
-	mounted() {
-		this.populate();
-	},
-	computed: mapState({
-		// TODO [#138]: Type for state
-		config: (state: any) => state.config,
-	}),
+    };
+  },
+  watch: {
+    species() {
+      this.populate();
+    }
+  },
+  mounted() {
+    this.populate();
+  },
+  computed: mapState({
+    // TODO [#138]: Type for state
+    config: (state: any) => state.config,
+  }),
 });
 </script>
 
 <style scoped lang="scss">
-$row-height: 0.75in;
+$row-height: 64px;
 
 table {
-	width: 100%;
-	padding: 1em;
+  width: 100%;
+  padding: 1em;
   border-collapse: collapse;
 }
 
 tbody tr {
-	height: $row-height;
+  height: $row-height;
 }
 
 tr.even {
@@ -169,11 +182,15 @@ tr.even {
 }
 
 td, img {
-	max-height: $row-height;
+  max-height: $row-height;
+}
+
+img {
+  max-width: $row-height * 2 / 3;
 }
 
 td.options a {
-	padding: 0.4em;
+  padding: 0.4em;
 }
 
 h1 {
@@ -184,12 +201,12 @@ h1 {
 }
 
 .add {
-	border: 1px solid green;
-	padding: 0.3em 0.6em;
-	margin: 0.4em;
-	color: green;
-	font-size: 120%;
-	border-radius: 0.2em;
+  border: 1px solid green;
+  padding: 0.3em 0.6em;
+  margin: 0.4em;
+  color: green;
+  font-size: 120%;
+  border-radius: 0.2em;
   display: inline-block;
 }
 

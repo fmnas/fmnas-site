@@ -49,7 +49,7 @@ class Database {
 		}
 
 		if (!($getPet = $this->db->prepare("
-			SELECT * FROM listings WHERE id = ? and species = ?
+			SELECT * FROM listings WHERE id = ? and species = ? ORDER BY `order`, modified DESC
 			"))) {
 			log_err("Failed to prepare getPet: {$this->db->error}");
 		} else {
@@ -57,20 +57,16 @@ class Database {
 		}
 
 		if (!($getPetById = $this->db->prepare("
-			SELECT * FROM listings WHERE id = ?
+			SELECT * FROM listings WHERE id = ? ORDER BY `order`, modified DESC
 			"))) {
 			log_err("Failed to prepare getPetById: {$this->db->error}");
 		} else {
 			$this->getPetById = $getPetById;
 		}
 
-		// TODO [#32]: Rewrite getPhotos query
 		if (!($getPhotos = $this->db->prepare("
-			SELECT assets.* FROM (
-				SELECT photos.photo FROM (
-					  SELECT * FROM pets WHERE id = ?
-				) pet LEFT JOIN photos ON pet.id = photos.pet
-			) p LEFT JOIN assets ON p.photo = assets.id
+			SELECT assets.* FROM photos JOIN assets ON photos.pet = ? AND photos.photo = assets.id 
+			ORDER BY photos.order, assets.id
 			"))) {
 			log_err("Failed to prepare getPhotos: {$this->db->error}");
 		} else {
@@ -88,6 +84,7 @@ class Database {
 
 		if (!($getAdoptablePets = $this->db->prepare("
 			SELECT listings.* FROM listings JOIN statuses ON listings.status = statuses.id AND statuses.listed = 1
+      ORDER BY `order`, modified DESC
 			"))) {
 			log_err("Failed to prepare getAdoptablePets: {$this->db->error}");
 		} else {
@@ -96,7 +93,7 @@ class Database {
 
 		if (!($getAdoptablePetsBySpecies = $this->db->prepare("
 			SELECT listings.* FROM listings JOIN statuses ON listings.status = statuses.id AND statuses.listed = 1 
-			WHERE listings.species = ?
+			WHERE listings.species = ? ORDER BY `order`, modified DESC
 			"))) {
 			log_err("Failed to prepare getAdoptablePetsBySpecies: {$this->db->error}");
 		} else {
@@ -104,7 +101,7 @@ class Database {
 		}
 
 		if (!($getAllPets = $this->db->prepare("
-			SELECT * FROM listings
+			SELECT * FROM listings ORDER BY `order`, modified DESC
 			"))) {
 			log_err("Failed to prepare getAllPets: {$this->db->error}");
 		} else {
@@ -115,7 +112,7 @@ class Database {
 			SELECT species.*, COUNT(pets.id) AS species_count
 			FROM species CROSS JOIN statuses
 			LEFT JOIN pets ON species.id = pets.species AND pets.status = statuses.id
-			WHERE listed = 1 GROUP BY species.id 
+			WHERE listed = 1 GROUP BY species.id ORDER BY species.id
 			"))) {
 			log_err("Failed to prepare getAllSpecies: {$this->db->error}");
 		} else {

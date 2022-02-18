@@ -13,7 +13,7 @@ endpoint(...[
 			if ($asset === null) {
 				return new Result(404, error: "Asset $key not found");
 			}
-			return new Result(200, $asset->imgTag("", false, false, $height));
+			return new Result(200, $asset->imgTag("", false, false, $height, $_GET["expand"] ?? true));
 		},
 		'put' => $reject,
 		'put_value' => $reject,

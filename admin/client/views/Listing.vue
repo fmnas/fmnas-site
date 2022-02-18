@@ -223,7 +223,7 @@
       @confirm="pet.friend.photo = undefined; singlePhoto = true; confirmRemoveSecondPhoto = false;"
       @cancel="confirmRemoveSecondPhoto = false; singlePhoto = false;">
     Are you sure you want to delete this image?<br>
-    <img :src="pet.friend.photo.localPath ?? `/api/raw/stored/${pet.friend.photo.key}`" :alt="pet.friend.name">
+    <img :src="pet.friend.photo.localPath ?? `/api/raw/cached/${pet.friend.photo.key}_480.jpg`" :alt="pet.friend.name">
   </modal>
   <modal v-if="confirmSplitPair">
     What do you want to do with {{ pet.friend.name }}?
@@ -349,8 +349,7 @@ export default defineComponent({
     load() {
       if (this.species && this.path) {
         // Updating an existing listing
-        // TODO [#39]: Add a loading indicator for listing editor
-        fetch(`/api/listings/${this.species}/${encodeURIComponent(this.path)}`).then(res => {
+        fetch(`/api/listings/${this.species}/${encodeURIComponent(this.path)}?buster=1`).then(res => {
           this.checkResponse(res);
           return res.json();
         }).then(data => {
