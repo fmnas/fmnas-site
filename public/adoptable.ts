@@ -113,7 +113,7 @@ function resizer() {
 		lastRow.replaceChildren();
 		lastRow.style.setProperty('display', 'none');
 	} catch (e: any) {
-		// TODO [#294]: replaceChildren not supported on safari 12
+		// replaceChildren not supported on safari 11.1
 		lastRow.innerHTML = '';
 	}
 	
