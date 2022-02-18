@@ -74,7 +74,7 @@ jobs:
         uses: lewagon/wait-on-check-action@master
         with:
           ref: test
-          check-regexp: GCP:.*
+          check-regexp: 'GCP:.*'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           wait-interval: 10
       - name: SFTP upload
