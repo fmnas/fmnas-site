@@ -1,7 +1,7 @@
 const MAX_CONDENSE = .8;
 const CUTOFF_WIDTH = 450; // sync with $cutoff in adoptable.scss
-const tbody: HTMLTableSectionElement = document.querySelector('table.listings tbody')!;
-const lastRow: HTMLTableSectionElement = document.querySelector('table.listings.last-row tbody')!;
+let tbody: HTMLTableSectionElement | null = document.querySelector('table.listings tbody');
+const lastRow: HTMLTableSectionElement | null = document.querySelector('table.listings.last-row tbody');
 
 function addEventListeners(link: Element) {
 	const href = (link as HTMLAnchorElement).href;
@@ -107,14 +107,21 @@ let lastReferenceWidth = 0;
 
 let fullyLoaded = false;
 
-function resizer() {
+function resizer(useReference: boolean = true) {
+	tbody ??= document.querySelector('tbody');
+	if (!tbody) {
+		return;
+	}
+
 	// Clear out the last row.
-	try {
-		lastRow.replaceChildren();
-		lastRow.style.setProperty('display', 'none');
-	} catch (e: any) {
-		// replaceChildren not supported on safari 11.1
-		lastRow.innerHTML = '';
+	if (lastRow) {
+		try {
+			lastRow.replaceChildren();
+			lastRow.style.setProperty('display', 'none');
+		} catch (e: any) {
+			// replaceChildren not supported on safari 11.1
+			lastRow.innerHTML = '';
+		}
 	}
 	
 	// Scale data to fit the grid columns.
@@ -135,7 +142,7 @@ function resizer() {
 	const referenceDoubleWidth = tbody.querySelector('tr.pair')?.clientWidth;
 	tbody.querySelectorAll('tr').forEach((listing: HTMLTableRowElement) => {
 		listing.classList.remove('yote');
-		if (referenceWidth !== lastReferenceWidth) {
+		if (!useReference || referenceWidth !== lastReferenceWidth) {
 			listing.querySelector('aside.explanation')?.classList.add('hidden');
 			// @ts-ignore this is always a TableCellElement
 			listing.querySelectorAll('td:not(.img), th').forEach((row: HTMLTableCellElement) => {
@@ -165,55 +172,57 @@ function resizer() {
 	}
 
 	// Move the last grid row into a separate, centered grid.
-	const gridColumns = window.getComputedStyle(tbody).getPropertyValue('grid-template-columns').split(' ').length;
-	let listings = [...tbody.querySelectorAll('tr')];
-	let totalSize = 0;
-	listings.forEach((cell: HTMLTableRowElement) => totalSize += cell.classList.contains('pair') ? 2 : 1);
-	const lastRowCount = totalSize % gridColumns;
-	if (lastRowCount) {
-		lastRow.style.removeProperty('display');
-		const byOrder: HTMLTableRowElement[][] = [];
-		let maxOrder = 0;
-		for (const listing of listings) {
-			const order = parseInt(window.getComputedStyle(listing).getPropertyValue('order'));
-			byOrder[order] ??= [];
-			byOrder[order].push(listing);
-			if (order > maxOrder) {
-				maxOrder = order;
+	if (lastRow) {
+		const gridColumns = window.getComputedStyle(tbody).getPropertyValue('grid-template-columns').split(' ').length;
+		let listings = [...tbody.querySelectorAll('tr')];
+		let totalSize = 0;
+		listings.forEach((cell: HTMLTableRowElement) => totalSize += cell.classList.contains('pair') ? 2 : 1);
+		const lastRowCount = totalSize % gridColumns;
+		if (lastRowCount) {
+			lastRow.style.removeProperty('display');
+			const byOrder: HTMLTableRowElement[][] = [];
+			let maxOrder = 0;
+			for (const listing of listings) {
+				const order = parseInt(window.getComputedStyle(listing).getPropertyValue('order'));
+				byOrder[order] ??= [];
+				byOrder[order].push(listing);
+				if (order > maxOrder) {
+					maxOrder = order;
+				}
 			}
+			let yote = 0;
+			let order = maxOrder;
+			let index = byOrder[maxOrder]?.length - 1;
+			while (yote++ < lastRowCount && order >= 0) {
+				const listing = byOrder[order]?.[index];
+				if (!listing) {
+					break;
+				}
+				if (listing.classList.contains('pair')) {
+					++yote;
+				}
+				console.log(`Yeeting row with order ${order} and index ${index}, ${yote} now yote`);
+				const clone = listing.cloneNode(true);
+				lastRow.appendChild(clone);
+				listing.classList.add('yote');
+				if (--index < 0) {
+					do {
+						--order;
+					} while (!byOrder[order]?.length && order > 0);
+					index = byOrder[order]?.length - 1;
+				}
+			}
+			lastRow.querySelectorAll('th.name a[href]').forEach(addEventListeners);
 		}
-		let yote = 0;
-		let order = maxOrder;
-		let index = byOrder[maxOrder]?.length - 1;
-		while (yote++ < lastRowCount && order >= 0) {
-			const listing = byOrder[order]?.[index];
-			if (!listing) {
-				break;
-			}
-			if (listing.classList.contains('pair')) {
-				++yote;
-			}
-			console.log(`Yeeting row with order ${order} and index ${index}, ${yote} now yote`);
-			const clone = listing.cloneNode(true);
-			lastRow.appendChild(clone);
-			listing.classList.add('yote');
-			if (--index < 0) {
-				do {
-					--order;
-				} while (!byOrder[order]?.length && order > 0);
-				index = byOrder[order]?.length - 1;
-			}
-		}
-		lastRow.querySelectorAll('th.name a[href]').forEach(addEventListeners);
 	}
 
 	// Set up the event listeners for explanatory tooltips.
 	window.matchMedia(`(max-width: ${CUTOFF_WIDTH - 1}px)`).matches ? setupMobileTooltips() : setupDesktopTooltips();
 }
 
-tbody.querySelectorAll('th.name a[href]').forEach(addEventListeners);
+tbody?.querySelectorAll('th.name a[href]').forEach(addEventListeners);
 
 resizer()
-window.addEventListener('load', resizer);
-window.addEventListener('resize', resizer);
+window.addEventListener('load', () => resizer());
+window.addEventListener('resize', () => resizer());
 document.fonts.ready.then(() => {fullyLoaded = true; resizer()});

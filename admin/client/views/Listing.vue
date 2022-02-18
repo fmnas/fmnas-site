@@ -242,7 +242,7 @@ import {
   getFullPathForPet, getPathForPet, partial, petAge, ucfirst, uploadDescription, getContext
 } from '../common';
 import {mapState} from 'vuex';
-import {Asset, Pet, Sex, Status} from '../types';
+import {Asset, PendingPhoto, Pet, Sex, Status} from '../types';
 import ProfilePhoto from '../components/ProfilePhoto.vue';
 import Modal from '../components/Modal.vue';
 import {progressBar, responseChecker} from '../mixins';
@@ -572,9 +572,26 @@ export default defineComponent({
       }
     },
   },
-  computed: mapState({
-    config: (state: any) => state.config,
-  }),
+  computed: {
+    ...mapState({
+      config: (state: any) => state.config,
+    }),
+    sameDescription() {
+      return this.originalDescription === this.description;
+    }
+
+  },
+  watch: {
+    pet: {
+      handler() {
+        (window as any).resizer?.(false);
+      },
+      deep: true,
+    },
+    sameDescription() {
+      (window as any).resizer?.(false);
+    }
+  },
 });
 </script>
 

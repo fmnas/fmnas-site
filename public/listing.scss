@@ -63,6 +63,7 @@ h2 {
 		align-items: center;
 		margin-top: 1.5em;
 		line-height: 0;
+
 		img {
 			padding: 0.5rem;
 			box-sizing: border-box;
@@ -87,16 +88,14 @@ h2 {
 	div.video {
 		width: 100%;
 
-		//noinspection CssOverwrittenProperties
 		iframe {
-			width: 853px;
-			height: 480px;
 			margin: 0 auto 1em;
 			display: block;
-			width: calc(1280px + 0.25em);
-			height: calc((1280px + 0.25em) * 9 / 16);
-			max-width: 95vw;
-			max-height: calc((100vw - 1em) * 9 / 16);
+			width: 1280px;
+			height: 720px;
+			max-width: 100vw;
+			max-height: 56.25vw;
+			aspect-ratio: 16 / 9;
 		}
 	}
 }
