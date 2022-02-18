@@ -201,16 +201,16 @@ class Pet implements JsonSerializable {
 
 	public function breed(): string {
 		if ($this->bonded !== 1 || $this->breed === $this->friend->breed) {
-			return $this->breed;
+			return $this->breed ?? '';
 		}
-		return $this->breed . ' & ' . $this->friend->breed;
+		return ($this->breed ?? '') . ' & ' . ($this->friend->breed ?? '');
 	}
 
 	public function dob(): string {
 		if ($this->bonded !== 1 || $this->dob === $this->friend->dob) {
-			return $this->dob;
+			return $this->dob ?? '';
 		}
-		return $this->dob . ' & ' . $this->friend->dob;
+		return ($this->dob ?? '') . ' & ' . ($this->friend->dob ?? '');
 	}
 
 	public function age(): string {
@@ -230,10 +230,10 @@ class Pet implements JsonSerializable {
 	}
 
 	public function sex(): string {
-		if ($this->bonded !== 1 || $this->sex->key === $this->friend->sex->key) {
-			return $this->sex->name;
+		if ($this->bonded !== 1 || $this->sex?->key === $this->friend->sex?->key) {
+			return ($this->sex?->name ?? '');
 		}
-		return $this->sex->name . ' & ' . $this->friend->sex->name;
+		return ($this->sex?->name ?? '') . ' & ' . ($this->friend->sex?->name ?? '');
 	}
 
 	public function jsonSerialize(): array {
