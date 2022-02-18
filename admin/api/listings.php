@@ -28,6 +28,7 @@ endpoint(...[
 			if ($key !== $pet['id']) {
 				$error ??= $db->deletePet($key); // Delete the original pet
 			}
+			@unlink(cached_assets() . '/' . $pet['description']['key'] . '.html'); // Invalidate cached description
 			if ($error !== null) {
 				return new Result(500, $error);
 			}
