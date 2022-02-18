@@ -263,7 +263,7 @@ table.listings {
 	tr:not(.soon) th.name a {
 		border-bottom: 1pt solid var(--link-color);
 
-		&:not(tr.pair a)::after {
+		&:not(tr.pair a)::after, li:nth-of-type(2)::after {
 			content: ' »';
 		}
 
