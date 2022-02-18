@@ -343,6 +343,7 @@ export default defineComponent({
         }
       };
       (window as any).resizer?.(false);
+      setTimeout(() => (window as any).resizer?.(false), 1000);
     },
     resetOriginal() {
       this.path = undefined;
