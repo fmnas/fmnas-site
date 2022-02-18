@@ -34,9 +34,9 @@
 		</thead>
 		<tbody>
 		<!-- TODO [#34]: Make listing metadata editable from table view -->
-    <template v-for="(listing, index) of listings" :key="listing['id']">
-      <tr :class="index % 2 ? 'odd' : 'even'">
-        <td class="checkbox" :rowspan="listing.friend ? 2 : 1"><input type="checkbox" v-model="listing.selected"></td>
+    <template v-for="(listing, index) of listings" :key="listing.id">
+      <tr :class="index % 2 ? 'odd' : 'even'" @click="listing.selected = !listing.selected">
+        <td class="checkbox" :rowspan="listing.friend ? 2 : 1"><input type="checkbox" v-model="listing.selected" @click.stop></td>
         <td class="photo" :rowspan="!listing.friend || listing.friend.photo ? 1 : 2"><img :alt="listing['name']" :src="`/api/raw/stored/${listing.photo?.key}`"></td>
         <td class="id">{{ listing['id'] }}</td>
         <td class="name">{{ listing['name'] }}</td>
@@ -46,12 +46,12 @@
         <td class="sex">{{ config['sexes']?.[listing['sex']]?.['name'] }}</td>
         <td class="fee" :rowspan="listing.friend ? 2 : 1">{{ listing['fee'] }}</td>
         <td class="status" :rowspan="listing.friend ? 2 : 1">{{ config['statuses']?.[listing['status']]?.['name'] }}</td>
-        <td class="options" :rowspan="listing.friend ? 2 : 1">
+        <td class="options" :rowspan="listing.friend ? 2 : 1" @click.stop>
           <router-link :to="{ path: '/' + getFullPathForPet(listing) }">Edit</router-link>
           <a :href="`//${config['public_domain']}/${getFullPathForPet(listing)}`">View</a>
         </td>
       </tr>
-      <tr v-if="listing.friend" :class="index % 2 ? 'odd' : 'even'">
+      <tr v-if="listing.friend" :class="index % 2 ? 'odd' : 'even'" @click="listing.selected = !listing.selected">
         <td class="photo" v-if="listing.friend.photo"><img :alt="listing.friend.name" :src="`/api/raw/stored/${listing.friend.photo.key}`"></td>
         <td class="id">{{ listing.friend.id }}</td>
         <td class="name">{{ listing.friend.name }}</td>
@@ -164,7 +164,7 @@ tbody tr {
 	height: $row-height;
 }
 
-tr.odd {
+tr.even {
   background-color: #eee;
 }
 
@@ -197,5 +197,9 @@ div.loading {
   img {
     max-height: max-content;
   }
+}
+
+div.bulk {
+  margin: 0.5em 0;
 }
 </style>
