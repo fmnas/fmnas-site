@@ -18,14 +18,13 @@ table.listings {
 
 	&.last-row tbody {
 		grid-template-columns: repeat(auto-fit, minmax(0, min(300px, calc(49vw - #{$gap} / 2))));
-		margin: $gap 2vw;
 	}
 
 	tbody {
 		display: grid;
 		grid-column-gap: $gap;
 		grid-row-gap: $gap;
-		margin: 1em 2vw 0;
+		margin: 0 2vw $gap;
 		grid-auto-flow: row dense;
 		grid-template-columns: minmax(0, 300px) repeat(auto-fill, minmax(0, 300px));
 		justify-content: center;
@@ -150,14 +149,14 @@ table.listings {
 					color: var(--text-color);
 					font-size: 10pt;
 					background-color: #fffffff6;
-					--width: calc(100% + min(1vw, 20%));
+					--width: min(calc(100% + 2 * var(--side-padding) + min(1vw, 20%) + #{$gap}), 450px);
 					width: var(--width);
 					left: calc((var(--width) - 100%) / -2);
 					top: 1.5rem;
 					white-space: normal;
 					text-align: justify;
 					text-align-last: center;
-					padding: 0;
+					padding: 0.4em;
 					border: 1px solid var(--border-color);
 					box-shadow: -2px 2px 3px var(--shadow-color);
 					border-radius: 1em;

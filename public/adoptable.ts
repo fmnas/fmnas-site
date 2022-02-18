@@ -101,38 +101,68 @@ function setupDesktopTooltips() {
 	});
 }
 
+// Keep track of the last reference width to avoid unnecessarily rescaling everything when the grid column width
+// hasn't changed on resize.
+let lastReferenceWidth = 0;
+
+let fullyLoaded = false;
+
 function resizer() {
-	// Scale data to fit the grid column.
+	// Clear out the last row.
 	try {
 		lastRow.replaceChildren();
+		lastRow.style.setProperty('display', 'none');
 	} catch (e: any) {
-		// replaceChildren not supported on safari
+		// TODO: replaceChildren not supported on safari 12
 		lastRow.innerHTML = '';
 	}
+	
+	// Scale data to fit the grid columns.
+	const referenceWidth = tbody.querySelector('tr:not(.pair) td.img')?.clientWidth ?? (() => {
+		const fakeRow = document.createElement('tr');
+		fakeRow.innerHTML = `
+			<th class="name">&nbsp;</th>
+			<td class="sex">&nbsp;</td>
+			<td class="age">&nbsp;</td>
+			<td class="img">&nbsp;</td>
+			<td class="inquiry">&nbsp;</td>
+		`;
+		tbody.appendChild(fakeRow);
+		const width = fakeRow.clientWidth;
+		fakeRow.replaceWith();
+		return width;
+	})();
+	const referenceDoubleWidth = tbody.querySelector('tr.pair')?.clientWidth;
 	tbody.querySelectorAll('tr').forEach((listing: HTMLTableRowElement) => {
 		listing.classList.remove('yote');
-		const referenceRow: HTMLTableCellElement = listing.querySelector('td.img')!;
-		const referenceWidth: number = referenceRow.clientWidth;
-		listing.querySelector('aside.explanation')?.classList.add('hidden');
-		listing.querySelectorAll('td, th').forEach((row: Element) => {
-			if (row === referenceRow) {
-				return;
-			}
-			const cell = row as HTMLTableCellElement;
-			cell.style.setProperty('--x-scale', '1');
-			cell.style.setProperty('--y-scale', '1');
-			cell.style.setProperty('overflow-x', 'scroll');
-			const scrollWidth: number = cell.scrollWidth;
-			if (scrollWidth > referenceWidth) {
-				const scale: number = referenceWidth / scrollWidth;
-				const yScale: number = scale < MAX_CONDENSE ? scale / MAX_CONDENSE : 1;
-				cell.style.setProperty('--x-scale', '' + scale);
-				cell.style.setProperty('--y-scale', '' + yScale);
-			}
-			cell.style.setProperty('overflow-x', 'hidden');
-		});
-		listing.querySelector('aside.explanation')?.classList.remove('hidden');
+		if (referenceWidth !== lastReferenceWidth) {
+			listing.querySelector('aside.explanation')?.classList.add('hidden');
+			// @ts-ignore this is always a TableCellElement
+			listing.querySelectorAll('td:not(.img), th').forEach((row: HTMLTableCellElement) => {
+				row.style.setProperty('--x-scale', '1');
+				row.style.setProperty('--y-scale', '1');
+				let width = 0;
+				row.querySelectorAll('li').forEach((column: HTMLLIElement) => {
+					if (column.scrollWidth > width) {
+						width = column.scrollWidth;
+					}
+				});
+				width ||= row.scrollWidth;
+				const doubleSpan = listing.classList.contains('pair') && !row.querySelector('li');
+				const targetWidth = doubleSpan ? referenceDoubleWidth! : referenceWidth;
+				if (width > targetWidth) {
+					const xScale = targetWidth / width;
+					const yScale = xScale < MAX_CONDENSE ? xScale / MAX_CONDENSE : 1;
+					row.style.setProperty('--x-scale', '' + xScale);
+					row.style.setProperty('--y-scale', '' + yScale);
+				}
+			});
+			listing.querySelector('aside.explanation')?.classList.remove('hidden');
+		}
 	});
+	if (fullyLoaded) {
+		lastReferenceWidth = referenceWidth;
+	}
 
 	// Move the last grid row into a separate, centered grid.
 	const gridColumns = window.getComputedStyle(tbody).getPropertyValue('grid-template-columns').split(' ').length;
@@ -140,40 +170,42 @@ function resizer() {
 	let totalSize = 0;
 	listings.forEach((cell: HTMLTableRowElement) => totalSize += cell.classList.contains('pair') ? 2 : 1);
 	const lastRowCount = totalSize % gridColumns;
-	const byOrder: HTMLTableRowElement[][] = [];
-	let maxOrder = 0;
-	for (const listing of listings) {
-		const order = parseInt(window.getComputedStyle(listing).getPropertyValue('order'));
-		byOrder[order] ??= [];
-		byOrder[order].push(listing);
-		if (order > maxOrder) {
-			maxOrder = order;
+	if (lastRowCount) {
+		lastRow.style.removeProperty('display');
+		const byOrder: HTMLTableRowElement[][] = [];
+		let maxOrder = 0;
+		for (const listing of listings) {
+			const order = parseInt(window.getComputedStyle(listing).getPropertyValue('order'));
+			byOrder[order] ??= [];
+			byOrder[order].push(listing);
+			if (order > maxOrder) {
+				maxOrder = order;
+			}
 		}
+		let yote = 0;
+		let order = maxOrder;
+		let index = byOrder[maxOrder]?.length - 1;
+		while (yote++ < lastRowCount && order >= 0) {
+			const listing = byOrder[order]?.[index];
+			if (!listing) {
+				break;
+			}
+			if (listing.classList.contains('pair')) {
+				++yote;
+			}
+			console.log(`Yeeting row with order ${order} and index ${index}, ${yote} now yote`);
+			const clone = listing.cloneNode(true);
+			lastRow.appendChild(clone);
+			listing.classList.add('yote');
+			if (--index < 0) {
+				do {
+					--order;
+				} while (!byOrder[order]?.length && order > 0);
+				index = byOrder[order]?.length - 1;
+			}
+		}
+		lastRow.querySelectorAll('th.name a[href]').forEach(addEventListeners);
 	}
-	let yote = 0;
-	let order = maxOrder;
-	let index = byOrder[maxOrder]?.length - 1;
-	console.log(byOrder, maxOrder);
-	while (yote++ < lastRowCount && order >= 0) {
-		const listing = byOrder[order]?.[index];
-		if (!listing) {
-			break;
-		}
-		if (listing.classList.contains('pair')) {
-			++yote;
-		}
-		console.log(`Yeeting row with order ${order} and index ${index}, ${yote} now yote`);
-		const clone = listing.cloneNode(true);
-		lastRow.appendChild(clone);
-		listing.classList.add('yote');
-		if (--index < 0) {
-			do {
-				--order;
-			} while (!byOrder[order]?.length && order > 0);
-			index = byOrder[order]?.length - 1;
-		}
-	}
-	lastRow.querySelectorAll('th.name a[href]').forEach(addEventListeners);
 
 	// Set up the event listeners for explanatory tooltips.
 	window.matchMedia(`(max-width: ${CUTOFF_WIDTH - 1}px)`).matches ? setupMobileTooltips() : setupDesktopTooltips();
@@ -183,6 +215,7 @@ function resizer() {
 
 tbody.querySelectorAll('th.name a[href]').forEach(addEventListeners);
 
-resizer();
+resizer()
+window.addEventListener('load', resizer);
 window.addEventListener('resize', resizer);
-
+document.fonts.ready.then(() => {fullyLoaded = true; resizer()});
