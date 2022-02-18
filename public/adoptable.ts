@@ -196,7 +196,7 @@ function resizer(useReference: boolean = true) {
 			let yote = 0;
 			let order = maxOrder;
 			let index = byOrder[maxOrder]?.length - 1;
-			while (yote++ < lastRowCount && order >= 0) {
+			while (yote < lastRowCount && order >= 0) {
 				const listing = byOrder[order]?.[index];
 				if (!listing) {
 					break;
@@ -206,9 +206,7 @@ function resizer(useReference: boolean = true) {
 					// TODO: Yeet pairs in each order first.
 					continue;
 				}
-				if (listing.classList.contains('pair')) {
-					++yote;
-				}
+				yote += listing.classList.contains('pair') ? 2 : 1;
 				console.log(`Yeeting row with order ${order} and index ${index}, ${yote} now yote`);
 				const clone = listing.cloneNode(true);
 				lastRow.appendChild(clone);
