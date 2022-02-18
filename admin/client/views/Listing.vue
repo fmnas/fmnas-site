@@ -10,59 +10,60 @@
       </div>
       <div class="bondage">
         <label>
-          <input type="checkbox" :key="!!pet.friend" :checked="pet.friend" @click.prevent="toggleBondedPair">
+          <input type="checkbox" :key="!!pet.friend" :checked="pet.friend" @click.prevent="toggleBondedPair" autocomplete="off">
           Bonded pair
         </label>
         <label v-if="pet.friend">
-          <input type="checkbox" :key="singlePhoto" :checked="singlePhoto" @click.prevent="toggleSinglePhoto">
+          <input type="checkbox" :key="singlePhoto" :checked="singlePhoto" @click.prevent="toggleSinglePhoto" autocomplete="off">
           Combined photo
         </label>
       </div>
       <ul>
         <li class="id">
           <label for="id">ID</label>
-          <input id="id" v-model="pet['id']" name="id" required type="text">
+          <input id="id" v-model="pet['id']" name="id" required type="text" autocomplete="off">
           <!--suppress XmlInvalidId -->
           <label for="friend_id">ID</label>
-          <auto-complete id="friend_id" v-if="pet.friend" v-model="pet.friend.id" name="friend_id" required
-              :suggestions="friendSuggestions" @complete="searchFriends($event)" appendTo="self"
+          <auto-complete id="friend_id" v-if="pet.friend && !pet.friend.name" v-model="pet.friend.id" name="friend_id"
+              required :suggestions="friendSuggestions" @complete="searchFriends($event)" appendTo="self"
               completeOnFocus="true" delay="100">
           </auto-complete>
+          <input id="friend_id" v-if="pet.friend && pet.friend.name" v-model="pet.friend.id" name="friend_id" required type="text" autocomplete="off">
         </li>
         <li class="name">
           <label for="name">Name</label>
-          <input id="name" v-model="pet['name']" name="name" required type="text">
+          <input id="name" v-model="pet['name']" name="name" required type="text" autocomplete="off">
           <label for="friend_name" v-if="pet.friend">Name</label>
-          <input id="friend_name" v-if="pet.friend" v-model="pet.friend.name" name="friend_name" required type="text">
+          <input id="friend_name" v-if="pet.friend" v-model="pet.friend.name" name="friend_name" required type="text" autocomplete="off">
         </li>
         <li class="species">
           <!--suppress XmlInvalidId no idea why this is firing -->
           <label for="species_input">Species</label>
-          <select id="species_input" v-model="pet['species']" name="species" required class="span">
+          <select id="species_input" v-model="pet['species']" name="species" required class="span" autocomplete="off">
             <option value=""></option>
             <option v-for="s of config['species']" :value="s['id']" :key="s['id']">{{ ucfirst(s['name']) }}</option>
           </select>
         </li>
         <li class="breed">
           <label for="breed">Breed/info</label>
-          <input id="breed" v-model="pet['breed']" name="breed" type="text">
+          <input id="breed" v-model="pet['breed']" name="breed" type="text" autocomplete="off">
           <label for="friend_breed" v-if="pet.friend">Breed/info</label>
-          <input id="friend_breed" v-if="pet.friend" v-model="pet.friend.breed" name="friend_breed" type="text">
+          <input id="friend_breed" v-if="pet.friend" v-model="pet.friend.breed" name="friend_breed" type="text" autocomplete="off">
         </li>
         <li class="dob">
           <label for="dob"><abbr title="date of birth">DOB</abbr></label>
           <input id="dob" v-model="pet['dob']" :max="new Date().toISOString().split('T')[0]" name="dob"
-              type="date">
+              type="date" autocomplete="off">
           <label for="friend_dob" v-if="pet.friend"><abbr title="date of birth">DOB</abbr></label>
           <input id="friend_dob" v-if="pet.friend" v-model="pet.friend.dob"
               :max="new Date().toISOString().split('T')[0]" name="dob"
-              type="date">
+              type="date" autocomplete="off">
         </li>
         <li class="sex">
           <label for="sexes">Sex</label>
           <fieldset id="sexes" :class="['sexes', sexInteracted || validated ? 'validated' : '']">
             <label v-for="sex of config.sexes" :key="sex.key">
-              <input v-model="pet.sex" :value="sex.key" name="sex" required type="radio">
+              <input v-model="pet.sex" :value="sex.key" name="sex" required type="radio" autocomplete="off">
               <abbr :title="ucfirst(sex['name'])" @click.prevent="(e: Event) => {sexClick(sex); e.target.blur();}"
                   @keyup.enter="sexClick(sex); $refs.fee.focus();" @keyup.space="sexClick(sex);" tabindex="0">{{
                   sex['name'][0].toUpperCase()
@@ -73,7 +74,7 @@
           <fieldset id="friend_sexes" v-if="pet.friend"
               :class="['sexes', sexInteracted || validated ? 'validated' : '']">
             <label v-for="sex of config.sexes" :key="sex.key">
-              <input v-model="pet.friend.sex" :value="sex.key" name="friend_sex" required type="radio">
+              <input v-model="pet.friend.sex" :value="sex.key" name="friend_sex" required type="radio" autocomplete="off">
               <abbr :title="ucfirst(sex['name'])" @click.prevent="(e: Event) => {sexClick(sex, true); e.target.blur();}"
                   @keyup.enter="sexClick(sex, true); $refs.fee.focus();" @keyup.space="sexClick(sex, true);"
                   tabindex="0">{{
@@ -89,7 +90,7 @@
         <li class="status">
           <!--suppress XmlInvalidId no idea why this is firing -->
           <label for="status">Status</label>
-          <select id="status" v-model="pet['status']" name="status" required class="span">
+          <select id="status" v-model="pet['status']" name="status" required class="span" autocomplete="off">
             <option value=""></option>
             <option v-for="status of config['statuses']" :value="status['key']" :key="status['key']">
               {{ status['name'] }}
@@ -609,7 +610,7 @@ export default defineComponent({
 
 <style lang="scss">
 @mixin input {
-  box-sizing: content-box;
+  box-sizing: border-box;
   border: none;
   box-shadow: inset 0 0 0 1px var(--border-color);
   border-radius: var(--border-radius);
@@ -631,6 +632,7 @@ section.metadata {
   --border-color: #aaa;
   --focus-color: var(--visited-color);
   --error-color: #f00;
+  --input-height: calc(1.2em + 2 * var(--input-padding-vertical));
 
   display: flex;
   justify-content: space-evenly;
@@ -643,6 +645,7 @@ section.metadata {
   form {
     flex-shrink: 1;
     display: grid;
+    grid-auto-rows: calc(var(--input-height) + 2 * var(--input-margin));
     grid-template-columns: var(--label-width) minmax(5em, var(--input-width)) [end];
     max-width: 100%;
     align-items: center;
@@ -655,6 +658,7 @@ section.metadata {
       font-family: inherit;
       padding: var(--input-padding);
       margin: var(--input-margin);
+      height: var(--input-height);
     }
 
     > ul {
