@@ -1,4 +1,4 @@
-const MAX_CONDENSE = .75;
+const MAX_CONDENSE = .8;
 const CUTOFF_WIDTH = 450; // sync with $cutoff in adoptable.scss
 const tbody: HTMLTableSectionElement = document.querySelector('table.listings tbody')!;
 const lastRow: HTMLTableSectionElement = document.querySelector('table.listings.last-row tbody')!;
