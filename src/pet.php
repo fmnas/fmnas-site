@@ -222,6 +222,13 @@ class Pet implements JsonSerializable {
 		return $leftAge . ' & ' . $rightAge;
 	}
 
+	public function collapsedAge(): string {
+		return preg_replace(
+				['/^([^&]+) & \1$/', '/^([0-9]+) (months?|years?) old & ([0-9]+) \2 old$/'],
+				['\1', '\1 & \ \2\3 old'],
+				$this->age());
+	}
+
 	public function sex(): string {
 		if ($this->bonded !== 1 || $this->sex->key === $this->friend->sex->key) {
 			return $this->sex->name;

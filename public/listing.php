@@ -38,7 +38,7 @@ if (!($pet = $db->getPetByPath($path))) {
 	<article class="listing">
 		<h2><?=$pet?></h2>
 		<p class="subtitle"><?php
-			echo $pet->age();
+			echo $pet->collapsedAge();
 			echo '&nbsp;&middot;&nbsp;';
 			echo $pet->status->name;
 			if ($pet->status->listed && !$pet->status->displayStatus) {
