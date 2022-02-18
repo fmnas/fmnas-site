@@ -180,7 +180,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           <span class="fee">{{
               statusInfo()?.displayStatus ?
                   statusInfo()?.name :
-                  (listed() ? (pet.friend ? 'BONDED PAIR ' : '') + pet.fee ?? '' : 'Coming Soon')
+                  (listed() ? (pet.friend ? 'BONDED PAIR ' : '') + (pet.fee ?? '') : 'Coming Soon')
             }}</span>
           <aside class="explanation"
               v-if="statusInfo()?.displayStatus &&
