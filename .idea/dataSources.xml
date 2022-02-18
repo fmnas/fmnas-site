@@ -22,5 +22,12 @@
       <jdbc-url>jdbc:mysql://mysql.forgetmenotshelter.org:3306/fmnas</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
+    <data-source source="LOCAL" name="asm@asm.forgetmenotshelter.org" uuid="1cc5c5ab-bd50-42cf-b31a-7893970a72c4">
+      <driver-ref>mariadb</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.mariadb.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mariadb://asm.forgetmenotshelter.org:3306/asm</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>
