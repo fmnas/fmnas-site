@@ -15,7 +15,7 @@ class Result implements JsonSerializable {
 
 	public function jsonSerialize(): mixed {
 		if ($this->error) {
-			return ['error' => $this->error];
+			return ['error' => $this->error, ...$this->value];
 		}
 		return $this->value;
 	}

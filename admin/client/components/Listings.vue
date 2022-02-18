@@ -37,7 +37,7 @@
     <template v-for="(listing, index) of listings" :key="listing.id">
       <tr :class="index % 2 ? 'odd' : 'even'" @click="listing.selected = !listing.selected">
         <td class="checkbox" :rowspan="listing.friend ? 2 : 1"><input type="checkbox" v-model="listing.selected" @click.stop></td>
-        <td class="photo" :rowspan="!listing.friend || listing.friend.photo ? 1 : 2"><img :alt="listing['name']" :src="`/api/raw/stored/${listing.photo?.key}`"></td>
+        <td class="photo" :rowspan="!listing.friend || listing.friend.photo ? 1 : 2"><img :alt="listing['name']" :src="`/api/raw/cached/${listing.photo?.key}_64.jpg`"></td>
         <td class="id">{{ listing['id'] }}</td>
         <td class="name">{{ listing['name'] }}</td>
         <td v-if="!species" class="species" :rowspan="listing.friend ? 2 : 1">{{ config['species']?.[listing['species']]?.['name'] }}</td>
@@ -52,7 +52,7 @@
         </td>
       </tr>
       <tr v-if="listing.friend" :class="index % 2 ? 'odd' : 'even'" @click="listing.selected = !listing.selected">
-        <td class="photo" v-if="listing.friend.photo"><img :alt="listing.friend.name" :src="`/api/raw/stored/${listing.friend.photo.key}`"></td>
+        <td class="photo" v-if="listing.friend.photo"><img :alt="listing.friend.name" :src="`/api/raw/cached/${listing.friend.photo.key}_64.jpg`"></td>
         <td class="id">{{ listing.friend.id }}</td>
         <td class="name">{{ listing.friend.name }}</td>
         <td class="breed">{{ listing.friend.breed }}</td>
@@ -152,7 +152,7 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
-$row-height: 0.75in;
+$row-height: 64px;
 
 table {
 	width: 100%;
@@ -170,6 +170,10 @@ tr.even {
 
 td, img {
 	max-height: $row-height;
+}
+
+img {
+  max-width: $row-height * 2 / 3;
 }
 
 td.options a {

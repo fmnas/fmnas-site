@@ -72,9 +72,10 @@ class Asset {
 	 * @param bool $link Whether to wrap it in a link to the full size image
 	 * @param bool $relative Whether the full size image is "in" the current directory
 	 * @param int $height Desired height of 1x image or 0 for no scaling (default: 600)
+	 * @param bool $expand Whether to add a srcset and cache larger scales
 	 * @return string img tag
 	 */
-	public function imgTag(?string $alt = "", bool $link = false, bool $relative = false, int $height = 600): string {
+	public function imgTag(?string $alt = "", bool $link = false, bool $relative = false, int $height = 600, bool $expand = true): string {
 		if ($this->path) {
 			$path = $relative ? basename($this->path) : '/' . $this->path;
 		} else {
@@ -92,7 +93,9 @@ class Asset {
 			while ($currentScale * $height < $intrinsicHeight) {
 				$tag .= $this->cachedImage($currentScale * $height);
 				$tag .= " {$currentScale}x, ";
-				if ($currentScale < 2) {
+				if (!$expand) {
+					break;
+				} else if ($currentScale < 2) {
 					$currentScale += 0.5;
 				} else if ($currentScale < 4) {
 					$currentScale += 1;
@@ -131,7 +134,7 @@ class Asset {
 	 * @param int $height desired height or 0 for no scaling
 	 * @return string The path to the image, relative to root/public (e.g. "/assets/cache/1_0.jpg")
 	 */
-	private function cachedImage(int $height): string {
+	public function cachedImage(int $height): string {
 		if (!file_exists($this->absolutePath())) {
 			log_err("Did not find stored image with key $this->key at {$this->absolutePath()}");
 			return "";
