@@ -115,6 +115,10 @@ table.listings {
 					max-height: min(300px, calc(max(50vw, 165px) - #{$gap}) * 3 / 2);
 					width: auto;
 				}
+
+				td.img ul li {
+					vertical-align: middle;
+				}
 			}
 
 			order: 1;
