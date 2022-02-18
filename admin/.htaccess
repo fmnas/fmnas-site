@@ -1,6 +1,6 @@
 # prevent caching
 <IfModule mod_headers.c>
-	<FilesMatch "\.(js|css|html)$">
+	<FilesMatch "\.(html|php)$">
     Header set Cache-Control "no-cache"
     FileETag MTime Size
   </FilesMatch>
