@@ -217,8 +217,6 @@ function resizer() {
 	window.matchMedia(`(max-width: ${CUTOFF_WIDTH - 1}px)`).matches ? setupMobileTooltips() : setupDesktopTooltips();
 }
 
-// TODO [#286]: Resizer miscalculates width when resizing after initial load in Firefox.
-
 tbody.querySelectorAll('th.name a[href]').forEach(addEventListeners);
 
 resizer()
