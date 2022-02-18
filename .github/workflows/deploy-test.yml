@@ -51,7 +51,11 @@ jobs:
           --smtp_username="${{ secrets.SMTP_USERNAME }}" \
           --smtp_password="${{ secrets.SMTP_PASSWORD }}" \
           --image_size_endpoint="${{ secrets.IMAGE_SIZE_TEST_ENDPOINT }}" \
-          --resize_image_endpoint="${{ secrets.RESIZE_IMAGE_TEST_ENDPOINT }}"
+          --resize_image_endpoint="${{ secrets.RESIZE_IMAGE_TEST_ENDPOINT }}" \
+          --asm_db="${{ secrets.ASM_DB }}" \
+          --asm_host="${{ secrets.ASM_HOST }}" \
+          --asm_user="${{ secrets.DB_USERNAME }}" \
+          --asm_pass="${{ secrets.DB_PASS }}"
       - name: Unignore config.php for upload
         run: echo '!secrets/config.php' >> .gitignore
       - name: Unignore vendor directory for upload
