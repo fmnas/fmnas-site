@@ -105,7 +105,10 @@ class Asset {
 		$tag .= ' src="' . $path . '"';
 		if ($alt) {
 			$tag .= ' alt="' . htmlspecialchars($alt) . '"';
+			$tag .= ' title="' . htmlspecialchars($alt) . '"';
 		}
+		$tag .= ' width="' . floor($this->size()[0] / $this->size()[1] * $height) . '"';
+		$tag .= ' height="' . $height . '"';
 		$tag .= '>';
 		if ($link) {
 			$tag .= '</a>';

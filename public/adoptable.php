@@ -53,8 +53,7 @@ pageHeader();
 		$href = "";
 		if ($listed) {
 			$href .= " href=\"/$path/";
-			$href .= htmlspecialchars($pet->id);
-			$href .= htmlspecialchars(str_replace(" ", "", $pet->name));
+			$href .= htmlspecialchars($pet->path);
 			$href .= '"';
 		}
 
@@ -69,26 +68,52 @@ pageHeader();
 				echo ' explain';
 			}
 		}
+		if ($pet->bonded) {
+			echo ' pair';
+		}
 		echo '">';
 
 		echo '<th class="name"><a';
 		echo $href;
-		echo ' id="' . htmlspecialchars($pet->id) . '">';
-		echo htmlspecialchars($pet->name);
+		if ($pet->bonded) {
+			echo '><ul><li id="' . htmlspecialchars($pet->id) . '">';
+			echo htmlspecialchars($pet->name);
+			echo '<li id="' . htmlspecialchars($pet->friend?->id) . '">';
+			echo htmlspecialchars($pet->friend?->name);
+			echo '</li></ul>';
+		} else {
+			echo ' id="' . htmlspecialchars($pet->id) . '">';
+			echo htmlspecialchars($pet->name);
+		}
 		echo '</a></th>';
 
 		echo '<td class="sex">';
-		echo ucfirst(@($pet->sex->name) ?? "");
-		echo " " . $pet->breed;
+		echo $pet->bonded ? "<ul><li>" . ucfirst(@($pet->sex->name) ?? "") . " " . $pet->breed . "<li>" .
+				ucfirst(@($pet->friend->sex->name) ?? "") . " " . $pet->friend?->breed . "</ul>" :
+				ucfirst(@($pet->sex->name) ?? "") . " " . $pet->breed;
 		echo '</td>';
 
 		echo '<td class="age">';
-		echo "<time datetime=\"{$pet->dob}\">";
-		echo $pet->age();
-		echo '</time></td>';
+		if ($pet->bonded) {
+			echo '<ul><li>';
+			echo "<time datetime=\"{$pet->dob}\">";
+			echo $pet->species->age($pet->dob);
+			echo '</time>';
+			echo '<li>';
+			echo "<time datetime=\"{$pet->friend->dob}\">";
+			echo $pet->species->age($pet->friend->dob);
+			echo '</time>';
+			echo '</li></ul>';
+		} else {
+			echo "<time datetime=\"{$pet->dob}\">";
+			echo $pet->species->age($pet->dob);
+			echo '</time>';
+		}
+		echo '</td>';
 
 		echo '<td class="fee"><span class="fee">';
-		echo $pet->status->displayStatus ? $pet->status->name : ($listed ? $pet->fee : 'Coming Soon');
+		echo $pet->status->displayStatus ? $pet->status->name :
+				($listed ? (($pet->bonded ? 'BONDED PAIR ' : '') . $pet->fee) : 'Coming Soon');
 		echo '</span>';
 		if ($pet->status->displayStatus && trim($pet->status->description ?? '')) {
 			echo '<aside class="explanation">';
@@ -100,10 +125,19 @@ pageHeader();
 		echo '<td class="img"><a';
 		echo $href;
 		echo '>';
-		echo $pet->photo?->imgTag(htmlspecialchars($pet->name), false, false, 300);
+		if (!$pet->friend?->photo?->key || $pet->friend->photo->key === $pet->photo->key) {
+			echo $pet->photo?->imgTag($pet->name, false, false, 300);
+		} else {
+			echo '<ul><li>';
+			echo $pet->photo?->imgTag($pet->name, false, false, 300);
+			echo '<li>';
+			echo $pet->friend->photo?->imgTag($pet->friend->name, false, false, 300);
+			echo '</li></ul>';
+		}
 		echo '</a></td>';
 
-		echo '<td class="inquiry"><a data-email></a></td>';
+		echo '<td class="inquiry"><a data-email="adopt+' . htmlspecialchars($pet->id()) . '">Email to adopt ' .
+				htmlspecialchars($pet->name()) . '!</a></td>';
 	}
 	?>
 	</tbody>

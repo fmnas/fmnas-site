@@ -1,3 +1,4 @@
+<?php
 /*
  * Copyright 2022 Google LLC
  *
@@ -15,30 +16,5 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {defineConfig} from 'vite';
-import vue from '@vitejs/plugin-vue';
-import * as path from 'path';
-import eslintPlugin from 'vite-plugin-eslint'; // TODO [#144]: Get linting to work in vite.
-
-export default defineConfig({
-	plugins: [
-		vue(),
-		eslintPlugin(),
-	],
-	resolve: {
-		alias: {
-			'@': path.resolve(__dirname, '.'),
-		},
-	},
-	publicDir: false,
-	build: {
-		outDir: '../',
-		emptyOutDir: false,
-		target: 'es2020',
-		rollupOptions: {
-			external: [
-					'components/ProgressToastContent.vue',
-			],
-		},
-	},
-});
+header('Content-Type: text/javascript');
+readfile("../public/adoptable.js");

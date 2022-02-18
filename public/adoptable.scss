@@ -35,14 +35,13 @@ table.listings {
 
 	&.last-row tbody {
 		grid-template-columns: repeat(auto-fit, minmax(0, min(300px, calc(49vw - #{$gap} / 2))));
-		margin: $gap 2vw;
 	}
 
 	tbody {
 		display: grid;
 		grid-column-gap: $gap;
 		grid-row-gap: $gap;
-		margin: 1em 2vw 0;
+		margin: 0 2vw $gap;
 		grid-auto-flow: row dense;
 		grid-template-columns: minmax(0, 300px) repeat(auto-fill, minmax(0, 300px));
 		justify-content: center;
@@ -62,6 +61,8 @@ table.listings {
 			border: 1px solid var(--border-color);
 			border-radius: 1rem;
 			background: var(--listing-background);
+			--side-padding: min(2vw, 1em);
+			padding: 0.5em var(--side-padding);
 
 			&.linked {
 				box-shadow: -2px 2px 3px var(--shadow-color);
@@ -101,45 +102,39 @@ table.listings {
 					z-index: 1;
 
 					li {
-						width: 50%;
+						width: calc(50% - #{$gap} / 2 - var(--side-padding));
 						display: inline-block;
 						box-sizing: border-box;
 
-						&:not(td.img li) {
-							$ampersand-width: 1.1em;
-							--inner-padding: calc(#{$ampersand-width} / 2 + 0.1em);
+						&:first-of-type {
+							margin-right: calc(#{$gap} + 2 * var(--side-padding));
+						}
+					}
+				}
 
-							&:first-of-type {
-								padding-right: var(--inner-padding);
-								text-align: right;
-							}
-
-							&:nth-of-type(2) {
-								padding-left: var(--inner-padding);
-								text-align: left;
-
-								&:not(a:not([href]) li) {
-									padding-right: 1.5em;
-								}
-
-								&::before {
-									display: block;
-									position: absolute;
-									top: 0;
-									left: calc(50% - #{$ampersand-width} / 2);
-									width: $ampersand-width;
-									height: $line-height;
-									text-align: center;
-									content: '&';
-								}
-							}
+				th.name ul li {
+					&:nth-of-type(2) {
+						&::before {
+							display: block;
+							position: absolute;
+							top: 0;
+							left: calc(50% - #{$gap} / 2);
+							width: $gap;
+							height: $line-height;
+							text-align: center;
+							content: '&';
 						}
 					}
 				}
 
 				td.img img:not(ul img) {
 					max-width: calc(400px + #{$gap});
-					max-height: 300px;
+					max-height: min(300px, calc(max(50vw, 165px) - #{$gap}) * 3 / 2);
+					width: auto;
+				}
+
+				td.img ul li {
+					vertical-align: middle;
 				}
 			}
 
@@ -175,14 +170,14 @@ table.listings {
 					color: var(--text-color);
 					font-size: 10pt;
 					background-color: #fffffff6;
-					--width: calc(100% + min(1vw, 20%));
+					--width: min(calc(100% + 2 * var(--side-padding) + min(1vw, 20%) + #{$gap}), 450px);
 					width: var(--width);
 					left: calc((var(--width) - 100%) / -2);
 					top: 1.5rem;
 					white-space: normal;
 					text-align: justify;
 					text-align-last: center;
-					padding: 0.5em;
+					padding: 0.4em;
 					border: 1px solid var(--border-color);
 					box-shadow: -2px 2px 3px var(--shadow-color);
 					border-radius: 1em;
@@ -242,8 +237,6 @@ table.listings {
 		--x-scale: 1;
 		--y-scale: 1;
 		display: block;
-		padding-left: 1em;
-		padding-right: 1em;
 		box-sizing: border-box;
 		width: calc(100% / var(--x-scale));
 		text-align: center;
@@ -252,14 +245,6 @@ table.listings {
 		transform: scaleX(var(--x-scale));
 		transform-origin: left;
 		z-index: 1;
-
-		&:first-child {
-			padding-top: 0.5em;
-		}
-
-		&:last-child {
-			padding-bottom: 0.5em;
-		}
 
 		> * {
 			display: inline-block;
@@ -282,12 +267,12 @@ table.listings {
 	tr:not(.soon) th.name a {
 		border-bottom: 1pt solid var(--link-color);
 
-		&:not(tr.pair a)::after {
+		&:not(tr.pair a)::after, li:nth-of-type(2)::after {
 			content: ' »';
 		}
 
 		@media (min-width: 450px) {
-			&[id]:not([id=''])::after, li[id]:not([id=''])::after {
+			&[id]:not([id=''])::after, li[id]:nth-of-type(2):not([id=''])::after {
 				content: ' (id#' attr(id) ') »';
 			}
 		}
@@ -315,17 +300,12 @@ table.listings {
 	}
 
 	td.img {
-		padding: 0 1rem;
-
-		@media (max-width: 50rem) {
-			padding: 0 2vw;
-		}
-
 		img {
 			display: block;
 			max-width: 200px;
 			width: 100%;
 			margin: 0 auto;
+			height: auto;
 		}
 	}
 
@@ -342,6 +322,7 @@ table.listings {
 section.explanations {
 	max-width: 10in;
 	margin: 0 auto;
+
 	> aside {
 		z-index: 2;
 
@@ -368,6 +349,7 @@ section.explanations {
 				cursor: pointer;
 				font-family: 'Material Icons', sans-serif;
 				font-size: 120%;
+
 				&:active {
 					color: var(--active-color);
 				}

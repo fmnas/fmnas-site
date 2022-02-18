@@ -51,22 +51,32 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		</thead>
 		<tbody>
 		<!-- TODO [#34]: Make listing metadata editable from table view -->
-		<tr v-for="listing of listings" :key="listing['id']">
-      <td class="checkbox"><input type="checkbox" v-model="listing.selected"></td>
-			<td class="photo"><img :alt="listing['name']" :src="`/api/raw/stored/${listing.photo?.key}`"></td>
-			<td class="id">{{ listing['id'] }}</td>
-			<td class="name">{{ listing['name'] }}</td>
-			<td v-if="!species" class="species">{{ config['species']?.[listing['species']]?.['name'] }}</td>
-			<td class="breed">{{ listing['breed'] }}</td>
-			<td class="dob">{{ listing['dob'] }}</td> <!-- TODO [#36]: Display DOB as M/D/Y -->
-			<td class="sex">{{ config['sexes']?.[listing['sex']]?.['name'] }}</td>
-			<td class="fee">{{ listing['fee'] }}</td>
-			<td class="status">{{ config['statuses']?.[listing['status']]?.['name'] }}</td>
-			<td class="options">
-				<router-link :to="{ path: '/' + getFullPathForPet(listing) }">Edit</router-link>
-				<a :href="`//${config['public_domain']}/${getFullPathForPet(listing)}`">View</a>
-			</td>
-		</tr>
+    <template v-for="(listing, index) of listings" :key="listing.id">
+      <tr :class="index % 2 ? 'odd' : 'even'" @click="listing.selected = !listing.selected">
+        <td class="checkbox" :rowspan="listing.friend ? 2 : 1"><input type="checkbox" v-model="listing.selected" @click.stop></td>
+        <td class="photo" :rowspan="!listing.friend || listing.friend.photo ? 1 : 2"><img :alt="listing['name']" :src="`/api/raw/stored/${listing.photo?.key}`"></td>
+        <td class="id">{{ listing['id'] }}</td>
+        <td class="name">{{ listing['name'] }}</td>
+        <td v-if="!species" class="species" :rowspan="listing.friend ? 2 : 1">{{ config['species']?.[listing['species']]?.['name'] }}</td>
+        <td class="breed">{{ listing['breed'] }}</td>
+        <td class="dob">{{ listing['dob'] }}</td> <!-- TODO [#36]: Display DOB as M/D/Y -->
+        <td class="sex">{{ config['sexes']?.[listing['sex']]?.['name'] }}</td>
+        <td class="fee" :rowspan="listing.friend ? 2 : 1">{{ listing['fee'] }}</td>
+        <td class="status" :rowspan="listing.friend ? 2 : 1">{{ config['statuses']?.[listing['status']]?.['name'] }}</td>
+        <td class="options" :rowspan="listing.friend ? 2 : 1" @click.stop>
+          <router-link :to="{ path: '/' + getFullPathForPet(listing) }">Edit</router-link>
+          <a :href="`//${config['public_domain']}/${getFullPathForPet(listing)}`">View</a>
+        </td>
+      </tr>
+      <tr v-if="listing.friend" :class="index % 2 ? 'odd' : 'even'" @click="listing.selected = !listing.selected">
+        <td class="photo" v-if="listing.friend.photo"><img :alt="listing.friend.name" :src="`/api/raw/stored/${listing.friend.photo.key}`"></td>
+        <td class="id">{{ listing.friend.id }}</td>
+        <td class="name">{{ listing.friend.name }}</td>
+        <td class="breed">{{ listing.friend.breed }}</td>
+        <td class="dob">{{ listing.friend.dob }}</td>
+        <td class="sex">{{ listing.friend.sex }}</td>
+      </tr>
+    </template>
 		</tbody>
 	</table>
 </template>
@@ -164,10 +174,15 @@ $row-height: 0.75in;
 table {
 	width: 100%;
 	padding: 1em;
+  border-collapse: collapse;
 }
 
 tbody tr {
 	height: $row-height;
+}
+
+tr.even {
+  background-color: #eee;
 }
 
 td, img {
@@ -199,5 +214,9 @@ div.loading {
   img {
     max-height: max-content;
   }
+}
+
+div.bulk {
+  margin: 0.5em 0;
 }
 </style>

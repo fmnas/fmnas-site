@@ -49,20 +49,7 @@ class Database {
 		}
 
 		if (!($getPet = $this->db->prepare("
-			SELECT 
-			       pets.*, 
-			       pic.id AS pic_id, 
-			       pic.data AS pic_data, 
-			       pic.type AS pic_type,
-			       pic.path AS pic_path,
-			       dsc.id AS dsc_id,
-			       dsc.data AS dsc_data,
-			       dsc.type AS dsc_type,
-			       dsc.path AS dsc_path
-			FROM pets
-    		LEFT JOIN assets pic ON pets.photo = pic.id 
-			LEFT JOIN assets dsc ON pets.description = dsc.id
-            WHERE pets.id = ? and pets.species = ?
+			SELECT * FROM listings WHERE id = ? and species = ?
 			"))) {
 			log_err("Failed to prepare getPet: {$this->db->error}");
 		} else {
@@ -70,20 +57,7 @@ class Database {
 		}
 
 		if (!($getPetById = $this->db->prepare("
-			SELECT 
-			       pets.*, 
-			       pic.id AS pic_id, 
-			       pic.data AS pic_data, 
-			       pic.type AS pic_type,
-			       pic.path AS pic_path,
-			       dsc.id AS dsc_id,
-			       dsc.data AS dsc_data,
-			       dsc.type AS dsc_type,
-			       dsc.path AS dsc_path
-			FROM pets
-            LEFT JOIN assets pic on pets.photo = pic.id
-            LEFT JOIN assets dsc on pets.description = dsc.id
-            WHERE pets.id = ?
+			SELECT * FROM listings WHERE id = ?
 			"))) {
 			log_err("Failed to prepare getPetById: {$this->db->error}");
 		} else {
@@ -104,20 +78,7 @@ class Database {
 		}
 
 		if (!($getPetByPath = $this->db->prepare("
-			SELECT 
-			       pets.*, 
-			       pic.id AS pic_id, 
-			       pic.data AS pic_data, 
-			       pic.type AS pic_type,
-			       pic.path AS pic_path,
-			       dsc.id AS dsc_id,
-			       dsc.data AS dsc_data,
-			       dsc.type AS dsc_type,
-			       dsc.path AS dsc_path
-			FROM pets
-			LEFT JOIN assets pic ON pets.photo = pic.id
-			LEFT JOIN assets dsc ON pets.description = dsc.id
-			WHERE (pets.path = ? OR pets.legacy_path = ?) AND pets.species = ?
+			SELECT * FROM listings WHERE (listing_path = ? OR legacy_path = ?) AND species = ?
 			LIMIT 1
 			"))) {
 			log_err("Failed to prepare getPetByPath: {$this->db->error}");
@@ -126,64 +87,16 @@ class Database {
 		}
 
 		if (!($getAdoptablePets = $this->db->prepare("
-			SELECT 
-			       pets.*, 
-			       pic.id AS pic_id, 
-			       pic.data AS pic_data, 
-			       pic.type AS pic_type,
-			       pic.path AS pic_path,
-			       dsc.id AS dsc_id,
-			       dsc.data AS dsc_data,
-			       dsc.type AS dsc_type,
-			       dsc.path AS dsc_path
-			FROM pets 
-			JOIN statuses ON 
-				pets.status = statuses.id AND 
-				statuses.listed = 1
-			LEFT JOIN assets pic ON pets.photo = pic.id
-			LEFT JOIN assets dsc ON pets.description = dsc.id
+			SELECT listings.* FROM listings JOIN statuses ON listings.status = statuses.id AND statuses.listed = 1
 			"))) {
 			log_err("Failed to prepare getAdoptablePets: {$this->db->error}");
 		} else {
 			$this->getAdoptablePets = $getAdoptablePets;
 		}
 
-//		if (!($getAdoptablePetsBySpeciesPlural = $this->db->prepare("
-//			SELECT * FROM (
-//			    SELECT pets.* FROM pets
-//					LEFT JOIN statuses ON
-//						pets.status = statuses.id AND
-//						statuses.listed = 1
-//			) pet
-//			LEFT JOIN assets pic ON pet.photo = pic.id
-//			LEFT JOIN assets dsc ON pet.description = dsc.id
-//			LEFT JOIN species ON
-//			    pet.species = species.id AND
-//			    species.plural = ?
-//			"))) {
-//			log_err("Failed to prepare getAdoptablePetsBySpeciesPlural: {$this->db->error}");
-//		} else {
-//			$this->getAdoptablePetsBySpeciesPlural = $getAdoptablePetsBySpeciesPlural;
-//		}
-
 		if (!($getAdoptablePetsBySpecies = $this->db->prepare("
-			SELECT 
-			       pets.*, 
-			       pic.id AS pic_id, 
-			       pic.data AS pic_data, 
-			       pic.type AS pic_type,
-			       pic.path AS pic_path,
-			       dsc.id AS dsc_id,
-			       dsc.data AS dsc_data,
-			       dsc.type AS dsc_type,
-			       dsc.path AS dsc_path
-			FROM pets
-			JOIN statuses ON
-			    pets.species = ? AND
-				pets.status = statuses.id AND 
-				statuses.listed = 1
-			LEFT JOIN assets pic ON pets.photo = pic.id
-			LEFT JOIN assets dsc ON pets.description = dsc.id
+			SELECT listings.* FROM listings JOIN statuses ON listings.status = statuses.id AND statuses.listed = 1 
+			WHERE listings.species = ?
 			"))) {
 			log_err("Failed to prepare getAdoptablePetsBySpecies: {$this->db->error}");
 		} else {
@@ -191,20 +104,7 @@ class Database {
 		}
 
 		if (!($getAllPets = $this->db->prepare("
-			SELECT 
-			       pets.*, 
-			       pic.id AS pic_id, 
-			       pic.data AS pic_data, 
-			       pic.type AS pic_type,
-			       pic.path AS pic_path,
-			       dsc.id AS dsc_id,
-			       dsc.data AS dsc_data,
-			       dsc.type AS dsc_type,
-			       dsc.path AS dsc_path
-			FROM pets 
-			JOIN statuses ON pets.status = statuses.id
-			LEFT JOIN assets pic ON pets.photo = pic.id
-			LEFT JOIN assets dsc ON pets.description = dsc.id
+			SELECT * FROM listings
 			"))) {
 			log_err("Failed to prepare getAllPets: {$this->db->error}");
 		} else {
@@ -333,7 +233,7 @@ class Database {
 		$p->id = $pet["id"];
 		$p->name = $pet["name"];
 		$p->species = _G_species()[$pet["species"]];
-		$p->path = $pet["path"];
+		$p->path = $pet["listing_path"];
 		$p->sex = $pet["sex"] ? _G_sexes()[$pet["sex"]] : null;
 		$p->fee = $pet["fee"];
 		$p->photo = self::createAsset([
@@ -352,6 +252,36 @@ class Database {
 		$p->status = _G_statuses()[$pet["status"]];
 		$p->breed = $pet["breed"];
 		$p->dob = $pet["dob"];
+		$p->bonded = $pet["bonded"];
+		$p->friend = null;
+		if ($p->bonded === 1) {
+			$p->friend = self::createPet([
+					"id" => $pet["friend"],
+					"name" => $pet["friend_name"],
+					"sex" => $pet["friend_sex"],
+					"pic_id" => $pet["friend_pic_id"],
+					"pic_data" => $pet["friend_pic_data"],
+					"pic_path" => $pet["friend_pic_path"],
+					"pic_type" => $pet["friend_pic_type"],
+					"breed" => $pet["friend_breed"],
+					"dob" => $pet["friend_dob"],
+					"bonded" => 2,
+					"species" => $pet["species"],
+					"fee" => $pet["fee"],
+					"dsc_data" => null,
+					"dsc_id" => null,
+					"dsc_path" => null,
+					"dsc_type" => null,
+					"listing_path" => $pet["listing_path"],
+					"status" => $pet["status"],
+					"order" => $pet["order"],
+					"adoption_date" => $pet["adoption_date"],
+					"modified" => $pet["modified"],
+			]);
+		}
+		$p->order = $pet["order"];
+		$p->adoption_date = $pet["adoption_date"];
+		$p->modified = $pet["modified"];
 		return $p;
 	}
 

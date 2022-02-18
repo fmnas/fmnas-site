@@ -88,6 +88,13 @@ jobs:
           git config user.name "FMNAS Automation"
           git add .
           git commit -am "Automated changes for deployment"
+      - name: Wait for GCP deployment
+        uses: lewagon/wait-on-check-action@master
+        with:
+          ref: prod
+          check-regexp: 'GCP:.*'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
       - name: SFTP upload
         uses: SamKirkland/FTP-Deploy-Action@3.0.0
         with:
