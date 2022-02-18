@@ -50,6 +50,8 @@ export default defineComponent({
     height: $height;
     text-align: left;
     border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
 
     &:hover {
       background: var(--background-color-3);
@@ -64,7 +66,6 @@ export default defineComponent({
       height: 100%;
       box-sizing: border-box;
       padding: $padding;
-      vertical-align: middle;
 
       &.img {
         width: $image-width;
