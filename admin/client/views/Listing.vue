@@ -27,11 +27,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       </div>
       <div class="bondage">
         <label>
-          <input type="checkbox" :key="!!pet.friend" :checked="pet.friend" @click.prevent="toggleBondedPair" autocomplete="off">
+          <input type="checkbox" :key="!!pet.friend" :checked="pet.friend" @click.prevent="toggleBondedPair"
+              autocomplete="off">
           Bonded pair
         </label>
         <label v-if="pet.friend">
-          <input type="checkbox" :key="singlePhoto" :checked="singlePhoto" @click.prevent="toggleSinglePhoto" autocomplete="off">
+          <input type="checkbox" :key="singlePhoto" :checked="singlePhoto" @click.prevent="toggleSinglePhoto"
+              autocomplete="off">
           Combined photo
         </label>
       </div>
@@ -39,24 +41,31 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <li class="id">
           <label for="id">ID</label>
           <input id="id" v-model="pet['id']" name="id" required type="text" autocomplete="off">
-          <!--suppress XmlInvalidId -->
           <label for="friend_id">ID</label>
+          <input id="friend_id" v-if="pet.friend && pet.friend.name" v-model="pet.friend.id" name="friend_id" required
+              type="text" autocomplete="off">
           <auto-complete id="friend_id" v-if="pet.friend && !pet.friend.name" v-model="pet.friend.id" name="friend_id"
-              required :suggestions="friendSuggestions" @complete="searchFriends($event)" appendTo="self"
+              required :suggestions="friendSuggestions" @complete="searchListings($event.query)" appendTo="self"
               completeOnFocus="true" delay="100">
           </auto-complete>
-          <input id="friend_id" v-if="pet.friend && pet.friend.name" v-model="pet.friend.id" name="friend_id" required type="text" autocomplete="off">
         </li>
         <li class="name">
           <label for="name">Name</label>
           <input id="name" v-model="pet['name']" name="name" required type="text" autocomplete="off">
           <label for="friend_name" v-if="pet.friend">Name</label>
-          <input id="friend_name" v-if="pet.friend" v-model="pet.friend.name" name="friend_name" required type="text" autocomplete="off">
+          <input id="friend_name" v-if="pet.friend && pet.friend.id" v-model="pet.friend.name" name="friend_name"
+              required type="text" autocomplete="off">
+          <auto-complete id="friend_name" v-if="pet.friend && !pet.friend.id" v-model="pet.friend.name"
+              name="friend_id" required :suggestions="friendSuggestions" @complete="searchListings($event.query)"
+              appendTo="self" completeOnFocus="true" delay="100">
+
+          </auto-complete>
         </li>
         <li class="species">
           <!--suppress XmlInvalidId no idea why this is firing -->
           <label for="species_input">Species</label>
-          <select id="species_input" v-model="pet['species']" name="species" required class="span" autocomplete="off">
+          <select id="species_input" v-model="pet['species']" name="species" required class="span" autocomplete="off"
+              @change="fetchListings">
             <option value=""></option>
             <option v-for="s of config['species']" :value="s['id']" :key="s['id']">{{ ucfirst(s['name']) }}</option>
           </select>
@@ -65,7 +74,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           <label for="breed">Breed/info</label>
           <input id="breed" v-model="pet['breed']" name="breed" type="text" autocomplete="off">
           <label for="friend_breed" v-if="pet.friend">Breed/info</label>
-          <input id="friend_breed" v-if="pet.friend" v-model="pet.friend.breed" name="friend_breed" type="text" autocomplete="off">
+          <input id="friend_breed" v-if="pet.friend" v-model="pet.friend.breed" name="friend_breed" type="text"
+              autocomplete="off">
         </li>
         <li class="dob">
           <label for="dob"><abbr title="date of birth">DOB</abbr></label>
@@ -91,7 +101,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           <fieldset id="friend_sexes" v-if="pet.friend"
               :class="['sexes', sexInteracted || validated ? 'validated' : '']">
             <label v-for="sex of config.sexes" :key="sex.key">
-              <input v-model="pet.friend.sex" :value="sex.key" name="friend_sex" required type="radio" autocomplete="off">
+              <input v-model="pet.friend.sex" :value="sex.key" name="friend_sex" required type="radio"
+                  autocomplete="off">
               <abbr :title="ucfirst(sex['name'])" @click.prevent="(e: Event) => {sexClick(sex, true); e.target.blur();}"
                   @keyup.enter="sexClick(sex, true); $refs.fee.focus();" @keyup.space="sexClick(sex, true);"
                   tabindex="0">{{
@@ -270,6 +281,14 @@ import Modal from '../components/Modal.vue';
 import {progressBar, responseChecker} from '../mixins';
 import AutoComplete from 'primevue/autocomplete';
 
+interface SearchResults {
+  all: Pet[],
+  idAndNamePrefix: Pet[],
+  idPrefix: Pet[],
+  namePrefix: Pet[],
+  nameContains: Pet[],
+}
+
 export default defineComponent({
   name: 'Listing',
   components: {ProfilePhoto, Editor, Photos, Modal, AutoComplete},
@@ -301,7 +320,10 @@ export default defineComponent({
       confirmRemoveSecondPhoto: false,
       confirmSplitPair: false,
       saveActions: [] as CallableFunction[],
-      friendSuggestions: ['A', 'B', 'C'],
+      friendSuggestions: undefined as Pet[] | undefined,
+      listings: undefined as Promise<Pet[]> | undefined,
+      cachedSearchResults: {} as Record<string, SearchResults>,
+      cachedQueries: [] as Set<string>[], // cached queries bucketed by length
     };
   },
   mounted() {
@@ -368,6 +390,7 @@ export default defineComponent({
       };
       (window as any).resizer?.(false);
       setTimeout(() => (window as any).resizer?.(false), 1000);
+      this.fetchListings();
     },
     resetOriginal() {
       this.path = undefined;
@@ -461,6 +484,7 @@ export default defineComponent({
         this.loading = false;
         throw e;
       }
+      this.fetchListings();
     },
     updateAfterSave() {
       // Update original pet
@@ -597,9 +621,80 @@ export default defineComponent({
         this.singlePhoto = false;
       }
     },
-    searchFriends(event: any) {
-      console.log(event);
-      this.friendSuggestions = ['a', 'b', 'c'];
+    fetchListings(): void {
+      let species = undefined as string | undefined;
+      if (this.pet.species) {
+        species = (Object.values(store.state.config.species)).find((s: any) => s.id === this.pet.species)?.plural;
+      } else if (this.species) {
+        species = this.species;
+      }
+      this.listings = fetch(species ? `/api/listings/?species=${species}` : '/api/listings').then((res) => {
+        this.cachedSearchResults = {};
+        return res.ok ? res.json() : [];
+      }).then(
+          (results: Pet[]) => results.sort((a: Pet, b: Pet) => -(a.modified?.localeCompare(b.modified ?? '') ?? 0)));
+    },
+    async searchListings(queryMixedCase: string, preferName: boolean = false) {
+      const query = queryMixedCase.toUpperCase();
+      console.log(`Searching for ${query}`);
+      if (this.listings === undefined) {
+        console.error('Listings is undefined while trying to search');
+        return;
+      }
+      let listings = await this.listings;
+      const reorder = (results: SearchResults): Pet[] =>
+          preferName ?
+              [...results.idAndNamePrefix, ...results.namePrefix, ...results.idPrefix, ...results.nameContains] :
+              [...results.idAndNamePrefix, ...results.idPrefix, ...results.namePrefix, ...results.nameContains]
+      ;
+      if (this.cachedSearchResults[query]) {
+        console.log('Cache hit');
+        this.friendSuggestions = reorder(this.cachedSearchResults[query]);
+        return;
+      }
+      for (let len = query.length; len >= 0; --len) {
+        // Narrow down the list in subsequent iterations prefixed by a cached query.
+        const prefix = query.slice(0, len);
+        if (this.cachedQueries[len]?.has(prefix)) {
+          console.log(`starting with results for ${prefix}`);
+          listings = this.cachedSearchResults[prefix].all;
+          break;
+        }
+      }
+      const results: SearchResults = {
+        all: [],
+        idAndNamePrefix: [],
+        idPrefix: [],
+        namePrefix: [],
+        nameContains: [],
+      };
+      for (const listing of listings) {
+        if (listing.friend) {
+          // Don't include listings that are already paired.
+          continue;
+        }
+        const nameUpper = listing.name.toUpperCase();
+        const idPrefix = listing.id.toUpperCase().startsWith(query);
+        const namePrefix = nameUpper.startsWith(query);
+        if (idPrefix && namePrefix) {
+          results.idAndNamePrefix.push(listing);
+          results.all.push(listing);
+        } else if (idPrefix) {
+          results.idPrefix.push(listing);
+          results.all.push(listing);
+        } else if (namePrefix) {
+          results.namePrefix.push(listing);
+          results.all.push(listing);
+        } else if (nameUpper.indexOf(query) !== -1) {
+          results.nameContains.push(listing);
+          results.all.push(listing);
+        }
+      }
+      this.cachedSearchResults[query] = results;
+      this.cachedQueries[query.length] ??= new Set<string>();
+      this.cachedQueries[query.length].add(query);
+      this.friendSuggestions = reorder(results);
+      console.log(`Found ${this.friendSuggestions.length} results`);
     },
   },
   computed: {
@@ -707,6 +802,7 @@ section.metadata {
           ~ span.p-inputwrapper {
             position: relative;
             padding: var(--input-margin);
+
             input {
               @include metadata-input;
               max-width: 100%;
@@ -719,9 +815,11 @@ section.metadata {
                 box-shadow: 0 2px var(--focus-color), -2px 0 var(--focus-color), 2px 0 var(--focus-color);
               }
             }
-            &[aria-expanded="true"] input {
+
+            &[aria-expanded='true'] input {
               border-radius: var(--border-radius) var(--border-radius) 0 0;
             }
+
             div.p-autocomplete-panel {
               background: var(--background-color);
               box-sizing: border-box;
@@ -732,6 +830,10 @@ section.metadata {
               border-top: none;
               top: calc(100% - var(--input-margin)) !important;
               margin: 0 var(--input-margin);
+            }
+
+            .p-autocomplete-loader {
+              right: calc(var(--input-padding-horizontal) + var(--input-margin));
             }
           }
 
