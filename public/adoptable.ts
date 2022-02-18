@@ -196,18 +196,17 @@ function resizer(useReference: boolean = true) {
 			let yote = 0;
 			let order = maxOrder;
 			let index = byOrder[maxOrder]?.length - 1;
-			while (yote++ < lastRowCount && order >= 0) {
+			while (yote < lastRowCount && order >= 0) {
 				const listing = byOrder[order]?.[index];
 				if (!listing) {
 					break;
 				}
 				if (listing.classList.contains('pair') && (lastRowCount - yote === 1)) {
 					// Don't yeet a pair if we only want 1 additional column.
+					// TODO: Yeet pairs in each order first.
 					continue;
 				}
-				if (listing.classList.contains('pair')) {
-					++yote;
-				}
+				yote += listing.classList.contains('pair') ? 2 : 1;
 				console.log(`Yeeting row with order ${order} and index ${index}, ${yote} now yote`);
 				const clone = listing.cloneNode(true);
 				lastRow.appendChild(clone);
