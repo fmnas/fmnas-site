@@ -34,8 +34,12 @@ h2 {
 	font: var(--heading-font);
 	font-size: 24pt;
 	text-align: center;
-	margin: 0;
 	color: var(--accent-color);
+}
+
+h2, .subtitle {
+	max-width: 95vw;
+	margin: 0 auto;
 }
 
 .listing {
