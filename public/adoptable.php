@@ -125,7 +125,7 @@ pageHeader();
 		echo '<td class="img"><a';
 		echo $href;
 		echo '>';
-		if (!$pet->friend?->photo?->key || $pet->friend->photo->key === $pet->photo->key) {
+		if (!$pet->friend?->photo?->key || $pet->friend->photo->key === $pet->photo?->key) {
 			echo $pet->photo?->imgTag($pet->name, false, false, 300);
 		} else {
 			echo '<ul><li>';

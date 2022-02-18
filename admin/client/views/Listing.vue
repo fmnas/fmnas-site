@@ -46,7 +46,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
               type="text" autocomplete="off">
           <auto-complete id="friend_id" v-if="pet.friend && !pet.friend.name" v-model="pet.friend.id" name="friend_id"
               required :suggestions="friendSuggestions" @complete="searchListings($event.query)" appendTo="self"
-              completeOnFocus="true" delay="100">
+              completeOnFocus="true" delay="100" field="id" @item-select="pet.friend = $event.value">
+            <template #item="slotProps">
+              <pet-dropdown-entry :pet="slotProps.item"/>
+            </template>
           </auto-complete>
         </li>
         <li class="name">
@@ -57,8 +60,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
               required type="text" autocomplete="off">
           <auto-complete id="friend_name" v-if="pet.friend && !pet.friend.id" v-model="pet.friend.name"
               name="friend_id" required :suggestions="friendSuggestions" @complete="searchListings($event.query)"
-              appendTo="self" completeOnFocus="true" delay="100">
-
+              appendTo="self" completeOnFocus="true" delay="100" field="name" @item-select="pet.friend = $event.value">
+            <template #item="slotProps">
+              <pet-dropdown-entry :pet="slotProps.item"/>
+            </template>
           </auto-complete>
         </li>
         <li class="species">
@@ -280,6 +285,7 @@ import ProfilePhoto from '../components/ProfilePhoto.vue';
 import Modal from '../components/Modal.vue';
 import {progressBar, responseChecker} from '../mixins';
 import AutoComplete from 'primevue/autocomplete';
+import PetDropdownEntry from '../components/PetDropdownEntry.vue';
 
 interface SearchResults {
   all: Pet[],
@@ -291,7 +297,7 @@ interface SearchResults {
 
 export default defineComponent({
   name: 'Listing',
-  components: {ProfilePhoto, Editor, Photos, Modal, AutoComplete},
+  components: {PetDropdownEntry, ProfilePhoto, Editor, Photos, Modal, AutoComplete},
   mixins: [responseChecker, progressBar],
   data() {
     return {
@@ -630,13 +636,14 @@ export default defineComponent({
       }
       this.listings = fetch(species ? `/api/listings/?species=${species}` : '/api/listings').then((res) => {
         this.cachedSearchResults = {};
+        this.cachedQueries = [];
         return res.ok ? res.json() : [];
       }).then(
           (results: Pet[]) => results.sort((a: Pet, b: Pet) => -(a.modified?.localeCompare(b.modified ?? '') ?? 0)));
     },
     async searchListings(queryMixedCase: string, preferName: boolean = false) {
       const query = queryMixedCase.toUpperCase();
-      console.log(`Searching for ${query}`);
+      // console.log(`Searching for ${query}`);
       if (this.listings === undefined) {
         console.error('Listings is undefined while trying to search');
         return;
@@ -648,7 +655,7 @@ export default defineComponent({
               [...results.idAndNamePrefix, ...results.idPrefix, ...results.namePrefix, ...results.nameContains]
       ;
       if (this.cachedSearchResults[query]) {
-        console.log('Cache hit');
+        // console.log('Cache hit');
         this.friendSuggestions = reorder(this.cachedSearchResults[query]);
         return;
       }
@@ -656,7 +663,7 @@ export default defineComponent({
         // Narrow down the list in subsequent iterations prefixed by a cached query.
         const prefix = query.slice(0, len);
         if (this.cachedQueries[len]?.has(prefix)) {
-          console.log(`starting with results for ${prefix}`);
+          // console.log(`starting with results for ${prefix}`);
           listings = this.cachedSearchResults[prefix].all;
           break;
         }
