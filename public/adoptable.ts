@@ -123,6 +123,10 @@ function resizer(useReference: boolean = true) {
 			lastRow.innerHTML = '';
 		}
 	}
+
+	tbody.querySelectorAll('tr').forEach((listing: HTMLTableRowElement) => {
+		listing.classList.remove('yote');
+	});
 	
 	// Scale data to fit the grid columns.
 	const referenceWidth = tbody.querySelector('tr:not(.pair) td.img')?.clientWidth ?? (() => {
@@ -141,7 +145,6 @@ function resizer(useReference: boolean = true) {
 	})();
 	const referenceDoubleWidth = tbody.querySelector('tr.pair')?.clientWidth;
 	tbody.querySelectorAll('tr').forEach((listing: HTMLTableRowElement) => {
-		listing.classList.remove('yote');
 		if (!useReference || referenceWidth !== lastReferenceWidth) {
 			listing.querySelector('aside.explanation')?.classList.add('hidden');
 			// @ts-ignore this is always a TableCellElement
@@ -197,6 +200,10 @@ function resizer(useReference: boolean = true) {
 				const listing = byOrder[order]?.[index];
 				if (!listing) {
 					break;
+				}
+				if (listing.classList.contains('pair') && (lastRowCount - yote === 1)) {
+					// Don't yeet a pair if we only want 1 additional column.
+					continue;
 				}
 				if (listing.classList.contains('pair')) {
 					++yote;
