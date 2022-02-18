@@ -316,6 +316,7 @@ export default defineComponent({
       listings: undefined as Promise<Pet[]> | undefined,
       cachedSearchResults: {} as Record<string, SearchResults>,
       cachedQueries: [] as Set<string>[], // cached queries bucketed by length
+      futureListings: [] as Pet[],
     };
   },
   mounted() {
@@ -500,8 +501,9 @@ export default defineComponent({
       this.loading = false;
       // Update singlePhoto
       this.singlePhoto = !!this.pet.friend && !!this.pet.photo && !this.pet.friend.photo;
-      // Clear saveActions
+      // Clear saveActions and futureListings
       this.saveActions = [];
+      this.futureListings = [];
     },
     modified() {
       // TODO [#196]: Weaken modified check so undefined == '' == null
@@ -574,6 +576,7 @@ export default defineComponent({
       friend.status = newStatus;
       this.pet.friend = undefined;
       this.original.friend = undefined;
+      this.futureListings.push(friend);
       this.saveActions.push(() => fetch(originalId ? `/api/listings/${originalId}` : `/api/listings`, {
         method: originalId ? 'PUT' : 'POST',
         body: JSON.stringify(friend),
@@ -625,7 +628,7 @@ export default defineComponent({
         this.cachedQueries = [];
         return res.ok ? res.json() : [];
       }).then(
-          (results: Pet[]) => results.sort((a: Pet, b: Pet) => -(a.modified?.localeCompare(b.modified ?? '') ?? 0)));
+          (results: Pet[]) => results.filter((pet) => pet && pet.id !== this.pet.id && pet.id !== this.pet.friend?.id).sort((a: Pet, b: Pet) => -(a.modified?.localeCompare(b.modified ?? '') ?? 0)));
     },
     async searchListings(queryMixedCase: string, preferName: boolean = false) {
       const query = queryMixedCase.toUpperCase();
@@ -634,7 +637,7 @@ export default defineComponent({
         console.error('Listings is undefined while trying to search');
         return;
       }
-      let listings = await this.listings;
+      let listings = [...await this.listings, ...this.futureListings];
       const reorder = (results: SearchResults): Pet[] =>
           preferName ?
               [...results.idAndNamePrefix, ...results.namePrefix, ...results.idPrefix, ...results.nameContains] :
@@ -709,8 +712,9 @@ export default defineComponent({
       newFriend.photos = undefined;
       newFriend.description = undefined;
       const newOriginalFriend = this.original;
-      this.original = this.original.friend ?? {} as Pet;
+      this.original = this.original.friend ?? newMain as Pet;
       this.original.friend = newOriginalFriend;
+      this.original.friend.friend = undefined;
       this.pet = newMain;
     },
   },
