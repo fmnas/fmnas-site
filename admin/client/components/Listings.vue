@@ -43,7 +43,7 @@
         <td v-if="!species" class="species" :rowspan="listing.friend ? 2 : 1">{{ config['species']?.[listing['species']]?.['name'] }}</td>
         <td class="breed">{{ listing['breed'] }}</td>
         <td class="dob">{{ listing['dob'] }}</td> <!-- TODO [#36]: Display DOB as M/D/Y -->
-        <td class="sex">{{ config['sexes']?.[listing['sex']]?.['name'] }}</td>
+        <td class="sex">{{ config.sexes[listing.sex]?.name }}</td>
         <td class="fee" :rowspan="listing.friend ? 2 : 1">{{ listing['fee'] }}</td>
         <td class="status" :rowspan="listing.friend ? 2 : 1">{{ config['statuses']?.[listing['status']]?.['name'] }}</td>
         <td class="options" :rowspan="listing.friend ? 2 : 1" @click.stop>
@@ -57,7 +57,7 @@
         <td class="name">{{ listing.friend.name }}</td>
         <td class="breed">{{ listing.friend.breed }}</td>
         <td class="dob">{{ listing.friend.dob }}</td>
-        <td class="sex">{{ listing.friend.sex }}</td>
+        <td class="sex">{{ config.sexes[listing.sex]?.name }}</td>
       </tr>
     </template>
 		</tbody>

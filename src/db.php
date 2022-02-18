@@ -228,7 +228,10 @@ class Database {
 		);
 	}
 
-	private static function createPet(array $pet, array $photos = []): Pet {
+	private static function createPet(array $pet, array $photos = []): ?Pet {
+		if (!$pet["id"] || !$pet["name"] || !$pet["species"] || !$pet["listing_path"]) {
+			return null;
+		}
 		$p = new Pet();
 		$p->id = $pet["id"];
 		$p->name = $pet["name"];
