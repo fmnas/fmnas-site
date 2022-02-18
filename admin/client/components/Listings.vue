@@ -99,8 +99,10 @@ export default defineComponent({
       this.loading = true;
 			let apiUrl = '/api/listings';
 			if (this.species) {
-				apiUrl += `/?species=${this.species}`;
-			}
+				apiUrl += `/?species=${this.species}&buster=1`;
+			} else {
+        apiUrl += '/?buster=1';
+      }
 			fetch(apiUrl, {
 				method: 'GET',
 			}).then(res => {
