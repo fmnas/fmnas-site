@@ -16,6 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
+use JetBrains\PhpStorm\NoReturn;
+
 require_once 'api.php';
 
 // This endpoint is for raw asset data. For metadata, use the assets endpoint.
@@ -41,35 +44,56 @@ $writer = function(string $key, mixed $body) use ($db): Result {
 		$height = $_GET["height"] ?? '';
 		/** @noinspection HttpUrlsUsage */
 		exec("bash -c 'curl http://$domain/api/tag/{$asset->key}?height=$height > /dev/null 2>&1 &'");
+		// Thumbnails for admin
+		/** @noinspection HttpUrlsUsage */
+		exec("bash -c 'curl http://$domain/api/tag/{$asset->key}?height=64&expand=0 > /dev/null 2>&1 &'");
+		/** @noinspection HttpUrlsUsage */
+		exec("bash -c 'curl http://$domain/api/tag/{$asset->key}?height=192&expand=0 > /dev/null 2>&1 &'");
 	}
 	return new Result(204);
 };
+
+#[NoReturn] function returnFile(string $filename, string $type): void {
+	// Caching
+	$etag = '"' . filemtime(__FILE__) . filemtime($filename) . '"';
+	header("ETag: $etag");
+	$ifNoneMatch = array_map('trim', explode(',', trim($_SERVER['HTTP_IF_NONE_MATCH'] ?? '')));
+	if (in_array($etag, $ifNoneMatch, true)) {
+		header("HTTP/2 304 Not Modified");
+		exit();
+	}
+
+	header("Content-Type: " . $type);
+	readfile($filename);
+	exit(); // Exit here to avoid outputting JSON
+}
 
 endpoint(...[
 		'get' => $reject,
 		'get_value' => function($value) use ($db): Result {
 			if (startsWith($value, "cached/")) {
-				// TODO [#58]: Handle cached images in raw api and use in listing editor
-				return new Result(501, error: "Can't read cache");
+				if (endsWith($value, ".html")) {
+					return new Result(501, error: "Reading cached descriptions not implemented");
+				}
+				$info = explode('_', basename($value, ".jpg"));
+				if (count($info) !== 2) {
+					return new Result(400, $info, error: "Failed to parse request info");
+				}
+				$key = $info[0];
+				$height = $info[1];
+				$filename = cached_assets() . "/${key}_$height.jpg";
+				if (file_exists($filename)) {
+					returnFile($filename, "image/jpeg");
+				}
+				$asset = $db->getAssetByKey($key);
+				returnFile(root() . "/public" . $asset->cachedImage($height), "image/jpeg");
 			}
 			$asset = startsWith($value, "stored/") ?
 					$db->getAssetByKey(intval(substr($value, strlen("stored/")))) : $db->getAssetByPath($value);
 			if ($asset === null) {
 				return new Result(404, error: "Asset $value not found (did you mean stored/$value?)");
 			}
-
-			// Caching
-			$etag = '"' . filemtime(__FILE__) . filemtime($asset->absolutePath()) . '"';
-			header("ETag: $etag");
-			$ifNoneMatch = array_map('trim', explode(',', trim($_SERVER['HTTP_IF_NONE_MATCH'] ?? '')));
-			if (in_array($etag, $ifNoneMatch, true)) {
-				header("HTTP/2 304 Not Modified");
-				exit();
-			}
-
-			header("Content-Type: " . $asset->getType());
-			readfile($asset->absolutePath());
-			exit(); // Exit here to avoid outputting JSON
+			returnFile($asset->absolutePath(), $asset->getType());
 		},
 		'post' => $reject,
 		'post_value' => $writer,

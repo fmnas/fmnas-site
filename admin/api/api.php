@@ -15,7 +15,7 @@ class Result implements JsonSerializable {
 
 	public function jsonSerialize(): mixed {
 		if ($this->error) {
-			return ['error' => $this->error];
+			return ['error' => $this->error, ...$this->value];
 		}
 		return $this->value;
 	}
@@ -82,6 +82,10 @@ function endpoint(?callable $get = null, ?callable $post = null, ?callable $put 
 	} catch (Exception $e) {
 		$result = new Result(500, print_r($e, true));
 	}
+
+	// Prevent caching
+	header("Cache-Control: no-store");
+
 	http_response_code($result->status);
 	echo json_encode($result);
 }
