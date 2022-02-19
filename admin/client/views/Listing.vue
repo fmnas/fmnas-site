@@ -274,11 +274,9 @@ import Editor from '../components/Editor.vue';
 import Photos from '../components/Photos.vue';
 import {defineComponent} from 'vue';
 import store from '../store';
-import {
-  getFullPathForPet, getPathForPet, partial, petAge, ucfirst, uploadDescription, getContext
-} from '../common';
+import {getContext, getFullPathForPet, getPathForPet, partial, petAge, ucfirst, uploadDescription} from '../common';
 import {mapState} from 'vuex';
-import {Asset, ImportablePet, PendingPhoto, Pet, Sex, Species, Status} from '../types';
+import {Asset, ImportablePet, Pet, Sex, Species, Status} from '../types';
 import ProfilePhoto from '../components/ProfilePhoto.vue';
 import Modal from '../components/Modal.vue';
 import {progressBar, responseChecker} from '../mixins';
@@ -477,13 +475,12 @@ export default defineComponent({
           this.pet.description = await uploadDescription(this.description);
         }
         this.saveActions.map((action) => action());
-        fetch(this.original?.id ? `/api/listings/${this.original.id}` : `/api/listings`, {
+        const res = await fetch(this.original?.id ? `/api/listings/${this.original.id}` : `/api/listings`, {
           method: this.original?.id ? 'PUT' : 'POST',
           body: JSON.stringify(this.pet),
-        }).then(res => {
-          this.checkResponse(res, 'Saved successfully');
-          this.updateAfterSave();
         });
+        this.checkResponse(res, 'Saved successfully');
+        this.updateAfterSave();
         // Attempt updating paths to images (failing is ok)
         for (const photo of this.pet.photos ?? []) {
           if (!photo.path?.startsWith(getFullPathForPet(this.pet))) {
@@ -502,7 +499,7 @@ export default defineComponent({
             });
           }
         }
-      } catch (e) {
+      } catch (e: any) {
         this.loading = false;
         throw e;
       }
@@ -673,7 +670,7 @@ export default defineComponent({
       // console.log(`Found ${listedIds.size} listed IDs`);
       const results = allImportables.filter(
           (candidate) => (!species || candidate.species?.toLowerCase() === species) && !listedIds.has(candidate.id));
-      // console.log(`Fetched ${results.length} total importables`);
+      console.log(`Fetched ${results.length} total importables`);
       this.cachedSearchResults = {};
       this.cachedQueries = [];
       return results;
@@ -787,9 +784,7 @@ export default defineComponent({
       this.cachedSearchResults[query] = results;
       this.cachedQueries[query.length] ??= new Set<string>();
       this.cachedQueries[query.length].add(query);
-      const flattened = reorder(results);
-      // console.log(`Found ${flattened.length} results`, results);
-      (this[resultsKey] as (Pet | ImportablePet)[]) = flattened;
+      (this[resultsKey] as (Pet | ImportablePet)[]) = reorder(results);
     },
     importPet(importable: ImportablePet, withFriend = true): Pet {
       const ADOPTION_PENDING = 3;
