@@ -435,6 +435,7 @@ export default defineComponent({
       this.original.status = 1;
     },
     reset() {
+      this.saveActions.map((action) => action());
       this.resetOriginal();
       this.pet = {} as Pet;
       this.description = partial('default');
@@ -587,8 +588,8 @@ export default defineComponent({
           this.checkResponse(res, 'Deleted listing successfully');
         });
       }
+      this.saveActions.map((action) => action());
       this.showModal = false;
-      this.reset();
     },
     sexText(pet: Pet): string {
       return pet['sex'] ? `${ucfirst(this.config['sexes'][pet['sex']]?.['name'])} ${pet['breed'] || ''}` : '';
