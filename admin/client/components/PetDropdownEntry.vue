@@ -84,6 +84,7 @@ div.entry {
     &.details {
       flex-shrink: 1;
       overflow: hidden;
+
       > span {
         display: block;
         overflow: hidden;
