@@ -15,11 +15,7 @@
 name: Check file watchers
 on:
   push:
-    paths:
-      - .idea/watcherTasks.xml
   pull_request:
-    paths:
-      - .idea/watcherTasks.xml
 jobs:
   check_watchers:
     name: All file watchers are enabled

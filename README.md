@@ -99,8 +99,7 @@ If the script is terminated abnormally, run it again so the cleanup steps run.
 The following workflows in `.github/workflows` ensure the repo is in a good state, and must pass before merging into
 `main`:
 
-* `check-file-watchers.yml` - checks that no file watchers were inadvertently disabled in IntelliJ. (Runs only if the
-  config file changed, which shouldn't usually happen.)
+* `check-file-watchers.yml` - checks that no file watchers were inadvertently disabled in IntelliJ.
 
 ### TODOs
 
