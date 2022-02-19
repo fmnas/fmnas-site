@@ -22,7 +22,7 @@ on:
       - .idea/watcherTasks.xml
 jobs:
   check_watchers:
-    name: Check file watchers
+    name: All file watchers are enabled
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
