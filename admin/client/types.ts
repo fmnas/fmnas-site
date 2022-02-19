@@ -91,3 +91,24 @@ export interface PendingPhoto {
 	localPath: string;
 	promise: Promise<any>;
 }
+
+export interface ImportablePet {
+	id: string;
+	name: string;
+	species?: string;
+	sex?: string;
+	breed?: string;
+	dob?: string;
+	fee?: string;
+	base64?: string;
+	type?: string;
+	friend_id?: string;
+	friend_name?: string;
+	friend_species?: string;
+	friend_sex?: string;
+	friend_breed?: string;
+	friend_dob?: string;
+	friend_base64?: string;
+	friend_type?: string;
+	pending: boolean;
+}

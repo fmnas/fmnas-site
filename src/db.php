@@ -16,6 +16,7 @@ class Database {
 	private mysqli_stmt $getAdoptablePetsBySpecies;
 	private mysqli_stmt $getAllPets;
 	private mysqli_stmt $getAllSpecies;
+	private mysqli_stmt $getAllIds;
 
 	public function __construct() {
 		$this->db = new mysqli(Config::$db_host, Config::$db_username, Config::$db_pass, Config::$db_name);
@@ -117,6 +118,14 @@ class Database {
 			log_err("Failed to prepare getAllSpecies: {$this->db->error}");
 		} else {
 			$this->getAllSpecies = $getAllSpecies;
+		}
+
+		if (!($getAllIds = $this->db->prepare("
+			SELECT id FROM pets
+		"))) {
+			log_err("Failed to prepare getAllIds: {$this->db->error}");
+		} else {
+			$this->getAllIds = $getAllIds;
 		}
 	}
 
@@ -372,6 +381,18 @@ class Database {
 			return [];
 		}
 		return array_map("self::createSpecies", $this->getAllSpecies->get_result()->fetch_all(MYSQLI_ASSOC));
+	}
+
+	public function getAllIds(): ?array {
+		if (!$this->getAllIds->execute()) {
+			log_err("Executing getAllIds failed");
+			return null;
+		}
+		return array_map("self::extractId", $this->getAllIds->get_result()->fetch_all(MYSQLI_ASSOC));
+	}
+
+	private static function extractId(array $row): string {
+		return $row['id'] ?? '';
 	}
 
 	public function query(string $query): array {
