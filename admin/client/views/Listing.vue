@@ -588,8 +588,8 @@ export default defineComponent({
           this.checkResponse(res, 'Deleted listing successfully');
         });
       }
-      this.saveActions.map((action) => action());
       this.showModal = false;
+      this.reset();
     },
     sexText(pet: Pet): string {
       return pet['sex'] ? `${ucfirst(this.config['sexes'][pet['sex']]?.['name'])} ${pet['breed'] || ''}` : '';
@@ -852,16 +852,13 @@ export default defineComponent({
       return pet;
     },
     setPet(target: Pet | ImportablePet) {
-      const pet = (target as any).pending !== undefined ? this.importPet(target as ImportablePet, true) :
+      this.pet = (target as any).pending !== undefined ? this.importPet(target as ImportablePet, true) :
           (target as Pet);
-      this.pet = pet;
-      this.original = JSON.parse(JSON.stringify(pet));
     },
     setFriend(friend: Pet | ImportablePet) {
       const pet = (friend as any).pending !== undefined ? this.importPet(friend as ImportablePet, false) :
           (friend as Pet);
       this.original.friend = JSON.parse(JSON.stringify(pet));
-      this.pet.friend = pet;
     },
     swapFriend() {
       const newMain = this.pet.friend!;
