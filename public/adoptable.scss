@@ -282,6 +282,7 @@ table.listings {
 			display: inline-block;
 			width: 100%;
 			height: min(300px, calc((max(100vw, var(--global-min-width)) - 4px - #{$gap} - 4 * var(--side-padding)) * 3 / 4));
+
 			img {
 				display: inline-block;
 				min-width: 0;
@@ -291,9 +292,11 @@ table.listings {
 				object-fit: contain;
 			}
 		}
+
 		ul {
 			height: 100%;
 			width: 100%;
+
 			li {
 				height: 100%;
 			}
