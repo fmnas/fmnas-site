@@ -833,8 +833,13 @@ export default defineComponent({
       return pet;
     },
     setPet(target: Pet | ImportablePet) {
-      this.pet = (target as any).pending !== undefined ? this.importPet(target as ImportablePet, true) :
+      const currentFriend = this.pet.friend;
+      const result = (target as any).pending !== undefined ? this.importPet(target as ImportablePet, true) :
           (target as Pet);
+      if (currentFriend && !result.friend) {
+        result.friend = currentFriend;
+      }
+      this.pet = result;
     },
     setFriend(friend: Pet | ImportablePet) {
       const pet = (friend as any).pending !== undefined ? this.importPet(friend as ImportablePet, false) :
