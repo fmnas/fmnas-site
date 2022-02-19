@@ -978,7 +978,7 @@ section.metadata {
 
             input {
               @include metadata-input;
-              max-width: 100%;
+              width: 100%;
               margin: 0;
               box-sizing: border-box;
               box-shadow: none;
