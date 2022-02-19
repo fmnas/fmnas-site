@@ -839,6 +839,7 @@ export default defineComponent({
     setFriend(friend: Pet | ImportablePet) {
       const pet = (friend as any).pending !== undefined ? this.importPet(friend as ImportablePet, false) :
           (friend as Pet);
+      this.pet.friend = pet;
       this.original.friend = JSON.parse(JSON.stringify(pet));
     },
     swapFriend() {
