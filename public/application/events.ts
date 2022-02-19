@@ -39,6 +39,7 @@ function labeledInput(name: string, label: string, className: string, inputType:
 	input.title = label;
 	input.ariaLabel = label;
 	input.type = inputType;
+	input.autocomplete = 'off';
 	labelText.innerHTML = label;
 	labelElement.append(labelText, input);
 	return labelElement;
@@ -55,6 +56,7 @@ function labeledSelect(name: string, label: string, className: string,
 	select.title = label;
 	select.name = name;
 	select.classList.add(className);
+	select.autocomplete = 'off';
 	const defaultOption: HTMLOptionElement = document.createElement('option');
 	select.append(defaultOption);
 	for (const [value, valueLabel] of Object.entries(options)) {
@@ -93,6 +95,7 @@ function radioGroup(name: string, label: string, className: string,
 		radio.ariaLabel = valueLabel;
 		radio.name = `group_${groupCounter}`;
 		radio.value = value;
+		radio.autocomplete = 'off';
 		radio.addEventListener('change', () => {
 			let checkedInput: HTMLInputElement | null = fieldset.querySelector('input[type="radio"]:checked');
 			if (!checkedInput) {
