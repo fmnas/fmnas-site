@@ -50,9 +50,9 @@ into `test`.
 After testing the changes in the live test site environment, create a pull request on GitHub to merge the branch into
 `main`.
 
-The `.github/workflows/sync-test.yml` workflow merges `main` back into `test` after each merged PR.
-You should then `git fetch` and rebase your dev branch onto `origin/test` before another PR. Or if developing directly
-on `test`, `git pull` to get the merge commit.
+The `.github/workflows/sync-test.yml` workflow merges `main` back into `test` after each merged PR. You should
+then `git fetch` and rebase your dev branch onto `origin/test` before another PR. Or if developing directly on `test`
+, `git pull` to get the merge commit.
 
 ### Initial build
 
@@ -93,11 +93,14 @@ If the script is terminated abnormally, run it again so the cleanup steps run.
 ### Tests
 
 #### Repo state tests
+
 <!-- TODO [#142]: Add a status check for admin/dev.sh sync and teardown -->
 
 The following workflows in `.github/workflows` ensure the repo is in a good state, and must pass before merging into
 `main`:
-* `check-file-watchers.yml` - checks that no file watchers were inadvertently disabled in IntelliJ
+
+* `check-file-watchers.yml` - checks that no file watchers were inadvertently disabled in IntelliJ. (Runs only if the
+  config file changed, which shouldn't usually happen.)
 
 ### TODOs
 
@@ -108,7 +111,6 @@ Don't try to change the name of one of the issues this creates. It will get chan
 ### Backups
 
 The `.github/workflows/backups.yml` workflow is used for nightly backups of untracked files on the FMNAS server.
-
 
 ## Deployment
 
@@ -129,27 +131,37 @@ The following workflows in `.github/workflows` are used for deployment:
 * `TEST_SFTP_HOST`: The SFTP host for deploying the test site (`fmnas.org`)
 * `TEST_SFTP_USER`: The SSH user for `TEST_SFTP_HOST`
 * `TEST_SFTP_PASS`: The SSH password for `TEST_SFTP_USER`
-* `TEST_SITE_ROOT`: The absolute path to the test site root on `TEST_SFTP_HOST` (one level above `public`, with no trailing slash)
+* `TEST_SITE_ROOT`: The absolute path to the test site root on `TEST_SFTP_HOST` (one level above `public`, with no
+  trailing slash)
 * `PROD_SFTP_HOST`: The SFTP host for deploying the prod site (`forgetmenotshelter.org`)
 * `PROD_SFTP_USER`: The SSH user for `PROD_SFTP_HOST`
 * `PROD_SFTP_PASS`: The SSH password for `PROD_SFTP_USER`
-* `PROD_SITE_ROOT`: The absolute path to the test site root on `TEST_SFTP_HOST` (one level above `public`, with no trailing slash)
+* `PROD_SITE_ROOT`: The absolute path to the test site root on `TEST_SFTP_HOST` (one level above `public`, with no
+  trailing slash)
 * `TEST_DB_NAME`: The MySQL database for the test site (`fmnas_testing`)
 * `PROD_DB_NAME`: The MySQL database for the prod site (`fmnas`)
 * `DB_USERNAME`: The MySQL user for `TEST_DB_NAME` and `PROD_DB_NAME`
 * `DB_PASS`: The MySQL password for `DB_USERNAME`
 * `DB_HOST`: The MySQL server (`mysql.forgetmenotshelter.org`)
-* `HTTP_CREDENTIALS`: The HTTP basic auth credentials to get into the test site and `regen_images` endpoint (`username:password`)
+* `HTTP_CREDENTIALS`: The HTTP basic auth credentials to get into the test site and `regen_images`
+  endpoint (`username:password`)
 * `TEST_SITE_URL`: The URL of the test site (`http://fmnas.org/`)
 * `PROD_SITE_URL`: The URL of the prod site (`https://forgetmenotshelter.org/`)
 * `TEST_IMAGES_API`: The URL to the test site `regen_images` endpoint (`https://admin.fmnas.org/api/regen_images`)
-* `PROD_IMAGES_API`: The URL to the prod site `regen_images` endpoint (`https://admin.forgetmenotshelter.org/api/regen_images`)
-* `RESIZE_IMAGE_REPO`: The Artifact Registry repository for `resize-image` (`us-central1-docker.pkg.dev/fmnas-automation/resize-image-docker`)
-* `RESIZE_IMAGE_TEST_ENDPOINT`: The HTTPS endpoint mapped to `resize-image-test` (`https://resize-image-test.gcp.forgetmenotshelter.org`)
-* `RESIZE_IMAGE_PROD_ENDPOINT`: The HTTPS endpoint mapped to `resize-image` (`https://resize-image.gcp.forgetmenotshelter.org`)
-* `IMAGE_SIZE_REPO`: The Artifact Registry repository for `image-size` (`us-central1-docker.pkg.dev/fmnas-automation/image-size-docker`)
-* `IMAGE_SIZE_TEST_ENDPOINT`: The HTTPS endpoint mapped to `image-size-test` (`https://image-size-test.gcp.forgetmenotshelter.org`)
-* `IMAGE_SIZE_PROD_ENDPOINT`: The HTTPS endpoint mapped to `image-size` (`https://image-size.gcp.forgetmenotshelter.org`)
+* `PROD_IMAGES_API`: The URL to the prod site `regen_images`
+  endpoint (`https://admin.forgetmenotshelter.org/api/regen_images`)
+* `RESIZE_IMAGE_REPO`: The Artifact Registry repository
+  for `resize-image` (`us-central1-docker.pkg.dev/fmnas-automation/resize-image-docker`)
+* `RESIZE_IMAGE_TEST_ENDPOINT`: The HTTPS endpoint mapped
+  to `resize-image-test` (`https://resize-image-test.gcp.forgetmenotshelter.org`)
+* `RESIZE_IMAGE_PROD_ENDPOINT`: The HTTPS endpoint mapped
+  to `resize-image` (`https://resize-image.gcp.forgetmenotshelter.org`)
+* `IMAGE_SIZE_REPO`: The Artifact Registry repository
+  for `image-size` (`us-central1-docker.pkg.dev/fmnas-automation/image-size-docker`)
+* `IMAGE_SIZE_TEST_ENDPOINT`: The HTTPS endpoint mapped
+  to `image-size-test` (`https://image-size-test.gcp.forgetmenotshelter.org`)
+* `IMAGE_SIZE_PROD_ENDPOINT`: The HTTPS endpoint mapped
+  to `image-size` (`https://image-size.gcp.forgetmenotshelter.org`)
 
 ##### Org secrets
 
@@ -158,10 +170,11 @@ The following workflows in `.github/workflows` are used for deployment:
 * `SMTP_SECURITY`: Security type for `SMTP_HOST` (`tls`)
 * `SMTP_PORT`: The port for `SMTP_HOST` (`587`)
 * `SMTP_USERNAME`: The username for `SMTP_HOST`
-  * FMNAS: Use the apps account
+	* FMNAS: Use the apps account
 * `SMTP_PASSWORD`: The password for `SMTP_HOST`
-* `TODO_ACTIONS_MONGO_URL`: The [MongoDB](https://cloud.mongodb.com/v2/) connector URL for todo-actions (`mongodb+srv://...`)
-  * FMNAS: Google log in with the apps account, use the FMNASGitHubTodos database
+* `TODO_ACTIONS_MONGO_URL`: The [MongoDB](https://cloud.mongodb.com/v2/) connector URL for
+  todo-actions (`mongodb+srv://...`)
+	* FMNAS: Google log in with the apps account, use the FMNASGitHubTodos database
 * `ASM_HOST`: The SSH hostname for the ASM server
 * `ASM_SSH_KEY`: A private key to get into `ASM_HOST`
 * `ASM_KNOWN_HOSTS`: Known hosts entry for `ASM_HOST`
@@ -176,15 +189,16 @@ The following workflows in `.github/workflows` are used for deployment:
 * `S3_ENDPOINT`: The endpoint for `S3_BUCKET` (`s3.fr-par.scw.cloud`)
 * `ASSETS_BUCKET`: The assets bucket name (`fmnas-assets`)
 * `DATA_BUCKET`: The data bucket name (`fmnas-data`)
-  * This should have a lifecycle rule to delete old backups
+	* This should have a lifecycle rule to delete old backups
 * `BLOG_DB`: The blog database name on `DB_HOST`
-* `GCP_IDENTITY_PROVDER`: The GCP identity provider for [Workload Identity Federation](https://github.com/google-github-actions/auth#setup) (`projects/602944024639/locations/global/workloadIdentityPools/github-actions/providers/github-actions-provider`)
-* `GCP_SERVICE_ACCOUNT`: The GCP service account for [Workload Identity Federation](https://github.com/google-github-actions/auth#setup) (`github-actions@fmnas-automation.iam.gserviceaccount.com`)
+* `GCP_IDENTITY_PROVDER`: The GCP identity provider
+  for [Workload Identity Federation](https://github.com/google-github-actions/auth#setup) (`projects/602944024639/locations/global/workloadIdentityPools/github-actions/providers/github-actions-provider`)
+* `GCP_SERVICE_ACCOUNT`: The GCP service account
+  for [Workload Identity Federation](https://github.com/google-github-actions/auth#setup) (`github-actions@fmnas-automation.iam.gserviceaccount.com`)
 * `GCP_PROJECT`: The GCP project name (`fmnas-automation`)
 * `GCP_REGION`: The GCP project region (`us-central1`)
 
 ##### Repo secrets
-
 
 ### Manual deployment
 
@@ -197,18 +211,18 @@ The following workflows in `.github/workflows` are used for deployment:
 * Linux (any POSIX-compatible OS should work)
 * Apache (Litespeed or any other web server with .htaccess and PHP support should work)
 * PHP 8.1
-  * ImageMagick
-  * GD
-    * libJPEG
-    * libPNG
-  * mysqli
-  * mbstring
-  * imagick
-  * curl
-  * php-xml
-  * Composer
-  * Needs shell access (with `shell_exec`) and the following executables in PATH:
-    * `curl` to request caching uploaded images
+	* ImageMagick
+	* GD
+		* libJPEG
+		* libPNG
+	* mysqli
+	* mbstring
+	* imagick
+	* curl
+	* php-xml
+	* Composer
+	* Needs shell access (with `shell_exec`) and the following executables in PATH:
+		* `curl` to request caching uploaded images
 * MySQL or MariaDB
 
 #### Build
