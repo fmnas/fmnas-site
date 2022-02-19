@@ -655,21 +655,7 @@ export default defineComponent({
         return [];
       }
       const allImportables: ImportablePet[] = await res.json();
-      // console.log(`Fetched ${allImportables.length} possible importables`);
-      if (this.listings === undefined) {
-        console.error('Listings undefined while trying to fetch importables');
-        return [];
-      }
-      const listedIds = new Set<string>();
-      for (const listing of await this.listings) {
-        listedIds.add(listing.id);
-        if (listing.friend) {
-          listedIds.add(listing.friend.id);
-        }
-      }
-      // console.log(`Found ${listedIds.size} listed IDs`);
-      const results = allImportables.filter(
-          (candidate) => (!species || candidate.species?.toLowerCase() === species) && !listedIds.has(candidate.id));
+      const results = allImportables.filter((candidate) => (!species || candidate.species?.toLowerCase() === species));
       console.log(`Fetched ${results.length} total importables`);
       this.cachedSearchResults = {};
       this.cachedQueries = [];
