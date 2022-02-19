@@ -19,7 +19,7 @@
 require_once 'api.php';
 
 endpoint(...[
-		'get' => function(): Result {
+		'get' => function() use ($db): Result {
 			$asm = new mysqli(Config::$asm_host, Config::$asm_user, Config::$asm_pass, Config::$asm_db);
 			$asm->set_charset("utf8mb4");
 			/** @noinspection SqlResolve */
@@ -60,8 +60,18 @@ WHERE animal.DeceasedDate IS NULL
 ORDER BY animal.LastChangedDate DESC;
 SQL
 			);
-			$query->execute();
-			return new Result(200, $query->get_result()->fetch_all(MYSQLI_ASSOC));
+			if (!$query->execute()) {
+				return new Result(500, error: "Failed to get pets from ASM");
+			}
+			$asmPets = $query->get_result()->fetch_all(MYSQLI_ASSOC);
+			$localPets = $db->getAllIds();
+			if ($localPets === null) {
+				return new Result(500, error: "Failed to get list of locally stored IDs");
+			}
+			$petsMap = array_flip($localPets);
+			return new Result(200, [...array_filter($asmPets, function ($asmRow) use ($petsMap) {
+				return !isset($petsMap[$asmRow['id']]);
+			})]);
 		},
 		'get_value' => $reject,
 		'put' => $reject,
