@@ -218,7 +218,7 @@ class DatabaseWriter extends Database {
 			}
 		}
 		if (!$error) {
-			foreach ($photos as $index=>$photo) {
+			foreach ($photos as $index => $photo) {
 				if (!$photo || !$photo['key']) {
 					continue;
 				}
@@ -253,12 +253,14 @@ class DatabaseWriter extends Database {
 			$error = "Failed to begin transaction";
 		} else if (!$this->updateAsset->bind_param("sssi", $path, $data, $type, $key)) {
 			$error = "Binding $path,$data,$type,$key to updateAsset failed: {$this->db->error}";
-		} else {
-			if (!$this->updateAsset->execute()) {
-				$error = "Executing updateAsset failed: {$this->db->error}";
-			} else if ($this->updateAsset->affected_rows !== 1) {
-				$error = "updateAsset affected {$this->updateAsset->affected_rows} rows instead of 1";
-			}
+		} else if (!$this->clearConflictingAssets->bind_param("s", $path)) {
+			$error = "Binding $path to clearConflictingAssets failed: {$this->db->error}";
+		} else if (!$this->clearConflictingAssets->execute()) {
+			$error = "Executing clearConflictingAssets failed: {$this->db->error}";
+		} else if (!$this->updateAsset->execute()) {
+			$error = "Executing updateAsset failed: {$this->db->error}";
+		} else if ($this->updateAsset->affected_rows !== 1) {
+			$error = "updateAsset affected {$this->updateAsset->affected_rows} rows instead of 1";
 		}
 		if ($error) {
 			log_err($error);
@@ -276,8 +278,6 @@ class DatabaseWriter extends Database {
 			$error = "Binding $key to deletePet failed: {$this->db->error}";
 		} else if (!$this->deletePet->execute()) {
 			$error = "Executing deletePet failed: {$this->db->error}";
-		} else if ($this->deletePet->affected_rows !== 1) {
-			$error = "deletePet affected {$this->deletePet->affected_rows} rows instead of 1";
 		}
 		if ($error) {
 			log_err($error);
