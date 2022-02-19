@@ -2,13 +2,14 @@
   <img :src="localPath ?? (photo ? `/api/raw/cached/${photo.key}_300.jpg` : null)"
       :alt="photo ? 'Edit profile image' : 'Add profile image'"
       :title="photo ? 'Edit profile image' : 'Add profile image'" @click="$refs.input.click()">
-  <input type="file" ref="input" @change="upload()" accept="image/*">
+  <input type="file" ref="input" @change="consume()" accept="image/*">
 </template>
 
 <script lang="ts">
 import {defineComponent, PropType} from 'vue';
 import {Asset} from '../types';
 import {uploadFile} from '../common';
+import {Md5} from 'ts-md5';
 
 export default defineComponent({
   name: 'ProfilePhoto',
@@ -28,6 +29,14 @@ export default defineComponent({
     reset: {
       type: Number,
       required: false,
+    },
+    base64: {
+      type: String,
+      required: false,
+    },
+    type: {
+      type: String,
+      required: false,
     }
   },
   data() {
@@ -40,8 +49,18 @@ export default defineComponent({
       // Reset local path on parent reset
       this.localPath = null;
     },
+    base64() {
+      if (this.base64) {
+        this.uploadBase64();
+      }
+    },
   },
-  emits: ['update:modelValue', 'update:promise'],
+  created() {
+    if (this.base64) {
+      this.uploadBase64();
+    }
+  },
+  emits: ['update:modelValue', 'update:promise', 'update:base64'],
   computed: {
     photo: {
       get(): Asset | undefined {
@@ -59,22 +78,45 @@ export default defineComponent({
         this.$emit('update:promise', value);
       },
     },
+    blob: {
+      get(): string | undefined {
+        return this.base64;
+      },
+      set(value: string | undefined): void {
+        this.$emit('update:base64', value);
+      },
+    }
   },
   methods: {
-    upload(): void {
+    consume(): void {
       const input = this.$refs.input as HTMLInputElement;
       if (input.files?.[0]) {
-        const localPath = URL.createObjectURL(input.files[0]);
-        this.localPath = localPath;
-        this.prom = uploadFile(input.files[0], this.prefix, 300).then((asset) => {
-          if (this.localPath === localPath) {
-            this.photo = asset;
-          }
-          return asset;
-        });
+        this.upload(input.files[0]);
       }
       input.value = '';
       input.files = null;
+    },
+    upload(file: File): void {
+      console.log('uploading profile photo', file);
+      const localPath = URL.createObjectURL(file);
+      this.localPath = localPath;
+      this.blob = undefined;
+      this.prom = uploadFile(file, this.prefix, 300).then((asset) => {
+        if (this.localPath === localPath) {
+          this.photo = asset;
+        }
+        return asset;
+      });
+    },
+    async uploadBase64() {
+      if (!this.blob) {
+        this.localPath = null;
+        return;
+      }
+      const dataURL = `data:${this.type ?? 'image/jpeg'};base64,${this.blob}`;
+      const res = await fetch(dataURL);
+      const blob = await res.blob();
+      this.upload(new File([blob], `${Md5.hashStr(this.blob)}.jpg`, {type: this.type ?? 'image/jpeg'}));
     }
   },
 });
@@ -88,29 +130,23 @@ input {
 /* Make a missing profile image seem like a link */
 img {
   vertical-align: center;
-  line-height: 318px;
-  box-sizing: border-box;
-  color: var(--link-color);
-  font-weight: bold;
-  cursor: pointer;
-  --stripe-1-color: transparent;
-  --stripe-2-color: rgba(0, 0, 0, 0.03);
+  --stripe-1-color: var(--background-color);
+  --stripe-2-color: var(--background-color-2);
   --plus-url: url('/plus.svg.php?color=066');
-  background-image: var(--plus-url), linear-gradient(135deg, var(--stripe-1-color) 25%, var(--stripe-2-color) 25%, var(--stripe-2-color) 50%, var(--stripe-1-color) 50%, var(--stripe-1-color) 75%, var(--stripe-2-color) 75%, var(--stripe-2-color) 100%);
-  background-size: 20px 20px;
-  background-repeat: no-repeat, repeat;
-  background-position: bottom 152px center, center;
-  background-clip: padding-box;
-  margin-top: 2px;
 
   &:not([src]) {
+    line-height: 318px;
+    box-sizing: border-box;
+    color: var(--link-color);
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 2px;
     width: 400px !important;
+    height: 300px !important;
 
     &:not(.pair a>img) {
       width: 200px !important;
     }
-
-    height: 300px !important;
   }
 
   &::before {
@@ -121,6 +157,11 @@ img {
 
   &:not([src]), &::before, &:hover {
     outline: 2px dashed var(--link-color);
+    background-image: var(--plus-url), linear-gradient(135deg, var(--stripe-1-color) 25%, var(--stripe-2-color) 25%, var(--stripe-2-color) 50%, var(--stripe-1-color) 50%, var(--stripe-1-color) 75%, var(--stripe-2-color) 75%, var(--stripe-2-color) 100%);
+    background-size: 20px 20px;
+    background-repeat: no-repeat, repeat;
+    background-position: bottom 152px center, center;
+    background-clip: padding-box;
   }
 
   &:hover {

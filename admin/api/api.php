@@ -83,9 +83,8 @@ function endpoint(?callable $get = null, ?callable $post = null, ?callable $put 
 		$result = new Result(500, print_r($e, true));
 	}
 
-	// Prevent caching
 	header("Cache-Control: no-store");
-
+	ini_set('zlib.output_compression', 1);
 	http_response_code($result->status);
 	echo json_encode($result);
 }

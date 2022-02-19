@@ -24,12 +24,21 @@
       <ul>
         <li class="id">
           <label for="id">ID</label>
-          <input id="id" v-model="pet['id']" name="id" required type="text" autocomplete="off">
+          <input id="id" v-model="pet.id" name="id" required type="text" autocomplete="off" v-if="pet.name">
+          <auto-complete id="id" v-if="!pet.name" v-model="pet.id" name="id"
+              required :suggestions="petSuggestions"
+              @complete="searchListings($event.query, 'petSuggestions', false, true)" appendTo="self"
+              completeOnFocus="true" delay="100" field="id" @item-select="setPet($event.value)">
+            <template #item="slotProps">
+              <pet-dropdown-entry :pet="slotProps.item"/>
+            </template>
+          </auto-complete>
           <label for="friend_id">ID</label>
           <input id="friend_id" v-if="pet.friend && pet.friend.name" v-model="pet.friend.id" name="friend_id" required
               type="text" autocomplete="off">
           <auto-complete id="friend_id" v-if="pet.friend && !pet.friend.name" v-model="pet.friend.id" name="friend_id"
-              required :suggestions="friendSuggestions" @complete="searchListings($event.query)" appendTo="self"
+              required :suggestions="friendSuggestions" @complete="searchListings($event.query, 'friendSuggestions')"
+              appendTo="self"
               completeOnFocus="true" delay="100" field="id" @item-select="setFriend($event.value)">
             <template #item="slotProps">
               <pet-dropdown-entry :pet="slotProps.item"/>
@@ -38,12 +47,21 @@
         </li>
         <li class="name">
           <label for="name">Name</label>
-          <input id="name" v-model="pet['name']" name="name" required type="text" autocomplete="off">
+          <input id="name" v-model="pet.name" name="name" required type="text" autocomplete="off" v-if="pet.id">
+          <auto-complete id="name" v-if="!pet.id" v-model="pet.name"
+              name="name" required :suggestions="petSuggestions"
+              @complete="searchListings($event.query, 'petSuggestions', true, true)"
+              appendTo="self" completeOnFocus="true" delay="100" field="name" @item-select="setPet($event.value)">
+            <template #item="slotProps">
+              <pet-dropdown-entry :pet="slotProps.item"/>
+            </template>
+          </auto-complete>
           <label for="friend_name" v-if="pet.friend">Name</label>
           <input id="friend_name" v-if="pet.friend && pet.friend.id" v-model="pet.friend.name" name="friend_name"
               required type="text" autocomplete="off">
           <auto-complete id="friend_name" v-if="pet.friend && !pet.friend.id" v-model="pet.friend.name"
-              name="friend_id" required :suggestions="friendSuggestions" @complete="searchListings($event.query)"
+              name="friend_name" required :suggestions="friendSuggestions"
+              @complete="searchListings($event.query, 'friendSuggestions', true)"
               appendTo="self" completeOnFocus="true" delay="100" field="name" @item-select="setFriend($event.value)">
             <template #item="slotProps">
               <pet-dropdown-entry :pet="slotProps.item"/>
@@ -54,7 +72,7 @@
           <!--suppress XmlInvalidId -->
           <label for="species_input">Species</label>
           <select id="species_input" v-model="pet['species']" name="species" required class="span" autocomplete="off"
-              @change="fetchListings">
+              @change="fetchListings(); importables = fetchImportables();">
             <option value=""></option>
             <option v-for="s of config['species']" :value="s['id']" :key="s['id']">{{ ucfirst(s['name']) }}</option>
           </select>
@@ -178,15 +196,15 @@
           <a>
             <profile-photo v-if="!pet.friend || singlePhoto" v-model="pet.photo" v-model:promise="profilePromise"
                 :reset="resetCount"
-                :prefix="getFullPathForPet(pet) + '/'"/>
+                :prefix="getFullPathForPet(pet) + '/'" v-model:base64="base64" :type="type"/>
             <ul v-else>
               <li>
                 <profile-photo v-model="pet.photo" v-model:promise="profilePromise" :reset="resetCount"
-                    :prefix="getFullPathForPet(pet) + '/'"/>
+                    :prefix="getFullPathForPet(pet) + '/'" v-model:base64="base64" :type="type"/>
               </li>
               <li>
                 <profile-photo v-model="pet.friend.photo" v-model:promise="secondProfilePromise" :reset="resetCount"
-                    :prefix="getFullPathForPet(pet) + '/'"/>
+                    :prefix="getFullPathForPet(pet) + '/'" v-model:base64="friendBase64" :type="friendType"/>
               </li>
             </ul>
           </a>
@@ -218,12 +236,6 @@
     Are you sure you want to leave?
     <br>
     This will delete unsaved changes here!
-  </modal>
-  <modal v-if="confirmRemoveSecondPhoto"
-      @confirm="pet.friend.photo = undefined; singlePhoto = true; confirmRemoveSecondPhoto = false;"
-      @cancel="confirmRemoveSecondPhoto = false; singlePhoto = false;">
-    Are you sure you want to delete this image?<br>
-    <img :src="pet.friend.photo.localPath ?? `/api/raw/cached/${pet.friend.photo.key}_480.jpg`" :alt="pet.friend.name">
   </modal>
   <modal v-if="confirmSplitPair">
     What do you want to do with {{ pet.friend.name }}?
@@ -262,11 +274,9 @@ import Editor from '../components/Editor.vue';
 import Photos from '../components/Photos.vue';
 import {defineComponent} from 'vue';
 import store from '../store';
-import {
-  getFullPathForPet, getPathForPet, partial, petAge, ucfirst, uploadDescription, getContext
-} from '../common';
+import {getContext, getFullPathForPet, getPathForPet, partial, petAge, ucfirst, uploadDescription} from '../common';
 import {mapState} from 'vuex';
-import {Asset, PendingPhoto, Pet, Sex, Status} from '../types';
+import {Asset, ImportablePet, Pet, Sex, Species, Status} from '../types';
 import ProfilePhoto from '../components/ProfilePhoto.vue';
 import Modal from '../components/Modal.vue';
 import {progressBar, responseChecker} from '../mixins';
@@ -279,6 +289,11 @@ interface SearchResults {
   idPrefix: Pet[],
   namePrefix: Pet[],
   nameContains: Pet[],
+  importAll: ImportablePet[],
+  importIdAndNamePrefix: ImportablePet[],
+  importIdPrefix: ImportablePet[],
+  importNamePrefix: ImportablePet[],
+  importNameContains: ImportablePet[],
 }
 
 export default defineComponent({
@@ -309,18 +324,25 @@ export default defineComponent({
       confirmOverwrite: false,
       singlePhoto: false,
       secondProfilePromise: null as Promise<Asset> | null,
-      confirmRemoveSecondPhoto: false,
       confirmSplitPair: false,
       saveActions: [] as CallableFunction[],
-      friendSuggestions: undefined as Pet[] | undefined,
+      friendSuggestions: undefined as (Pet | ImportablePet)[] | undefined,
+      petSuggestions: undefined as (Pet | ImportablePet)[] | undefined,
       listings: undefined as Promise<Pet[]> | undefined,
       cachedSearchResults: {} as Record<string, SearchResults>,
       cachedQueries: [] as Set<string>[], // cached queries bucketed by length
       futureListings: [] as Pet[],
+      importables: undefined as Promise<ImportablePet[]> | undefined,
+      base64: undefined as string | undefined,
+      type: undefined as string | undefined,
+      friendBase64: undefined as string | undefined,
+      friendType: undefined as string | undefined,
     };
   },
   mounted() {
     window.addEventListener('beforeunload', this.listener);
+    // Get this ready so it isn't fetched only when clicking the add profile image button.
+    fetch('/plus.svg.php?color=f60');
   },
   unmounted() {
     window.removeEventListener('beforeunload', this.listener);
@@ -383,6 +405,7 @@ export default defineComponent({
       (window as any).resizer?.(false);
       setTimeout(() => (window as any).resizer?.(false), 1000);
       this.fetchListings();
+      this.importables = this.fetchImportables();
     },
     resetOriginal() {
       this.path = undefined;
@@ -393,6 +416,7 @@ export default defineComponent({
       this.original.status = 1;
     },
     reset() {
+      this.saveActions.map((action) => action());
       this.resetOriginal();
       this.pet = {} as Pet;
       this.description = partial('default');
@@ -413,6 +437,10 @@ export default defineComponent({
       this.pet.status = 1; // Default to adoptable
       this.resetCount++;
       this.$router.push('/new');
+      this.base64 = undefined;
+      this.friendBase64 = undefined;
+      this.type = undefined;
+      this.friendType = undefined;
       this.loading = false;
     },
     async save() {
@@ -447,13 +475,12 @@ export default defineComponent({
           this.pet.description = await uploadDescription(this.description);
         }
         this.saveActions.map((action) => action());
-        fetch(this.original?.id ? `/api/listings/${this.original.id}` : `/api/listings`, {
+        const res = await fetch(this.original?.id ? `/api/listings/${this.original.id}` : `/api/listings`, {
           method: this.original?.id ? 'PUT' : 'POST',
           body: JSON.stringify(this.pet),
-        }).then(res => {
-          this.checkResponse(res, 'Saved successfully');
-          this.updateAfterSave();
         });
+        this.checkResponse(res, 'Saved successfully');
+        this.updateAfterSave();
         // Attempt updating paths to images (failing is ok)
         for (const photo of this.pet.photos ?? []) {
           if (!photo.path?.startsWith(getFullPathForPet(this.pet))) {
@@ -472,11 +499,12 @@ export default defineComponent({
             });
           }
         }
-      } catch (e) {
+      } catch (e: any) {
         this.loading = false;
         throw e;
       }
       this.fetchListings();
+      this.importables = this.fetchImportables();
     },
     updateAfterSave() {
       // Update original pet
@@ -604,16 +632,34 @@ export default defineComponent({
     toggleSinglePhoto(): void {
       if (!this.singlePhoto && this.pet.friend) {
         // Check single photo.
-        if (this.pet.friend.photo) {
-          this.confirmRemoveSecondPhoto = true;
-        } else {
-          this.pet.friend.photo = undefined;
-          this.singlePhoto = true;
-        }
+        this.pet.friend.photo = undefined;
+        this.singlePhoto = true;
       } else {
         // Uncheck single photo.
         this.singlePhoto = false;
       }
+    },
+    async fetchImportables(): Promise<ImportablePet[]> {
+      let species = undefined as string | undefined;
+      if (this.pet.species) {
+        species = (Object.values(store.state.config.species)).find((s: any) => s.id === this.pet.species)?.name
+            ?.toLowerCase();
+      } else if (this.species) {
+        species = (Object.values(store.state.config.species)).find((s: any) => s.plural === this.species)?.name
+            ?.toLowerCase();
+      }
+      // console.log(`Fetching importables for species '${species}'`);
+      const res = await fetch(`/api/importable`);
+      if (!res.ok) {
+        console.error(res);
+        return [];
+      }
+      const allImportables: ImportablePet[] = await res.json();
+      const results = allImportables.filter((candidate) => (!species || candidate.species?.toLowerCase() === species));
+      console.log(`Fetched ${results.length} total importables`);
+      this.cachedSearchResults = {};
+      this.cachedQueries = [];
+      return results;
     },
     fetchListings(): void {
       let species = undefined as string | undefined;
@@ -627,24 +673,36 @@ export default defineComponent({
         this.cachedQueries = [];
         return res.ok ? res.json() : [];
       }).then(
-          (results: Pet[]) => results.filter((pet) => pet && pet.id !== this.pet.id && pet.id !== this.pet.friend?.id).sort((a: Pet, b: Pet) => -(a.modified?.localeCompare(b.modified ?? '') ?? 0)));
+          (results: Pet[]) => results.filter((pet) => pet && pet.id !== this.pet.id && pet.id !== this.pet.friend?.id)
+              .sort((a: Pet, b: Pet) => -(a.modified?.localeCompare(b.modified ?? '') ?? 0)));
     },
-    async searchListings(queryMixedCase: string, preferName: boolean = false) {
+    async searchListings(queryMixedCase: string, resultsKey: string, preferName: boolean = false,
+        importOnly: boolean = false): Promise<void> {
       const query = queryMixedCase.toUpperCase();
       // console.log(`Searching for ${query}`);
-      if (this.listings === undefined) {
-        console.error('Listings is undefined while trying to search');
+      if (this.listings === undefined || this.importables === undefined) {
+        console.error('Listings or importables undefined while trying to search');
         return;
       }
       let listings = [...await this.listings, ...this.futureListings];
-      const reorder = (results: SearchResults): Pet[] =>
-          preferName ?
-              [...results.idAndNamePrefix, ...results.namePrefix, ...results.idPrefix, ...results.nameContains] :
-              [...results.idAndNamePrefix, ...results.idPrefix, ...results.namePrefix, ...results.nameContains]
+      let importables = await this.importables;
+      const reorder = (results: SearchResults): (Pet | ImportablePet)[] =>
+          importOnly ? (preferName ?
+                  [...results.importIdAndNamePrefix, ...results.importNamePrefix, ...results.importIdPrefix,
+                    ...results.importNameContains] :
+                  [...results.importIdAndNamePrefix, ...results.importIdPrefix, ...results.importNamePrefix,
+                    ...results.importNameContains]
+          ) : (preferName ?
+              [...results.idAndNamePrefix, ...results.namePrefix, ...results.idPrefix, ...results.nameContains,
+                ...results.importIdAndNamePrefix, ...results.importNamePrefix, ...results.importIdPrefix,
+                ...results.importNameContains] :
+              [...results.idAndNamePrefix, ...results.idPrefix, ...results.namePrefix, ...results.nameContains,
+                ...results.importIdAndNamePrefix, ...results.importIdPrefix, ...results.importNamePrefix,
+                ...results.importNameContains])
       ;
       if (this.cachedSearchResults[query]) {
         // console.log('Cache hit');
-        this.friendSuggestions = reorder(this.cachedSearchResults[query]);
+        (this[resultsKey] as (Pet | ImportablePet)[]) = reorder(this.cachedSearchResults[query]);
         return;
       }
       for (let len = query.length; len >= 0; --len) {
@@ -653,6 +711,7 @@ export default defineComponent({
         if (this.cachedQueries[len]?.has(prefix)) {
           // console.log(`starting with results for ${prefix}`);
           listings = this.cachedSearchResults[prefix].all;
+          importables = this.cachedSearchResults[prefix].importAll;
           break;
         }
       }
@@ -662,6 +721,11 @@ export default defineComponent({
         idPrefix: [],
         namePrefix: [],
         nameContains: [],
+        importAll: [],
+        importIdAndNamePrefix: [],
+        importIdPrefix: [],
+        importNamePrefix: [],
+        importNameContains: [],
       };
       for (const listing of listings) {
         if (listing.friend) {
@@ -685,15 +749,81 @@ export default defineComponent({
           results.all.push(listing);
         }
       }
+      for (const importable of importables) {
+        const nameUpper = importable.name.toUpperCase();
+        const idPrefix = importable.id.toUpperCase().startsWith(query);
+        const namePrefix = nameUpper.startsWith(query);
+        if (idPrefix && namePrefix) {
+          results.importIdAndNamePrefix.push(importable);
+          results.importAll.push(importable);
+        } else if (idPrefix) {
+          results.importIdPrefix.push(importable);
+          results.importAll.push(importable);
+        } else if (namePrefix) {
+          results.importNamePrefix.push(importable);
+          results.importAll.push(importable);
+        } else if (nameUpper.indexOf(query) !== -1) {
+          results.importNameContains.push(importable);
+          results.importAll.push(importable);
+        }
+      }
       this.cachedSearchResults[query] = results;
       this.cachedQueries[query.length] ??= new Set<string>();
       this.cachedQueries[query.length].add(query);
-      this.friendSuggestions = reorder(results);
-      console.log(`Found ${this.friendSuggestions.length} results`);
+      (this[resultsKey] as (Pet | ImportablePet)[]) = reorder(results);
     },
-    setFriend(friend: Pet) {
-      this.original.friend = friend;
-      this.pet.friend = friend;
+    importPet(importable: ImportablePet, withFriend = true): Pet {
+      const ADOPTION_PENDING = 3;
+      const ADOPTABLE = 1;
+      const pet: Pet = {
+        id: importable.id,
+        name: importable.name,
+        breed: importable.breed,
+        sex: (Object.values(store.state.config.sexes)).find(
+            (s: Sex) => s.name.toUpperCase() === importable.sex?.toUpperCase())?.key,
+        fee: importable.fee,
+        status: importable.pending ? ADOPTION_PENDING : ADOPTABLE,
+        dob: importable.dob,
+        species: (Object.values(store.state.config.species)).find(
+            (s: Species) => s.name?.toUpperCase() === importable.species?.toUpperCase())?.id,
+      };
+      if (importable.base64 && importable.friend_id && !importable.friend_base64 && withFriend) {
+        this.singlePhoto = true;
+      }
+      if (importable.friend_id && withFriend) {
+        pet.friend = {
+          id: importable.friend_id,
+          name: importable.friend_name ?? '',
+          breed: importable.friend_breed,
+          dob: importable.friend_dob,
+          sex: (Object.values(store.state.config.sexes)).find(
+              (s: Sex) => s.name.toUpperCase() === importable.friend_sex?.toUpperCase())?.key,
+        };
+        // console.log(`Setting friendBase64, friendType ${importable.friend_type}`);
+        this.friendBase64 = importable.friend_base64 ?? undefined;
+        this.friendType = importable.friend_type ?? undefined;
+      }
+      if (withFriend) {
+        // console.log(`Setting base64, type ${importable.type}`);
+        this.base64 = importable.base64 ?? undefined;
+        this.type = importable.type ?? undefined;
+      } else if (!withFriend) {
+        // !withFriend is true if importing a friend only
+        // console.log(`Setting friendBase64, friendType ${importable.type}`);
+        this.friendBase64 ??= importable.base64 ?? undefined;
+        this.friendType ??= importable.type ?? undefined;
+      }
+      return pet;
+    },
+    setPet(target: Pet | ImportablePet) {
+      this.pet = (target as any).pending !== undefined ? this.importPet(target as ImportablePet, true) :
+          (target as Pet);
+    },
+    setFriend(friend: Pet | ImportablePet) {
+      const pet = (friend as any).pending !== undefined ? this.importPet(friend as ImportablePet, false) :
+          (friend as Pet);
+      this.pet.friend = pet;
+      this.original.friend = JSON.parse(JSON.stringify(pet));
     },
     swapFriend() {
       const newMain = this.pet.friend!;
@@ -708,10 +838,11 @@ export default defineComponent({
       newMain.status = newFriend.status;
       newMain.fee = newFriend.fee;
       newMain.photos = newFriend.photos;
+      newMain.species = newFriend.species;
       newFriend.photos = undefined;
       newFriend.description = undefined;
       const newOriginalFriend = this.original;
-      this.original = this.original.friend ?? newMain as Pet;
+      this.original = JSON.parse(JSON.stringify(this.original.friend ?? newMain as Pet));
       this.original.friend = newOriginalFriend;
       this.original.friend.friend = undefined;
       this.pet = newMain;
@@ -990,6 +1121,6 @@ table.listings tbody {
 }
 
 :root {
-  min-width: 400px;
+  --global-min-width: 400px;
 }
 </style>
