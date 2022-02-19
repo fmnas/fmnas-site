@@ -95,15 +95,22 @@ If the script is terminated abnormally, run it again so the cleanup steps run.
 #### Repo state tests
 
 <!-- TODO [#142]: Add a status check for admin/dev.sh sync and teardown -->
+The `.github/workflows/check-repo.yml` workflow checks that the repo is in a good state before merging. All of the
+following checks must pass before merging a PR into `main`:
 
-The following workflows in `.github/workflows` ensure the repo is in a good state, and must pass before merging into
-`main`:
-
-* `check-file-watchers.yml` - checks that no file watchers were inadvertently disabled in IntelliJ.
+* All file watchers are enabled
+  * Checks that `.idea/watcherTasks.xml` contains no disabled file watchers (these can be inadvertently disabled by
+    IntelliJ due to local configuration errors).
+* All files added by Sean contain a copyright header
+  * Checks that a copyright header is included in all source code files added by Sean. 
+  * Required because Sean's commits are copyrighted by Google and they want these.
+  * If Sean did not author any commits in the PR, this should always pass.
+* All 
 
 ### TODOs
 
-The `.github/workflows/todo-issues.yml` creates issues from TODOs added in `tests`, and closes issues for removed TODOs.
+The `.github/workflows/todo-issues.yml` workflow creates issues from TODOs added in `tests`, and closes issues for
+removed TODOs.
 
 Don't try to change the name of one of the issues this creates. It will get changed back on the next push.
 

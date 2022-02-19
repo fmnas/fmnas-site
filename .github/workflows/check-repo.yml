@@ -12,16 +12,26 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-name: Check file watchers
+name: Check repo status
 on:
   push:
+    branches-ignore:
+      - main
   pull_request:
 jobs:
-  check_watchers:
+  watchers:
     name: All file watchers are enabled
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@main
-      - name: grep
+      - name: Check for disabled file watchers
         run: if grep 'isEnabled="false"' .idea/watcherTasks.xml; then exit 1; fi
+  copyright:
+    name: All files added by Sean contain a copyright header
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+      - name: Check for copyright headers
+        run: ./copyright-check.sh
