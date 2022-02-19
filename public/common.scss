@@ -32,7 +32,9 @@
 	--heading-font: 600 14pt 'Asap', sans-serif;
 	--body-font: 12pt 'Open Sans', sans-serif;
 	font: var(--body-font);
-	min-width: 330px;
+
+	--global-min-width: 330px;
+	min-width: var(--global-min-width);
 }
 
 body {
