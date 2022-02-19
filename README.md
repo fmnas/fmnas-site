@@ -50,6 +50,10 @@ into `test`.
 After testing the changes in the live test site environment, create a pull request on GitHub to merge the branch into
 `main`.
 
+The `.github/workflows/sync-test.yml` workflow merges `main` back into `test` after each merged PR.
+You should then `git fetch` and rebase your dev branch onto `origin/test` before another PR. Or if developing directly
+on `test`, `git pull` to get the merge commit.
+
 ### Initial build
 
 After checking out the repository, run:
@@ -85,7 +89,26 @@ To run a Vue dev server with hot reloading, run `admin/dev.sh` in a terminal. Th
 If the script is terminated abnormally, run it again so the cleanup steps run.
 
 `admin/loader.html` should be kept in sync with `admin/client/index.html`.
+
+### Tests
+
+#### Repo state tests
 <!-- TODO [#142]: Add a status check for admin/dev.sh sync and teardown -->
+
+The following workflows in `.github/workflows` ensure the repo is in a good state, and must pass before merging into
+`main`:
+* `check-file-watchers.yml` - checks that no file watchers were inadvertently disabled in IntelliJ
+
+### TODOs
+
+The `.github/workflows/todo-issues.yml` creates issues from TODOs added in `tests`, and closes issues for removed TODOs.
+
+Don't try to change the name of one of the issues this creates. It will get changed back on the next push.
+
+### Backups
+
+The `.github/workflows/backups.yml` workflow is used for nightly backups of untracked files on the FMNAS server.
+
 
 ## Deployment
 
@@ -94,16 +117,12 @@ If the script is terminated abnormally, run it again so the cleanup steps run.
 GitHub Actions are used to automatically deploy the `main` branch to the prod site and the `test` branch to the test
 site. See the Workflow section above for more details.
 
-The following workflow files are present in .github/workflows:
+The following workflows in `.github/workflows` are used for deployment:
 
-* backups.yml - Nightly backups of the ASM database and blog (not tracked on GitHub) to our Scaleway bucket.
-* deploy-gcp-{prod,test}.yml - Deploys Google Cloud Platform services from gcp/.
-* deploy-{prod,test}.yml - Builds and deploys the website to Dreamhost, and regenerates src/generated.php.
-* regenerate-images-{prod,test}.yml - Calls the API to regenerate cached images when the image scaling code (
+* `deploy-gcp-{prod,test}.yml` - Deploys Google Cloud Platform services from gcp/.
+* `deploy-{prod,test}.yml` - Builds and deploys the website to Dreamhost, and regenerates src/generated.php.
+* `regenerate-images-{prod,test}.yml` - Calls the API to regenerate cached images when the image scaling code (
   src/resize.php) changes.
-* sync-test.yml - Merges `main` back into `test` after a PR is merged, so you can `git pull` test and be up to date with
-  the merge commit in `main`.
-* todo-issues.yml - Creates issues from TODOs added in `test`, and closes issues for removed TODOs.
 
 #### Secrets
 
