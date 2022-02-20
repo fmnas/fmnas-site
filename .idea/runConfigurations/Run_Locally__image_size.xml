@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Run Locally: resize-image" type="CloudCodeCloudRunConfigurationType" factoryName="CloudCodeCloudRunDevelopConfigurationFactory" show_console_on_std_err="false" show_console_on_std_out="false" imageBuilder="{&quot;name&quot;:&quot;Buildpacks&quot;,&quot;payload&quot;:{&quot;path&quot;:&quot;package.json&quot;,&quot;builder&quot;:&quot;gcr.io/buildpacks/builder:v1&quot;}}">
+  <configuration default="false" name="Run Locally: image-size" type="CloudCodeCloudRunConfigurationType" factoryName="CloudCodeCloudRunDevelopConfigurationFactory" show_console_on_std_err="false" show_console_on_std_out="false" imageBuilder="{&quot;name&quot;:&quot;Buildpacks&quot;,&quot;payload&quot;:{&quot;path&quot;:&quot;package.json&quot;,&quot;builder&quot;:&quot;gcr.io/buildpacks/builder:v1&quot;}}">
     <option name="allowRunningInParallel" value="false" />
     <option name="buildpacksEnv">
       <map />
@@ -25,7 +25,7 @@
       <list />
     </option>
     <option name="serviceAccount" value="" />
-    <option name="serviceName" value="resize-image" />
+    <option name="serviceName" value="image-size" />
     <option name="skaffoldWatchMode" value="ON_FILE_SAVE" />
     <method v="2" />
   </configuration>

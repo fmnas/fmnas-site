@@ -136,3 +136,46 @@ jobs:
       - name: Get deployment URL
         if: steps.changed-files.outputs.any_changed == 'true' || github.event.action == 'workflow_dispatch'
         run: echo ${{ steps.deploy.outputs.url }}
+  print-pdf:
+    name: 'GCP: Deploy print-pdf-test'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    steps:
+      - name: Checkout test
+        uses: actions/checkout@main
+        with:
+          ref: test
+          fetch-depth: 0
+      - name: Test changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v15
+        with:
+          files: |
+            gcp/print-pdf/**
+            .github/workflows/deploy-gcp-test.yml
+      - name: Authenticate to Google Cloud
+        if: steps.changed-files.outputs.any_changed == 'true' || github.event.action == 'workflow_dispatch'
+        uses: google-github-actions/auth@v0
+        with:
+          workload_identity_provider: ${{ secrets.GCP_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+      - name: Setup Cloud SDK
+        if: steps.changed-files.outputs.any_changed == 'true' || github.event.action == 'workflow_dispatch'
+        uses: google-github-actions/setup-gcloud@v0
+        with:
+          project_id: ${{ secrets.GCP_PROJECT }}
+      - name: Deploy to Cloud Functions
+        if: steps.changed-files.outputs.any_changed == 'true' || github.event.action == 'workflow_dispatch'
+        id: deploy
+        uses: google-github-actions/deploy-cloud-functions@v0
+        with:
+          name: print-pdf-test
+          entry_point: printPdf
+          memory_mb: 2048
+          region: ${{ secrets.GCP_REGION }}
+          event_trigger_type: http
+          https_trigger_security_level: secure_always
+          timeout: 10
+          min_instances: 0
+          max_instances: 100

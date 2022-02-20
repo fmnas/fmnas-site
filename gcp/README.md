@@ -10,7 +10,7 @@ These functions are deployed by the deploy-gcp-{prod,test} GitHub Actions workfl
 
 ## resize-image
 
-This Cloud Run container resizes images in cases (such as HEIC and WebP) where the ImageMagick version on Dreamhost is 
+This Cloud Run container resizes images in cases (such as HEIC and WebP) where the ImageMagick version on Dreamhost is
 too outdated to read the original image or otherwise fails.
 
 ### Manual deployment
@@ -35,10 +35,11 @@ curl -v -F height=200 -F 'image=@/path/to/in.jpg' https://resize-image-test.gcp.
 
 ## image-size
 
-This Cloud Run container gets the size of an image in cases (such as HEIC and WebP) where the ImageMagick version on 
+This Cloud Run container gets the size of an image in cases (such as HEIC and WebP) where the ImageMagick version on
 Dreamhost is too outdated to read the image or otherwise fails.
 
 ### Manual deployment
+
 ```shell
 cd gcp/image-size
 gcloud auth configure-docker us-central1-docker.pkg.dev
@@ -57,13 +58,32 @@ gcloud artifacts docker images list us-central1-docker.pkg.dev/fmnas-automation/
 curl -v -F 'image=@/path/to/in.jpg' https://image-size-test.gcp.forgetmenotshelter.org 
 ```
 
+## print-pdf
+
+This Cloud Function converts an uploaded HTML file to pdf.
+
+### Testing
+
+```shell
+curl -v -F 'html=@/path/to/in.html' https://us-central1-fmnas-automation.cloudfunctions.net/print-pdf-test > out.pdf 
+```
+
+### Manual deployment
+
+```shell
+cd gcp/print-pdf
+npm run compile
+gcloud functions deploy print-pdf-test --entry-point printPdf --runtime nodejs16 --trigger-http
+```
 
 ## Granting roles to the service account
 
-The service account needs the `roles/run.admin`, `roles/artifactregistry.admin`, and `roles/iam.serviceAccountUser` roles:
+The service account needs the `roles/run.admin`, `roles/artifactregistry.admin`, `roles/cloudfunctions.admin`
+and `roles/iam.serviceAccountUser` roles:
 
 ```shell
 gcloud projects add-iam-policy-binding fmnas-automation --member="serviceAccount:github-actions@fmnas-automation.iam.gserviceaccount.com" --role=roles/run.admin
 gcloud projects add-iam-policy-binding fmnas-automation --member="serviceAccount:github-actions@fmnas-automation.iam.gserviceaccount.com" --role=roles/artifactregistry.admin
+gcloud projects add-iam-policy-binding fmnas-automation --member="serviceAccount:github-actions@fmnas-automation.iam.gserviceaccount.com" --role=roles/cloudfunctions.admin
 gcloud projects add-iam-policy-binding fmnas-automation --member="serviceAccount:github-actions@fmnas-automation.iam.gserviceaccount.com" --role=roles/iam.serviceAccountUser
 ```
