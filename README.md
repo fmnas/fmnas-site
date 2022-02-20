@@ -173,6 +173,10 @@ The following workflows in `.github/workflows` are used for deployment:
   to `image-size-test` (`https://image-size-test.gcp.forgetmenotshelter.org`)
 * `IMAGE_SIZE_PROD_ENDPOINT`: The HTTPS endpoint mapped
   to `image-size` (`https://image-size.gcp.forgetmenotshelter.org`)
+* `ASM_WEB_DB`: The MySQL database with replicated ASM tables (see #314) for the import backend (`asm_web`) 
+* `ASM_WEB_HOST`: The MySQL host for `ASM_WEB_DB` (`fmnas.forgetmenotshelter.org`)
+* `ASM_WEB_USER`: The MySQL user for `ASM_WEB_DB` (`fmnas_asm`)
+* `ASM_WEB_PASS`: The MySQL password for `ASM_WEB_USER`
 
 ##### Org secrets
 

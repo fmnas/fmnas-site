@@ -834,18 +834,28 @@ export default defineComponent({
     },
     setPet(target: Pet | ImportablePet) {
       const currentFriend = this.pet.friend;
+      const needsNewFetch = !this.pet.species; // Will re-fetch suggestions if species is updated.
       const result = (target as any).pending !== undefined ? this.importPet(target as ImportablePet, true) :
           (target as Pet);
       if (currentFriend && !result.friend) {
         result.friend = currentFriend;
       }
       this.pet = result;
+      if (needsNewFetch) {
+        this.fetchListings();
+        this.importables = this.fetchImportables();
+      }
     },
     setFriend(friend: Pet | ImportablePet) {
+      const needsNewFetch = !this.pet.species; // Will re-fetch suggestions if species is updated.
       const pet = (friend as any).pending !== undefined ? this.importPet(friend as ImportablePet, false) :
           (friend as Pet);
       this.pet.friend = pet;
       this.original.friend = JSON.parse(JSON.stringify(pet));
+      if (needsNewFetch) {
+        this.fetchListings();
+        this.importables = this.fetchImportables();
+      }
     },
     swapFriend() {
       const newMain = this.pet.friend!;

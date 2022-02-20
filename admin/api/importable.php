@@ -18,30 +18,32 @@
 
 require_once 'api.php';
 
+// TODO [#321]: Make a separate endpoint to request ASM photos.
+
 endpoint(...[
 		'get' => function() use ($db): Result {
 			$asm = new mysqli(Config::$asm_host, Config::$asm_user, Config::$asm_pass, Config::$asm_db);
 			$asm->set_charset("utf8mb4");
 			/** @noinspection SqlResolve */
 			$query = $asm->prepare(<<<SQL
-SELECT animal.ShelterCode                                                         AS id,
-       animal.AnimalName                                                          AS name,
-       species.SpeciesName                                                        AS species,
-       lksex.Sex                                                                  AS sex,
-       animal.BreedName                                                           AS breed,
-       CAST(animal.DateOfBirth AS DATE)                                           AS dob,
-       IF(animal.Fee > 0, CONCAT('$', CAST((animal.Fee / 100) AS INTEGER)), NULL) AS fee,
-       dbfs.Content                                                               AS base64,
-       media.MediaMimeType                                                        AS type,
-       f.ShelterCode                                                              AS friend_id,
-       f.AnimalName                                                               AS friend_name,
-       fspecies.SpeciesName                                                       AS friend_species,
-       fsex.Sex                                                                   AS friend_sex,
-       f.BreedName                                                                AS friend_breed,
-       CAST(f.DateOfBirth AS DATE)                                                AS friend_dob,
-       fdbfs.Content                                                              AS friend_base64,
-       fmedia.MediaMimeType                                                       AS friend_type,
-       IF(adoption.ID IS NULL, FALSE, TRUE)                                       AS pending
+SELECT animal.ShelterCode                                                          AS id,
+       animal.AnimalName                                                           AS name,
+       species.SpeciesName                                                         AS species,
+       lksex.Sex                                                                   AS sex,
+       animal.BreedName                                                            AS breed,
+       CAST(animal.DateOfBirth AS DATE)                                            AS dob,
+       IF(animal.Fee > 0, CONCAT('$', CAST((animal.Fee / 100) AS UNSIGNED)), NULL) AS fee,
+       dbfs.Content                                                                AS base64,
+       media.MediaMimeType                                                         AS type,
+       f.ShelterCode                                                               AS friend_id,
+       f.AnimalName                                                                AS friend_name,
+       fspecies.SpeciesName                                                        AS friend_species,
+       fsex.Sex                                                                    AS friend_sex,
+       f.BreedName                                                                 AS friend_breed,
+       CAST(f.DateOfBirth AS DATE)                                                 AS friend_dob,
+       fdbfs.Content                                                               AS friend_base64,
+       fmedia.MediaMimeType                                                        AS friend_type,
+       IF(adoption.ID IS NULL, FALSE, TRUE)                                        AS pending
 FROM animal
 	     LEFT JOIN species ON animal.SpeciesID = species.ID
 	     LEFT JOIN lksex ON animal.Sex = lksex.ID

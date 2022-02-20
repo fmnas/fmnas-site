@@ -29,5 +29,12 @@
       <jdbc-url>jdbc:mariadb://asm.forgetmenotshelter.org:3306/asm</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
+    <data-source source="LOCAL" name="asm_web@mysql.forgetmenotshelter.org" uuid="83e14040-09ac-421b-a853-3c25851ea66d">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://mysql.forgetmenotshelter.org:3306/asm_web</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>
