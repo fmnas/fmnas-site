@@ -61,6 +61,7 @@ if (!($pet = $db->getPetByPath($path))) {
 			if ($pet->description !== null) {
 				echo $pet->description->parse($pet->toArray());
 			}
+			if (!$pet->status->displayStatus):
 			?>
 			<form action="/application" method="GET" id="bottom_form">
 				If you would like to know more about, or think you might like to adopt, <?=htmlspecialchars($pet->name())?>,
@@ -69,6 +70,9 @@ if (!($pet = $db->getPetByPath($path))) {
 						data-email="adopt+<?=htmlspecialchars($pet->id())?>">Adopt <?=htmlspecialchars($pet->name())?>!</a>
 				<input type="hidden" name="pet" value="<?=htmlspecialchars($pet->id)?>" id="hidden_id">
 			</form>
+			<?php
+			endif;
+			?>
 		</section>
 	</article>
 	<?php

@@ -540,7 +540,8 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 					Please specify:
 					<input type="text" name="particular_specify" autocomplete="off"
 							value="<?=(($_GET['pet'] ?? false) && $pet = $db->getPetById($_GET['pet'])) ?
-									$pet->id . ' ' . $pet->name : ''?>">
+									$pet->id . ' ' . $pet->name . ($pet->friend ? " &amp; {$pet->friend->id} {$pet->friend->name}" : "") :
+									''?>">
 				</label>
 			</section>
 			<section id="qualities">
