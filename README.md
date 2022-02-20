@@ -16,6 +16,11 @@ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Gen
 You should have received a copy of the GNU General Public License along with this program. If not,
 see <https://www.gnu.org/licenses/>.
 
+### Disclaimer
+
+Many files in this repository contain a Google license header. **This is not an officially supported Google product.**
+Google owns the copyright to much of this code because it was written by a Google employee.
+
 ## Development
 
 ### Requirements
