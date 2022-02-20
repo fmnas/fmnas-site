@@ -23,7 +23,7 @@ while read -r file; do
 	fi
 
 	# Skip generated, non-code, and template files
-	allow_regex='^\.idea/|\.(lock|json|md|txt)$|\/go\.(mod|sum)|^admin/templates/|^src/templates/$'
+	allow_regex='^\.idea/|\.(lock|json|md|txt|nvmrc)$|\/go\.(mod|sum)$|^admin/templates/|^src/templates/'
 	if [[ "$file" =~ $allow_regex ]]; then
 		continue
 	fi
@@ -32,7 +32,7 @@ while read -r file; do
 		if head -3 "$file" | grep -qE 'Copyright 20[0-9]{2} Google LLC'; then
 			echo "License header found in $file"
 		else
-			echo -e "\033[31m\033[1mLicense header not found in $file" 1>&2
+			echo -e "\033[31m\033[1mLicense header not found in $file\033[0m" 1>&2
 			((failed++))
 		fi
 	fi
