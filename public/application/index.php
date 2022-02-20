@@ -361,8 +361,8 @@ function addressInput(string $label, string $prefix, bool $required = false): st
 	<?php
 	style();
 	emailLinks();
-	style("application", true, "20220215");
-	style("minheader", true);
+	style("application", true, "20220219");
+	style("minheader", true, "20220219");
 	?>
 	<script src="events.js"></script>
 	<script src="/formenter.js"></script>
