@@ -53,12 +53,12 @@ function renderPdf(DOMDocument $original, string $target, string|null $base = nu
 
 		if ($margin) {
 			$root = $dom->getElementsByTagName('html')[0] ?? $dom->firstElementChild;
-			$style = $root->hasAttribute("style") ? $root->getAttribute("style") : "";
+			$style = $root?->hasAttribute("style") ? $root?->getAttribute("style") : "";
 			if ($style && !str_ends_with($style, ';')) {
 				$style .= ';';
 			}
 			$style .= "margin: $margin;";
-			$root->setAttribute("style", $style);
+			$root?->setAttribute("style", $style);
 		}
 
 		// Find the head.
