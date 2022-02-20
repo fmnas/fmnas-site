@@ -73,7 +73,7 @@ curl -v -F 'html=@/path/to/in.html' https://us-central1-fmnas-automation.cloudfu
 ```shell
 cd gcp/print-pdf
 npm run compile
-gcloud functions deploy print-pdf-test --entry-point printPdf --runtime nodejs16 --trigger-http
+gcloud functions deploy print-pdf-test --entry-point printPdf
 ```
 
 ## Granting roles to the service account

@@ -157,6 +157,19 @@ jobs:
             gcp/print-pdf/**
             .github/workflows/deploy-gcp-test.yml
           since_last_remote_commit: "true"
+      - name: Go to print-pdf directory
+        if: steps.changed-files.outputs.any_changed == 'true' || github.event.action == 'workflow_dispatch'
+        run: cd gcp/print-pdf
+      - name: Set up build dependencies
+        if: steps.changed-files.outputs.any_changed == 'true' || github.event.action == 'workflow_dispatch'
+        uses: actions/setup-node@v2
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+          cache-dependency-path: gcp/print-pdf/package-lock.json
+      - name: Compile function
+        if: steps.changed-files.outputs.any_changed == 'true' || github.event.action == 'workflow_dispatch'
+        run: npm run compile
       - name: Authenticate to Google Cloud
         if: steps.changed-files.outputs.any_changed == 'true' || github.event.action == 'workflow_dispatch'
         uses: google-github-actions/auth@v0
@@ -170,7 +183,7 @@ jobs:
         with:
           name: print-pdf-test
           source_dir: gcp/print-pdf
-          runtime: node16
+          runtime: nodejs16
           entry_point: printPdf
           memory_mb: 2048
           region: ${{ secrets.GCP_REGION }}
