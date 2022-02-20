@@ -18,7 +18,7 @@ while read -r file; do
 		if head -3 "$file" | grep -qE 'Copyright 20[0-9]{2} Google LLC'; then
 			echo "License header found in $file"
 		else
-			echo "\033[31m\033[1mLicense header not found in $file" 1>&2
+			echo "\033[31m\033[1mLicense header not found in $file"
 			((failed++))
 		fi
 	fi
