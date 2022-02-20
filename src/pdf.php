@@ -37,10 +37,11 @@ class PdfException extends Exception {
  * @param DOMDocument $original DOM to render to a PDF
  * @param string $target File to which to save the rendered PDF
  * @param ?string $base Base URL to use for relative hrefs (defaults to $_SERVER['REQUEST_URI'])
+ * @param ?string $margin Margin for the root element
  * @return void
  * @throws PdfException
  */
-function renderPdf(DOMDocument $original, string $target, string|null $base): void {
+function renderPdf(DOMDocument $original, string $target, string|null $base = null, string|null $margin = null): void {
 	$base ??= (pathinfo($_SERVER['REQUEST_URI'])['dirname'] ?? '.') . '/';
 	try {
 		// Clone the DOMDocument to avoid modifying the original.
@@ -49,6 +50,16 @@ function renderPdf(DOMDocument $original, string $target, string|null $base): vo
 			throw new PdfException("Failed to save original DOM to HTML");
 		}
 		$dom = $html5->loadHTML($html);
+
+		if ($margin) {
+			$root = $dom->getElementsByTagName('html')[0] ?? $dom->firstElementChild;
+			$style = $root->hasAttribute("style") ? $root->getAttribute("style") : "";
+			if ($style && !str_ends_with($style, ';')) {
+				$style .= ';';
+			}
+			$style .= "margin: $margin;";
+			$root->setAttribute("style", $style);
+		}
 
 		// Find the head.
 		$head = $dom->getElementsByTagName('head')[0] ?? $dom->firstElementChild;
@@ -87,8 +98,6 @@ function renderPdf(DOMDocument $original, string $target, string|null $base): vo
 		if (!file_put_contents($file, $html)) {
 			throw new PdfException("Error writing temp file $file");
 		}
-
-		var_dump($html);
 
 		$curl = curl_init();
 		if (!$curl) {

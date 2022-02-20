@@ -19,6 +19,8 @@ function application_response(): void { ?>
 		<a href="mailto:<?=_G_default_email_user()?>@<?=_G_public_domain()?>">
 			<?=_G_default_email_user()?>@<?=_G_public_domain()?></a>.
 
+	<p id="response_injection">
+
 	<p>Thanks so much for caring about shelter pets!
 
 	<p>

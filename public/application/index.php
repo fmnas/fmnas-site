@@ -20,8 +20,7 @@ require_once "$src/resize.php";
 require_once "$src/pdf.php";
 require_once "$t/header.php";
 require_once "$t/application_response.php";
-
-use Masterminds\HTML5;
+require_once "$t/footer.php";
 
 ini_set('memory_limit', '2048M');
 setlocale(LC_ALL, 'en_US.UTF-8');
@@ -207,11 +206,10 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 				try {
 					// Render a PDF of the email.
 					$file = tempnam(sys_get_temp_dir(), "PDF");
-					renderPdf($dom, $file, "https://forgetmenotshelter.org/application/");
+					renderPdf($dom, $file, "https://forgetmenotshelter.org/application/", "0.5in");
 					// Attach the PDF
 					$filename = preg_replace('/[^a-zA-Z0-9& _+-]+/', '-', $primarySubject) . ".pdf";
-					$attachments[] =
-							new AttachmentInfo($file, $filename, "application/pdf");
+					$attachments[] = new AttachmentInfo($file, $filename, "application/pdf");
 				} catch (PdfException $e) {
 					log_err($e->getMessage());
 				}
@@ -221,13 +219,53 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 			$shelterEmail,
 			[$applicantEmail],
 			'Your ' . _G_shortname() . ' Adoption Application',
-			['main' => false]
+			['main' => false, 'minhead' => true]
 	);
 	$secondaryEmail->attachFiles = false;
 	if ($formData['CEmail']) {
 		$secondaryEmail->cc = [new EmailAddress(trim($formData['CEmail']), trim($formData['CName']))];
 	}
-	$secondaryEmail->emailTransformation = $primaryEmail->emailTransformation;
+	$secondaryEmail->emailTransformation =
+			function(DOMDocument $dom, array &$attachments) use ($primarySubject): void {
+				try {
+					// Render a PDF of the email.
+					$file = tempnam(sys_get_temp_dir(), "PDF");
+					renderPdf($dom, $file, "https://forgetmenotshelter.org/application/", "0.5in");
+					// Attach the PDF
+					$attachments[] = new AttachmentInfo($file, "Adoption Application.pdf", "application/pdf");
+					$dom->getElementById('response_injection')?->appendChild($dom->createTextNode(
+							'A copy of your application is attached for your records.'
+					));
+				} catch (Exception $e) {
+					log_err($e->getMessage());
+					try {
+						$dom->getElementById('response_injection')?->remove();
+					} catch (Exception) {
+						// ignore.
+					}
+				}
+
+				try {
+					if (!($minhead = $dom->getElementById('minimal_header'))) {
+						throw new Exception('No minhead found');
+					}
+					$minhead->remove();
+				} catch (Exception $e) {
+					log_err($e->getMessage());
+				}
+				try {
+					// dunno why getElementById('application') doesn't work
+					foreach ($dom->getElementsByTagName('article') as $article) {
+						/** @var $article DOMElement */
+						if ($article->getAttribute("id") === "application") {
+							$article->remove();
+							break;
+						}
+					}
+				} catch (Exception $e) {
+					log_err($e->getMessage());
+				}
+			};
 
 	if (file_exists($save->saveFile)) {
 		echo '<!-- Application not sent - detected duplicate at ' . $save->saveFile . ' -->';
@@ -691,14 +729,15 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 				</section>
 			</div>
 		</section>
-		<section id="attachments" class="noprint">
-			<h3>Attachments</h3>
-			<div data-remove="true">
+		<section id="attachments">
+			<h3 class="noprint" data-remove="true">Attachments</h3>
+			<h3 data-if-config="main">Attachments</h3>
+			<div data-remove="true" class="noprint">
 				<p>Add any attachments below, or email them to <a data-email></a> after submitting your application.</p>
 				<p>If you live outside the Republic/Curlew area, please attach or email photos of your home.</p>
 			</div>
 			<input type="file" id="images" name="images[]" accept="image/*,application/pdf" capture="environment"
-					multiple autocomplete="off">
+					multiple autocomplete="off" class="noprint">
 			<span class="limits explanatory" data-remove="true">
             (max. 64 MB each, 512 MB total)
 			</span>
@@ -753,20 +792,10 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 	</script>
 </article>
 
-<ul>
-	<li><a href="index.php">Relative link</a></li>
-	<li><a href="/index.php">Link starting with /</a></li>
-	<li><a href="../index.php">Link starting with ../</a></li>
-	<li><a href="./index.php">Link starting with ./</a></li>
-	<li><a href="//forgetmenotshelter.org">Link starting with //</a></li>
-	<li><a href="https://forgetmenotshelter.org">Link starting with https://</a></li>
-	<li><a href="mailto:adopt@forgetmenotshelter.org">Link starting with mailto:</a></li>
-	<li><a href="#index.php">Link starting with #</a></li>
-	<li><a href="?a=b#c">Link starting with ? and with #</a></li>
-	<li><a href="/?a=b">Link starting with / and with ?</a></li>
-	<li><a href="x/y/z?a=b#c">Link to x/y/z?a=b#c</a></li>
-	<li><a href="/x/y/z?a=b#c">Link to /x/y/z?a=b#c</a></li>
-	<li><a href="//example.com/x/y/z/?a=b#c">Link to //example.com/x/y/z?a=b#c</a></li>
-</ul>
+<?php
+ob_start();
+footer();
+echo str_replace("<footer>", "<footer data-remove='true'>", ob_get_clean());
+?>
 </body>
 </html>
