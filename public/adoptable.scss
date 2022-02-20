@@ -258,7 +258,7 @@ table.listings {
 		}
 	}
 
-	// TODO: Get rid of ugly selectors after target is bumped past Chrome 88/Firefox 84.
+	// TODO [#327]: Get rid of ugly selectors after target is bumped past Chrome 88/Firefox 84.
 	// Then we can use the &:not(tr.pair a)::after variant below.
 	tr:not(.soon):not(.pair) th.name a::after, tr:not(.soon) th.name a li:nth-of-type(2)::after {
 		content: ' »';
