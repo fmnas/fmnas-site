@@ -64,6 +64,14 @@ then `git fetch` and rebase your dev branch onto `origin/test` before another PR
 After checking out the repository, run:
 
 * `npm install` for Node dependencies
+* Create the config file (change values as appropriate):
+  * ```shell
+    ts-node handleparse.ts secrets/config.php.hbs --db_name=database --db_username=username --db_pass=password \
+    --db_host=localhost --smtp_host=localhost --smtp_auth=false --smtp_port=25 \
+    --image_size_endpoint=https://image-size-test.gcp.forgetmenotshelter.org \
+    --resize_image_endpoint=https://resize-image-test.gcp.forgetmenotshelter.org \
+    --print_pdf_endpoint=https://localhost:8080
+	```
 * `composer install` for PHP dependencies
 * `sass public:public` for public site stylesheets
 * `tsc -p public` for public site scripts
@@ -111,6 +119,7 @@ following checks must pass before merging a PR into `main`:
   * If Sean did not author any commits in the PR, this should always pass.
 * `admin/.htaccess` looks like `admin/dev.sh` is not running
   * Checks that `admin/.htaccess` doesn't contain any uncommented `dev.sh add` lines or commented `dev.sh remove` lines.
+* The uploaded branch has origin/main and origin/test as ancestors.
 
 ### TODOs
 
@@ -173,6 +182,8 @@ The following workflows in `.github/workflows` are used for deployment:
   to `image-size-test` (`https://image-size-test.gcp.forgetmenotshelter.org`)
 * `IMAGE_SIZE_PROD_ENDPOINT`: The HTTPS endpoint mapped
   to `image-size` (`https://image-size.gcp.forgetmenotshelter.org`)
+* `PRINT_PDF_ENDPOINT`: The HTTPS endpoint for `print-pdf` (`https://us-central1-fmnas-automation.cloudfunctions.net/print-pdf`)
+* `PRINT_PDF_TEST_ENDPOINT`: The HTTPS endpoint for `print-pdf-test` (`https://us-central1-fmnas-automation.cloudfunctions.net/print-pdf-test`)
 * `ASM_WEB_DB`: The MySQL database with replicated ASM tables (see #314) for the import backend (`asm_web`) 
 * `ASM_WEB_HOST`: The MySQL host for `ASM_WEB_DB` (`fmnas.forgetmenotshelter.org`)
 * `ASM_WEB_USER`: The MySQL user for `ASM_WEB_DB` (`fmnas_asm`)
@@ -255,7 +266,8 @@ On the build machine:
 		--db_host=localhost --smtp_host=smtp.gmail.com --smtp_auth=true --smtp_security=tls --smtp_port=587 \
 		--smtp_username=me@gmail.com --smtp_password=password \
 		--image_size_endpoint=https://image-size.gcp.forgetmenotshelter.org \
-		--resize_image_endpoint=https://resize-image.gcp.forgetmenotshelter.org
+		--resize_image_endpoint=https://resize-image.gcp.forgetmenotshelter.org \
+		--print_pdf_endpoint=https://us-central1-fmnas-automation.cloudfunctions.net/print-pdf
 		```
 	* Alternatively, copy `secrets/config_sample.php` to `secrets/config.php` and update the configuration values
 	  manually.

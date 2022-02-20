@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="print-pdf" pattern="file[fmnas]:gcp/print-pdf//*" />
+</component>

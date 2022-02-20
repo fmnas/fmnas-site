@@ -218,6 +218,12 @@
  *    content: "☑ ";
  *  }
  *
+ * For any other changes to the email before sending it, a custom penultimate transformation may be supplied to
+ * FormEmailConfig::emailTransformation. This closure will be given the DOMDocument and the attachments array.
+ *
+ * After this is applied, any linked stylesheets will be inlined into the email.
+ * <link> elements without rel="stylesheet" will be removed unless they have an explicit falsy data-remove attribute.
+ *
  * TODO [#69]: Add unit tests for the form processor.
  * TODO [#70]: Split the form processor into a separate repo?
  * @noinspection GrazieInspection
@@ -225,6 +231,7 @@
 
 // Intentionally not including common.php here so this can be independent of the rest of the site someday.
 require_once __DIR__ . "/../vendor/autoload.php";
+
 use JetBrains\PhpStorm\Pure;
 use Masterminds\HTML5;
 use PHPMailer\PHPMailer\PHPMailer;
@@ -387,6 +394,14 @@ class FormEmailConfig {
 	public string $saveFile;
 
 	/**
+	 * Transformer applied immediately before rendering and sending the email.
+	 * @param DOMDocument &$dom The DOM immediately before rendering.
+	 * @param array<AttachmentInfo> &$attachments The email attachments.
+	 * @return void
+	 */
+	public ?Closure $emailTransformation;
+
+	/**
 	 * FormEmailConfig constructor.
 	 * @param EmailAddress|null $from The email for the From header, or null to dump HTML rather than emailing.
 	 * @param iterable<EmailAddress> $to The emails for the To header.
@@ -409,6 +424,7 @@ class FormEmailConfig {
 		$this->filesConverter = null;
 		$this->globalConversion = false;
 		$this->saveFile = "";
+		$this->emailTransformation = null;
 	}
 }
 
@@ -696,6 +712,17 @@ function collectElements(DOMElement|DOMDocument $root, string $tag = "*", ?Closu
 #[Pure] function attr(string $attribute, string $value): Closure {
 	return function(DOMElement $element) use ($attribute, $value): bool {
 		return $element->getAttribute($attribute) === $value;
+	};
+}
+
+/**
+ * Negates a filter.
+ * @param Closure $filter A filter (DOMElement -> bool) to apply to elements before adding them to the array.
+ * @return Closure The negation of the given filter.
+ */
+#[Pure] function not(Closure $filter): Closure {
+	return function(DOMElement $element) use ($filter): bool {
+		return !$filter($element);
 	};
 }
 
@@ -1191,6 +1218,14 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
 		}
 	}
 
+	// Mark all non-stylesheet link elements with data-remove.
+	foreach (collectElements($dom, "link", not(attr("rel", "stylesheet"))) as $link) {
+		/** @var $link DOMElement */
+		if (!$link->hasAttribute("data-remove")) {
+			$link->setAttribute("data-remove", "1");
+		}
+	}
+
 	// Process data-foreach elements.
 	foreach (collectElements($dom, "*", has("data-foreach", "data-foreach-config")) as $element) {
 		/** @var $element DOMElement */
@@ -1271,6 +1306,62 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
 		$element->parentNode?->removeChild($element);
 	}
 
+	applyDataValues($dom, $data, $values, $files);
+
+	// Apply data transformations.
+	foreach (collectElements($dom, "*", has("data-transformer")) as $element) {
+		/** @var $element DOMElement */
+		if ($element->hasAttribute("data-transformer-if") || $element->hasAttribute("data-transformer-if-config")) {
+			$lhs = $data[$element->getAttribute("data-transformer-if")] ??
+					$values[$element->getAttribute("data-transformer-if-config")] ?? null;
+
+			$rhs = true;
+			if ($element->hasAttribute("data-transformer-rhs")) {
+				$rhs = $element->getAttribute("data-transformer-rhs");
+			} else if ($element->hasAttribute("data-transformer-rhs-value")) {
+				$rhs = $data[$element->getAttribute("data-transformer-rhs-value")] ?? null;
+			} else if ($element->hasAttribute("data-transformer-rhs-config")) {
+				$rhs = $values[$element->getAttribute("data-transformer-rhs-config")] ?? null;
+			}
+
+			$result = match ($element->getAttribute("data-transformer-operator")) {
+				"lt" => $lhs < $rhs,
+				"gt" => $lhs > $rhs,
+				"le" => $lhs <= $rhs,
+				"ge" => $lhs >= $rhs,
+				"ne" => $lhs != $rhs,
+				default => $lhs == $rhs,
+			};
+
+			if (!$result) {
+				continue; // Don't apply the transformation to this element.
+			}
+		}
+		$transformer = $element->getAttribute("data-transformer");
+		if (isset($formConfig->transformers[$transformer])) {
+			if ($element->hasAttribute("data-href") || $element->hasAttribute("data-href-config")) {
+				$element->setAttribute("href", $formConfig->transformers[$transformer]($element->getAttribute("href")));
+			} else {
+				$innerHTML = "";
+				while ($element->hasChildNodes()) {
+					$innerHTML .= $dom->saveHTML($element->firstChild);
+					$element->removeChild($element->firstChild);
+				}
+				$transformed = $formConfig->transformers[$transformer]($innerHTML);
+				$fragment = $element->ownerDocument->createDocumentFragment();
+				$fragment->appendXML($transformed);
+				$element->appendChild($fragment);
+			}
+		} else {
+			echo "Warning: transformer $transformer not found; leaving value untransformed.";
+		}
+	}
+
+	// Apply any custom transformation.
+	if ($emailConfig->emailTransformation) {
+		($emailConfig->emailTransformation)($dom, $attachments);
+	}
+
 	// Merge linked style sheets into the output HTML.
 	$stylesToInject = [];
 	foreach (collectElements($dom, "link", attr("rel", "stylesheet")) as $link) {
@@ -1322,57 +1413,6 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
 		$stylesToInject[$locator] = $styles;
 		$style->nodeValue = $locator; // Can't inject right now because we would end up with HTML entities, etc.
 		$link->parentNode?->replaceChild($style, $link);
-	}
-
-	applyDataValues($dom, $data, $values, $files);
-
-	// Apply data transformations.
-	foreach (collectElements($dom, "*", has("data-transformer")) as $element) {
-		/** @var $element DOMElement */
-		if ($element->hasAttribute("data-transformer-if") || $element->hasAttribute("data-transformer-if-config")) {
-			$lhs = $data[$element->getAttribute("data-transformer-if")] ??
-					$values[$element->getAttribute("data-transformer-if-config")] ?? null;
-
-			$rhs = true;
-			if ($element->hasAttribute("data-transformer-rhs")) {
-				$rhs = $element->getAttribute("data-transformer-rhs");
-			} else if ($element->hasAttribute("data-transformer-rhs-value")) {
-				$rhs = $data[$element->getAttribute("data-transformer-rhs-value")] ?? null;
-			} else if ($element->hasAttribute("data-transformer-rhs-config")) {
-				$rhs = $values[$element->getAttribute("data-transformer-rhs-config")] ?? null;
-			}
-
-			$result = match ($element->getAttribute("data-transformer-operator")) {
-				"lt" => $lhs < $rhs,
-				"gt" => $lhs > $rhs,
-				"le" => $lhs <= $rhs,
-				"ge" => $lhs >= $rhs,
-				"ne" => $lhs != $rhs,
-				default => $lhs == $rhs,
-			};
-
-			if (!$result) {
-				continue; // Don't apply the transformation to this element.
-			}
-		}
-		$transformer = $element->getAttribute("data-transformer");
-		if (isset($formConfig->transformers[$transformer])) {
-			if ($element->hasAttribute("data-href") || $element->hasAttribute("data-href-config")) {
-				$element->setAttribute("href", $formConfig->transformers[$transformer]($element->getAttribute("href")));
-			} else {
-				$innerHTML = "";
-				while ($element->hasChildNodes()) {
-					$innerHTML .= $dom->saveHTML($element->firstChild);
-					$element->removeChild($element->firstChild);
-				}
-				$transformed = $formConfig->transformers[$transformer]($innerHTML);
-				$fragment = $element->ownerDocument->createDocumentFragment();
-				$fragment->appendXML($transformed);
-				$element->appendChild($fragment);
-			}
-		} else {
-			echo "Warning: transformer $transformer not found; leaving value untransformed.";
-		}
 	}
 
 	return new RenderedEmail(str_replace(array_keys($stylesToInject), array_values($stylesToInject), $dom->saveHTML()),

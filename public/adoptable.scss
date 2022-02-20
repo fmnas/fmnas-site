@@ -258,12 +258,20 @@ table.listings {
 		}
 	}
 
+	// TODO: Get rid of ugly selectors after target is bumped past Chrome 88/Firefox 84.
+	// Then we can use the &:not(tr.pair a)::after variant below.
+	tr:not(.soon):not(.pair) th.name a::after, tr:not(.soon) th.name a li:nth-of-type(2)::after {
+		content: ' »';
+	}
+
+
 	tr:not(.soon) th.name a {
 		border-bottom: 1pt solid var(--link-color);
 
-		&:not(tr.pair a)::after, li:nth-of-type(2)::after {
-			content: ' »';
-		}
+		// See above - :not(tr.pair a) isn't supported until Chrome 88/Firefox 84.
+		//&:not(tr.pair a)::after, li:nth-of-type(2)::after {
+		//	content: ' »';
+		//}
 
 		@media (min-width: 450px) {
 			&[id]:not([id=''])::after, li[id]:nth-of-type(2):not([id=''])::after {

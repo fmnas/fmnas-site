@@ -1,10 +1,27 @@
 <?php /** @noinspection PhpUnusedParameterInspection */
+# Copyright 2022 Google LLC
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 require_once "../../src/common.php";
-require_once "../../src/form.php";
-require_once "../../src/db.php";
-require_once "../../src/resize.php";
+require_once "$src/form.php";
+require_once "$src/db.php";
+require_once "$src/resize.php";
+require_once "$src/pdf.php";
 require_once "$t/header.php";
 require_once "$t/application_response.php";
+require_once "$t/footer.php";
+
 ini_set('memory_limit', '2048M');
 setlocale(LC_ALL, 'en_US.UTF-8');
 set_time_limit(1200);
@@ -70,8 +87,6 @@ $formConfig->handler = function(FormException $e): void {
 					'<pre>' . print_r(get_defined_vars(), true) . '</pre>',
 					[]));
 };
-
-// TODO [#65]: Email the applicant a copy of their application as a PDF.
 
 $cwd = getcwd();
 $formConfig->emails = function(array $formData) use ($cwd): array {
@@ -184,17 +199,71 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 		return isset($metadata["total_size"]) && $metadata["total_size"] < 20 * 1048576;
 	};
 	$primaryEmail->replyTo = [$applicantEmail];
+	$primaryEmail->emailTransformation =
+			function(DOMDocument $dom, array &$attachments) use ($primarySubject): void {
+				try {
+					// Render a PDF of the email.
+					$file = tempnam(sys_get_temp_dir(), "PDF");
+					renderPdf($dom, $file, "https://forgetmenotshelter.org/application/", "0.5in");
+					// Attach the PDF
+					$filename = preg_replace('/[^a-zA-Z0-9& _+-]+/', '-', $primarySubject) . ".pdf";
+					$attachments[] = new AttachmentInfo($file, $filename, "application/pdf");
+				} catch (PdfException $e) {
+					log_err($e->getMessage());
+				}
+			};
 
 	$secondaryEmail = new FormEmailConfig(
 			$shelterEmail,
 			[$applicantEmail],
 			'Your ' . _G_shortname() . ' Adoption Application',
-			['main' => false]
+			['main' => false, 'minhead' => true, 'showrentp' => true]
 	);
 	$secondaryEmail->attachFiles = false;
 	if ($formData['CEmail']) {
 		$secondaryEmail->cc = [new EmailAddress(trim($formData['CEmail']), trim($formData['CName']))];
 	}
+	$secondaryEmail->emailTransformation =
+			function(DOMDocument $dom, array &$attachments) use ($primarySubject): void {
+				try {
+					// Render a PDF of the email.
+					$file = tempnam(sys_get_temp_dir(), "PDF");
+					renderPdf($dom, $file, "https://forgetmenotshelter.org/application/", "0.5in");
+					// Attach the PDF
+					$attachments[] = new AttachmentInfo($file, "Adoption Application.pdf", "application/pdf");
+					$dom->getElementById('response_injection')?->appendChild($dom->createTextNode(
+							'A copy of your application is attached for your records.'
+					));
+				} catch (Exception $e) {
+					log_err($e->getMessage());
+					try {
+						$dom->getElementById('response_injection')?->remove();
+					} catch (Exception) {
+						// ignore.
+					}
+				}
+
+				try {
+					if (!($minhead = $dom->getElementById('minimal_header'))) {
+						throw new Exception('No minhead found');
+					}
+					$minhead->remove();
+				} catch (Exception $e) {
+					log_err($e->getMessage());
+				}
+				try {
+					// dunno why getElementById('application') doesn't work
+					foreach ($dom->getElementsByTagName('article') as $article) {
+						/** @var $article DOMElement */
+						if ($article->getAttribute("id") === "application") {
+							$article->remove();
+							break;
+						}
+					}
+				} catch (Exception $e) {
+					log_err($e->getMessage());
+				}
+			};
 
 	if (file_exists($save->saveFile)) {
 		echo '<!-- Application not sent - detected duplicate at ' . $save->saveFile . ' -->';
@@ -204,7 +273,7 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 	return [$save, $primaryEmail, $secondaryEmail];
 };
 $formConfig->fileTransformers["url"] = function(array $metadata): string {
-	return "https://" . _G_public_domain() . "/application/received/" . $metadata["hash"];
+	return "https://" . _G_public_domain() . "/application/received/" . ($metadata["hash"] ?? "UNKNOWN");
 };
 $formConfig->transformers["mailto"] = function(string $email): string {
 	return "mailto:$email";
@@ -347,8 +416,8 @@ function addressInput(string $label, string $prefix, bool $required = false): st
 	<?php
 	style();
 	emailLinks();
-	style("application", true, "20220215");
-	style("minheader", true);
+	style("application", true, "20220219");
+	style("minheader", true, "20220219");
 	?>
 	<script src="events.js"></script>
 	<script src="/formenter.js"></script>
@@ -365,7 +434,7 @@ pageHeader();
 echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 ?>
 <article>
-	<section id="thanks" data-if-config="main" data-rhs="false">
+	<section id="thanks" data-if-config="main" data-rhs="false" class="noprint">
 		<?php
 		application_response();
 		?>
@@ -379,7 +448,7 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 			</div>
 		</a>
 	</header>
-	<form method="POST" enctype="multipart/form-data" id="application" data-if-config="main" data-hidden="false">
+	<form method="POST" enctype="multipart/form-data" id="application">
 		<h2 data-if-config="main" data-rhs="false" data-hidden="false">Adoption Application</h2>
 		<p data-if-config="weblink"><a data-href-config="path">View application on the web</a>
 			<?php // TODO [#143]: Display a modal for application faq ?>
@@ -573,7 +642,7 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 					<input type="radio" id="live_both" name="will_live" value="both" required autocomplete="off">
 					<label for="live_both">Both<span data-if="will_live" data-rhs="both"> inside and outside</span></label>
 				</div>
-				<p class="rented" data-remove="true" data-hidden="0">
+				<p class="rented" data-if-config="showrentp" data-hidden="0">
 					Please attach below, email to <a data-email></a>, or fax to <?=_G_fax()?> a copy of the pet clause of your
 					lease or other written permission, along with contact information for your landlord or managing agent.
 				</p>
@@ -658,14 +727,15 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 				</section>
 			</div>
 		</section>
-		<section id="attachments" class="noprint">
-			<h3>Attachments</h3>
-			<div data-remove="true">
+		<section id="attachments">
+			<h3 class="noprint" data-remove="true">Attachments</h3>
+			<h3 data-if-config="main">Attachments</h3>
+			<div data-remove="true" class="noprint">
 				<p>Add any attachments below, or email them to <a data-email></a> after submitting your application.</p>
 				<p>If you live outside the Republic/Curlew area, please attach or email photos of your home.</p>
 			</div>
 			<input type="file" id="images" name="images[]" accept="image/*,application/pdf" capture="environment"
-					multiple autocomplete="off">
+					multiple autocomplete="off" class="noprint">
 			<span class="limits explanatory" data-remove="true">
             (max. 64 MB each, 512 MB total)
 			</span>
@@ -719,5 +789,11 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 		});
 	</script>
 </article>
+
+<?php
+ob_start();
+footer();
+echo str_replace("<footer>", "<footer data-remove='true'>", ob_get_clean());
+?>
 </body>
 </html>
