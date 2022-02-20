@@ -43,6 +43,19 @@ To get a local server running, you will need:
 
 The repository includes configs for IntelliJ/PHPStorm.
 
+The following plugins are required for full-stack development in IntelliJ IDEA Ultimate:
+* [.ignore](https://plugins.jetbrains.com/plugin/7495--ignore)
+* [Apache config (.htaccess)](https://plugins.jetbrains.com/plugin/6834-apache-config--htaccess-)
+* [Cloud Code](https://plugins.jetbrains.com/plugin/8079-cloud-code)
+* [File Watchers](https://plugins.jetbrains.com/plugin/7177-file-watchers)
+* [Go](https://plugins.jetbrains.com/plugin/9568-go)
+* [Handlebars/Mustache](https://plugins.jetbrains.com/plugin/6884-handlebars-mustache)
+* [Multirun](https://plugins.jetbrains.com/plugin/7248-multirun)
+* [PHP](https://plugins.jetbrains.com/plugin/6610-php)
+* [Vue.js](https://plugins.jetbrains.com/plugin/9442-vue-js)
+  
+The "Run local servers" multirun workflow runs all the GCP services as well as a local Vite server for the admin site.
+
 The `main` branch contains the stable [prod site](https://forgetmenotshelter.org), while the `test` branch contains the
 unstable [test site](http://fmnas.org).
 
@@ -71,7 +84,7 @@ After checking out the repository, run:
     --image_size_endpoint=https://image-size-test.gcp.forgetmenotshelter.org \
     --resize_image_endpoint=https://resize-image-test.gcp.forgetmenotshelter.org \
     --print_pdf_endpoint=https://localhost:8080
-	```
+  ```
 * `composer install` for PHP dependencies
 * `sass public:public` for public site stylesheets
 * `tsc -p public` for public site scripts

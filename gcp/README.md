@@ -6,6 +6,8 @@ These are Google Cloud Platform services used for tasks that DreamHost can't han
 
 An IntelliJ/GoLand config is included in the fmnas-site project.
 
+The "Run local servers" multirun workflow runs all the GCP services as well as a local Vite server for the admin site.
+
 These functions are deployed by the deploy-gcp-{prod,test} GitHub Actions workflows.
 
 ## resize-image
@@ -27,10 +29,21 @@ gcloud artifacts docker images list us-central1-docker.pkg.dev/fmnas-automation/
   us-central1-docker.pkg.dev/fmnas-automation/resize-image-docker/resize-image@%
 ```
 
+### Running locally
+
+The "Run resize-image" IntelliJ run configuration uses the Cloud Code extension to run the service on port 591.
+
+If it doesn't work with managed dependencies, try installing the latest minikube, skaffold, and kubectl locally and
+setting the dependency paths manually in the extension settings.
+
+This uses an automatically selected ephemeral port. To forward a specific port to the service, use
+`kubectl port-forward service/resize-image $PORT:8080`. Another IntelliJ run configuration is included to forward
+port 50000 to resize-image. This must be run while image-size is running.
+
 ### Testing
 
 ```shell
-curl -v -F height=200 -F 'image=@/path/to/in.jpg' https://resize-image-test.gcp.forgetmenotshelter.org > out.jpg
+curl -v -F height=200 -F 'image=@/path/to/in.jpg' http://localhost:591 > out.jpg
 ```
 
 ## image-size
@@ -52,21 +65,26 @@ gcloud artifacts docker images list us-central1-docker.pkg.dev/fmnas-automation/
   us-central1-docker.pkg.dev/fmnas-automation/image-size-docker/image-size@%
 ```
 
+### Running locally
+
+The "Run image-size" IntelliJ run configuration uses the Cloud Code extension to run the service. 
+
+If it doesn't work with managed dependencies, try installing the latest minikube, skaffold, and kubectl locally and 
+setting the dependency paths manually in the extension settings.
+
+This uses an automatically selected ephemeral port. To forward a specific port to the service, use
+`kubectl port-forward service/image-size $PORT:8080`. Another IntelliJ run configuration is included to forward
+port 50001 to image-size. This must be run while image-size is running.
+
 ### Testing
 
 ```shell
-curl -v -F 'image=@/path/to/in.jpg' https://image-size-test.gcp.forgetmenotshelter.org 
+curl -v -F 'image=@/path/to/in.jpg' http://localhost:8008 
 ```
 
 ## print-pdf
 
 This Cloud Function converts an uploaded HTML file to pdf.
-
-### Testing
-
-```shell
-curl -v -F 'html=@/path/to/in.html' https://us-central1-fmnas-automation.cloudfunctions.net/print-pdf-test > out.pdf 
-```
 
 ### Manual deployment
 
@@ -74,6 +92,17 @@ curl -v -F 'html=@/path/to/in.html' https://us-central1-fmnas-automation.cloudfu
 cd gcp/print-pdf
 npm run compile
 gcloud functions deploy print-pdf-test --entry-point printPdf
+```
+
+### Running locally
+
+The "Run print-pdf on port 50002" IntelliJ run configuration runs `PORT=50002 npm run watch` in the `gcp/print-pdf`
+directory.
+
+### Testing
+
+```shell
+curl -v -F 'html=@/path/to/in.html' http://localhost:50002 > out.pdf 
 ```
 
 ## Granting roles to the service account
