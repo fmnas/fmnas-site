@@ -110,7 +110,12 @@ function renderPdf(DOMDocument $original, string $target, string|null $base = nu
 				CURLOPT_RETURNTRANSFER => true,
 		]);
 		if (!($pdf = curl_exec($curl)) || curl_errno($curl)) {
+			curl_close($curl);
 			throw new PdfException("cURL Error: " . curl_error($curl) . "\n$pdf");
+		}
+		if (($code = curl_getinfo($curl, CURLINFO_RESPONSE_CODE)) !== 200) {
+			curl_close($curl);
+			throw new PdfException("Got response code $code\n$pdf");
 		}
 		curl_close($curl);
 		if (!file_put_contents($target, $pdf)) {

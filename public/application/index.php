@@ -219,7 +219,7 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 			$shelterEmail,
 			[$applicantEmail],
 			'Your ' . _G_shortname() . ' Adoption Application',
-			['main' => false, 'minhead' => true]
+			['main' => false, 'minhead' => true, 'showrentp' => true]
 	);
 	$secondaryEmail->attachFiles = false;
 	if ($formData['CEmail']) {
@@ -644,7 +644,7 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 					<input type="radio" id="live_both" name="will_live" value="both" required autocomplete="off">
 					<label for="live_both">Both<span data-if="will_live" data-rhs="both"> inside and outside</span></label>
 				</div>
-				<p class="rented" data-remove="true" data-hidden="0">
+				<p class="rented" data-if-config="showrentp" data-hidden="0">
 					Please attach below, email to <a data-email></a>, or fax to <?=_G_fax()?> a copy of the pet clause of your
 					lease or other written permission, along with contact information for your landlord or managing agent.
 				</p>
