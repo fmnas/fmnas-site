@@ -792,6 +792,7 @@ export default defineComponent({
     importPet(importable: ImportablePet, withFriend = true): Pet {
       const ADOPTION_PENDING = 3;
       const ADOPTABLE = 1;
+      const needsNewFetch = !!this.pet.species; // Will re-fetch importables if species is updated.
       const pet: Pet = {
         id: importable.id,
         name: importable.name,
@@ -829,6 +830,9 @@ export default defineComponent({
         // console.log(`Setting friendBase64, friendType ${importable.type}`);
         this.friendBase64 ??= importable.base64 ?? undefined;
         this.friendType ??= importable.type ?? undefined;
+      }
+      if (needsNewFetch) {
+        this.importables = this.fetchImportables();
       }
       return pet;
     },
