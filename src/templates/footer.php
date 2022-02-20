@@ -9,7 +9,7 @@ function footer(): void { ?>
 			fax&nbsp;<?=_G_fax()?>,
 			or email <a data-email="info"></a>.
 		<p>&copy; 2004&ndash;<?=date('Y')
-			// TODO [$6211fc50b550690009bb5a13]: Make the copyright year dependent on last change
+			// TODO [#325]: Make the copyright year dependent on last change
 			?> <?=_G_longname()?>, <?=str_replace("\n", ", ", _G_address())?></p>
 	</footer>
 <?php }
