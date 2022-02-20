@@ -157,13 +157,17 @@ jobs:
             gcp/print-pdf/**
             .github/workflows/deploy-gcp-test.yml
           since_last_remote_commit: "true"
-      - name: Set up build dependencies
+      - name: Set up Node
         if: steps.changed-files.outputs.any_changed == 'true' || github.event.action == 'workflow_dispatch'
         uses: actions/setup-node@v2
         with:
           node-version-file: 'gcp/print-pdf/.nvmrc'
           cache: 'npm'
           cache-dependency-path: gcp/print-pdf/package-lock.json
+      - name: Install build dependences
+        if: steps.changed-files.outputs.any_changed == 'true' || github.event.action == 'workflow_dispatch'
+        working-directory: gcp/print-pdf
+        run: npm install --only=dev
       - name: Compile function
         if: steps.changed-files.outputs.any_changed == 'true' || github.event.action == 'workflow_dispatch'
         working-directory: gcp/print-pdf
