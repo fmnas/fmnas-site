@@ -170,7 +170,6 @@ jobs:
           entry_point: printPdf
           memory_mb: 2048
           region: ${{ secrets.GCP_REGION }}
-          event_trigger_type: http
           https_trigger_security_level: secure_always
           timeout: 10
           min_instances: 0
