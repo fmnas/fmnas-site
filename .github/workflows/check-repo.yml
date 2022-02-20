@@ -25,8 +25,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@main
-        with:
-          fetch-depth: 0
       - name: Check for disabled file watchers
         run: if grep 'isEnabled="false"' .idea/watcherTasks.xml; then exit 1; fi
   copyright:
@@ -35,5 +33,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@main
+        with:
+          fetch-depth: 0
       - name: Check for copyright headers
         run: ./copyright-check.sh
