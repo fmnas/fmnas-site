@@ -18,6 +18,8 @@
 
 require_once 'api.php';
 
+// TODO: Make a separate endpoint to request ASM photos.
+
 endpoint(...[
 		'get' => function() use ($db): Result {
 			$asm = new mysqli(Config::$asm_host, Config::$asm_user, Config::$asm_pass, Config::$asm_db);
