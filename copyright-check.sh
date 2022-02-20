@@ -2,7 +2,6 @@
 
 failed=0
 
-# All files added between main and HEAD
 while read -r file; do
 	# Skip binary files
 	if ! grep -qI . "$file"; then
@@ -15,9 +14,7 @@ while read -r file; do
 		continue
 	fi
 
-	# If Sean created the file
 	if [[ $(git log --format=format:%aE | tail -1) = "sean@forgetmenotshelter.org" ]]; then
-		# Check for a license header
 		if head -3 "$file" | grep -qE 'Copyright 20[0-9]{2} Google LLC'; then
 			echo "License header found in $file"
 		else
@@ -25,7 +22,7 @@ while read -r file; do
 			((failed++))
 		fi
 	fi
-done <<< "$(git diff --name-only --diff-filter=A main HEAD)"
+done <<< "$(git diff --name-only --diff-filter=A origin/main HEAD)"
 
 # Status code is the number of failed files
 exit "$failed"
