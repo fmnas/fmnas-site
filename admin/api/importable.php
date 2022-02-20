@@ -18,7 +18,7 @@
 
 require_once 'api.php';
 
-// TODO: Make a separate endpoint to request ASM photos.
+// TODO [$6211a4a36e2b65000a26f47d]: Make a separate endpoint to request ASM photos.
 
 endpoint(...[
 		'get' => function() use ($db): Result {
