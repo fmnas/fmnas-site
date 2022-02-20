@@ -222,7 +222,7 @@
  * FormEmailConfig::emailTransformation. This closure will be given the DOMDocument and the attachments array.
  *
  * After this is applied, any linked stylesheets will be inlined into the email.
- * <link> elements without rel="stylesheet" will be removed.
+ * <link> elements without rel="stylesheet" will be removed unless they have an explicit falsy data-remove attribute.
  *
  * TODO [#69]: Add unit tests for the form processor.
  * TODO [#70]: Split the form processor into a separate repo?
@@ -710,6 +710,17 @@ function collectElements(DOMElement|DOMDocument $root, string $tag = "*", ?Closu
 #[Pure] function attr(string $attribute, string $value): Closure {
 	return function(DOMElement $element) use ($attribute, $value): bool {
 		return $element->getAttribute($attribute) === $value;
+	};
+}
+
+/**
+ * Negates a filter.
+ * @param Closure $filter A filter (DOMElement -> bool) to apply to elements before adding them to the array.
+ * @return Closure The negation of the given filter.
+ */
+#[Pure] function not(Closure $filter): Closure {
+	return function(DOMElement $element) use ($filter): bool {
+		return !$filter($element);
 	};
 }
 
@@ -1202,6 +1213,14 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
 		/** @var $script DOMElement */
 		if (!$script->hasAttribute("data-remove")) {
 			$script->setAttribute("data-remove", "1");
+		}
+	}
+
+	// Mark all non-stylesheet link elements with data-remove.
+	foreach (collectElements($dom, "link", not(attr("rel", "stylesheet"))) as $link) {
+		/** @var $link DOMElement */
+		if (!$link->hasAttribute("data-remove")) {
+			$link->setAttribute("data-remove", "1");
 		}
 	}
 
