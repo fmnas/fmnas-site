@@ -36,9 +36,10 @@ export const printPdf: HttpFunction = async (req, res) => {
 			}
 			const browser = await puppeteer.launch();
 			const page = await browser.newPage();
-			await page.setContent(html, {waitUntil: 'domcontentloaded'});
+			await page.setContent(html, {waitUntil: 'load'});
 			const pdf = await page.pdf({format: 'letter'});
 			await page.evaluateHandle('document.fonts.ready');
+			await page.waitForNetworkIdle({timeout: 5000, idleTime: 50});
 			res.header('Content-Type', 'application/pdf');
 			res.send(pdf);
 			await browser.close();
