@@ -231,6 +231,7 @@
 
 // Intentionally not including common.php here so this can be independent of the rest of the site someday.
 require_once __DIR__ . "/../vendor/autoload.php";
+
 use JetBrains\PhpStorm\Pure;
 use Masterminds\HTML5;
 use PHPMailer\PHPMailer\PHPMailer;
