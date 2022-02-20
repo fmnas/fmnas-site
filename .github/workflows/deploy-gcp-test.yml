@@ -160,11 +160,6 @@ jobs:
         with:
           workload_identity_provider: ${{ secrets.GCP_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
-      - name: Setup Cloud SDK
-        if: steps.changed-files.outputs.any_changed == 'true' || github.event.action == 'workflow_dispatch'
-        uses: google-github-actions/setup-gcloud@v0
-        with:
-          project_id: ${{ secrets.GCP_PROJECT }}
       - name: Deploy to Cloud Functions
         if: steps.changed-files.outputs.any_changed == 'true' || github.event.action == 'workflow_dispatch'
         id: deploy
@@ -180,3 +175,4 @@ jobs:
           timeout: 10
           min_instances: 0
           max_instances: 100
+          project_id: ${{ secrets.GCP_PROJECT }}
