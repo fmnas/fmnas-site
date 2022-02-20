@@ -43,7 +43,7 @@ function remoteSize(string $path): array {
 			CURLOPT_RETURNTRANSFER => true,
 	]);
 	$json = curl_exec($curl);
-	// TODO: Check image-size for non-200 response code.
+	// TODO [$62120302d40518000970fc2a]: Check image-size for non-200 response code.
 	if (!curl_errno($curl)) {
 		curl_close($curl);
 		$result = json_decode($json);
@@ -126,7 +126,7 @@ function resizeMultiple(array $files): array {
 			$results[$index] = new ImageResizeException("Failed to initialize cURL");
 			continue;
 		}
-		// TODO: Check resize-image for non-200 response code.
+		// TODO [$62120302d40518000970fc2b]: Check resize-image for non-200 response code.
 		if (!curl_errno($curl)) {
 			if (!file_put_contents($files[$index]->target, curl_multi_getcontent($curl))) {
 				$results[$index] = new ImageResizeException("Failed to write file");
