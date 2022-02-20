@@ -44,6 +44,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@main
       - name: Check for commented "dev.sh remove" lines
-        run: ! grep -qE '^#.*# dev.sh remove$' admin/.htaccess
+        run: "! grep -qE '^#.*# dev.sh remove$' admin/.htaccess"
       - name: Check for uncommented "dev.sh add" lines
-        run: ! grep -qE '^[^#].*# dev.sh add' admin/.htaccess
+        run: "! grep -qE '^[^#].*# dev.sh add' admin/.htaccess"
