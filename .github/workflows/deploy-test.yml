@@ -69,7 +69,8 @@ jobs:
           --asm_db="${{ secrets.ASM_WEB_DB }}" \
           --asm_host="${{ secrets.ASM_WEB_HOST }}" \
           --asm_user="${{ secrets.ASM_WEB_USER }}" \
-          --asm_pass="${{ secrets.ASM_WEB_PASS }}"
+          --asm_pass="${{ secrets.ASM_WEB_PASS }}" \
+          --print_pdf_endpoint="${{ secrets.PRINT_PDF_TEST_ENDPOINT }}"
       - name: Unignore config.php for upload
         run: echo '!secrets/config.php' >> .gitignore
       - name: Unignore vendor directory for upload
