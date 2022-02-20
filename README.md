@@ -320,8 +320,9 @@ The template context is of the type Pet. Some useful properties include:
 
 **PHP** is used as the backend language to simplify deployment to Dreamhost shared hosting.
 
-[**Vue**](https:/vuejs.org) 3 is used in the admin interface. The public site is vanilla PHP, TypeScript compiled to
-vanilla JS, and SCSS.
+[**Vue**](https:/vuejs.org) 3 is used in the admin interface.
+
+The public site is vanilla PHP, TypeScript compiled to vanilla JS, and SCSS.
 
 On the server side, listings are first compiled with [lightncandy](https://github.com/zordius/lightncandy), then parsed
 with [Parsedown](https://parsedown.org/). Any PHP code embedded in listings will **not** be executed on the server. The
