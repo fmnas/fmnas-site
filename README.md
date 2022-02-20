@@ -99,7 +99,6 @@ If the script is terminated abnormally, run it again so the cleanup steps run.
 
 #### Repo state tests
 
-<!-- TODO [#142]: Add a status check for admin/dev.sh sync and teardown -->
 The `.github/workflows/check-repo.yml` workflow checks that the repo is in a good state before merging. All of the
 following checks must pass before merging a PR into `main`:
 
@@ -110,7 +109,8 @@ following checks must pass before merging a PR into `main`:
   * Checks that a copyright header is included in all source code files added by Sean. 
   * Required because Sean's commits are copyrighted by Google and they want these.
   * If Sean did not author any commits in the PR, this should always pass.
-* All 
+* `admin/.htaccess` looks like `admin/dev.sh` is not running
+  * Checks that `admin/.htaccess` doesn't contain any uncommented `dev.sh add` lines or commented `dev.sh remove` lines.
 
 ### TODOs
 
