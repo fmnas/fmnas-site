@@ -22,13 +22,6 @@ while read -r file; do
 		continue
 	fi
 
-	# Skip generated, non-code, and template files
-	# TODO [#324]: Use an ignore file for copyright-check.sh
-	allow_regex='^\.idea/|\.(lock|json|md|txt|nvmrc|gcloudignore)$|\/go\.(mod|sum)$|^admin/templates/|^src/templates/'
-	if [[ "$file" =~ $allow_regex ]]; then
-		continue
-	fi
-
 	if [[ $(git log --format=format:%aE "$file" | tail -1) = "sean@forgetmenotshelter.org" ]]; then
 		if head -3 "$file" | grep -qE 'Copyright 20[0-9]{2} Google LLC'; then
 			echo "License header found in $file"
@@ -37,7 +30,11 @@ while read -r file; do
 			((failed++))
 		fi
 	fi
-done <<< "$(git diff --name-only --diff-filter=A origin/main HEAD)"
+done <<< "$(
+	comm -23 `# Lines only in first (sorted) input file` \
+	<(git diff --name-only --diff-filter=A origin/main HEAD | sort) `# Files added since origin/main` \
+	<(git ls-files -ciX .copyrightignore | sort) # Files ignored by .copyrightignore
+)"
 
 # Status code is the number of failed files
 exit "$failed"

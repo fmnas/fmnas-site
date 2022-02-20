@@ -1,0 +1,16 @@
+# Generated files
+go.mod
+go.sum
+composer.lock
+/.idea
+
+# Files that don't support comments
+*.json
+.nvmrc
+
+# Don't need copyright headers in documentation
+*.md
+
+# Can't use copyright headers in template files
+/admin/templates
+/src/templates
