@@ -23,7 +23,7 @@ while read -r file; do
 	fi
 
 	# Skip generated, non-code, and template files
-	# TODO [$6211caf124e8d00009527b87]: Use an ignore file for copyright-check.sh
+	# TODO [#324]: Use an ignore file for copyright-check.sh
 	allow_regex='^\.idea/|\.(lock|json|md|txt|nvmrc|gcloudignore)$|\/go\.(mod|sum)$|^admin/templates/|^src/templates/'
 	if [[ "$file" =~ $allow_regex ]]; then
 		continue
