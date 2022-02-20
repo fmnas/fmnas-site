@@ -18,7 +18,7 @@ while read -r file; do
 	# If Sean created the file
 	if [[ $(git log --format=format:%aE | tail -1) = "sean@forgetmenotshelter.org" ]]; then
 		# Check for a license header
-		if head -3 "$file" | grep -q 'Copyright 20[0-9]{2} Google LLC'; then
+		if head -3 "$file" | grep -qE 'Copyright 20[0-9]{2} Google LLC'; then
 			echo "License header found in $file"
 		else
 			echo "License header not found in $file" 1>&2
