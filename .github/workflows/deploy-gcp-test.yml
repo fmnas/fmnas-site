@@ -171,6 +171,7 @@ jobs:
         uses: google-github-actions/deploy-cloud-functions@v0
         with:
           name: print-pdf-test
+          runtime: node16
           entry_point: printPdf
           memory_mb: 2048
           region: ${{ secrets.GCP_REGION }}
