@@ -325,7 +325,7 @@ vanilla JS, and SCSS.
 
 On the server side, listings are first compiled with [lightncandy](https://github.com/zordius/lightncandy), then parsed
 with [Parsedown](https://parsedown.org/). Any PHP code embedded in listings will **not** be executed on the server. The
-resulting HTML is cached (TODO); the cached assets are automatically deleted when listings are updated through the admin
+resulting HTML is cached; the cached assets are automatically deleted when listings are updated through the admin
 interface, but must be manually deleted if changes are made to the asset or corresponding database records outside the
 admin interface.
 
