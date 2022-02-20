@@ -14,11 +14,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 require_once "../../src/common.php";
-require_once "../../src/form.php";
-require_once "../../src/db.php";
-require_once "../../src/resize.php";
+require_once "$src/form.php";
+require_once "$src/db.php";
+require_once "$src/resize.php";
+require_once "$src/pdf.php";
 require_once "$t/header.php";
 require_once "$t/application_response.php";
+
+use Masterminds\HTML5;
+
 ini_set('memory_limit', '2048M');
 setlocale(LC_ALL, 'en_US.UTF-8');
 set_time_limit(1200);
@@ -198,6 +202,20 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 		return isset($metadata["total_size"]) && $metadata["total_size"] < 20 * 1048576;
 	};
 	$primaryEmail->replyTo = [$applicantEmail];
+	$primaryEmail->emailTransformation =
+			function(DOMDocument $dom, array &$attachments) use ($primarySubject): void {
+				try {
+					// Render a PDF of the email.
+					$file = tempnam(sys_get_temp_dir(), "PDF");
+					renderPdf($dom, $file, "https://forgetmenotshelter.org/application/");
+					// Attach the PDF
+					$filename = preg_replace('/[^a-zA-Z0-9& _+-]+/', '-', $primarySubject) . ".pdf";
+					$attachments[] =
+							new AttachmentInfo($file, $filename, "application/pdf");
+				} catch (PdfException $e) {
+					log_err($e->getMessage());
+				}
+			};
 
 	$secondaryEmail = new FormEmailConfig(
 			$shelterEmail,
@@ -209,16 +227,17 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 	if ($formData['CEmail']) {
 		$secondaryEmail->cc = [new EmailAddress(trim($formData['CEmail']), trim($formData['CName']))];
 	}
+	$secondaryEmail->emailTransformation = $primaryEmail->emailTransformation;
 
 	if (file_exists($save->saveFile)) {
 		echo '<!-- Application not sent - detected duplicate at ' . $save->saveFile . ' -->';
-		return [];
+//		return [];
 	}
 
 	return [$save, $primaryEmail, $secondaryEmail];
 };
 $formConfig->fileTransformers["url"] = function(array $metadata): string {
-	return "https://" . _G_public_domain() . "/application/received/" . $metadata["hash"];
+	return "https://" . _G_public_domain() . "/application/received/" . ($metadata["hash"] ?? "UNKNOWN");
 };
 $formConfig->transformers["mailto"] = function(string $email): string {
 	return "mailto:$email";
@@ -379,7 +398,7 @@ pageHeader();
 echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 ?>
 <article>
-	<section id="thanks" data-if-config="main" data-rhs="false">
+	<section id="thanks" data-if-config="main" data-rhs="false" class="noprint">
 		<?php
 		application_response();
 		?>
@@ -393,7 +412,7 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 			</div>
 		</a>
 	</header>
-	<form method="POST" enctype="multipart/form-data" id="application" data-if-config="main" data-hidden="false">
+	<form method="POST" enctype="multipart/form-data" id="application">
 		<h2 data-if-config="main" data-rhs="false" data-hidden="false">Adoption Application</h2>
 		<p data-if-config="weblink"><a data-href-config="path">View application on the web</a>
 			<?php // TODO [#143]: Display a modal for application faq ?>
@@ -733,5 +752,21 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 		});
 	</script>
 </article>
+
+<ul>
+	<li><a href="index.php">Relative link</a></li>
+	<li><a href="/index.php">Link starting with /</a></li>
+	<li><a href="../index.php">Link starting with ../</a></li>
+	<li><a href="./index.php">Link starting with ./</a></li>
+	<li><a href="//forgetmenotshelter.org">Link starting with //</a></li>
+	<li><a href="https://forgetmenotshelter.org">Link starting with https://</a></li>
+	<li><a href="mailto:adopt@forgetmenotshelter.org">Link starting with mailto:</a></li>
+	<li><a href="#index.php">Link starting with #</a></li>
+	<li><a href="?a=b#c">Link starting with ? and with #</a></li>
+	<li><a href="/?a=b">Link starting with / and with ?</a></li>
+	<li><a href="x/y/z?a=b#c">Link to x/y/z?a=b#c</a></li>
+	<li><a href="/x/y/z?a=b#c">Link to /x/y/z?a=b#c</a></li>
+	<li><a href="//example.com/x/y/z/?a=b#c">Link to //example.com/x/y/z?a=b#c</a></li>
+</ul>
 </body>
 </html>

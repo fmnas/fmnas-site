@@ -397,6 +397,7 @@ class FormEmailConfig {
 	 * Transformer applied immediately before rendering and sending the email.
 	 * @param DOMDocument &$dom The DOM immediately before rendering.
 	 * @param array<AttachmentInfo> &$attachments The email attachments.
+	 * @return void
 	 */
 	public ?Closure $emailTransformation;
 
@@ -423,6 +424,7 @@ class FormEmailConfig {
 		$this->filesConverter = null;
 		$this->globalConversion = false;
 		$this->saveFile = "";
+		$this->emailTransformation = null;
 	}
 }
 
