@@ -261,6 +261,7 @@ table.listings {
 	tr:not(.soon) th.name a {
 		border-bottom: 1pt solid var(--link-color);
 
+		// TODO: :not(tr.pair a) isn't supported until Chrome 88/Firefox 84.
 		&:not(tr.pair a)::after, li:nth-of-type(2)::after {
 			content: ' »';
 		}
