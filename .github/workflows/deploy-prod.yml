@@ -66,10 +66,10 @@ jobs:
           --smtp_password="${{ secrets.SMTP_PASSWORD }}" \
           --image_size_endpoint="${{ secrets.IMAGE_SIZE_PROD_ENDPOINT }}" \
           --resize_image_endpoint="${{ secrets.RESIZE_IMAGE_PROD_ENDPOINT }}" \
-          --asm_db="${{ secrets.ASM_DB }}" \
-          --asm_host="${{ secrets.ASM_HOST }}" \
-          --asm_user="${{ secrets.DB_USERNAME }}" \
-          --asm_pass="${{ secrets.DB_PASS }}"
+          --asm_db="${{ secrets.ASM_WEB_DB }}" \
+          --asm_host="${{ secrets.ASM_WEB_HOST }}" \
+          --asm_user="${{ secrets.ASM_WEB_USER }}" \
+          --asm_pass="${{ secrets.ASM_WEB_PASS }}"
       - name: Require HTTPS to access public site
         run: cat public/.htaccess-prod >> public/.htaccess
       - name: Restrict access to admin site
