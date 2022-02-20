@@ -119,6 +119,7 @@ following checks must pass before merging a PR into `main`:
   * If Sean did not author any commits in the PR, this should always pass.
 * `admin/.htaccess` looks like `admin/dev.sh` is not running
   * Checks that `admin/.htaccess` doesn't contain any uncommented `dev.sh add` lines or commented `dev.sh remove` lines.
+* The uploaded branch has origin/main and origin/test as ancestors.
 
 ### TODOs
 

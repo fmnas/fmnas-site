@@ -47,3 +47,15 @@ jobs:
         run: "! grep -qE '^#.*# dev.sh remove$' admin/.htaccess"
       - name: Check for uncommented "dev.sh add" lines
         run: "! grep -qE '^[^#].*# dev.sh add' admin/.htaccess"
+  base:
+    name: Branch is past origin/main and origin/test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+        with:
+          fetch-depth: 0
+      - name: Check that branch is past origin/main
+        run: git merge-base --is-ancestor origin/main HEAD
+      - name: Check that branch is past origin/test
+        run: git merge-base --is-ancestor origin/test HEAD
