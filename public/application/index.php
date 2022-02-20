@@ -88,8 +88,6 @@ $formConfig->handler = function(FormException $e): void {
 					[]));
 };
 
-// TODO [#65]: Email the applicant a copy of their application as a PDF.
-
 $cwd = getcwd();
 $formConfig->emails = function(array $formData) use ($cwd): array {
 	$shelterEmail = new EmailAddress(_G_default_email_user() . '@' . _G_public_domain(), _G_shortname());
