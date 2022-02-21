@@ -21,8 +21,8 @@ on:
       - '.github/workflows/regenerate-images-prod.yml'
       - 'src/resize.php'
 jobs:
-  regenerate:
-    name: Regenerate image cache
+  wait:
+    name: Wait for site deployment
     runs-on: ubuntu-latest
     steps:
       - name: Wait for site deployment
@@ -33,5 +33,31 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           wait-interval: 10
           allowed-conclusions: success
-      - name: Request image regeneration
-        run: curl -u ${{ secrets.HTTP_CREDENTIALS }} ${{ secrets.PROD_IMAGES_API }}
+  regenerate:
+    name: Request image regeneration
+    needs: wait
+    runs-on: ubuntu-latest
+    steps:
+      - name: Hit images API endpoint
+        run: curl -f -u ${{ secrets.HTTP_CREDENTIALS }} ${{ secrets.PROD_IMAGES_API }}
+  badge:
+    name: Update status badge
+    needs:
+      - wait
+      - regenerate
+    if: |
+      always() && needs.wait.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update badge to broken/important status
+        uses: schneegans/dynamic-badges-action@v1.1.0
+        with:
+          auth: ${{ secrets.TORTOISEWRATH_GIST_TOKEN }}
+          gistID: e38e961e5c08b2bdf4d78c800d851203
+          filename: deploy-prod.json
+          label: test
+          message: broken
+          namedLogo: php
+          logoColor: ccc
+          color: important
+

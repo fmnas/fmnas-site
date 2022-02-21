@@ -119,7 +119,7 @@ jobs:
           script: rm ${{ secrets.TEST_SITE_ROOT }}/src/generated.php ${{ secrets.TEST_SITE_ROOT }}/public/assets/cache/*.html || echo "Error $?"
       - name: Regenerate generated.php
         id: generate-success
-        run: curl -u ${{ secrets.HTTP_CREDENTIALS }} ${{ secrets.TEST_SITE_URL }}
+        run: curl -f -u ${{ secrets.HTTP_CREDENTIALS }} ${{ secrets.TEST_SITE_URL }}
   badge:
     name: Update status badge
     if: ${{ always() }}

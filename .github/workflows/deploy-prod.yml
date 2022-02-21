@@ -116,4 +116,4 @@ jobs:
           password: ${{ secrets.PROD_SFTP_PASS }}
           script: rm ${{ secrets.PROD_SITE_ROOT }}/src/generated.php ${{ secrets.PROD_SITE_ROOT }}/public/assets/cache/*.html || echo "Error $?"
       - name: Regenerate generated.php
-        run: curl ${{ secrets.PROD_SITE_URL }}
+        run: curl -f ${{ secrets.PROD_SITE_URL }}
