@@ -1,7 +1,6 @@
 # fmnas-site
 
-[![GCP status (prod)](https://img.shields.io/github/workflow/status/fmnas/fmnas-site/Deploy%20GCP%20services%20(prod)/main?label=prod&logo=googlecloud&logoColor=ccc)](https://github.com/fmnas/fmnas-site/actions/workflows/deploy-gcp-prod.yml)
-[![GCP status (test)](https://img.shields.io/github/workflow/status/fmnas/fmnas-site/Deploy%20GCP%20services%20(test)/test?label=prod&logo=googlecloud&logoColor=ccc)](https://github.com/fmnas/fmnas-site/actions/workflows/deploy-gcp-test.yml)
+![GCP (test)](https://byob.yarr.is/fmnas/fmnas-site/gcp-test)
 
 This repository contains source code for the website of the
 [Forget Me Not Animal Shelter](https://forgetmenotshelter.org)
