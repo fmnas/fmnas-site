@@ -155,7 +155,7 @@ jobs:
         with:
           files: |
             gcp/print-pdf/**
-            .github/workflows/deploy-gcp-main.yml
+            .github/workflows/deploy-gcp-prod.yml
           since_last_remote_commit: "true"
       - name: Set up Node
         if: steps.changed-files.outputs.any_changed == 'true' || github.event.action == 'workflow_dispatch'
@@ -211,7 +211,7 @@ jobs:
         with:
           files: |
             gcp/minify-html/**
-            .github/workflows/deploy-gcp-main.yml
+            .github/workflows/deploy-gcp-prod.yml
           since_last_remote_commit: "true"
       - name: Set up Node
         if: steps.changed-files.outputs.any_changed == 'true' || github.event.action == 'workflow_dispatch'
