@@ -9,8 +9,8 @@
 [![handoff progress](https://img.shields.io/github/milestones/progress/fmnas/fmnas-site/7)](https://github.com/fmnas/fmnas-site/milestone/7)
 [![other issues](https://img.shields.io/github/milestones/issues-open/fmnas/fmnas-site/6?color=blue&label=other)](https://github.com/fmnas/fmnas-site/milestone/6)  
 [![public site status](https://img.shields.io/website?down_color=critical&label=public&up_color=5021da&url=https%3A%2F%2Fforgetmenotshelter.org)](https://forgetmenotshelter.org)
-![ASM status](https://img.shields.io/website?down_color=critical&label=asm3&up_color=009d00&url=http%3A%2F%2Fasm.forgetmenotshelter.org)
 ![admin status](https://img.shields.io/website?down_color=important&label=admin&up_color=informational&url=https%3A%2F%2Fadmin.forgetmenotshelter.org)
+![ASM status](https://img.shields.io/website?down_color=critical&label=asm3&up_color=009d00&url=http%3A%2F%2Fasm.forgetmenotshelter.org)
 [![backup status](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/TortoiseWrath/e38e961e5c08b2bdf4d78c800d851203/raw/backups.json)](https://github.com/fmnas/fmnas-site/actions/workflows/backups.yml)
 
 
