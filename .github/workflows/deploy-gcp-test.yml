@@ -242,7 +242,7 @@ jobs:
           name: minify-html-test
           source_dir: gcp/minify-html
           runtime: nodejs16
-          entry_point: minify-html
+          entry_point: minify
           memory_mb: 2048
           region: ${{ secrets.GCP_REGION }}
           https_trigger_security_level: secure_always
