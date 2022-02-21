@@ -54,7 +54,7 @@ export const minify: HttpFunction = async (req, res) => {
 			await page.exposeFunction('decodeEntities', decode);
 			let decodeEntities: (x: string) => Promise<string>;
 
-			// TODO [$6212f24a7dc3e7000b3319d5]: Remove undisplayed elements in minifier.
+			// TODO [#334]: Remove undisplayed elements in minifier.
 			// This is too aggressive for the application, since they can still be found in CSS selectors (div.hidden + div).
 			// await page.evaluate(() => {
 			// 	const remove: Element[] = [];
@@ -73,7 +73,7 @@ export const minify: HttpFunction = async (req, res) => {
 			// });
 
 			// Extract styles.
-			// TODO [$6212f24a7dc3e7000b3319d6]: Replace complex selectors with classes.
+			// TODO [#335]: Replace complex selectors with classes.
 			let styles: string = await page.evaluate(async (): Promise<string> => {
 				const remove: Element[] = [];
 				let styles = '';
@@ -137,7 +137,7 @@ export const minify: HttpFunction = async (req, res) => {
 				to: undefined,
 			});
 
-			// TODO [$6212f24a7dc3e7000b3319d7]: Soft wrap CSS in minifier.
+			// TODO [#336]: Soft wrap CSS in minifier.
 
 			// noinspection HtmlRequiredTitleElement
 			const inlined = htmlWithoutStyles.replace('<head>', `<head><style>${cssResult.css}</style>`);
