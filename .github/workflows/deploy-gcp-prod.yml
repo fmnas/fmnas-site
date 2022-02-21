@@ -12,7 +12,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Deploy GCP services on push
 name: Deploy GCP services (prod)
 on:
   push:

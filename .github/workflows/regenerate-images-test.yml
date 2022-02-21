@@ -18,6 +18,7 @@ on:
     branches:
       - test
     paths:
+      - '.github/workflows/regenerate-images-test.yml'
       - 'src/resize.php'
 jobs:
   regenerate:
