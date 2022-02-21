@@ -268,7 +268,7 @@ jobs:
           if [[ "${{ needs.print-pdf.result }}" != "success" ]]; then ((failures++)); fi
           if [[ "${{ needs.minify-html.result }}" != "success" ]]; then ((failures++)); fi
           if [[ "$failures" = "$total" ]]; then echo "color=critical" >> $GITHUB_ENV
-          elif [[ "$failures" = 0 ]]; then echo "color=informational" >> $GITHUB_ENV
+          elif [[ "$failures" = 0 ]]; then echo "color=success" >> $GITHUB_ENV
           else echo "color=important" >> $GITHUB_ENV; fi
           echo "result=$((total - failures))/$total" >> $GITHUB_ENV
       - name: Update badge

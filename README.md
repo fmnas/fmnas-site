@@ -1,6 +1,7 @@
 # fmnas-site
 
 [![GCP (test)](https://gist.githubusercontent.com/TortoiseWrath/e38e961e5c08b2bdf4d78c800d851203/raw/gcp-test.json)](https://github.com/fmnas/fmnas-site/actions/workflows/deploy-gcp-test.yml)
+[![deploy (test)](https://gist.githubusercontent.com/TortoiseWrath/e38e961e5c08b2bdf4d78c800d851203/raw/deploy-test.json)](https://github.com/fmnas/fmnas-site/actions/workflows/deploy-test.yml)
 
 This repository contains source code for the website of the
 [Forget Me Not Animal Shelter](https://forgetmenotshelter.org)

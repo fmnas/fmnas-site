@@ -19,9 +19,13 @@ on:
     branches:
       - test
 jobs:
-  upload:
+  deploy:
     name: Deploy test website
     runs-on: ubuntu-latest
+    outputs:
+      build-status: ${{ steps.build-success.outcome }}
+      deploy-status: ${{ steps.deploy-success.outcome }}
+      generate-status: ${{ steps.generate-success.outcome }}
     steps:
       - name: Checkout test
         uses: actions/checkout@main
@@ -52,6 +56,7 @@ jobs:
       - name: Build admin client
         run: npx vite build admin/client
       - name: Set config values
+        id: build-success
         run: |
           npx ts-node handleparse.ts secrets/config.php.hbs \
           --db_name="${{ secrets.TEST_DB_NAME }}" \
@@ -98,6 +103,7 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           wait-interval: 10
       - name: SFTP upload
+        id: deploy-success
         uses: SamKirkland/FTP-Deploy-Action@3.0.0
         with:
           ftp-server: sftp://${{ secrets.TEST_SFTP_HOST }}${{ secrets.TEST_SITE_ROOT }}/
@@ -112,4 +118,32 @@ jobs:
           password: ${{ secrets.TEST_SFTP_PASS }}
           script: rm ${{ secrets.TEST_SITE_ROOT }}/src/generated.php ${{ secrets.TEST_SITE_ROOT }}/public/assets/cache/*.html || echo "Error $?"
       - name: Regenerate generated.php
+        id: generate-success
         run: curl -u ${{ secrets.HTTP_CREDENTIALS }} ${{ secrets.TEST_SITE_URL }}
+  badge:
+    name: Update status badge
+    if: ${{ always() }}
+    needs:
+      - deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check status
+        run: |
+          if [[ "${{ needs.deploy.outputs.build-status }}" != "success" ]]; then result=failing; color=critical
+          elif [[ "${{ needs.deploy.outputs.deploy-status }}" != "success" ]]; then result=stale; color=important
+          elif [[ "${{ needs.deploy.outputs.generate-status }}" != "success" ]]; then result=broken; color=critical
+          else result=passing; color=success
+          fi
+          echo "color=$color" >> $GITHUB_ENV
+          echo "result=$result" >> $GITHUB_ENV
+      - name: Update badge
+        uses: schneegans/dynamic-badges-action@v1.1.0
+        with:
+          auth: ${{ secrets.TORTOISEWRATH_GIST_TOKEN }}
+          gistID: e38e961e5c08b2bdf4d78c800d851203
+          filename: deploy-test.json
+          label: test
+          message: ${{ env.result }}
+          namedLogo: php
+          logoColor: ccc
+          color: ${{ env.color }}
