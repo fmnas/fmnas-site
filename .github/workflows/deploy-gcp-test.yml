@@ -260,7 +260,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Count failures
-        run: cat <<EOF | bash
+        run: |
           failures=0
           if [[ "${{ needs.resize-image.result }}" != "success" ]]; then ((failures++)); fi
           if [[ "${{ needs.image-size.result }}" != "success" ]]; then ((failures++)); fi
@@ -269,7 +269,6 @@ jobs:
           if [[ "$failures" = 4 ]]; then echo "color=critical" >> $GITHUB_ENV;
           elif [[ "$failures" = 0 ]]; then echo "color=informational" >> $GITHUB_ENV;
           else echo "color=important" >> $GITHUB_ENV; fi
-          EOF
       - name: Update badge
         uses: RubbaBoy/BYOB@v1.2.1
         with:
