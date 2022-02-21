@@ -3,17 +3,15 @@
 [![GCP (prod)](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/TortoiseWrath/e38e961e5c08b2bdf4d78c800d851203/raw/gcp-prod.json)](https://github.com/fmnas/fmnas-site/actions/workflows/deploy-gcp-prod.yml)
 [![deploy (prod)](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/TortoiseWrath/e38e961e5c08b2bdf4d78c800d851203/raw/deploy-prod.json)](https://github.com/fmnas/fmnas-site/actions/workflows/deploy-prod.yml)
 [![GCP (test)](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/TortoiseWrath/e38e961e5c08b2bdf4d78c800d851203/raw/gcp-test.json)](https://github.com/fmnas/fmnas-site/actions/workflows/deploy-gcp-test.yml)
-[![deploy (test)](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/TortoiseWrath/e38e961e5c08b2bdf4d78c800d851203/raw/deploy-test.json)](https://github.com/fmnas/fmnas-site/actions/workflows/deploy-test.yml)  
-[![gamma progress](https://img.shields.io/github/milestones/progress/fmnas/fmnas-site/5)](https://github.com/fmnas/fmnas-site/milestone/5)
-[![release progress](https://img.shields.io/github/milestones/progress/fmnas/fmnas-site/3)](https://github.com/fmnas/fmnas-site/milestone/3)
-[![handoff progress](https://img.shields.io/github/milestones/progress/fmnas/fmnas-site/7)](https://github.com/fmnas/fmnas-site/milestone/7)
-[![other issues](https://img.shields.io/github/milestones/issues-open/fmnas/fmnas-site/6?color=blue&label=other)](https://github.com/fmnas/fmnas-site/milestone/6)  
+[![deploy (test)](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/TortoiseWrath/e38e961e5c08b2bdf4d78c800d851203/raw/deploy-test.json)](https://github.com/fmnas/fmnas-site/actions/workflows/deploy-test.yml)
 [![public site status](https://img.shields.io/website?down_color=critical&label=public&up_color=5021da&url=https%3A%2F%2Fforgetmenotshelter.org)](https://forgetmenotshelter.org)
 [![admin status](https://img.shields.io/website?down_color=important&label=admin&up_color=informational&url=https%3A%2F%2Fadmin.forgetmenotshelter.org)](https://admin.forgetmenotshelter.org)
 [![ASM status](https://img.shields.io/website?down_color=critical&label=asm3&up_color=009d00&url=http%3A%2F%2Fasm.forgetmenotshelter.org)](http://asm.forgetmenotshelter.org)
-[![backup status](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/TortoiseWrath/e38e961e5c08b2bdf4d78c800d851203/raw/backups.json)](https://github.com/fmnas/fmnas-site/actions/workflows/backups.yml)
-
-
+[![backup status](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/TortoiseWrath/e38e961e5c08b2bdf4d78c800d851203/raw/backups.json)](https://github.com/fmnas/fmnas-site/actions/workflows/backups.yml)  
+[![gamma progress](https://img.shields.io/github/milestones/progress/fmnas/fmnas-site/5)](https://github.com/fmnas/fmnas-site/milestone/5)
+[![release progress](https://img.shields.io/github/milestones/progress/fmnas/fmnas-site/3)](https://github.com/fmnas/fmnas-site/milestone/3)
+[![handoff progress](https://img.shields.io/github/milestones/progress/fmnas/fmnas-site/7)](https://github.com/fmnas/fmnas-site/milestone/7)
+[![other issues](https://img.shields.io/github/milestones/issues-open/fmnas/fmnas-site/6?color=blue&label=other)](https://github.com/fmnas/fmnas-site/milestone/6)
 
 This repository contains source code for the website of the
 [Forget Me Not Animal Shelter](https://forgetmenotshelter.org)
