@@ -70,7 +70,6 @@ jobs:
           filename: backups.json
           label: backup
           message: ${{ steps.date.outputs.value }}
-          logoColor: ccc
           color: critical
   badge-success:
     name: Update status badge (success)
@@ -94,5 +93,4 @@ jobs:
           filename: backups.json
           label: backup
           message: ${{ steps.date.outputs.date }}
-          logoColor: ccc
           color: informational

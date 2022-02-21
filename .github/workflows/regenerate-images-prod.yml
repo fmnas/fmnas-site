@@ -46,7 +46,7 @@ jobs:
       - wait
       - regenerate
     if: |
-      always() && needs.wait.result == 'success'
+      always() && needs.wait.result == 'success' && needs.regenerate.result != 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Update badge to broken/important status
