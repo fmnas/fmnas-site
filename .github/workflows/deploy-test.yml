@@ -19,8 +19,8 @@ on:
     branches:
       - test
 jobs:
-  setup:
-    name: Set up repo
+  upload:
+    name: Deploy test website
     runs-on: ubuntu-latest
     steps:
       - name: Checkout test
@@ -29,11 +29,6 @@ jobs:
           ref: test
       - name: Create local branch
         run: git checkout -b test_deployment
-  deploy:
-    name: Deploy test website
-    needs: setup
-    runs-on: ubuntu-latest
-    steps:
       - name: Set up Node
         uses: actions/setup-node@v2
         with:
