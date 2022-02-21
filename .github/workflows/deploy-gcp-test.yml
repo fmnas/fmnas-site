@@ -231,7 +231,7 @@ jobs:
         if: steps.changed-files.outputs.any_changed == 'true' || github.event.action == 'workflow_dispatch'
         uses: google-github-actions/auth@v0
         with:
-          workload_identity_provider: ${{ secrets.GCP_IDENTITY_PROVIER }}
+          workload_identity_provider: ${{ secrets.GCP_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
       - name: Deploy to Cloud Functions
         if: steps.changed-files.outputs.any_changed == 'true' || github.event.action == 'workflow_dispatch'
@@ -249,7 +249,8 @@ jobs:
           min_instances: 0
           max_instances: 100
           project_id: ${{ secrets.GCP_PROJECT }}
-  badges:
+  badge:
+    name: Update status badge
     if: ${{ always() }}
     needs:
       - resize-image
@@ -258,8 +259,8 @@ jobs:
       - minify-html
     runs-on: ubuntu-latest
     steps:
-      - name: Calculate result
-        run: |
+      - name: Count failures
+        run: cat <<EOF | bash
           failures=0
           if [[ "${{ needs.resize-image.result }}" != "success" ]]; then ((failures++)); fi
           if [[ "${{ needs.image-size.result }}" != "success" ]]; then ((failures++)); fi
@@ -268,7 +269,8 @@ jobs:
           if [[ "$failures" = 4 ]]; then echo "color=critical" >> $GITHUB_ENV;
           elif [[ "$failures" = 0 ]]; then echo "color=informational" >> $GITHUB_ENV;
           else echo "color=important" >> $GITHUB_ENV; fi
-      - name: GCP test badge
+          EOF
+      - name: Update badge
         uses: RubbaBoy/BYOB@v1.2.1
         with:
           NAME: gcp-test
