@@ -78,7 +78,7 @@ jobs:
     steps:
       - name: Get current date
         id: date
-        run: echo "::set-output name=date::$(date +'%-m/%d/%y')"
+        run: echo "::set-output name=date::$(date +'%-m/%d')"
       - name: Update persisted success date
         uses: aaimio/set-persistent-value@v1.1.2
         with:
@@ -93,4 +93,4 @@ jobs:
           filename: backups.json
           label: backup
           message: ${{ steps.date.outputs.date }}
-          color: informational
+          color: 5021da
