@@ -117,3 +117,30 @@ jobs:
           script: rm ${{ secrets.PROD_SITE_ROOT }}/src/generated.php ${{ secrets.PROD_SITE_ROOT }}/public/assets/cache/*.html || echo "Error $?"
       - name: Regenerate generated.php
         run: curl -f ${{ secrets.PROD_SITE_URL }}
+  badge:
+    name: Update status badge
+    if: ${{ always() }}
+    needs:
+      - deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check status
+        run: |
+          if [[ "${{ needs.deploy.outputs.build-status }}" != "success" ]]; then result=failing; color=critical
+          elif [[ "${{ needs.deploy.outputs.deploy-status }}" != "success" ]]; then result=stale; color=important
+          elif [[ "${{ needs.deploy.outputs.generate-status }}" != "success" ]]; then result=broken; color=critical
+          else result=passing; color=success
+          fi
+          echo "color=$color" >> $GITHUB_ENV
+          echo "result=$result" >> $GITHUB_ENV
+      - name: Update badge
+        uses: schneegans/dynamic-badges-action@v1.1.0
+        with:
+          auth: ${{ secrets.TORTOISEWRATH_GIST_TOKEN }}
+          gistID: e38e961e5c08b2bdf4d78c800d851203
+          filename: deploy-prod.json
+          label: prod
+          message: ${{ env.result }}
+          namedLogo: php
+          logoColor: ccc
+          color: ${{ env.color }}
