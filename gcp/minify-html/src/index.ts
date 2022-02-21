@@ -94,7 +94,7 @@ export const minify: HttpFunction = async (req, res) => {
 					}
 				}
 				for (const el of document.getElementsByTagName('*')) {
-					if (el.tagName === 'STYLE' || (el.tagName === 'LINK' && el.getAttribute('rel') === 'stylesheet')) {
+					if (el.tagName === 'STYLE') {
 						remove.push(el);
 						continue;
 					}
