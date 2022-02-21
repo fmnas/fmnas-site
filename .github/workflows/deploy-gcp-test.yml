@@ -270,7 +270,7 @@ jobs:
           if [[ "$failures" = "$total" ]]; then echo "color=critical" >> $GITHUB_ENV
           elif [[ "$failures" = 0 ]]; then echo "color=informational" >> $GITHUB_ENV
           else echo "color=important" >> $GITHUB_ENV; fi
-          echo "result=$((total - failures))/$total >> $GITHUB_ENV
+          echo "result=$((total - failures))/$total" >> $GITHUB_ENV
       - name: Update badge
         uses: schneegans/dynamic-badges-action@v1.1.0
         with:
