@@ -1,0 +1,14 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Run minify-html on port 50003" type="js.build_tools.npm">
+    <package-json value="$PROJECT_DIR$/gcp/minify-html/package.json" />
+    <command value="run" />
+    <scripts>
+      <script value="watch" />
+    </scripts>
+    <node-interpreter value="project" />
+    <envs>
+      <env name="PORT" value="50003" />
+    </envs>
+    <method v="2" />
+  </configuration>
+</component>

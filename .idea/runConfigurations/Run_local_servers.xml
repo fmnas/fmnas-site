@@ -6,6 +6,7 @@
     <runConfiguration name="Forward port 50001 to image-size" type="Shell Script" />
     <runConfiguration name="Forward port 50000 to resize-image" type="Shell Script" />
     <runConfiguration name="Run admin site dev server" type="Shell Script" />
+    <runConfiguration name="Run minify-html on port 50003" type="npm" />
     <method v="2" />
   </configuration>
 </component>

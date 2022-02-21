@@ -20,7 +20,9 @@ require_once __DIR__ . '/../secrets/config.php';
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/base.php';
 
-class PdfException extends Exception {
+use Masterminds\HTML5;
+
+class MinifyException extends Exception {
 }
 
 // TODO [#274]: Google Cloud authentication for remote functions
@@ -28,60 +30,47 @@ class PdfException extends Exception {
 // https://cloud.google.com/docs/authentication/production#auth-cloud-implicit-php
 
 /**
- * Render a DOMDocument to a PDF.
- * @param DOMDocument $original DOM to render to a PDF
- * @param string $target File to which to save the rendered PDF
+ * Remotely minify an HTML string.
+ * @param string $html HTML to minify
  * @param ?string $base Base URL to use for relative hrefs
- * @param ?string $margin Margin for the root element
- * @return void
- * @throws PdfException
+ * @return string the minified HTML
+ * @throws MinifyException
  */
-function renderPdf(DOMDocument $original, string $target, string|null $base = null, string|null $margin = null): void {
-	$base ??= (pathinfo($_SERVER['REQUEST_URI'])['dirname'] ?? '.') . '/';
+function remoteMinify(string $html, string|null $base = null): string {
 	try {
-		$dom = applyBase($original, $base);
-
-		if ($margin) {
-			$root = $dom->getElementsByTagName('html')[0] ?? $dom->firstElementChild;
-			$style = $root?->hasAttribute("style") ? $root?->getAttribute("style") : "";
-			if ($style && !str_ends_with($style, ';')) {
-				$style .= ';';
-			}
-			$style .= "margin: $margin;";
-			$root?->setAttribute("style", $style);
-		}
+		$html5 = new HTML5(["disable_html_ns" => true]);
+		$dom = $html5->loadHTML($html);
+		applyBase($dom, $base, true);
 
 		$file = tempnam(sys_get_temp_dir(), "HTM");
 		if (!$html = $dom->saveHTML()) {
-			throw new PdfException("Error generating HTML");
+			throw new MinifyException("Error generating HTML");
 		}
 		if (!file_put_contents($file, $html)) {
-			throw new PdfException("Error writing temp file $file");
+			throw new MinifyException("Error writing temp file $file");
 		}
 
 		$curl = curl_init();
 		if (!$curl) {
-			throw new PdfException("Failed to initialize cURL");
+			throw new MinifyException("Failed to initialize cURL");
 		}
 		curl_setopt_array($curl, [
-				CURLOPT_URL => Config::$print_pdf_endpoint,
+				CURLOPT_URL => Config::$minify_html_endpoint,
 				CURLOPT_POST => true,
 				CURLOPT_POSTFIELDS => ["file" => new CURLFile($file)],
 				CURLOPT_RETURNTRANSFER => true,
 		]);
-		if (!($pdf = curl_exec($curl)) || curl_errno($curl)) {
+		if (!($html = curl_exec($curl)) || curl_errno($curl)) {
 			curl_close($curl);
-			throw new PdfException("cURL Error: " . curl_error($curl) . "\n$pdf");
+			throw new MinifyException("cURL Error: " . curl_error($curl) . "\n$html");
 		}
 		if (($code = curl_getinfo($curl, CURLINFO_RESPONSE_CODE)) !== 200) {
 			curl_close($curl);
-			throw new PdfException("Got response code $code\n$pdf");
+			throw new MinifyException("Got response code $code\n$html");
 		}
 		curl_close($curl);
-		if (!file_put_contents($target, $pdf)) {
-			throw new PdfException("Error writing file $file");
-		}
+		return $html;
 	} catch (BaseException $e) {
-		throw new PdfException("Error adding base: " . $e->getMessage());
+		throw new MinifyException("Error applying base: " . $e->getMessage());
 	}
 }

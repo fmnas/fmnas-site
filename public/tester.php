@@ -19,6 +19,7 @@
 require_once '../src/common.php';
 require_once '../src/resize.php';
 require_once '../src/pdf.php';
+require_once '../src/minify.php';
 
 use Masterminds\HTML5;
 
@@ -92,6 +93,23 @@ use Masterminds\HTML5;
 			echo "</pre>";
 		}
 		break;
+	case "minify-html":
+		echo "<p>";
+		try {
+			$new = time() . ".html";
+			$newAbs = cached_assets() . "/$new";
+			$newLink = "/assets/cache/$new";
+			$html = ($_FILES["file"]["tmp_name"] ?? false) ? file_get_contents($_FILES["file"]["tmp_name"]) : ($_POST["source"] ?? '');
+			$html = remoteMinify($html);
+			file_put_contents($newAbs, $html);
+			echo "Minified HTML: <a href=\"$newLink\">$new</a>";
+			echo "<pre>" . htmlspecialchars($html) . "</pre>";
+		} catch (MinifyException $e) {
+			echo "<strong>Exception remotely minifying HTML.</strong><pre>";
+			var_dump($e);
+			echo "</pre>";
+		}
+		break;
 	case "none":
 		break;
 	default:
@@ -105,6 +123,7 @@ use Masterminds\HTML5;
 		<option value="image-size">image-size</option>
 		<option value="resize-image">resize-image</option>
 		<option value="print-pdf">print-pdf</option>
+		<option value="minify-html">minify-html</option>
 	</select><br>
 	file: <input type="file" name="file"><br>
 	height: <input type="number" value="480" name="height"><br>
