@@ -70,7 +70,8 @@ jobs:
           --asm_host="${{ secrets.ASM_WEB_HOST }}" \
           --asm_user="${{ secrets.ASM_WEB_USER }}" \
           --asm_pass="${{ secrets.ASM_WEB_PASS }}" \
-          --print_pdf_endpoint="${{ secrets.PRINT_PDF_PROD_ENDPOINT }}"
+          --print_pdf_endpoint="${{ secrets.PRINT_PDF_PROD_ENDPOINT }}" \
+          --minify_html_endpoint="${{ secrets.MINIFY_HTML_TEST_ENDPOINT }}"
       - name: Require HTTPS to access public site
         run: cat public/.htaccess-prod >> public/.htaccess
       - name: Restrict access to admin site

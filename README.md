@@ -81,9 +81,8 @@ After checking out the repository, run:
   * ```shell
     ts-node handleparse.ts secrets/config.php.hbs --db_name=database --db_username=username --db_pass=password \
     --db_host=localhost --smtp_host=localhost --smtp_auth=false --smtp_port=25 \
-    --image_size_endpoint=https://image-size-test.gcp.forgetmenotshelter.org \
-    --resize_image_endpoint=https://resize-image-test.gcp.forgetmenotshelter.org \
-    --print_pdf_endpoint=https://localhost:8080
+    --image_size_endpoint=https://localhost:50000 --resize_image_endpoint=https://localhost:50001 \
+    --print_pdf_endpoint=https://localhost:50002 --minify_html_endpoint=https://localhost:50003
   ```
 * `composer install` for PHP dependencies
 * `sass public:public` for public site stylesheets
@@ -197,6 +196,8 @@ The following workflows in `.github/workflows` are used for deployment:
   to `image-size` (`https://image-size.gcp.forgetmenotshelter.org`)
 * `PRINT_PDF_ENDPOINT`: The HTTPS endpoint for `print-pdf` (`https://us-central1-fmnas-automation.cloudfunctions.net/print-pdf`)
 * `PRINT_PDF_TEST_ENDPOINT`: The HTTPS endpoint for `print-pdf-test` (`https://us-central1-fmnas-automation.cloudfunctions.net/print-pdf-test`)
+* `MINIFY_HTML_ENDPOINT`: The HTTPS endpoint for `minify-html` (`https://us-central1-fmnas-automation.cloudfunctions.net/minify-html`)
+* `MINIFY_HTML_TEST_ENDPOINT`: The HTTPS endpoint for `minify-html-test` (`https://us-central1-fmnas-automation.cloudfunctions.net/minify-html-test`)
 * `ASM_WEB_DB`: The MySQL database with replicated ASM tables (see #314) for the import backend (`asm_web`) 
 * `ASM_WEB_HOST`: The MySQL host for `ASM_WEB_DB` (`fmnas.forgetmenotshelter.org`)
 * `ASM_WEB_USER`: The MySQL user for `ASM_WEB_DB` (`fmnas_asm`)
@@ -280,7 +281,8 @@ On the build machine:
 		--smtp_username=me@gmail.com --smtp_password=password \
 		--image_size_endpoint=https://image-size.gcp.forgetmenotshelter.org \
 		--resize_image_endpoint=https://resize-image.gcp.forgetmenotshelter.org \
-		--print_pdf_endpoint=https://us-central1-fmnas-automation.cloudfunctions.net/print-pdf
+		--print_pdf_endpoint=https://us-central1-fmnas-automation.cloudfunctions.net/print-pdf \
+  	--minify_html_endpoint=https://us-central1-fmnas-automation.cloudfunctions.net/minify-html
 		```
 	* Alternatively, copy `secrets/config_sample.php` to `secrets/config.php` and update the configuration values
 	  manually.
