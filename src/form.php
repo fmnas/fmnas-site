@@ -397,7 +397,7 @@ class FormEmailConfig {
 	 * Transformer applied immediately before rendering and sending the email.
 	 * @param DOMDocument &$dom The DOM immediately before rendering.
 	 * @param array<AttachmentInfo> &$attachments The email attachments.
-	 * @return void|string - if returned, used as HTML instead of $dom
+	 * @return null|string - if returned, used as HTML instead of $dom
 	 */
 	public ?Closure $emailTransformation;
 
@@ -1359,11 +1359,9 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
 
 	// Apply any custom transformation.
 	if ($emailConfig->emailTransformation) {
-		$transformedEmail = ($emailConfig->emailTransformation)($dom, $attachments);
-	}
-
-	if (isset($transformedEmail) && is_string($transformedEmail)) {
-		return new RenderedEmail($transformedEmail, $attachments);
+		if ($transformedEmail = ($emailConfig->emailTransformation)($dom, $attachments)) {
+			return new RenderedEmail($transformedEmail, $attachments);
+		}
 	}
 
 	return new RenderedEmail($dom->saveHTML(), $attachments);

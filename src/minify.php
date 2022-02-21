@@ -30,7 +30,7 @@ class MinifyException extends Exception {
 // https://cloud.google.com/docs/authentication/production#auth-cloud-implicit-php
 
 /**
- * Remotely minify an HTML string.
+ * Remotely minify a DOM.
  * @param string $html HTML to minify
  * @param ?string $base Base URL to use for relative hrefs
  * @return string the minified HTML
@@ -76,7 +76,7 @@ function remoteMinify(string $html, string|null $base = null): string {
 }
 
 
-function inlineStyles(DOMDocument $dom): string {
+function inlineStyles(DOMDocument $dom, string $pwd): string {
 	try {
 		$stylesToInject = [];
 		foreach (collectElements($dom, "link", attr("rel", "stylesheet")) as $link) {

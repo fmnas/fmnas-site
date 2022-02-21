@@ -17,6 +17,7 @@ require_once "../../src/common.php";
 require_once "$src/form.php";
 require_once "$src/db.php";
 require_once "$src/resize.php";
+require_once "$src/minify.php";
 require_once "$src/pdf.php";
 require_once "$t/header.php";
 require_once "$t/application_response.php";
@@ -27,6 +28,7 @@ setlocale(LC_ALL, 'en_US.UTF-8');
 set_time_limit(1200);
 $formConfig->method = HTTPMethod::POST;
 $db ??= new Database();
+$pwd = getcwd();
 $formConfig->confirm = function(array $formData): void {
 	?>
 	<!DOCTYPE html>
@@ -89,7 +91,7 @@ $formConfig->handler = function(FormException $e): void {
 };
 
 $cwd = getcwd();
-$formConfig->emails = function(array $formData) use ($cwd): array {
+$formConfig->emails = function(array $formData) use ($pwd, $cwd): array {
 	$shelterEmail = new EmailAddress(_G_default_email_user() . '@' . _G_public_domain(), _G_shortname());
 	$applicantEmail = new EmailAddress(trim($formData['AEmail']), trim($formData['AName']));
 	$applicantFakeEmail = new EmailAddress('noreply@' . _G_public_domain(), trim($formData['AName']));
@@ -170,6 +172,9 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 		}
 	};
 	$save->globalConversion = true;
+	$save->emailTransformation = function(DOMDocument $dom, array &$attachments) use ($pwd): null|string {
+		return inlineStyles($dom, $pwd) ?: null;
+	};
 
 	$dump = new FormEmailConfig(
 			null,
@@ -200,7 +205,7 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 	};
 	$primaryEmail->replyTo = [$applicantEmail];
 	$primaryEmail->emailTransformation =
-			function(DOMDocument $dom, array &$attachments) use ($primarySubject): void {
+			function(DOMDocument $dom, array &$attachments) use ($pwd, $primarySubject): null|string {
 				try {
 					// Render a PDF of the email.
 					$file = tempnam(sys_get_temp_dir(), "PDF");
@@ -210,6 +215,14 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 					$attachments[] = new AttachmentInfo($file, $filename, "application/pdf");
 				} catch (PdfException $e) {
 					log_err($e->getMessage());
+				}
+
+				$inlined = inlineStyles($dom, $pwd);
+
+				try {
+					return remoteMinify($inlined, "https://forgetmenotshelter.org/application/");
+				} catch (MinifyException) {
+					return $inlined;
 				}
 			};
 
@@ -224,7 +237,7 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 		$secondaryEmail->cc = [new EmailAddress(trim($formData['CEmail']), trim($formData['CName']))];
 	}
 	$secondaryEmail->emailTransformation =
-			function(DOMDocument $dom, array &$attachments) use ($primarySubject): void {
+			function(DOMDocument $dom, array &$attachments) use ($primarySubject, $pwd): null|string {
 				try {
 					// Render a PDF of the email.
 					$file = tempnam(sys_get_temp_dir(), "PDF");
@@ -262,6 +275,14 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 					}
 				} catch (Exception $e) {
 					log_err($e->getMessage());
+				}
+
+				$inlined = inlineStyles($dom, $pwd);
+
+				try {
+					return remoteMinify($inlined, "https://forgetmenotshelter.org/application/");
+				} catch (MinifyException) {
+					return $inlined;
 				}
 			};
 

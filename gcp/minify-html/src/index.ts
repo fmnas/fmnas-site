@@ -44,9 +44,13 @@ export const minify: HttpFunction = async (req, res) => {
 			if (!html) {
 				return res.status(400).end();
 			}
+
 			const browser = await puppeteer.launch();
 			const page = await browser.newPage();
 			await page.setContent(html, {waitUntil: 'load'});
+			await page.evaluateHandle('document.fonts.ready');
+			await page.waitForNetworkIdle({timeout: 5000, idleTime: 50});
+
 			await page.exposeFunction('decodeEntities', decode);
 			let decodeEntities: (x: string) => Promise<string>;
 
@@ -75,19 +79,22 @@ export const minify: HttpFunction = async (req, res) => {
 				let styles = '';
 				let idIndex = 0;
 				for (const sheet of document.styleSheets) {
-					for (const rule of sheet.cssRules) {
-						if (!rule.cssText.startsWith('@import')) {
-							if (rule.cssText.includes('content:')) {
-								// For some reason this gets HTML entities in it
-								styles += await decodeEntities(rule.cssText);
-							} else {
-								styles += rule.cssText;
+					try {
+						for (const rule of sheet.cssRules) {
+							if (!rule.cssText.startsWith('@import')) {
+								if (rule.cssText.includes('content:')) {
+									// For some reason this gets HTML entities in it
+									styles += await decodeEntities(rule.cssText);
+								} else {
+									styles += rule.cssText;
+								}
 							}
 						}
+					} catch (e: any) {
 					}
 				}
 				for (const el of document.getElementsByTagName('*')) {
-					if (el.tagName === 'STYLE' || el.tagName === 'LINK') {
+					if (el.tagName === 'STYLE' || (el.tagName === 'LINK' && el.getAttribute('rel') === 'stylesheet')) {
 						remove.push(el);
 						continue;
 					}
