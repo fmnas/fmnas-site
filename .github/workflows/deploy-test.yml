@@ -132,7 +132,7 @@ jobs:
           if [[ "${{ needs.deploy.outputs.build-status }}" != "success" ]]; then result=failing; color=critical
           elif [[ "${{ needs.deploy.outputs.deploy-status }}" != "success" ]]; then result=stale; color=important
           elif [[ "${{ needs.deploy.outputs.generate-status }}" != "success" ]]; then result=broken; color=critical
-          else result=ok; color=5021da
+          else result=ok; color=090
           fi
           echo "color=$color" >> $GITHUB_ENV
           echo "result=$result" >> $GITHUB_ENV
