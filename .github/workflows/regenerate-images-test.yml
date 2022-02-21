@@ -34,11 +34,11 @@ jobs:
           wait-interval: 10
           allowed-conclusions: success
   regenerate:
-    name: Request image regeneration
+    name: Regenerate images
     needs: wait
     runs-on: ubuntu-latest
     steps:
-      - name: Hit images API endpoint
+      - name: Request image regeneration
         run: curl -f -u ${{ secrets.HTTP_CREDENTIALS }} ${{ secrets.TEST_IMAGES_API }}
   badge:
     name: Update status badge
