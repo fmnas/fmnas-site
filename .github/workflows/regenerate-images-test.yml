@@ -28,7 +28,7 @@ jobs:
       - name: Wait for site deployment
         uses: lewagon/wait-on-check-action@master
         with:
-          ref: main
+          ref: test
           check-name: 'Deploy test website'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           wait-interval: 10
