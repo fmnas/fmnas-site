@@ -262,18 +262,23 @@ jobs:
       - name: Count failures
         run: |
           failures=0
+          total=4
           if [[ "${{ needs.resize-image.result }}" != "success" ]]; then ((failures++)); fi
           if [[ "${{ needs.image-size.result }}" != "success" ]]; then ((failures++)); fi
           if [[ "${{ needs.print-pdf.result }}" != "success" ]]; then ((failures++)); fi
           if [[ "${{ needs.minify-html.result }}" != "success" ]]; then ((failures++)); fi
-          if [[ "$failures" = 4 ]]; then echo "color=critical" >> $GITHUB_ENV;
-          elif [[ "$failures" = 0 ]]; then echo "color=informational" >> $GITHUB_ENV;
+          if [[ "$failures" = "$total" ]]; then echo "color=critical" >> $GITHUB_ENV
+          elif [[ "$failures" = 0 ]]; then echo "color=informational" >> $GITHUB_ENV
           else echo "color=important" >> $GITHUB_ENV; fi
+          echo "result=$((total - failures))/$total >> $GITHUB_ENV
       - name: Update badge
-        uses: RubbaBoy/BYOB@v1.2.1
+        uses: schneegans/dynamic-badges-action@v1.1.0
         with:
-          NAME: gcp-test
-          ICON: googlecloud
-          COLOR: ${{ env.color }}
-          STATUS: test
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          auth: ${{ secrets.TORTOISEWRATH_GIST_TOKEN }}
+          gistID: e38e961e5c08b2bdf4d78c800d851203
+          filename: gcp-test.json
+          label: test
+          message: ${{ env.result }}
+          namedLogo: googlecloud
+          logoColor: ccc
+          color: ${{ env.color }}
