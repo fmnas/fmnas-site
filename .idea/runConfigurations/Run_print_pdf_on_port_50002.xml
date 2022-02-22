@@ -1,12 +1,14 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Run Locally: print-pdf" type="js.build_tools.npm">
+  <configuration default="false" name="Run print-pdf on port 50002" type="js.build_tools.npm">
     <package-json value="$PROJECT_DIR$/gcp/print-pdf/package.json" />
     <command value="run" />
     <scripts>
       <script value="watch" />
     </scripts>
     <node-interpreter value="project" />
-    <envs />
+    <envs>
+      <env name="PORT" value="50002" />
+    </envs>
     <method v="2" />
   </configuration>
 </component>

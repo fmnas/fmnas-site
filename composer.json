@@ -11,6 +11,8 @@
 		"ext-mysqli": "*",
 		"ext-gd": "*",
 		"ext-dom": "*",
-		"ext-ctype": "*"
+		"ext-ctype": "*",
+		"whichbrowser/parser": "^2.1",
+		"ext-sqlite3": "*"
 	}
 }

@@ -221,11 +221,10 @@
  * For any other changes to the email before sending it, a custom penultimate transformation may be supplied to
  * FormEmailConfig::emailTransformation. This closure will be given the DOMDocument and the attachments array.
  *
- * After this is applied, any linked stylesheets will be inlined into the email.
- * <link> elements without rel="stylesheet" will be removed unless they have an explicit falsy data-remove attribute.
- *
  * TODO [#69]: Add unit tests for the form processor.
  * TODO [#70]: Split the form processor into a separate repo?
+ * TODO [#340]: Refactor the form processor into a forms directory.
+ * TODO [#341]: Make server-side style inlining a default behavior of the form processor.
  * @noinspection GrazieInspection
  */
 
@@ -259,6 +258,13 @@ class FormConfig {
 	 * @return void
 	 */
 	public Closure $handler;
+
+	/**
+	 * Callback for when the form data is received but has not been processed yet.
+	 * @param array form data ($_POST or $_GET)
+	 * @return void
+	 */
+	public Closure $received;
 
 	/**
 	 * Closure that shall return configs for each copy of the form to email.
@@ -397,7 +403,7 @@ class FormEmailConfig {
 	 * Transformer applied immediately before rendering and sending the email.
 	 * @param DOMDocument &$dom The DOM immediately before rendering.
 	 * @param array<AttachmentInfo> &$attachments The email attachments.
-	 * @return void
+	 * @return null|string - if returned, used as HTML instead of $dom
 	 */
 	public ?Closure $emailTransformation;
 
@@ -470,6 +476,7 @@ function collectForm(): void {
 
 	if ($receivedData || $_FILES) {
 		try {
+			($formConfig->received)($receivedData);
 			processForm($receivedData, $html);
 			($formConfig->confirm)($receivedData);
 		} catch (Exception $e) {
@@ -1359,64 +1366,12 @@ function renderForm(array $data, string $html, FormEmailConfig $emailConfig): Re
 
 	// Apply any custom transformation.
 	if ($emailConfig->emailTransformation) {
-		($emailConfig->emailTransformation)($dom, $attachments);
+		if ($transformedEmail = ($emailConfig->emailTransformation)($dom, $attachments)) {
+			return new RenderedEmail($transformedEmail, $attachments);
+		}
 	}
 
-	// Merge linked style sheets into the output HTML.
-	$stylesToInject = [];
-	foreach (collectElements($dom, "link", attr("rel", "stylesheet")) as $link) {
-		/** @var $link DOMElement */
-		$href = $link->getAttribute("href");
-		$url = parse_url($href);
-		// TODO [#74]: Consider solutions for $url["query"] === $_SERVER["HTTP_HOST"]
-		// TODO [#75]: Consider solutions for startsWith($url["path"], "/")
-		if (!isset($url["host"]) && !startsWith($url["path"], "/")) {
-			// Relative path
-			ob_start();
-			if (isset($url["query"])) {
-				parse_str($url["query"], $_GET);
-			}
-			$file = $pwd . "/" . $url["path"];
-			if (!is_file($file)) {
-				// Ignore this one
-				continue;
-			}
-			include $file;
-			$styles = ob_get_clean();
-		} else {
-			// Absolute path
-			if (!ini_get('allow_url_fopen')) {
-				// Can't get the file :(
-				continue;
-			}
-			$path = $url["scheme"] ?? (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] === "on" ? "https" : "http");
-			$path .= "://";
-			$path .= $url["host"] ?? $_SERVER["HTTP_HOST"];
-			if (isset($url["port"])) {
-				$path .= ":" . $url["port"];
-			}
-			$path .= $url["path"];
-			if (isset($url["query"])) {
-				$path .= "?" . $url["query"];
-			}
-			$styles = file_get_contents($path);
-		}
-		if ($styles === false) {
-			// Failed to get styles; delegate responsibility to the email client.
-			continue;
-		}
-		$style = $dom->createElement("style");
-		$style->setAttribute("type", "text/css");
-		$style->setAttribute("data-type", "link");
-		copyAttributes($link, $style, "rel", "href");
-		$locator = "/* INJECT STYLE HERE: " . sha1($styles) . " */";
-		$stylesToInject[$locator] = $styles;
-		$style->nodeValue = $locator; // Can't inject right now because we would end up with HTML entities, etc.
-		$link->parentNode?->replaceChild($style, $link);
-	}
-
-	return new RenderedEmail(str_replace(array_keys($stylesToInject), array_values($stylesToInject), $dom->saveHTML()),
-			$attachments);
+	return new RenderedEmail($dom->saveHTML(), $attachments);
 }
 
 /** @noinspection PhpObjectFieldsAreOnlyWrittenInspection
@@ -1525,6 +1480,7 @@ $formConfig->fileTransformers = [
 $formConfig->fileValidator = function(array $metadata): bool {
 	return !$metadata["error"];
 };
+$formConfig->received = function(array $formData): void {};
 
 ob_start();
 register_shutdown_function('collectForm');

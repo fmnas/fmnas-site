@@ -1,6 +1,7 @@
 <?php
 declare(strict_types = 1);
 @header("Content-Encoding: UTF-8");
+@header("Accept-CH: Sec-CH-UA, Sec-CH-UA-Mobile, Sec-CH-UA-Platform, Viewport-Width, Device-Memory, Downlink");
 ini_set("pcre.jit", "0");
 set_include_path(__DIR__);
 include 'common-test.php';
@@ -171,3 +172,5 @@ function log_err(string $msg = "") {
 function emailLinks(): void {
 	echo '<script src="/email.js.php"></script>';
 }
+
+require_once "$src/analytics.php";

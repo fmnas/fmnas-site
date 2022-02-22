@@ -761,7 +761,7 @@ export default defineComponent({
         } else if (namePrefix) {
           results.namePrefix.push(listing);
           results.all.push(listing);
-        } else if (nameUpper.indexOf(query) !== -1) {
+        } else if (nameUpper.includes(query)) {
           results.nameContains.push(listing);
           results.all.push(listing);
         }
@@ -779,7 +779,7 @@ export default defineComponent({
         } else if (namePrefix) {
           results.importNamePrefix.push(importable);
           results.importAll.push(importable);
-        } else if (nameUpper.indexOf(query) !== -1) {
+        } else if (nameUpper.includes(query)) {
           results.importNameContains.push(importable);
           results.importAll.push(importable);
         }

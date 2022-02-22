@@ -24,6 +24,7 @@ export const printPdf: HttpFunction = async (req, res) => {
 		return res.status(405).end();
 	}
 	try {
+		console.log(`Got a print-pdf request, ${new Date().toISOString()}`);
 		const boy = busboy({headers: req.headers});
 		let html = '';
 		boy.on('file', (fieldname, file, filename) => {
@@ -34,6 +35,8 @@ export const printPdf: HttpFunction = async (req, res) => {
 			if (!html) {
 				return res.status(400).end();
 			}
+			console.log(`Request HTML is ${html.length} bytes`);
+
 			const browser = await puppeteer.launch();
 			const page = await browser.newPage();
 			await page.setContent(html, {waitUntil: 'load'});
@@ -41,6 +44,7 @@ export const printPdf: HttpFunction = async (req, res) => {
 			await page.evaluateHandle('document.fonts.ready');
 			await page.waitForNetworkIdle({timeout: 5000, idleTime: 50});
 			res.header('Content-Type', 'application/pdf');
+			console.log(`Response PDF is ${pdf.length} bytes`);
 			res.send(pdf);
 			await browser.close();
 			res.end();

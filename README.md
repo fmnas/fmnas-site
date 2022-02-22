@@ -1,5 +1,18 @@
 # fmnas-site
 
+[![GCP (prod)](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/TortoiseWrath/e38e961e5c08b2bdf4d78c800d851203/raw/gcp-prod.json)](https://github.com/fmnas/fmnas-site/actions/workflows/deploy-gcp-prod.yml)
+[![deploy (prod)](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/TortoiseWrath/e38e961e5c08b2bdf4d78c800d851203/raw/deploy-prod.json)](https://github.com/fmnas/fmnas-site/actions/workflows/deploy-prod.yml)
+[![GCP (test)](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/TortoiseWrath/e38e961e5c08b2bdf4d78c800d851203/raw/gcp-test.json)](https://github.com/fmnas/fmnas-site/actions/workflows/deploy-gcp-test.yml)
+[![deploy (test)](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/TortoiseWrath/e38e961e5c08b2bdf4d78c800d851203/raw/deploy-test.json)](https://github.com/fmnas/fmnas-site/actions/workflows/deploy-test.yml)
+[![public site status](https://img.shields.io/website?down_color=critical&label=public&up_color=090&url=https%3A%2F%2Fforgetmenotshelter.org)](https://forgetmenotshelter.org)
+[![admin status](https://img.shields.io/website?down_color=important&label=admin&up_color=090&url=https%3A%2F%2Fadmin.forgetmenotshelter.org)](https://admin.forgetmenotshelter.org)
+[![ASM status](https://img.shields.io/website?down_color=critical&label=asm3&up_color=090&url=http%3A%2F%2Fasm.forgetmenotshelter.org)](http://asm.forgetmenotshelter.org)
+[![backup status](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/TortoiseWrath/e38e961e5c08b2bdf4d78c800d851203/raw/backups.json)](https://github.com/fmnas/fmnas-site/actions/workflows/backups.yml)  
+[![gamma progress](https://img.shields.io/github/milestones/progress/fmnas/fmnas-site/5?color=5021da)](https://github.com/fmnas/fmnas-site/milestone/5)
+[![release progress](https://img.shields.io/github/milestones/progress/fmnas/fmnas-site/3?color=5021da)](https://github.com/fmnas/fmnas-site/milestone/3)
+[![handoff progress](https://img.shields.io/github/milestones/progress/fmnas/fmnas-site/7?color=5021da)](https://github.com/fmnas/fmnas-site/milestone/7)
+[![other issues](https://img.shields.io/github/milestones/issues-open/fmnas/fmnas-site/6?color=5021da&label=other)](https://github.com/fmnas/fmnas-site/milestone/6)
+
 This repository contains source code for the website of the
 [Forget Me Not Animal Shelter](https://forgetmenotshelter.org)
 in Republic, WA.
@@ -30,7 +43,8 @@ To get a local server running, you will need:
 * Apache (or Litespeed, etc.)
 	* Debian packages: `apache2 libapache2-mod-php`
 * PHP 8.1 and dependencies noted below
-	* Debian packages: `php php-gd php-mbstring php-mysql php-xml php-imagick php-curl`
+  * Debian packages: `php php-gd php-mbstring php-mysql php-xml php-imagick php-curl php-sqlite3`
+  * To get a more accurate emulation of the server environment, [use PHP-FPM](https://www.linode.com/docs/guides/how-to-install-and-configure-fastcgi-and-php-fpm-on-ubuntu-18-04/)
 * cURL on PATH
 * Node
 	* I suggest using NVM and enabling [deep shell integration](https://github.com/nvm-sh/nvm#deeper-shell-integration) to
@@ -42,6 +56,19 @@ To get a local server running, you will need:
 ### Workflow
 
 The repository includes configs for IntelliJ/PHPStorm.
+
+The following plugins are required for full-stack development in IntelliJ IDEA Ultimate:
+* [.ignore](https://plugins.jetbrains.com/plugin/7495--ignore)
+* [Apache config (.htaccess)](https://plugins.jetbrains.com/plugin/6834-apache-config--htaccess-)
+* [Cloud Code](https://plugins.jetbrains.com/plugin/8079-cloud-code)
+* [File Watchers](https://plugins.jetbrains.com/plugin/7177-file-watchers)
+* [Go](https://plugins.jetbrains.com/plugin/9568-go)
+* [Handlebars/Mustache](https://plugins.jetbrains.com/plugin/6884-handlebars-mustache)
+* [Multirun](https://plugins.jetbrains.com/plugin/7248-multirun)
+* [PHP](https://plugins.jetbrains.com/plugin/6610-php)
+* [Vue.js](https://plugins.jetbrains.com/plugin/9442-vue-js)
+  
+The "Run local servers" multirun workflow runs all the GCP services as well as a local Vite server for the admin site.
 
 The `main` branch contains the stable [prod site](https://forgetmenotshelter.org), while the `test` branch contains the
 unstable [test site](http://fmnas.org).
@@ -68,10 +95,9 @@ After checking out the repository, run:
   * ```shell
     ts-node handleparse.ts secrets/config.php.hbs --db_name=database --db_username=username --db_pass=password \
     --db_host=localhost --smtp_host=localhost --smtp_auth=false --smtp_port=25 \
-    --image_size_endpoint=https://image-size-test.gcp.forgetmenotshelter.org \
-    --resize_image_endpoint=https://resize-image-test.gcp.forgetmenotshelter.org \
-    --print_pdf_endpoint=https://localhost:8080
-	```
+    --image_size_endpoint=https://localhost:50000 --resize_image_endpoint=https://localhost:50001 \
+    --print_pdf_endpoint=https://localhost:50002 --minify_html_endpoint=https://localhost:50003
+  ```
 * `composer install` for PHP dependencies
 * `sass public:public` for public site stylesheets
 * `tsc -p public` for public site scripts
@@ -184,10 +210,16 @@ The following workflows in `.github/workflows` are used for deployment:
   to `image-size` (`https://image-size.gcp.forgetmenotshelter.org`)
 * `PRINT_PDF_ENDPOINT`: The HTTPS endpoint for `print-pdf` (`https://us-central1-fmnas-automation.cloudfunctions.net/print-pdf`)
 * `PRINT_PDF_TEST_ENDPOINT`: The HTTPS endpoint for `print-pdf-test` (`https://us-central1-fmnas-automation.cloudfunctions.net/print-pdf-test`)
+* `MINIFY_HTML_ENDPOINT`: The HTTPS endpoint for `minify-html` (`https://us-central1-fmnas-automation.cloudfunctions.net/minify-html`)
+* `MINIFY_HTML_TEST_ENDPOINT`: The HTTPS endpoint for `minify-html-test` (`https://us-central1-fmnas-automation.cloudfunctions.net/minify-html-test`)
 * `ASM_WEB_DB`: The MySQL database with replicated ASM tables (see #314) for the import backend (`asm_web`) 
 * `ASM_WEB_HOST`: The MySQL host for `ASM_WEB_DB` (`fmnas.forgetmenotshelter.org`)
 * `ASM_WEB_USER`: The MySQL user for `ASM_WEB_DB` (`fmnas_asm`)
 * `ASM_WEB_PASS`: The MySQL password for `ASM_WEB_USER`
+* `TORTOISEWRATH_GIST_TOKEN`: A PAT to update gists created by @TortoiseWrath (used for badges)
+* `PERSISTENCE_TOKEN`: A token for @aaimio/set-peristent-value (used for badges)
+* `PROD_GA_ID`: The Google Analytics ID for the prod site (`G-3YRWV82YZX`)
+* `TEST_GA_ID`: The Google Analytics ID for the test site (`G-E73F6XEPY7`)
 
 ##### Org secrets
 
@@ -237,18 +269,19 @@ The following workflows in `.github/workflows` are used for deployment:
 * Linux (any POSIX-compatible OS should work)
 * Apache (Litespeed or any other web server with .htaccess and PHP support should work)
 * PHP 8.1
-	* ImageMagick
-	* GD
-		* libJPEG
-		* libPNG
-	* mysqli
-	* mbstring
-	* imagick
-	* curl
-	* php-xml
-	* Composer
-	* Needs shell access (with `shell_exec`) and the following executables in PATH:
-		* `curl` to request caching uploaded images
+  * ImageMagick
+  * GD
+    * libJPEG
+    * libPNG
+  * mysqli
+  * mbstring
+  * imagick
+  * curl
+  * php-xml
+  * sqlite3
+  * Composer
+  * Needs shell access (with `shell_exec`) and the following executables in PATH:
+    * `curl` to request caching uploaded images
 * MySQL or MariaDB
 
 #### Build
@@ -267,7 +300,8 @@ On the build machine:
 		--smtp_username=me@gmail.com --smtp_password=password \
 		--image_size_endpoint=https://image-size.gcp.forgetmenotshelter.org \
 		--resize_image_endpoint=https://resize-image.gcp.forgetmenotshelter.org \
-		--print_pdf_endpoint=https://us-central1-fmnas-automation.cloudfunctions.net/print-pdf
+		--print_pdf_endpoint=https://us-central1-fmnas-automation.cloudfunctions.net/print-pdf \
+  	--minify_html_endpoint=https://us-central1-fmnas-automation.cloudfunctions.net/minify-html
 		```
 	* Alternatively, copy `secrets/config_sample.php` to `secrets/config.php` and update the configuration values
 	  manually.
@@ -307,12 +341,13 @@ The template context is of the type Pet. Some useful properties include:
 
 **PHP** is used as the backend language to simplify deployment to Dreamhost shared hosting.
 
-[**Vue**](https:/vuejs.org) 3 is used in the admin interface. The public site is vanilla PHP, TypeScript compiled to
-vanilla JS, and SCSS.
+[**Vue**](https:/vuejs.org) 3 is used in the admin interface.
+
+The public site is vanilla PHP, TypeScript compiled to vanilla JS, and SCSS.
 
 On the server side, listings are first compiled with [lightncandy](https://github.com/zordius/lightncandy), then parsed
 with [Parsedown](https://parsedown.org/). Any PHP code embedded in listings will **not** be executed on the server. The
-resulting HTML is cached (TODO); the cached assets are automatically deleted when listings are updated through the admin
+resulting HTML is cached; the cached assets are automatically deleted when listings are updated through the admin
 interface, but must be manually deleted if changes are made to the asset or corresponding database records outside the
 admin interface.
 

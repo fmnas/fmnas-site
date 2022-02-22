@@ -24,6 +24,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 )
 
 func main() {
@@ -45,6 +46,8 @@ func main() {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Got an image-size request, %v", time.Now())
+
 	if err := r.ParseMultipartForm(20 << 20); err != nil {
 		http.Error(w, "Unable to parse request", http.StatusBadRequest)
 		log.Printf("Error parsing request: %v", err)
@@ -66,6 +69,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	s := int(fh.Size)
+	log.Printf("Payload is %v bytes", s)
 	b := make([]byte, s)
 	n, err := f.Read(b)
 	if err != nil {
@@ -90,6 +94,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	ow := mw.GetImageWidth()
 	oh := mw.GetImageHeight()
+	log.Printf("Image is %vx%v", ow, oh)
 
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(map[string]uint{"width": ow, "height": oh}); err != nil {

@@ -17,6 +17,7 @@ on:
   push:
     branches-ignore:
       - main
+      - test
   pull_request:
 jobs:
   watchers:
