@@ -44,7 +44,6 @@ To get a local server running, you will need:
 	* Debian packages: `apache2 libapache2-mod-php`
 * PHP 8.1 and dependencies noted below
   * Debian packages: `php php-gd php-mbstring php-mysql php-xml php-imagick php-curl php-sqlite3`
-  * To get a more accurate emulation of the server environment, [use PHP-FPM](https://www.linode.com/docs/guides/how-to-install-and-configure-fastcgi-and-php-fpm-on-ubuntu-18-04/)
 * cURL on PATH
 * Node
 	* I suggest using NVM and enabling [deep shell integration](https://github.com/nvm-sh/nvm#deeper-shell-integration) to
@@ -81,10 +80,6 @@ into `test`.
 
 After testing the changes in the live test site environment, create a pull request on GitHub to merge the branch into
 `main`.
-
-The `.github/workflows/sync-test.yml` workflow merges `main` back into `test` after each merged PR. You should
-then `git fetch` and rebase your dev branch onto `origin/test` before another PR. Or if developing directly on `test`
-, `git pull` to get the merge commit.
 
 ### Initial build
 
@@ -202,9 +197,9 @@ The following workflows in `.github/workflows` are used for deployment:
   to `image-size-test` (`https://image-size-test.gcp.forgetmenotshelter.org`)
 * `IMAGE_SIZE_PROD_ENDPOINT`: The HTTPS endpoint mapped
   to `image-size` (`https://image-size.gcp.forgetmenotshelter.org`)
-* `PRINT_PDF_ENDPOINT`: The HTTPS endpoint for `print-pdf` (`https://us-central1-fmnas-automation.cloudfunctions.net/print-pdf`)
+* `PRINT_PDF_PROD_ENDPOINT`: The HTTPS endpoint for `print-pdf` (`https://us-central1-fmnas-automation.cloudfunctions.net/print-pdf`)
 * `PRINT_PDF_TEST_ENDPOINT`: The HTTPS endpoint for `print-pdf-test` (`https://us-central1-fmnas-automation.cloudfunctions.net/print-pdf-test`)
-* `MINIFY_HTML_ENDPOINT`: The HTTPS endpoint for `minify-html` (`https://us-central1-fmnas-automation.cloudfunctions.net/minify-html`)
+* `MINIFY_HTML_PROD_ENDPOINT`: The HTTPS endpoint for `minify-html` (`https://us-central1-fmnas-automation.cloudfunctions.net/minify-html`)
 * `MINIFY_HTML_TEST_ENDPOINT`: The HTTPS endpoint for `minify-html-test` (`https://us-central1-fmnas-automation.cloudfunctions.net/minify-html-test`)
 * `ASM_WEB_DB`: The MySQL database with replicated ASM tables (see #314) for the import backend (`asm_web`) 
 * `ASM_WEB_HOST`: The MySQL host for `ASM_WEB_DB` (`fmnas.forgetmenotshelter.org`)
