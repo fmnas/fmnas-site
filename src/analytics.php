@@ -27,6 +27,7 @@ function logHeaders(): void {
 	@unlink("$secrets/analytics.db");
 	@symlink("$secrets/$dbname.db", "$secrets/analytics.db");
 	$db = new SQLite3("$secrets/$dbname.db");
+	$db->busyTimeout(1000); // TODO: Increase busy timeout
 	$db->query("
 	CREATE TABLE IF NOT EXISTS requests (start INTEGER, end INTEGER, uri TEXT, ip TEXT, host TEXT, agent TEXT, 
 	description TEXT, browser TEXT, major INTEGER, minor TEXT, os TEXT, version TEXT, edition TEXT, ua TEXT, 
@@ -39,6 +40,9 @@ function logHeaders(): void {
 			                             :os, :version, :edition, :ua, :mobile, :platform, :width, :memory, :downlink, 
 			                             :accept, :encoding, :language, :referer)
 			");
+	if (!$s) {
+		return;
+	}
 	$headers = getallheaders();
 	$parsed = new WhichBrowser\Parser($headers);
 	$s->bindValue(':start', $_SERVER['REQUEST_TIME'] ?? null);
@@ -64,7 +68,6 @@ function logHeaders(): void {
 	$s->bindValue(':accept', $headers['Accept'] ?? null);
 	$s->bindValue(':language', $headers['Accept-Language'] ?? null);
 	$s->bindValue(':referer', $_SERVER['HTTP_REFERER'] ?? null);
-	$db->busyTimeout(1000); // TODO: Increase busy timeout
 	@$s->execute();
 	$db->close();
 }
