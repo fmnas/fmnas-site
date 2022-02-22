@@ -20,7 +20,7 @@ require_once __DIR__ . "/../src/analytics.php";
 
 $file = $_POST["file"] ?? false;
 
-if (!$file || !startsWith($file, sys_get_temp_dir())) {
+if (!$file || !str_starts_with($file, sys_get_temp_dir())) {
 	die();
 }
 
