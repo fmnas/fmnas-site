@@ -76,7 +76,6 @@ class Asset {
 	 * @return string img tag
 	 */
 	public function imgTag(?string $alt = "", bool $link = false, bool $relative = false, int $height = 600, bool $expand = true): string {
-		$start = microtime(true);
 		if ($this->path) {
 			$path = $relative ? basename($this->path) : '/' . $this->path;
 		} else {
@@ -117,8 +116,6 @@ class Asset {
 		if ($link) {
 			$tag .= '</a>';
 		}
-		$time = microtime(true) - $start;
-		$tag .= "<!-- $time -->";
 		return $tag;
 	}
 

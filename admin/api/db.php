@@ -174,7 +174,7 @@ class DatabaseWriter extends Database {
 		// bonded and friend will be set by setPair below
 		$bonded = 0;
 		$friend = null;
-		$adoption_date = $pet['adoption_date'] ?? '' ?: null;
+		$adoption_date = $pet['adoption_date'] ?: null;
 		// order will be set by reorderPets
 		$order = null;
 		if (!($inner || $this->db->begin_transaction())) {
@@ -198,7 +198,7 @@ class DatabaseWriter extends Database {
 				$error = "Failed to bind $id to deletePhotos: {$this->db->error}";
 			} else if (!$this->deletePhotos->execute()) {
 				$error = "Executing deletePhotos failed: {$this->db->error}";
-			} else if ($pet['friend'] ?? false) {
+			} else if ($pet['friend']) {
 				$error = $this->insertPet($pet['friend'], true);
 				if (!$error) {
 					// Set bonded and friends.

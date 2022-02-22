@@ -202,9 +202,9 @@ The following workflows in `.github/workflows` are used for deployment:
   to `image-size-test` (`https://image-size-test.gcp.forgetmenotshelter.org`)
 * `IMAGE_SIZE_PROD_ENDPOINT`: The HTTPS endpoint mapped
   to `image-size` (`https://image-size.gcp.forgetmenotshelter.org`)
-* `PRINT_PDF_PROD_ENDPOINT`: The HTTPS endpoint for `print-pdf` (`https://us-central1-fmnas-automation.cloudfunctions.net/print-pdf`)
+* `PRINT_PDF_ENDPOINT`: The HTTPS endpoint for `print-pdf` (`https://us-central1-fmnas-automation.cloudfunctions.net/print-pdf`)
 * `PRINT_PDF_TEST_ENDPOINT`: The HTTPS endpoint for `print-pdf-test` (`https://us-central1-fmnas-automation.cloudfunctions.net/print-pdf-test`)
-* `MINIFY_HTML_PROD_ENDPOINT`: The HTTPS endpoint for `minify-html` (`https://us-central1-fmnas-automation.cloudfunctions.net/minify-html`)
+* `MINIFY_HTML_ENDPOINT`: The HTTPS endpoint for `minify-html` (`https://us-central1-fmnas-automation.cloudfunctions.net/minify-html`)
 * `MINIFY_HTML_TEST_ENDPOINT`: The HTTPS endpoint for `minify-html-test` (`https://us-central1-fmnas-automation.cloudfunctions.net/minify-html-test`)
 * `ASM_WEB_DB`: The MySQL database with replicated ASM tables (see #314) for the import backend (`asm_web`) 
 * `ASM_WEB_HOST`: The MySQL host for `ASM_WEB_DB` (`fmnas.forgetmenotshelter.org`)
