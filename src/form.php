@@ -221,11 +221,10 @@
  * For any other changes to the email before sending it, a custom penultimate transformation may be supplied to
  * FormEmailConfig::emailTransformation. This closure will be given the DOMDocument and the attachments array.
  *
- * After this is applied, any linked stylesheets will be inlined into the email.
- * <link> elements without rel="stylesheet" will be removed unless they have an explicit falsy data-remove attribute.
- *
  * TODO [#69]: Add unit tests for the form processor.
  * TODO [#70]: Split the form processor into a separate repo?
+ * TODO: Refactor the form processor into a forms directory.
+ * TODO: Make server-side style inlining a default behavior of the form processor.
  * @noinspection GrazieInspection
  */
 
