@@ -24,7 +24,7 @@ class DatabaseWriter extends Database {
 		}
 
 		if (!($updateAsset = $this->db->prepare("
-			UPDATE assets SET path=?, data=?, type=? WHERE id=? LIMIT 1
+			UPDATE assets SET path=?, data=?, type=?, width=?, height=? WHERE id=? LIMIT 1
 			"))) {
 			log_err("Failed to prepare updateAsset: {$this->db->error}");
 		} else {
@@ -32,7 +32,7 @@ class DatabaseWriter extends Database {
 		}
 
 		if (!($insertAsset = $this->db->prepare("
-			INSERT INTO assets (id, path, data, type) VALUES(NULL, ?, ?, ?)
+			INSERT INTO assets (id, path, data, type, width, height) VALUES(NULL, ?, ?, ?, ?, ?)
 			"))) {
 			log_err("Failed to prepare insertAsset: {$this->db->error}");
 		} else {
@@ -113,10 +113,12 @@ class DatabaseWriter extends Database {
 		$path = ($value['path'] ?? null) ?: null;
 		$data = isset($value['data']) ? serialize($value['data']) : null;
 		$type = $value['type'] ?? null;
+		$width = $value['width'] ?? null;
+		$height = $value['height'] ?? null;
 		if (!$this->db->begin_transaction()) {
 			$error = "Failed to begin transaction";
-		} else if (!$this->insertAsset->bind_param("sss", $path, $data, $type)) {
-			$error = "Binding $path,$data,$type to insertAsset failed: {$this->db->error}";
+		} else if (!$this->insertAsset->bind_param("sssii", $path, $data, $type, $width, $height)) {
+			$error = "Binding $path,$data,$type,$width,$height to insertAsset failed: {$this->db->error}";
 		} else if (!$this->clearConflictingAssets->bind_param("s", $path)) {
 			$error = "Binding $path to clearConflictingAssets failed: {$this->db->error}";
 		} else if (!$this->clearConflictingAssets->execute()) {
@@ -249,9 +251,11 @@ class DatabaseWriter extends Database {
 		$path = ($value['path'] ?? null) ?: null;
 		$data = isset($value['data']) ? serialize($value['data']) : null;
 		$type = $value['type'] ?? null;
+		$width = $value['width'] ?? null;
+		$height = $value['height'] ?? null;
 		if (!$this->db->begin_transaction()) {
 			$error = "Failed to begin transaction";
-		} else if (!$this->updateAsset->bind_param("sssi", $path, $data, $type, $key)) {
+		} else if (!$this->updateAsset->bind_param("sssiii", $path, $data, $type, $width, $height, $key)) {
 			$error = "Binding $path,$data,$type,$key to updateAsset failed: {$this->db->error}";
 		} else if (!$this->clearConflictingAssets->bind_param("s", $path)) {
 			$error = "Binding $path to clearConflictingAssets failed: {$this->db->error}";
