@@ -35,7 +35,7 @@ require_once "$t/application_response.php";
 require_once "$t/footer.php";
 
 // Useful for debugging.
-// TODO: Check that $DEDUPLICATE is true when merging.
+// TODO [#365]: Check that $DEDUPLICATE is true when merging.
 $DEDUPLICATE = false;
 
 ini_set('memory_limit', '2048M');
