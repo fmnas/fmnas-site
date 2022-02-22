@@ -160,6 +160,9 @@ class Database {
 		$a->path = $asset["path"];
 		$a->setType($asset["type"]);
 		$a->data = ($asset["data"] ? unserialize($asset["data"]) : []);
+		if (($asset["width"] ?? false) || ($asset["height"] ?? false)) {
+			$a->size = [$asset["width"] ?? 1, $asset["height"] ?? 1];
+		}
 		return $a;
 	}
 
@@ -250,6 +253,8 @@ class Database {
 				"data" => $pet["pic_data"],
 				"path" => $pet["pic_path"],
 				"type" => $pet["pic_type"],
+				"width" => $pet["pic_width"],
+				"height" => $pet["pic_height"],
 		]);
 		$p->description = self::createAsset([
 				"id" => $pet["dsc_id"],
@@ -272,6 +277,8 @@ class Database {
 					"pic_data" => $pet["friend_pic_data"],
 					"pic_path" => $pet["friend_pic_path"],
 					"pic_type" => $pet["friend_pic_type"],
+					"pic_width" => $pet["friend_pic_width"],
+					"pic_height" => $pet["friend_pic_height"],
 					"breed" => $pet["friend_breed"],
 					"dob" => $pet["friend_dob"],
 					"bonded" => 2,

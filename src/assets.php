@@ -11,8 +11,8 @@ class Asset {
 	public ?string $path; // Canonical pathname
 	public ?array $data; // generic data associated with this asset
 	public ?string $type; // MIME type
+	public ?array $size; // intrinsic size of image
 	private ?string $contents;
-	private ?array $size; // intrinsic size of image
 
 	/**
 	 * Parse handlebars/markdown into HTML and cache, or retrieve from cache

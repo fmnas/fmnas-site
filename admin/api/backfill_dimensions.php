@@ -21,12 +21,6 @@ require_once 'api.php';
 endpoint(...[
 		'get' => function() use ($db): Result {
 			try {
-				try {
-					$db->query("alter table assets add column width mediumint");
-					$db->query("alter table assets add column height mediumint");
-				} catch (Exception $e) {
-
-				}
 				$assets = $db->query("select * from assets where type like 'image/%' and height is null");
 				foreach ($assets as $ass) {
 					$asset = $db->getAssetByKey($ass['id']);
