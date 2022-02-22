@@ -162,6 +162,7 @@ function style(string $name = "/common", bool $relative = false, ?string $buster
  * @param $msg string Message to log, along with backtrace
  */
 function log_err(string $msg = "") {
+	error_log($msg);
 	file_put_contents(root() . "/log",
 			date("c\n") . $msg . "\nBacktrace:\n" . print_r(debug_backtrace(), true) . "\n\n", FILE_APPEND);
 }
