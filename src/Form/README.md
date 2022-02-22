@@ -1,3 +1,5 @@
+TODO: Update form processor readme to reflect refactoring.
+
 Include this file at the top of a form page, then set values of $this->formConfig.
 
 The `<form>` element will be replaced with an `<article>` element. All `<script>` elements will be removed unless they

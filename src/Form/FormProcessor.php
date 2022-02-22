@@ -30,6 +30,10 @@ use Masterminds\HTML5;
 class FormProcessor {
 	public Closure $collector;
 
+	// Useful for debugging.
+	// TODO: Check that $PERSIST_TEMP_FILES is false when merging.
+	private bool $PERSIST_TEMP_FILES = true;
+
 	public function __construct(
 			private FormConfig $formConfig,
 	) {
@@ -45,9 +49,6 @@ class FormProcessor {
 	 * Otherwise, the rendered HTML is output to the browser.
 	 */
 	public function collectForm(): void {
-		// Get the server-rendered form HTML from the page output.
-		$html = ob_get_clean();
-
 		// Get the submitted POST or GET data.
 		$receivedData = match ($this->formConfig->method) {
 			HTTPMethod::GET => $_GET,
@@ -55,62 +56,165 @@ class FormProcessor {
 			HTTPMethod::EITHER => $_POST ?: $_GET,
 		};
 
-		if ($receivedData || $_FILES) {
-			try {
-				($this->formConfig->received)($receivedData);
-				$this->processForm($receivedData, $html);
-				($this->formConfig->confirm)($receivedData);
-			} catch (Exception $e) {
-				($this->formConfig->handler)(new FormException($e, $receivedData));
+		$stage = $receivedData["_form_stage"] ?? ($receivedData || $_FILES ? "receiveData" : "displayForm");
+
+		try {
+			switch ($stage) {
+			case "receiveData":
+				$this->receiveData($receivedData);
+				break;
+			case "displayForm":
+				$this->displayForm($receivedData);
+				break;
+			case "processForm":
+				if (count($receivedData) === 1) {
+					// This request was made from the return-early stage of receiveData,
+					// and the form data will be serialized in an attached file.
+					$data = unserialize(file_get_contents($_FILES["data"]["tmp_name"]));
+					$_FILES = $data["_form_files"];
+					$this->processForm($data);
+					if (!$this->PERSIST_TEMP_FILES) {
+						foreach ($_FILES as $file) {
+							// Expicitly delete the files, as they were moved by the previous stage to be persistent.
+							if (is_array($file["tmp_name"])) {
+								foreach($file["tmp_name"] as $filename) {
+									@unlink($filename);
+								}
+							} else {
+								@unlink($file["tmp_name"]);
+							}
+						}
+						@unlink($data["_tmp_file"]);
+					}
+				} else {
+					$this->processForm($receivedData);
+				}
+				break;
+			default:
+				throw new Exception("Unrecognized form stage $stage");
 			}
-		} else {
-			// Look for a good place to put the injected CSS.
-			$separator = "";
-			$after = false; // Whether to place the CSS after the separator instead of before.
-			$halves = [$html, ""];
-			/** @noinspection HtmlRequiredLangAttribute */
-			foreach ([["</head>", false], ["<body", false], ["<head", true], ["</title>", true], ["<!DOCTYPE html>", true],
-					["<html>", true]] as $candidate) {
-				if (contains($html, $candidate[0])) {
-					$separator = $candidate[0];
-					$after = $candidate[1];
-					$halves = explode($candidate[0], $html, 2);
-					break;
+		} catch (Exception $e) {
+			($this->formConfig->handler)(new FormException($e));
+		}
+	}
+
+	/**
+	 * Find the HTML of the form, either from the form data "_form_html" or from the output buffer.
+	 * @param $data array Form data
+	 * @return string
+	 */
+	private function collectHtml(array &$data): string {
+		return $data["_form_html"] ??= ob_get_clean();
+	}
+
+	/**
+	 * Second stage of form execution: receive the data and pass it to processForm, optionally after returning
+	 * an HTTP response with returnEarly.
+	 * @param $data array Form data
+	 * @throws DOMException
+	 * @throws \PHPMailer\PHPMailer\Exception
+	 */
+	private function receiveData(array &$data) {
+		$html = $this->collectHtml($data);
+		($this->formConfig->received)($data);
+		if ($this->formConfig->returnEarly) {
+			// Move uploaded files to be persistent.
+			foreach($_FILES as &$file) {
+				if (is_array($file["tmp_name"])) {
+					foreach($file["tmp_name"] as &$oldname) {
+						$newname = tempnam(sys_get_temp_dir(), "PERSIST_");
+						@move_uploaded_file($oldname, $newname);
+						$oldname = $newname;
+					}
+				} else {
+					$newname = tempnam(sys_get_temp_dir(), "PERSIST_");
+					@move_uploaded_file($file["tmp_name"], $newname);
+					$file["tmp_name"] = $newname;
 				}
 			}
 
-			// Stuff before the injected CSS.
-			echo $halves[0];
-			if ($after) {
-				echo $separator;
-			}
+			// Put a copy of $_FILES in $data for serialization.
+			$data["_form_files"] = $_FILES;
 
-			// Build and echo the injected CSS.
-			$attributes = ["data-hidden", "data-foreach", "data-foreach-config", "data-if", "data-if-config", "data-value",
-					"data-value-config", "data-href", "data-href-config"];
-			$selectors = [];
-			foreach ($attributes as $attribute) {
-				$selectors[] =
-						"*[$attribute]:not([data-hidden='0']):not([data-hidden='false']):not([data-hidden='false' i])";
-			}
-			echo "<style>" . implode(",", $selectors) . "{display: none !important;}</style>";
+			// Generate a temp filename in which to put the data.
+			$tempfile = tempnam(sys_get_temp_dir(), "PERSIST_");
 
-			// Stuff after the injected CSS.
-			if (!$after) {
-				echo $separator;
+			// Store the temp filename along with the form data.
+			$data["_tmp_file"] = $tempfile;
+
+			// Serialize the data into the temp file.
+			file_put_contents($tempfile, serialize($data));
+
+			// Request processing in the background.
+			$pipes = [];
+			$scheme = ($_SERVER["HTTPS"] ?? "off") === "on" ? "https" : "http";
+			$host = $_SERVER["HTTP_HOST"];
+			$server = $_SERVER["SERVER_NAME"];
+			if ($host !== $server) {
+				error_log("Host $host doesn't match server $server - refusing to request background processing.");
+				$this->processForm($data);
+				return;
 			}
-			echo $halves[1];
+			$uri = $_SERVER["REQUEST_URI"];
+			$relative = parse_url($uri, PHP_URL_PATH);
+			$path = "$scheme://$host$relative";
+			$command = "curl -v -F '_form_stage=processForm' -F 'data=@$tempfile' $path";
+			var_dump($command);
+			proc_close(proc_open("$command &", [], $pipes));
+		} else {
+			$this->processForm($data);
 		}
+	}
+
+	private function displayForm(array &$data) {
+		$html = $this->collectHtml($data);
+
+		// Look for a good place to put the injected CSS.
+		$separator = "";
+		$after = false; // Whether to place the CSS after the separator instead of before.
+		$halves = [$html, ""];
+		/** @noinspection HtmlRequiredLangAttribute */
+		foreach ([["</head>", false], ["<body", false], ["<head", true], ["</title>", true], ["<!DOCTYPE html>", true],
+				["<html>", true]] as $candidate) {
+			if (contains($html, $candidate[0])) {
+				$separator = $candidate[0];
+				$after = $candidate[1];
+				$halves = explode($candidate[0], $html, 2);
+				break;
+			}
+		}
+
+		// Stuff before the injected CSS.
+		echo $halves[0];
+		if ($after) {
+			echo $separator;
+		}
+
+		// Build and echo the injected CSS.
+		$attributes = ["data-hidden", "data-foreach", "data-foreach-config", "data-if", "data-if-config", "data-value",
+				"data-value-config", "data-href", "data-href-config"];
+		$selectors = [];
+		foreach ($attributes as $attribute) {
+			$selectors[] =
+					"*[$attribute]:not([data-hidden='0']):not([data-hidden='false']):not([data-hidden='false' i])";
+		}
+		echo "<style>" . implode(",", $selectors) . "{display: none !important;}</style>";
+
+		// Stuff after the injected CSS.
+		if (!$after) {
+			echo $separator;
+		}
+		echo $halves[1];
 	}
 
 	/**
 	 * Send emails containing the submitted form data.
 	 * @param array $data Raw form data ($_GET or $_POST).
-	 * @param string $html The server-rendered HTML of the empty form.
 	 * @throws \PHPMailer\PHPMailer\Exception
 	 * @throws DOMException
 	 */
-	function processForm(array $data, string $html): void {
+	private function processForm(array $data): void {
+		$html = $this->collectHtml($data);
 		$data["_FORM_DEDUPLICATION_METADATA_"] = date("Ymd") . (@md5_file(__FILE__) ?: "") . md5($html);
 
 		$this->validateFiles();
@@ -126,7 +230,7 @@ class FormProcessor {
 	/**
 	 * Remove invalid files from $_FILES.
 	 */
-	function validateFiles(): void {
+	private function validateFiles(): void {
 		$removeInputs = [];
 		foreach ($_FILES as $inputName => &$fileArray) {
 			if (!isset($fileArray["size"])) {
@@ -168,7 +272,7 @@ class FormProcessor {
 	 * @param array $metadata A PHP-style file metadata array (like $_FILES["something"])
 	 * @return array A sane file metadata array
 	 */
-	#[Pure] function transformFileArray(array $metadata): array {
+	#[Pure] private function transformFileArray(array $metadata): array {
 		if (!isset($metadata["size"])) {
 			return [];
 		}
@@ -196,7 +300,7 @@ class FormProcessor {
 	 * @throws DOMException
 	 * @noinspection PhpMissingBreakStatementInspection
 	 */
-	function renderForm(array $data, string $html, FormEmailConfig $emailConfig): RenderedEmail {
+	private function renderForm(array $data, string $html, FormEmailConfig $emailConfig): RenderedEmail {
 		$files = $this->applyFileConversions($emailConfig);
 		$attachments = $this->collectAttachments($files);
 
@@ -546,7 +650,7 @@ class FormProcessor {
 	 * @param FormEmailConfig $emailConfig
 	 * @return array The updated file metadata array
 	 */
-	function applyFileConversions(FormEmailConfig $emailConfig): array {
+	private function applyFileConversions(FormEmailConfig $emailConfig): array {
 		if ($emailConfig->globalConversion) {
 			$files = &$_FILES;
 		} else {
@@ -554,6 +658,12 @@ class FormProcessor {
 		}
 
 		foreach ($files as $inputName => &$fileArray) {
+			if ($inputName[0] === '_') {
+				// Discard internal files.
+				$file["attached"] = false;
+				$this->updateFile($fileArray, 0, $file);
+				continue;
+			}
 			$transformed = $this->transformFileArray($fileArray);
 			// Apply filesConverter.
 			if ($emailConfig->filesConverter !== null) {
@@ -628,7 +738,7 @@ class FormProcessor {
 	 * @param array $file The file (in transformFileArray) to put in $files
 	 * @return void
 	 */
-	function updateFile(array &$files, int $index, array $file) {
+	private function updateFile(array &$files, int $index, array $file) {
 		if (!isset($files["size"])) {
 			echo "Warning: got a bogus file array!";
 			var_dump($files);
@@ -658,7 +768,7 @@ class FormProcessor {
 	 * @param array<array> $fileArray A PHP-style file array like $_FILES
 	 * @return array<AttachmentInfo> Files to attach
 	 */
-	#[Pure] function collectAttachments(array $fileArray): array {
+	#[Pure] private function collectAttachments(array $fileArray): array {
 		$attachments = [];
 		foreach ($fileArray as $metadata) {
 			$files = $this->transformFileArray($metadata);
@@ -678,7 +788,7 @@ class FormProcessor {
 	 * @param array $values Values to use for elements with the data-value-config or data-href-config attribute
 	 * @param array $files Uploaded file metadata (in $_FILES format)
 	 */
-	function applyDataValues(DOMElement|DOMDocument $root, array $data, array $values, array $files): void {
+	private function applyDataValues(DOMElement|DOMDocument $root, array $data, array $values, array $files): void {
 		foreach (DOMHelpers::collectElements($root, "*", DOMHelpers::has("data-value-config")) as $element) {
 			/** @var $element DOMElement */
 			if (isset($values[$element->getAttribute("data-value-config")])) {

@@ -34,6 +34,10 @@ require_once "$t/header.php";
 require_once "$t/application_response.php";
 require_once "$t/footer.php";
 
+// Useful for debugging.
+// TODO: Check that $DEDUPLICATE is true when merging.
+$DEDUPLICATE = false;
+
 ini_set('memory_limit', '2048M');
 setlocale(LC_ALL, 'en_US.UTF-8');
 set_time_limit(3600);
@@ -51,6 +55,7 @@ $smtpConfig = new SMTPConfig(
 		password: Config::$smtp_password
 );
 
+$formConfig->returnEarly = true;
 $formConfig->received = function(array $formData) use ($cwd): void {
 	?>
 	<!DOCTYPE html>
@@ -75,6 +80,7 @@ $formConfig->received = function(array $formData) use ($cwd): void {
 };
 
 $formConfig->handler = function(FormException $e) use ($smtpConfig): void {
+	log_err(print_r($e, true));
 	http_response_code(500);
 	?>
 	<!DOCTYPE html>
@@ -112,9 +118,6 @@ $formConfig->handler = function(FormException $e) use ($smtpConfig): void {
 	@$email->send(new RenderedEmail(
 			'<pre>' . print_r(get_defined_vars(), true) . '</pre>',
 			[]));
-};
-
-$formConfig->confirm = function(array $formData): void {
 };
 
 $formConfig->emails = function(array $formData) use ($smtpConfig, $cwd): array {
@@ -318,7 +321,9 @@ $formConfig->emails = function(array $formData) use ($smtpConfig, $cwd): array {
 
 	if (file_exists($save->saveFile)) {
 		echo '<!-- Application not sent - detected duplicate at ' . $save->saveFile . ' -->';
-//		return [];
+		if ($DEDUPLICATE) {
+			return [];
+		}
 	}
 
 	return [$save, $primaryEmail, $secondaryEmail];

@@ -52,12 +52,12 @@ function logHeaders(): void {
 	$s->bindValue(':host', $_SERVER['REMOTE_HOST'] ?? null);
 	$s->bindValue(':agent', $_SERVER['HTTP_USER_AGENT'] ?? null);
 	$s->bindValue(':description', $parsed->toString());
-	$s->bindValue(':browser', $parsed->browser->name);
-	$s->bindValue(':major', $parsed->browser->version->getMajor());
-	$s->bindValue(':minor', $parsed->browser->version->value);
-	$s->bindValue(':os', $parsed->os->getName());
-	$s->bindValue(':version', $parsed->os->getVersion());
-	$s->bindValue(':edition', $parsed->os->edition);
+	$s->bindValue(':browser', $parsed->browser?->name ?? null);
+	$s->bindValue(':major', $parsed->browser?->version?->getMajor() ?? null);
+	$s->bindValue(':minor', $parsed->browser?->version?->value ?? null);
+	$s->bindValue(':os', $parsed->os?->getName() ?? null);
+	$s->bindValue(':version', $parsed->os?->getVersion() ?? null);
+	$s->bindValue(':edition', $parsed->os?->edition ?? null);
 	$s->bindValue(':ua', $headers['Sec-CH-UA'] ?? null);
 	$s->bindValue(':mobile', $headers['Sec-CH-UA-Mobile'] ?? null);
 	$s->bindValue(':platform', $headers['Sec-CH-UA-Platform'] ?? null);

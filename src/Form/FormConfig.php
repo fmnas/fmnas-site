@@ -50,6 +50,11 @@ class FormConfig {
 	public Closure $received;
 
 	/**
+	 * Whether to send an HTTP response and become a background process after calling $received.
+	 */
+	public bool $returnEarly = false;
+
+	/**
 	 * Closure that shall return configs for each copy of the form to email.
 	 * In most cases, the returned iterable should be an array.
 	 * @param array form data ($_POST or $_GET)
@@ -181,6 +186,7 @@ class FormConfig {
 			return !$metadata["error"];
 		};
 		$this->received = function(array $formData): void {
+
 		};
 	}
 }
