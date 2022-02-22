@@ -42,13 +42,14 @@ $writer = function(string $key, mixed $body) use ($db): Result {
 		// Make an (asynchronous) imgTag request to generate cached versions
 		$domain = _G_admin_domain();
 		$height = $_GET["height"] ?? '';
+		$credentials = Config::$api_credentials;
 		/** @noinspection HttpUrlsUsage */
-		exec("bash -c 'curl http://$domain/api/tag/{$asset->key}?height=$height > /dev/null 2>&1 &'");
+		shell_exec("bash -c 'curl -u \"$credentials\" http://$domain/api/tag/{$asset->key}?height=$height > /dev/null 2>&1 &'");
 		// Thumbnails for admin
 		/** @noinspection HttpUrlsUsage */
-		exec("bash -c 'curl http://$domain/api/tag/{$asset->key}?height=64&expand=0 > /dev/null 2>&1 &'");
+		shell_exec("bash -c 'curl -u \"$credentials\" http://$domain/api/tag/{$asset->key}?height=64&expand=0 > /dev/null 2>&1 &'");
 		/** @noinspection HttpUrlsUsage */
-		exec("bash -c 'curl http://$domain/api/tag/{$asset->key}?height=192&expand=0 > /dev/null 2>&1 &'");
+		shell_exec("bash -c 'curl -u \"$credentials\" http://$domain/api/tag/{$asset->key}?height=192&expand=0 > /dev/null 2>&1 &'");
 	}
 	return new Result(204);
 };
