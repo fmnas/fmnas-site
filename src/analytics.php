@@ -30,13 +30,14 @@ function logHeaders(): void {
 	$db->query("
 	CREATE TABLE IF NOT EXISTS requests (start INTEGER, end INTEGER, uri TEXT, ip TEXT, host TEXT, agent TEXT, 
 	description TEXT, browser TEXT, major INTEGER, minor TEXT, os TEXT, version TEXT, edition TEXT, ua TEXT, 
-	mobile TEXT, platform TEXT, width TEXT, memory TEXT, downlink TEXT, accept TEXT, encoding TEXT, language TEXT)
+	mobile TEXT, platform TEXT, width TEXT, memory TEXT, downlink TEXT, accept TEXT, encoding TEXT, language TEXT,
+	referer TEXT)
 	");
 	$s =
 			$db->prepare("
 			INSERT INTO requests VALUES (:start, :end, :uri, :ip, :host, :agent, :description, :browser, :major, :minor, 
 			                             :os, :version, :edition, :ua, :mobile, :platform, :width, :memory, :downlink, 
-			                             :accept, :encoding, :language)
+			                             :accept, :encoding, :language, :referer)
 			");
 	$headers = getallheaders();
 	$parsed = new WhichBrowser\Parser($headers);
@@ -62,6 +63,7 @@ function logHeaders(): void {
 	$s->bindValue(':encoding', $headers['Accept-Encoding'] ?? null);
 	$s->bindValue(':accept', $headers['Accept'] ?? null);
 	$s->bindValue(':language', $headers['Accept-Language'] ?? null);
+	$s->bindValue(':referer', $_SERVER['HTTP_REFERER'] ?? null);
 	$s->execute();
 	$db->close();
 }

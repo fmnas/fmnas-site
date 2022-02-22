@@ -168,9 +168,7 @@ site. See the Workflow section above for more details.
 The following workflows in `.github/workflows` are used for deployment:
 
 * `deploy-gcp-{prod,test}.yml` - Deploys Google Cloud Platform services from gcp/.
-* `deploy-{prod,test}.yml` - Builds and deploys the website to Dreamhost, and regenerates src/generated.php.
-* `regenerate-images-{prod,test}.yml` - Calls the API to regenerate cached images when the image scaling code (
-  src/resize.php) changes.
+* `deploy-{prod,test}.yml` - Builds and deploys the website to Dreamhost, then invalidates server caches as necessary.
 
 #### Secrets
 
@@ -189,13 +187,9 @@ The following workflows in `.github/workflows` are used for deployment:
 * `DB_USERNAME`: The MySQL user for `TEST_DB_NAME` and `PROD_DB_NAME`
 * `DB_PASS`: The MySQL password for `DB_USERNAME`
 * `DB_HOST`: The MySQL server (`mysql.forgetmenotshelter.org`)
-* `HTTP_CREDENTIALS`: The HTTP basic auth credentials to get into the test site and `regen_images`
-  endpoint (`username:password`)
-* `TEST_SITE_URL`: The URL of the test site (`http://fmnas.org/`)
-* `PROD_SITE_URL`: The URL of the prod site (`https://forgetmenotshelter.org/`)
-* `TEST_IMAGES_API`: The URL to the test site `regen_images` endpoint (`https://admin.fmnas.org/api/regen_images`)
-* `PROD_IMAGES_API`: The URL to the prod site `regen_images`
-  endpoint (`https://admin.forgetmenotshelter.org/api/regen_images`)
+* `HTTP_CREDENTIALS`: HTTP basic auth credentials for the admin API (`username:password`)
+* `TEST_ADMIN_DOMAIN`: The domain of the test admin site (`admin.fmnas.org`)
+* `PROD_ADMIN_DOMAIN`: The domain of the prod site (`admin.forgetmenotshelter.org`)
 * `RESIZE_IMAGE_REPO`: The Artifact Registry repository
   for `resize-image` (`us-central1-docker.pkg.dev/fmnas-automation/resize-image-docker`)
 * `RESIZE_IMAGE_TEST_ENDPOINT`: The HTTPS endpoint mapped
