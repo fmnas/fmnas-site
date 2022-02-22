@@ -52,6 +52,7 @@ jobs:
       - name: Build admin client
         run: npx vite build admin/client
       - name: Set config values
+        id: build-success
         run: |
           npx ts-node handleparse.ts secrets/config.php.hbs \
           --db_name="${{ secrets.PROD_DB_NAME }}" \
@@ -103,6 +104,7 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           wait-interval: 10
       - name: SFTP upload
+        id: deploy-success
         uses: SamKirkland/FTP-Deploy-Action@3.0.0
         with:
           ftp-server: sftp://${{ secrets.PROD_SFTP_HOST }}${{ secrets.PROD_SITE_ROOT }}/
@@ -117,6 +119,7 @@ jobs:
           password: ${{ secrets.PROD_SFTP_PASS }}
           script: rm ${{ secrets.PROD_SITE_ROOT }}/src/generated.php ${{ secrets.PROD_SITE_ROOT }}/public/assets/cache/*.html || echo "Error $?"
       - name: Regenerate generated.php
+        id: generate-success
         run: curl -f ${{ secrets.PROD_SITE_URL }}
   badge:
     name: Update status badge
