@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 use JetBrains\PhpStorm\NoReturn;
 
 require_once 'api.php';
+require_once "$src/resize.php";
 
 // This endpoint is for raw asset data. For metadata, use the assets endpoint.
 
@@ -39,6 +39,21 @@ $writer = function(string $key, mixed $body) use ($db): Result {
 		return new Result(500, error: "Failed to save asset to $path");
 	}
 	if (startsWith($asset->getType(), "image/")) {
+		// Find the size of the image.
+		try {
+			$size = size($path);
+			$arr = [
+					"path" => $asset->path,
+					"data" => $asset->data,
+					"type" => $asset->type,
+					"width" => $size[0],
+					"height" => $size[1]
+			];
+			$db->updateAsset($key, $arr);
+		} catch (ImageResizeException $e) {
+			log_err(print_r($e, true));
+		}
+
 		// Make an (asynchronous) imgTag request to generate cached versions
 		$domain = _G_admin_domain();
 		$height = $_GET["height"] ?? '';
