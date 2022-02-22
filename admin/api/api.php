@@ -80,12 +80,16 @@ function endpoint(?callable $get = null, ?callable $post = null, ?callable $put 
 			break;
 		}
 	} catch (Exception $e) {
+		log_err(print_r($e, true));
 		$result = new Result(500, print_r($e, true));
 	}
 
 	header("Cache-Control: no-store");
 	ini_set('zlib.output_compression', 1);
 	http_response_code($result->status);
+	if ($result->status >= 300) {
+		log_err(print_r($result, true));
+	}
 	echo json_encode($result);
 }
 
