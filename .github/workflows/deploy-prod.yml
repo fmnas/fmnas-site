@@ -22,6 +22,10 @@ jobs:
   deploy:
     name: Deploy prod website
     runs-on: ubuntu-latest
+    outputs:
+      build-status: ${{ steps.build-success.outcome }}
+      deploy-status: ${{ steps.deploy-success.outcome }}
+      generate-status: ${{ steps.generate-success.outcome }}
     steps:
       - name: Checkout main
         uses: actions/checkout@main
