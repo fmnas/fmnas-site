@@ -179,7 +179,10 @@ function emailLinks(): void {
  */
 function launch(string $command): void {
 	$pipes = [];
-	proc_close(proc_open("$command &", [], $pipes));
+	proc_close(proc_open("$command &", [
+			1 => ["file", "/dev/null", "w"],
+			2 => ["file", "/dev/null", "w"],
+	], $pipes));
 }
 
 function requestLogHeaders() {

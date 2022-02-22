@@ -149,7 +149,7 @@ $formConfig->emails = function(array $formData) use ($DEDUPLICATE, $smtpConfig, 
 		$filespecs = [];
 		$count = 0;
 		$heic_count = 0;
-		foreach ($files as $index => &$file) {
+		foreach ($files as $index => $file) {
 			if (!startsWith($file["type"], "image/")) {
 				$filespecs[$index] = null;
 				continue;
