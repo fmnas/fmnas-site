@@ -76,7 +76,8 @@ jobs:
           --asm_pass="${{ secrets.ASM_WEB_PASS }}" \
           --print_pdf_endpoint="${{ secrets.PRINT_PDF_PROD_ENDPOINT }}" \
           --minify_html_endpoint="${{ secrets.MINIFY_HTML_TEST_ENDPOINT }}" \
-          --ga_id="${{ secrets.PROD_GA_ID }}"
+          --ga_id="${{ secrets.PROD_GA_ID }}" \
+          --api_credentials="${{ secrets.HTTP_CREDENTIALS }}"
       - name: Require HTTPS to access public site
         run: cat public/.htaccess-prod | tee -a public/.htaccess
       - name: Restrict access to admin site
@@ -89,7 +90,7 @@ jobs:
         run: sed -i '/\/vendor\//d' .gitignore
       - name: Unignore compiled files for upload
         run: |
-          sed -i -E "/\.(css|js)$/d" public/.gitignore
+          sed -i -E "/\.(css|js|map)$/d" public/.gitignore
           rm admin/.gitignore
       - name: Remove tester.php
         run: rm public/tester.php
