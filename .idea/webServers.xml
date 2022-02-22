@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="122cc4f5-b534-4c71-83ed-e06fc55c449b" name="Local Admin Site" url="http://admin.fmnas.panray.seangillen.net">
+        <fileTransfer accessType="LOCAL" port="0" />
+      </webServer>
+      <webServer id="5edd4727-83c8-45c9-bede-5dba97169f1c" name="Local Public Site" url="http://fmnas.panray.seangillen.net">
+        <fileTransfer accessType="LOCAL" port="0" />
+      </webServer>
+    </option>
+  </component>
+</project>

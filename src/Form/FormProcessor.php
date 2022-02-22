@@ -75,7 +75,7 @@ class FormProcessor {
 					$this->processForm($data);
 					if (!$this->PERSIST_TEMP_FILES) {
 						foreach ($_FILES as $file) {
-							// Expicitly delete the files, as they were moved by the previous stage to be persistent.
+							// Explicitly delete the files, as they were moved by the previous stage to be persistent.
 							if (is_array($file["tmp_name"])) {
 								foreach($file["tmp_name"] as $filename) {
 									@unlink($filename);
@@ -115,7 +115,7 @@ class FormProcessor {
 	 * @throws \PHPMailer\PHPMailer\Exception
 	 */
 	private function receiveData(array &$data) {
-		$html = $this->collectHtml($data);
+		$this->collectHtml($data);
 		($this->formConfig->received)($data);
 		if ($this->formConfig->returnEarly) {
 			// Move uploaded files to be persistent.
@@ -133,16 +133,9 @@ class FormProcessor {
 				}
 			}
 
-			// Put a copy of $_FILES in $data for serialization.
 			$data["_form_files"] = $_FILES;
-
-			// Generate a temp filename in which to put the data.
 			$tempfile = tempnam(sys_get_temp_dir(), "PERSIST_");
-
-			// Store the temp filename along with the form data.
 			$data["_tmp_file"] = $tempfile;
-
-			// Serialize the data into the temp file.
 			file_put_contents($tempfile, serialize($data));
 
 			// Request processing in the background.
@@ -159,7 +152,6 @@ class FormProcessor {
 			$relative = parse_url($uri, PHP_URL_PATH);
 			$path = "$scheme://$host$relative";
 			$command = "curl -v -F '_form_stage=processForm' -F 'data=@$tempfile' $path";
-			var_dump($command);
 			proc_close(proc_open("$command &", [], $pipes));
 		} else {
 			$this->processForm($data);

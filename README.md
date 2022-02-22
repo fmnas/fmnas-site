@@ -43,7 +43,7 @@ To get a local server running, you will need:
 * Apache (or Litespeed, etc.)
 	* Debian packages: `apache2 libapache2-mod-php`
 * PHP 8.1 and dependencies noted below
-  * Debian packages: `php php-gd php-mbstring php-mysql php-xml php-imagick php-curl php-sqlite3`
+	* Debian packages: `php php-gd php-mbstring php-mysql php-xml php-imagick php-curl php-sqlite3`
 * cURL on PATH
 * Node
 	* I suggest using NVM and enabling [deep shell integration](https://github.com/nvm-sh/nvm#deeper-shell-integration) to
@@ -57,6 +57,7 @@ To get a local server running, you will need:
 The repository includes configs for IntelliJ/PHPStorm.
 
 The following plugins are required for full-stack development in IntelliJ IDEA Ultimate:
+
 * [.ignore](https://plugins.jetbrains.com/plugin/7495--ignore)
 * [Apache config (.htaccess)](https://plugins.jetbrains.com/plugin/6834-apache-config--htaccess-)
 * [Cloud Code](https://plugins.jetbrains.com/plugin/8079-cloud-code)
@@ -66,7 +67,7 @@ The following plugins are required for full-stack development in IntelliJ IDEA U
 * [Multirun](https://plugins.jetbrains.com/plugin/7248-multirun)
 * [PHP](https://plugins.jetbrains.com/plugin/6610-php)
 * [Vue.js](https://plugins.jetbrains.com/plugin/9442-vue-js)
-  
+
 The "Run local servers" multirun workflow runs all the GCP services as well as a local Vite server for the admin site.
 
 The `main` branch contains the stable [prod site](https://forgetmenotshelter.org), while the `test` branch contains the
@@ -85,7 +86,7 @@ The `.github/workflows/sync-test.yml` workflow merges `main` back into `test` af
 then `git fetch` and rebase your dev branch onto `origin/test` before another PR. Or if developing directly on `test`
 , `git pull` to get the merge commit.
 
-If you revert a PR in main but want to keep the changes in test, revert the revert PR and merge the new PR into test. 
+If you revert a PR in main but want to keep the changes in test, revert the revert PR and merge the new PR into test.
 
 ### Initial build
 
@@ -93,7 +94,7 @@ After checking out the repository, run:
 
 * `npm install` for Node dependencies
 * Create the config file (change values as appropriate):
-  * ```shell
+	* ```shell
     ts-node handleparse.ts secrets/config.php.hbs --db_name=database --db_username=username --db_pass=password \
     --db_host=localhost --smtp_host=localhost --smtp_auth=false --smtp_port=25 \
     --image_size_endpoint=https://localhost:50000 --resize_image_endpoint=https://localhost:50001 \
@@ -138,14 +139,14 @@ The `.github/workflows/check-repo.yml` workflow checks that the repo is in a goo
 following checks must pass before merging a PR into `main`:
 
 * All file watchers are enabled
-  * Checks that `.idea/watcherTasks.xml` contains no disabled file watchers (these can be inadvertently disabled by
-    IntelliJ due to local configuration errors).
+	* Checks that `.idea/watcherTasks.xml` contains no disabled file watchers (these can be inadvertently disabled by
+	  IntelliJ due to local configuration errors).
 * All files added by Sean contain a copyright header
-  * Checks that a copyright header is included in all source code files added by Sean. 
-  * Required because Sean's commits are copyrighted by Google and they want these.
-  * If Sean did not author any commits in the PR, this should always pass.
+	* Checks that a copyright header is included in all source code files added by Sean.
+	* Required because Sean's commits are copyrighted by Google and they want these.
+	* If Sean did not author any commits in the PR, this should always pass.
 * `admin/.htaccess` looks like `admin/dev.sh` is not running
-  * Checks that `admin/.htaccess` doesn't contain any uncommented `dev.sh add` lines or commented `dev.sh remove` lines.
+	* Checks that `admin/.htaccess` doesn't contain any uncommented `dev.sh add` lines or commented `dev.sh remove` lines.
 * The uploaded branch has origin/main and origin/test as ancestors.
 
 ### TODOs
@@ -203,11 +204,15 @@ The following workflows in `.github/workflows` are used for deployment:
   to `image-size-test` (`https://image-size-test.gcp.forgetmenotshelter.org`)
 * `IMAGE_SIZE_PROD_ENDPOINT`: The HTTPS endpoint mapped
   to `image-size` (`https://image-size.gcp.forgetmenotshelter.org`)
-* `PRINT_PDF_PROD_ENDPOINT`: The HTTPS endpoint for `print-pdf` (`https://us-central1-fmnas-automation.cloudfunctions.net/print-pdf`)
-* `PRINT_PDF_TEST_ENDPOINT`: The HTTPS endpoint for `print-pdf-test` (`https://us-central1-fmnas-automation.cloudfunctions.net/print-pdf-test`)
-* `MINIFY_HTML_PROD_ENDPOINT`: The HTTPS endpoint for `minify-html` (`https://us-central1-fmnas-automation.cloudfunctions.net/minify-html`)
-* `MINIFY_HTML_TEST_ENDPOINT`: The HTTPS endpoint for `minify-html-test` (`https://us-central1-fmnas-automation.cloudfunctions.net/minify-html-test`)
-* `ASM_WEB_DB`: The MySQL database with replicated ASM tables (see #314) for the import backend (`asm_web`) 
+* `PRINT_PDF_PROD_ENDPOINT`: The HTTPS endpoint
+  for `print-pdf` (`https://us-central1-fmnas-automation.cloudfunctions.net/print-pdf`)
+* `PRINT_PDF_TEST_ENDPOINT`: The HTTPS endpoint
+  for `print-pdf-test` (`https://us-central1-fmnas-automation.cloudfunctions.net/print-pdf-test`)
+* `MINIFY_HTML_PROD_ENDPOINT`: The HTTPS endpoint
+  for `minify-html` (`https://us-central1-fmnas-automation.cloudfunctions.net/minify-html`)
+* `MINIFY_HTML_TEST_ENDPOINT`: The HTTPS endpoint
+  for `minify-html-test` (`https://us-central1-fmnas-automation.cloudfunctions.net/minify-html-test`)
+* `ASM_WEB_DB`: The MySQL database with replicated ASM tables (see #314) for the import backend (`asm_web`)
 * `ASM_WEB_HOST`: The MySQL host for `ASM_WEB_DB` (`fmnas.forgetmenotshelter.org`)
 * `ASM_WEB_USER`: The MySQL user for `ASM_WEB_DB` (`fmnas_asm`)
 * `ASM_WEB_PASS`: The MySQL password for `ASM_WEB_USER`
@@ -264,19 +269,19 @@ The following workflows in `.github/workflows` are used for deployment:
 * Linux (any POSIX-compatible OS should work)
 * Apache (Litespeed or any other web server with .htaccess and PHP support should work)
 * PHP 8.1
-  * ImageMagick
-  * GD
-    * libJPEG
-    * libPNG
-  * mysqli
-  * mbstring
-  * imagick
-  * curl
-  * php-xml
-  * sqlite3
-  * Composer
-  * Needs shell access (with `shell_exec`) and the following executables in PATH:
-    * `curl` to request caching uploaded images
+	* ImageMagick
+	* GD
+		* libJPEG
+		* libPNG
+	* mysqli
+	* mbstring
+	* imagick
+	* curl
+	* php-xml
+	* sqlite3
+	* Composer
+	* Needs shell access (with `shell_exec`) and the following executables in PATH:
+		* `curl` to request caching uploaded images
 * MySQL or MariaDB
 
 #### Build

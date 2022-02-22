@@ -120,7 +120,7 @@ $formConfig->handler = function(FormException $e) use ($smtpConfig): void {
 			[]));
 };
 
-$formConfig->emails = function(array $formData) use ($smtpConfig, $cwd): array {
+$formConfig->emails = function(array $formData) use ($DEDUPLICATE, $smtpConfig, $cwd): array {
 	$shelterEmail = new EmailAddress(_G_default_email_user() . '@' . _G_public_domain(), _G_shortname());
 	$applicantEmail = new EmailAddress(trim($formData['AEmail']), trim($formData['AName']));
 	$applicantFakeEmail = new EmailAddress('noreply@' . _G_public_domain(), trim($formData['AName']));

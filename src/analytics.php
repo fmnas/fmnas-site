@@ -72,4 +72,3 @@ function logHeaders(): void {
 	$db->close();
 }
 
-register_shutdown_function('logHeaders');
