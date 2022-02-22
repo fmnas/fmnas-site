@@ -174,4 +174,12 @@ function emailLinks(): void {
 	echo '<script src="/email.js.php"></script>';
 }
 
+/**
+ * Launch a background process
+ */
+function launch(string $command): void {
+	$pipes = [];
+	proc_close(proc_open("$command &", [], $pipes));
+}
+
 require_once "$src/analytics.php";
