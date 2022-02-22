@@ -260,6 +260,13 @@ class FormConfig {
 	public Closure $handler;
 
 	/**
+	 * Callback for when the form data is received but has not been processed yet.
+	 * @param array form data ($_POST or $_GET)
+	 * @return void
+	 */
+	public Closure $received;
+
+	/**
 	 * Closure that shall return configs for each copy of the form to email.
 	 * In most cases, the returned iterable should be an array.
 	 * @param array form data ($_POST or $_GET)
@@ -469,6 +476,7 @@ function collectForm(): void {
 
 	if ($receivedData || $_FILES) {
 		try {
+			($formConfig->received)($receivedData);
 			processForm($receivedData, $html);
 			($formConfig->confirm)($receivedData);
 		} catch (Exception $e) {
@@ -1472,6 +1480,7 @@ $formConfig->fileTransformers = [
 $formConfig->fileValidator = function(array $metadata): bool {
 	return !$metadata["error"];
 };
+$formConfig->received = function(array $formData): void {};
 
 ob_start();
 register_shutdown_function('collectForm');

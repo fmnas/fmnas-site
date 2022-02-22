@@ -25,11 +25,29 @@ require_once "$t/footer.php";
 
 ini_set('memory_limit', '2048M');
 setlocale(LC_ALL, 'en_US.UTF-8');
-set_time_limit(1200);
+set_time_limit(3600);
 $formConfig->method = HTTPMethod::POST;
 $db ??= new Database();
-$pwd = getcwd();
-$formConfig->confirm = function(array $formData): void {
+$cwd = getcwd();
+
+ob_start();
+ignore_user_abort(true);
+function sendResponseEarly() {
+	$size = ob_get_length();
+	header("Content-Encoding: none");
+	header("Content-Length: {$size}");
+	header("Connection: close");
+	ob_end_flush();
+	flush();
+	if (session_id()) {
+		session_write_close();
+	}
+	if (is_callable('fastcgi_finish_request')) {
+		fastcgi_finish_request();
+	}
+}
+
+$formConfig->received = function(array $formData) use ($cwd): void {
 	?>
 	<!DOCTYPE html>
 	<html lang="en-US">
@@ -49,7 +67,10 @@ $formConfig->confirm = function(array $formData): void {
 	</article>
 	</html>
 	<?php
+	sendResponseEarly();
+	file_put_contents("$cwd/received/" . microtime(true) . ".serialized", serialize($formData));
 };
+
 $formConfig->handler = function(FormException $e): void {
 	http_response_code(500);
 	?>
@@ -79,19 +100,21 @@ $formConfig->handler = function(FormException $e): void {
 		</article>
 	</html>
 	<?php
-	// Attempt to email the PHP context to Sean so he can fix it.
+	// Attempt to email the PHP context to admin@ so we can fix it.
 	@sendEmail(
 			new FormEmailConfig(
 					new EmailAddress("admin@" . _G_public_domain()),
-					[new EmailAddress("sean@" . _G_public_domain())],
+					[new EmailAddress("admin@" . _G_public_domain())],
 					"Application Error Context"),
 			new RenderedEmail(
 					'<pre>' . print_r(get_defined_vars(), true) . '</pre>',
 					[]));
+	sendResponseEarly();
 };
 
-$cwd = getcwd();
-$formConfig->emails = function(array $formData) use ($pwd, $cwd): array {
+$formConfig->confirm = function(array $formData): void {};
+
+$formConfig->emails = function(array $formData) use ($cwd): array {
 	$shelterEmail = new EmailAddress(_G_default_email_user() . '@' . _G_public_domain(), _G_shortname());
 	$applicantEmail = new EmailAddress(trim($formData['AEmail']), trim($formData['AName']));
 	$applicantFakeEmail = new EmailAddress('noreply@' . _G_public_domain(), trim($formData['AName']));
@@ -172,8 +195,8 @@ $formConfig->emails = function(array $formData) use ($pwd, $cwd): array {
 		}
 	};
 	$save->globalConversion = true;
-	$save->emailTransformation = function(DOMDocument $dom, array &$attachments) use ($pwd): null|string {
-		return inlineStyles($dom, $pwd) ?: null;
+	$save->emailTransformation = function(DOMDocument $dom, array &$attachments) use ($cwd): null|string {
+		return inlineStyles($dom, $cwd) ?: null;
 	};
 
 	$dump = new FormEmailConfig(
@@ -205,7 +228,7 @@ $formConfig->emails = function(array $formData) use ($pwd, $cwd): array {
 	};
 	$primaryEmail->replyTo = [$applicantEmail];
 	$primaryEmail->emailTransformation =
-			function(DOMDocument $dom, array &$attachments) use ($pwd, $primarySubject): null|string {
+			function(DOMDocument $dom, array &$attachments) use ($cwd, $primarySubject): null|string {
 				try {
 					// Render a PDF of the email.
 					$file = tempnam(sys_get_temp_dir(), "PDF");
@@ -217,7 +240,7 @@ $formConfig->emails = function(array $formData) use ($pwd, $cwd): array {
 					log_err($e->getMessage());
 				}
 
-				$inlined = inlineStyles($dom, $pwd);
+				$inlined = inlineStyles($dom, $cwd);
 
 				try {
 					return remoteMinify($inlined, "https://forgetmenotshelter.org/application/");
@@ -237,7 +260,7 @@ $formConfig->emails = function(array $formData) use ($pwd, $cwd): array {
 		$secondaryEmail->cc = [new EmailAddress(trim($formData['CEmail']), trim($formData['CName']))];
 	}
 	$secondaryEmail->emailTransformation =
-			function(DOMDocument $dom, array &$attachments) use ($primarySubject, $pwd): null|string {
+			function(DOMDocument $dom, array &$attachments) use ($primarySubject, $cwd): null|string {
 				try {
 					// Render a PDF of the email.
 					$file = tempnam(sys_get_temp_dir(), "PDF");
@@ -277,7 +300,7 @@ $formConfig->emails = function(array $formData) use ($pwd, $cwd): array {
 					log_err($e->getMessage());
 				}
 
-				$inlined = inlineStyles($dom, $pwd);
+				$inlined = inlineStyles($dom, $cwd);
 
 				try {
 					return remoteMinify($inlined, "https://forgetmenotshelter.org/application/");
@@ -288,7 +311,7 @@ $formConfig->emails = function(array $formData) use ($pwd, $cwd): array {
 
 	if (file_exists($save->saveFile)) {
 		echo '<!-- Application not sent - detected duplicate at ' . $save->saveFile . ' -->';
-		return [];
+//		return [];
 	}
 
 	return [$save, $primaryEmail, $secondaryEmail];
