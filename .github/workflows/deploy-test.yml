@@ -83,7 +83,7 @@ jobs:
         run: sed -i '/\/vendor\//d' .gitignore
       - name: Unignore compiled files for upload
         run: |
-          sed -i -E "/\.(css|js)$/d" public/.gitignore
+          sed -i -E "/\.(css|js|map)$/d" public/.gitignore
           rm admin/.gitignore
       - name: Restrict access to test site
         run: cat public/.htaccess-test | tee -a public/.htaccess

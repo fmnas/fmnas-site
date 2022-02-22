@@ -89,7 +89,7 @@ jobs:
         run: sed -i '/\/vendor\//d' .gitignore
       - name: Unignore compiled files for upload
         run: |
-          sed -i -E "/\.(css|js)$/d" public/.gitignore
+          sed -i -E "/\.(css|js|map)$/d" public/.gitignore
           rm admin/.gitignore
       - name: Remove tester.php
         run: rm public/tester.php
