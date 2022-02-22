@@ -14,7 +14,18 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 require_once "../../src/common.php";
-require_once "$src/form.php";
+
+use fmnas\Form\AttachmentInfo;
+use fmnas\Form\EmailAddress;
+use fmnas\Form\FormConfig;
+use fmnas\Form\FormEmailConfig;
+use fmnas\Form\FormException;
+use fmnas\Form\HashOptions;
+use fmnas\Form\HTTPMethod;
+use fmnas\Form\FormProcessor;
+use fmnas\Form\RenderedEmail;
+use fmnas\Form\SMTPConfig;
+
 require_once "$src/db.php";
 require_once "$src/resize.php";
 require_once "$src/minify.php";
@@ -26,16 +37,19 @@ require_once "$t/footer.php";
 ini_set('memory_limit', '2048M');
 setlocale(LC_ALL, 'en_US.UTF-8');
 set_time_limit(3600);
+$formConfig = new FormConfig();
 $formConfig->method = HTTPMethod::POST;
 $db ??= new Database();
 $cwd = getcwd();
 
-ignore_user_abort(true);
-function sendResponseEarly() {
-	if (is_callable('fastcgi_finish_request')) {
-		fastcgi_finish_request();
-	}
-}
+$smtpConfig = new SMTPConfig(
+		host: Config::$smtp_host,
+		security: Config::$smtp_security,
+		port: Config::$smtp_port,
+		auth: Config::$smtp_auth,
+		user: Config::$smtp_username,
+		password: Config::$smtp_password
+);
 
 $formConfig->received = function(array $formData) use ($cwd): void {
 	?>
@@ -57,11 +71,10 @@ $formConfig->received = function(array $formData) use ($cwd): void {
 	</article>
 	</html>
 	<?php
-	sendResponseEarly();
 	file_put_contents("$cwd/received/" . microtime(true) . ".serialized", serialize($formData));
 };
 
-$formConfig->handler = function(FormException $e): void {
+$formConfig->handler = function(FormException $e) use ($smtpConfig): void {
 	http_response_code(500);
 	?>
 	<!DOCTYPE html>
@@ -91,20 +104,20 @@ $formConfig->handler = function(FormException $e): void {
 	</html>
 	<?php
 	// Attempt to email the PHP context to admin@ so we can fix it.
-	@sendEmail(
-			new FormEmailConfig(
-					new EmailAddress("admin@" . _G_public_domain()),
-					[new EmailAddress("admin@" . _G_public_domain())],
-					"Application Error Context"),
-			new RenderedEmail(
-					'<pre>' . print_r(get_defined_vars(), true) . '</pre>',
-					[]));
-	sendResponseEarly();
+	$email = new FormEmailConfig(
+			new EmailAddress("admin@" . _G_public_domain()),
+			[new EmailAddress("admin@" . _G_public_domain())],
+			"Application Error Context",
+			$smtpConfig);
+	@$email->send(new RenderedEmail(
+			'<pre>' . print_r(get_defined_vars(), true) . '</pre>',
+			[]));
 };
 
-$formConfig->confirm = function(array $formData): void {};
+$formConfig->confirm = function(array $formData): void {
+};
 
-$formConfig->emails = function(array $formData) use ($cwd): array {
+$formConfig->emails = function(array $formData) use ($smtpConfig, $cwd): array {
 	$shelterEmail = new EmailAddress(_G_default_email_user() . '@' . _G_public_domain(), _G_shortname());
 	$applicantEmail = new EmailAddress(trim($formData['AEmail']), trim($formData['AName']));
 	$applicantFakeEmail = new EmailAddress('noreply@' . _G_public_domain(), trim($formData['AName']));
@@ -119,6 +132,7 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 			null,
 			[],
 			'',
+			$smtpConfig,
 			['main' => true, 'path' => $path, 'thumbnails' => true, 'minhead' => true,
 					'outside_warn' => $outside_warn, 'outside_message' => $outside_message,]
 	);
@@ -193,6 +207,7 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 			null,
 			[],
 			'',
+			$smtpConfig,
 			['main' => true, 'path' => $path, 'weblink' => true,
 					'outside_warn' => $outside_warn, 'outside_message' => $outside_message,]
 	);
@@ -210,6 +225,7 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 			$applicantFakeEmail,
 			[$shelterEmail],
 			$primarySubject,
+			$smtpConfig,
 			['main' => true, 'path' => $path, 'weblink' => true,
 					'outside_warn' => $outside_warn, 'outside_message' => $outside_message,]
 	);
@@ -243,6 +259,7 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 			$shelterEmail,
 			[$applicantEmail],
 			'Your ' . _G_shortname() . ' Adoption Application',
+			$smtpConfig,
 			['main' => false, 'minhead' => true, 'showrentp' => true]
 	);
 	$secondaryEmail->attachFiles = false;
@@ -301,7 +318,7 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 
 	if (file_exists($save->saveFile)) {
 		echo '<!-- Application not sent - detected duplicate at ' . $save->saveFile . ' -->';
-		return [];
+//		return [];
 	}
 
 	return [$save, $primaryEmail, $secondaryEmail];
@@ -312,12 +329,14 @@ $formConfig->fileTransformers["url"] = function(array $metadata): string {
 $formConfig->transformers["mailto"] = function(string $email): string {
 	return "mailto:$email";
 };
-$formConfig->smtpHost = Config::$smtp_host;
-$formConfig->smtpSecurity = Config::$smtp_security;
-$formConfig->smtpPort = Config::$smtp_port;
-$formConfig->smtpUser = Config::$smtp_username;
-$formConfig->smtpPassword = Config::$smtp_password;
-$formConfig->smtpAuth = Config::$smtp_auth;
+
+$processor = new FormProcessor($formConfig);
+ob_start();
+function collect() {
+	global $processor;
+	$processor->collectForm();
+}
+register_shutdown_function('collect');
 
 function options(array $opts): string {
 	$options = "";

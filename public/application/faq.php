@@ -17,7 +17,7 @@
  */
 
 require_once "../../src/common.php";
-require_once "../../src/form.php";
+require_once "../../src/Processor.php";
 require_once "$t/header.php";
 ?>
 <!DOCTYPE html>
