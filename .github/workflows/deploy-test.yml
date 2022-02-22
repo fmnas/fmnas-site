@@ -79,7 +79,7 @@ jobs:
           --minify_html_endpoint="${{ secrets.MINIFY_HTML_TEST_ENDPOINT }}" \
           --ga_id="${{ secrets.TEST_GA_ID }}"
       - name: Unignore config.php for upload
-        run: echo '!secrets/config.php' >> .gitignore
+        run: echo '!secrets/config.php' | tee -a .gitignore
       - name: Unignore vendor directory for upload
         run: sed -i '/\/vendor\//d' .gitignore
       - name: Unignore compiled files for upload
@@ -87,9 +87,9 @@ jobs:
           sed -i -E "/\.(css|js)$/d" public/.gitignore
           rm admin/.gitignore
       - name: Restrict access to test site
-        run: cat public/.htaccess-test >> public/.htaccess
+        run: cat public/.htaccess-test | tee -a public/.htaccess
       - name: Restrict access to admin site
-        run: cat admin/.htaccess-test >> admin/.htaccess
+        run: cat admin/.htaccess-test | tee -a admin/.htaccess
       - name: Commit changes to local branch
         run: |
           git config user.email "admin+automation@forgetmenotshelter.org"
@@ -135,8 +135,8 @@ jobs:
           elif [[ "${{ needs.deploy.outputs.generate-status }}" != "success" ]]; then result=broken; color=critical
           else result=ok; color=090
           fi
-          echo "color=$color" >> $GITHUB_ENV
-          echo "result=$result" >> $GITHUB_ENV
+          echo "color=$color" | tee -a $GITHUB_ENV
+          echo "result=$result" | tee -a $GITHUB_ENV
       - name: Update badge
         uses: schneegans/dynamic-badges-action@v1.1.0
         with:
