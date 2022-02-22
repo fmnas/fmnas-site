@@ -44,12 +44,12 @@ $writer = function(string $key, mixed $body) use ($db): Result {
 		$height = $_GET["height"] ?? '';
 		$credentials = Config::$api_credentials;
 		/** @noinspection HttpUrlsUsage */
-		shell_exec("bash -c 'curl -u \"$credentials\" http://$domain/api/tag/{$asset->key}?height=$height > /dev/null 2>&1 &'");
+		exec("bash -c 'curl -u \"$credentials\" http://$domain/api/tag/{$asset->key}?height=$height > /dev/null 2>&1 &'");
 		// Thumbnails for admin
 		/** @noinspection HttpUrlsUsage */
-		shell_exec("bash -c 'curl -u \"$credentials\" http://$domain/api/tag/{$asset->key}?height=64&expand=0 > /dev/null 2>&1 &'");
+		exec("bash -c 'curl -u \"$credentials\" http://$domain/api/tag/{$asset->key}?height=64&expand=0 > /dev/null 2>&1 &'");
 		/** @noinspection HttpUrlsUsage */
-		shell_exec("bash -c 'curl -u \"$credentials\" http://$domain/api/tag/{$asset->key}?height=192&expand=0 > /dev/null 2>&1 &'");
+		exec("bash -c 'curl -u \"$credentials\" http://$domain/api/tag/{$asset->key}?height=192&expand=0 > /dev/null 2>&1 &'");
 	}
 	return new Result(204);
 };
