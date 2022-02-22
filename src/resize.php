@@ -182,7 +182,7 @@ function resize(string $source, string $target, int $height = 480): void {
 			$image->setImageCompressionQuality(90);
 			$image->writeImage($target);
 		} catch (ImagickException $e) {
-			remoteResize($source, $target, $height);
+			throw new ImageResizeException($e);
 		}
 	}
 }

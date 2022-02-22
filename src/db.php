@@ -404,6 +404,11 @@ class Database {
 			log_err("Failed to execute query $query");
 			return [];
 		}
-		return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+		$result = $stmt->get_result();
+		if (!$result) {
+			log_err("Didn't get any results for query $query");
+			return [];
+		}
+		return $result->fetch_all(MYSQLI_ASSOC);
 	}
 }
