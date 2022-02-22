@@ -25,7 +25,6 @@ jobs:
     outputs:
       build-status: ${{ steps.build-success.outcome }}
       deploy-status: ${{ steps.deploy-success.outcome }}
-      generate-status: ${{ steps.generate-success.outcome }}
     steps:
       - name: Checkout main
         uses: actions/checkout@main
@@ -115,28 +114,123 @@ jobs:
           ftp-username: ${{ secrets.PROD_SFTP_USER }}
           ftp-password: ${{ secrets.PROD_SFTP_PASS }}
           git-ftp-args: --insecure
-      - name: Delete generated.php and cached descriptions
+  invalidate-descriptions:
+    name: Invalidate description cache
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@main
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Test changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v15
+        with:
+          files: |
+            src/assets.php
+            src/parser.php
+            src/pet.php
+            composer.json
+      - name: Delete cached descriptions
+        if: steps.changed-files.outputs.any_changed == 'true'
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.PROD_SFTP_HOST }}
           username: ${{ secrets.PROD_SFTP_USER }}
           password: ${{ secrets.PROD_SFTP_PASS }}
-          script: rm ${{ secrets.PROD_SITE_ROOT }}/src/generated.php ${{ secrets.PROD_SITE_ROOT }}/public/assets/cache/*.html || echo "Error $?"
-      - name: Regenerate generated.php
-        id: generate-success
-        run: curl -f ${{ secrets.PROD_SITE_URL }}
+          script: rm ${{ secrets.PROD_SITE_ROOT }}/public/assets/cache/*.html || echo "Error $?"
+  invalidate-config:
+    name: Invalidate configuration cache
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@main
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Test changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v15
+        with:
+          files: |
+            src/db.php
+            src/generator.php
+      - name: Delete generated.php
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.PROD_SFTP_HOST }}
+          username: ${{ secrets.PROD_SFTP_USER }}
+          password: ${{ secrets.PROD_SFTP_PASS }}
+          script: rm ${{ secrets.PROD_SITE_ROOT }}/src/generated.php || echo "Error $?"
+      - name: Request config regeneration
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: curl -f -u ${{ secrets.HTTP_CREDENTIALS }} https://${{ secrets.PROD_ADMIN_DOMAIN }}/api/regenerate
+  invalidate-images:
+    name: Invalidate image cache
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@main
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Test changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v15
+        with:
+          files: |
+            src/resize.php
+            gcp/resize-image/**
+            gcp/image-size/**
+      - name: Request image regeneration
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: curl -f -u ${{ secrets.HTTP_CREDENTIALS }} https://${{ secrets.PROD_ADMIN_DOMAIN }}/api/regen_images
+  invalidate-analytics:
+    name: Invalidate local analytics
+    needs: invalidate-images
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@main
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Test changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v15
+        with:
+          files: src/analytics.php
+      - name: Rename analytics file
+        if: steps.changed-files.outputs.any_changed == 'true'
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.PROD_SFTP_HOST }}
+          username: ${{ secrets.PROD_SFTP_USER }}
+          password: ${{ secrets.PROD_SFTP_PASS }}
+          script: cd ${{ secrets.PROD_SITE_ROOT }}/secrets; mv $(readlink -f analytics.db) analytics_$(date +%s).db
   badge:
     name: Update status badge
     if: ${{ always() }}
     needs:
       - deploy
+      - invalidate-descriptions
+      - invalidate-config
+      - invalidate-images
+      - invalidate-analytics
     runs-on: ubuntu-latest
     steps:
       - name: Check status
         run: |
           if [[ "${{ needs.deploy.outputs.build-status }}" != "success" ]]; then result=failing; color=critical
           elif [[ "${{ needs.deploy.outputs.deploy-status }}" != "success" ]]; then result=stale; color=important
-          elif [[ "${{ needs.deploy.outputs.generate-status }}" != "success" ]]; then result=broken; color=critical
+          elif [[ "${{ needs.invalidate-descriptions.result }}" != "success" ]]; then result=listings; color=critical
+          elif [[ "${{ needs.invalidate-config.result }}" != "success" ]]; then result=config; color=critical
+          elif [[ "${{ needs.invalidate-images.result }}" != "success" ]]; then result=images; color=important
+          elif [[ "${{ needs.invalidate-analytics.result }}" != "success" ]]; then result=analytics; color=important
           else result=ok; color=090
           fi
           echo "color=$color" | tee -a $GITHUB_ENV
