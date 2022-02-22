@@ -81,10 +81,6 @@ into `test`.
 After testing the changes in the live test site environment, create a pull request on GitHub to merge the branch into
 `main`.
 
-The `.github/workflows/sync-test.yml` workflow merges `main` back into `test` after each merged PR. You should
-then `git fetch` and rebase your dev branch onto `origin/test` before another PR. Or if developing directly on `test`
-, `git pull` to get the merge commit.
-
 ### Initial build
 
 After checking out the repository, run:
