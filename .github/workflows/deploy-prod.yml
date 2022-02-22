@@ -191,7 +191,7 @@ jobs:
         run: curl -f -u ${{ secrets.HTTP_CREDENTIALS }} https://${{ secrets.PROD_ADMIN_DOMAIN }}/api/regen_images
   invalidate-analytics:
     name: Invalidate local analytics
-    needs: invalidate-images
+    needs: deploy
     runs-on: ubuntu-latest
     steps:
       - name: Checkout main
