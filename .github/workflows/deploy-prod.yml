@@ -191,7 +191,7 @@ jobs:
         run: curl -f -u ${{ secrets.HTTP_CREDENTIALS }} https://${{ secrets.PROD_ADMIN_DOMAIN }}/api/regen_images
   invalidate-analytics:
     name: Invalidate local analytics
-    needs: invalidate-images
+    needs: deploy
     runs-on: ubuntu-latest
     steps:
       - name: Checkout main
@@ -211,7 +211,7 @@ jobs:
           host: ${{ secrets.PROD_SFTP_HOST }}
           username: ${{ secrets.PROD_SFTP_USER }}
           password: ${{ secrets.PROD_SFTP_PASS }}
-          script: cd ${{ secrets.PROD_SITE_ROOT }}/secrets; mv $(readlink -f analytics.db) analytics_$(date +%s).db
+          script: cd ${{ secrets.PROD_SITE_ROOT }}/secrets; mv $(readlink -f analytics.db) analytics_$(date +%s).db; rm analytics.db
   badge:
     name: Update status badge
     if: ${{ always() }}
