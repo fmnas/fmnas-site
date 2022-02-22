@@ -29,6 +29,8 @@ gcloud artifacts docker images list us-central1-docker.pkg.dev/fmnas-automation/
   us-central1-docker.pkg.dev/fmnas-automation/resize-image-docker/resize-image@%
 ```
 
+I suggest running this with 2 vCPU / 4 GiB / 4 concurrency to reduce OOM and optimize costs.
+
 ### Running locally
 
 The "Run resize-image" IntelliJ run configuration uses the Cloud Code extension to run the service on port 591.
@@ -64,6 +66,8 @@ gcloud artifacts docker images list us-central1-docker.pkg.dev/fmnas-automation/
   --include-tags | awk '$3 ~ /^2/ { print $2 }' | xargs -I % gcloud artifacts docker images delete \
   us-central1-docker.pkg.dev/fmnas-automation/image-size-docker/image-size@%
 ```
+
+I suggest running this with 1 vCPU / 2 GiB / 4 concurrency to reduce OOM and optimize costs.
 
 ### Running locally
 

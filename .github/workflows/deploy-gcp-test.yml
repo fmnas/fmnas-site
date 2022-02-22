@@ -189,7 +189,7 @@ jobs:
           memory_mb: 2048
           region: ${{ secrets.GCP_REGION }}
           https_trigger_security_level: secure_always
-          timeout: 10
+          timeout: 60
           min_instances: 0
           max_instances: 100
           project_id: ${{ secrets.GCP_PROJECT }}
@@ -245,7 +245,7 @@ jobs:
           memory_mb: 2048
           region: ${{ secrets.GCP_REGION }}
           https_trigger_security_level: secure_always
-          timeout: 10
+          timeout: 60
           min_instances: 0
           max_instances: 100
           project_id: ${{ secrets.GCP_PROJECT }}

@@ -30,18 +30,8 @@ $formConfig->method = HTTPMethod::POST;
 $db ??= new Database();
 $cwd = getcwd();
 
-ob_start();
 ignore_user_abort(true);
 function sendResponseEarly() {
-	$size = ob_get_length();
-	header("Content-Encoding: none");
-	header("Content-Length: {$size}");
-	header("Connection: close");
-	ob_end_flush();
-	flush();
-	if (session_id()) {
-		session_write_close();
-	}
 	if (is_callable('fastcgi_finish_request')) {
 		fastcgi_finish_request();
 	}
@@ -157,8 +147,8 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 			}
 			$count++;
 		}
-		if ($count < 30 && $heic_count < 5) {
-			// Probably faster to do the resizing locally in this case.
+		if ($count < 10 && $heic_count < 3) {
+			// Probably better to do the resizing locally in this case.
 			foreach ($filespecs as $index => $filespec) {
 				try {
 					resize($filespec->source, $filespec->target, $filespec->height);
@@ -223,8 +213,8 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 			['main' => true, 'path' => $path, 'weblink' => true,
 					'outside_warn' => $outside_warn, 'outside_message' => $outside_message,]
 	);
-	$primaryEmail->attachFiles = function(array $metadata): bool {
-		return isset($metadata["total_size"]) && $metadata["total_size"] < 20 * 1048576;
+	$primaryEmail->attachFiles = function(array $file): bool {
+		return isset($file["total_size"]) && $file["total_size"] < 20 * 1048576;
 	};
 	$primaryEmail->replyTo = [$applicantEmail];
 	$primaryEmail->emailTransformation =
@@ -311,7 +301,7 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 
 	if (file_exists($save->saveFile)) {
 		echo '<!-- Application not sent - detected duplicate at ' . $save->saveFile . ' -->';
-//		return [];
+		return [];
 	}
 
 	return [$save, $primaryEmail, $secondaryEmail];
@@ -606,34 +596,34 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 			<section id="types_of_animals">
 				<p>Which types of animals are you interested in?</p>
 				<label>
-					<input type="checkbox" name="adult_dog" autocomplete="off"> Adult dog
+					<input type="checkbox" name="adult_dog"> Adult dog
 				</label>
 				<label>
-					<input type="checkbox" name="puppy" autocomplete="off"> Puppy
+					<input type="checkbox" name="puppy"> Puppy
 				</label>
 				<label>
-					<input type="checkbox" name="adult_cat" autocomplete="off"> Adult cat
+					<input type="checkbox" name="adult_cat"> Adult cat
 				</label>
 				<label>
-					<input type="checkbox" name="kitten" autocomplete="off"> Kitten
+					<input type="checkbox" name="kitten"> Kitten
 				</label>
 				<div class="other">
 					<label>
-						<input type="checkbox" name="other" autocomplete="off"> <span class="other_label">Other</span>
+						<input type="checkbox" name="other"> <span class="other_label">Other</span>
 					</label>
 					<label for="other_specify">Please specify</label>
-					<input type="text" name="other_specify" id="other_specify" title="Please specify" disabled autocomplete="off">
+					<input type="text" name="other_specify" id="other_specify" title="Please specify" disabled>
 				</div>
 				<div class="preference">
 					<p>Preference: </p>
 					<label>
-						<input type="radio" name="preference" value="male" autocomplete="off"> Male
+						<input type="radio" name="preference" value="male"> Male
 					</label>
 					<label>
-						<input type="radio" name="preference" value="female" autocomplete="off"> Female
+						<input type="radio" name="preference" value="female"> Female
 					</label>
 					<label>
-						<input type="radio" name="preference" value="either" autocomplete="off"> Either<span data-if="preference"
+						<input type="radio" name="preference" value="either"> Either<span data-if="preference"
 								data-rhs="either"> male or female</span>
 					</label>
 				</div>
@@ -642,16 +632,16 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 				<p>Are you applying for a particular animal listed on our website?</p>
 				<div>
 					<label>
-						<input type="radio" name="particular" value="y" autocomplete="off" required<?=$_GET['pet'] ??
+						<input type="radio" name="particular" value="y" required<?=$_GET['pet'] ??
 						false ? ' checked' : ''?>> Yes
 					</label>
 					<label>
-						<input type="radio" name="particular" value="n" autocomplete="off" required> No
+						<input type="radio" name="particular" value="n" required> No
 					</label>
 				</div>
 				<label data-if="particular" data-rhs="y" data-hidden="false">
 					Please specify:
-					<input type="text" name="particular_specify" autocomplete="off"
+					<input type="text" name="particular_specify"
 							value="<?=(($_GET['pet'] ?? false) && $pet = $db->getPetById($_GET['pet'])) ?
 									$pet->id . ' ' . $pet->name . ($pet->friend ? " &amp; {$pet->friend->id} {$pet->friend->name}" : "") :
 									''?>">
@@ -660,7 +650,7 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 			<section id="qualities">
 				<label class="textarea">
 					<span>What qualities and characteristics do you desire in your new pet?</span>
-					<textarea name="qualities" required autocomplete="off"></textarea>
+					<textarea name="qualities" required></textarea>
 				</label>
 			</section>
 		</section>
@@ -669,21 +659,21 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 			<section id="residence">
 				<label class="textarea">
 					<span>Please describe your residence:</span>
-					<textarea name="residence" required autocomplete="off"></textarea>
+					<textarea name="residence" required></textarea>
 				</label>
 				<input type="hidden" id="will_live_tracker" name="will_live_tracker" value="0">
 				<div class="residence_grid">
 					<p>The residence is:</p>
-					<input type="radio" id="owned" name="residence_is" value="owned" required autocomplete="off">
+					<input type="radio" id="owned" name="residence_is" value="owned" required>
 					<label for="owned">Owned</label>
-					<input type="radio" id="rented" name="residence_is" value="rented" required autocomplete="off">
+					<input type="radio" id="rented" name="residence_is" value="rented" required>
 					<label for="rented">Rented</label>
 					<p>The pet will live:</p>
-					<input type="radio" id="live_inside" name="will_live" value="inside" required autocomplete="off">
+					<input type="radio" id="live_inside" name="will_live" value="inside" required>
 					<label for="live_inside">Inside</label>
-					<input type="radio" id="live_outside" name="will_live" value="outside" required autocomplete="off">
+					<input type="radio" id="live_outside" name="will_live" value="outside" required>
 					<label for="live_outside">Outside</label>
-					<input type="radio" id="live_both" name="will_live" value="both" required autocomplete="off">
+					<input type="radio" id="live_both" name="will_live" value="both" required>
 					<label for="live_both">Both<span data-if="will_live" data-rhs="both"> inside and outside</span></label>
 				</div>
 				<p class="rented" data-if-config="showrentp" data-hidden="0">
@@ -697,41 +687,41 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 				<div>
 					<p>Is the yard fenced? </p>
 					<label>
-						<input type="radio" name="Fence" value="Y" autocomplete="off"> Yes
+						<input type="radio" name="Fence" value="Y"> Yes
 					</label>
 					<label>
-						<input type="radio" name="Fence" value="N" autocomplete="off"> No
+						<input type="radio" name="Fence" value="N"> No
 					</label>
 					<label class="fence_description textarea">
 						<span class="fence-unspecified" data-if="Fence" data-rhs="" data-hidden="0">Please describe the height and type of fencing, or if no fence, how you plan to exercise and confine the pet:</span>
 						<span class="fence-yes" data-if="Fence" data-rhs="Y" data-hidden="0">Please describe the height and type of fencing:</span>
 						<span class="fence-no" data-if="Fence" data-rhs="N" data-hidden="0">Please describe how you plan to exercise and confine the pet:</span>
-						<textarea name="fence_description" autocomplete="off"></textarea>
+						<textarea name="fence_description"></textarea>
 					</label>
 				</div>
 				<div class="fieldset">
 					<fieldset>
 						<legend>When outside, the pet will be:</legend>
-						<input type="radio" id="chained_tied" name="when_outside" value="chained_tied" autocomplete="off">
+						<input type="radio" id="chained_tied" name="when_outside" value="chained_tied">
 						<label for="chained_tied">Chained/tied</label>
-						<input type="radio" id="fenced_in_yard" name="when_outside" value="fenced_in_yard" autocomplete="off">
+						<input type="radio" id="fenced_in_yard" name="when_outside" value="fenced_in_yard">
 						<label for="fenced_in_yard">Fenced in yard</label>
-						<input type="radio" id="leashed" name="when_outside" value="leashed" autocomplete="off">
+						<input type="radio" id="leashed" name="when_outside" value="leashed">
 						<label for="leashed">Leashed</label>
-						<input type="radio" id="free_to_roam" name="when_outside" value="free_to_roam" autocomplete="off">
+						<input type="radio" id="free_to_roam" name="when_outside" value="free_to_roam">
 						<label for="free_to_roam">Free to roam</label>
 					</fieldset>
 				</div>
 			</section>
 			<label>
 				<span>Where will the pet sleep at night?</span>
-				<input type="text" name="sleep" class="sleep" autocomplete="off">
+				<input type="text" name="sleep" class="sleep">
 			</label>
 			<label class="textarea">
 				<span>Approximately how many hours per week will the pet be left without human companionship?
 				Will the pet be indoors or outdoors when alone?
 					What other pets will be with this pet?</span>
-				<textarea name="companionship" autocomplete="off"></textarea>
+				<textarea name="companionship"></textarea>
 			</label>
 		</section>
 		<section id="references">
@@ -745,11 +735,11 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 							tell us what vet you plan to use.</p>
 					</div>
 					<div>
-						<input type="text" id="vet_name" name="vet_name" required autocomplete="off">
+						<input type="text" id="vet_name" name="vet_name" required>
 						<label for="vet_name" class="explanatory required">Name</label>
-						<textarea id="vet_address" name="vet_address" required autocomplete="off"></textarea>
+						<textarea id="vet_address" name="vet_address" required></textarea>
 						<label for="vet_address" class="explanatory required">Address</label>
-						<input type="tel" id="vet_phone" name="vet_phone" required autocomplete="off">
+						<input type="tel" id="vet_phone" name="vet_phone" required>
 						<label for="vet_phone" class="explanatory required">Phone</label>
 					</div>
 				</section>
@@ -762,9 +752,9 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 					</div>
 					<div>
 						<div class="spacer"></div>
-						<input type="text" id="ref_name" name="ref_name" autocomplete="off">
+						<input type="text" id="ref_name" name="ref_name">
 						<label for="ref_name" class="explanatory">Name</label>
-						<input type="text" id="ref_contact" name="ref_contact" autocomplete="off">
+						<input type="text" id="ref_contact" name="ref_contact">
 						<label for="ref_contact" class="explanatory">Phone&nbsp;or email</label>
 						<div class="spacer"></div>
 					</div>
@@ -779,7 +769,7 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 				<p>If you live outside the Republic/Curlew area, please attach or email photos of your home.</p>
 			</div>
 			<input type="file" id="images" name="images[]" accept="image/*,application/pdf" capture="environment"
-					multiple autocomplete="off" class="noprint">
+					multiple class="noprint">
 			<span class="limits explanatory" data-remove="true">
             (max. 64 MB each, 512 MB total)
 			</span>
@@ -801,7 +791,7 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 		</section>
 		<section id="comments" data-if="comments" data-hidden="false">
 			<h3><label for="comments_box">Comments</label></h3>
-			<textarea name="comments" id="comments_box" autocomplete="off"></textarea>
+			<textarea name="comments" id="comments_box"></textarea>
 		</section>
 		<section id="submit" data-remove="true">
 			<button type="submit">Submit Application</button>

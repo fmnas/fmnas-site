@@ -34,6 +34,7 @@ export const minify: HttpFunction = async (req, res) => {
 		return res.status(405).end();
 	}
 	try {
+		console.log(`Got a minify request, ${new Date().toISOString()}`);
 		const boy = busboy({headers: req.headers});
 		let html = '';
 		boy.on('file', (fieldname, file, filename) => {
@@ -44,6 +45,7 @@ export const minify: HttpFunction = async (req, res) => {
 			if (!html) {
 				return res.status(400).end();
 			}
+			console.log(`Request HTML is ${html.length} bytes`);
 
 			const browser = await puppeteer.launch();
 			const page = await browser.newPage();
@@ -156,6 +158,7 @@ export const minify: HttpFunction = async (req, res) => {
 			});
 
 			res.header('Content-Type', 'text/html');
+			console.log(`Response HTML is ${minified.length} bytes`);
 			res.send(minified);
 			await browser.close();
 			res.end();

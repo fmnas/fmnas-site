@@ -23,6 +23,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 
 	"gopkg.in/gographics/imagick.v3/imagick"
 )
@@ -46,6 +47,8 @@ func main() {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Got a resize-image request, %v", time.Now())
+
 	if err := r.ParseMultipartForm(20 << 20); err != nil {
 		http.Error(w, "Unable to parse request", http.StatusBadRequest)
 		log.Printf("Error parsing request: %v", err)
@@ -67,6 +70,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	s := int(fh.Size)
+	log.Printf("Request image is %v bytes", s)
 	b := make([]byte, s)
 	n, err := f.Read(b)
 	if err != nil {
@@ -131,6 +135,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	out := mw.GetImageBlob()
+	log.Printf("Response image is %v bytes", len(out))
 
 	w.Header().Set("Content-Type", "image/jpeg")
 	if _, err := w.Write(out); err != nil {
