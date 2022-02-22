@@ -44,7 +44,6 @@ To get a local server running, you will need:
 	* Debian packages: `apache2 libapache2-mod-php`
 * PHP 8.1 and dependencies noted below
   * Debian packages: `php php-gd php-mbstring php-mysql php-xml php-imagick php-curl php-sqlite3`
-  * To get a more accurate emulation of the server environment, [use PHP-FPM](https://www.linode.com/docs/guides/how-to-install-and-configure-fastcgi-and-php-fpm-on-ubuntu-18-04/)
 * cURL on PATH
 * Node
 	* I suggest using NVM and enabling [deep shell integration](https://github.com/nvm-sh/nvm#deeper-shell-integration) to
