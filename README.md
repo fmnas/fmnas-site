@@ -43,7 +43,7 @@ To get a local server running, you will need:
 * Apache (or Litespeed, etc.)
 	* Debian packages: `apache2 libapache2-mod-php`
 * PHP 8.1 and dependencies noted below
-  * Debian packages: `php php-gd php-mbstring php-mysql php-xml php-imagick php-curl`
+  * Debian packages: `php php-gd php-mbstring php-mysql php-xml php-imagick php-curl php-sqlite3`
   * To get a more accurate emulation of the server environment, [use PHP-FPM](https://www.linode.com/docs/guides/how-to-install-and-configure-fastcgi-and-php-fpm-on-ubuntu-18-04/)
 * cURL on PATH
 * Node
@@ -217,7 +217,9 @@ The following workflows in `.github/workflows` are used for deployment:
 * `ASM_WEB_USER`: The MySQL user for `ASM_WEB_DB` (`fmnas_asm`)
 * `ASM_WEB_PASS`: The MySQL password for `ASM_WEB_USER`
 * `TORTOISEWRATH_GIST_TOKEN`: A PAT to update gists created by @TortoiseWrath (used for badges)
-* `PERSISTENCE_TOKEN` A token for @aaimio/set-peristent-value (used for badges)
+* `PERSISTENCE_TOKEN`: A token for @aaimio/set-peristent-value (used for badges)
+* `PROD_GA_ID`: The Google Analytics ID for the prod site (`G-3YRWV82YZX`)
+* `TEST_GA_ID`: The Google Analytics ID for the test site (`G-E73F6XEPY7`)
 
 ##### Org secrets
 
@@ -267,18 +269,19 @@ The following workflows in `.github/workflows` are used for deployment:
 * Linux (any POSIX-compatible OS should work)
 * Apache (Litespeed or any other web server with .htaccess and PHP support should work)
 * PHP 8.1
-	* ImageMagick
-	* GD
-		* libJPEG
-		* libPNG
-	* mysqli
-	* mbstring
-	* imagick
-	* curl
-	* php-xml
-	* Composer
-	* Needs shell access (with `shell_exec`) and the following executables in PATH:
-		* `curl` to request caching uploaded images
+  * ImageMagick
+  * GD
+    * libJPEG
+    * libPNG
+  * mysqli
+  * mbstring
+  * imagick
+  * curl
+  * php-xml
+  * sqlite3
+  * Composer
+  * Needs shell access (with `shell_exec`) and the following executables in PATH:
+    * `curl` to request caching uploaded images
 * MySQL or MariaDB
 
 #### Build
