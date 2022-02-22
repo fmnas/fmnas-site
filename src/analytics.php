@@ -64,10 +64,8 @@ function logHeaders(): void {
 	$s->bindValue(':accept', $headers['Accept'] ?? null);
 	$s->bindValue(':language', $headers['Accept-Language'] ?? null);
 	$s->bindValue(':referer', $_SERVER['HTTP_REFERER'] ?? null);
-	$attempts = 0;
-	while (!($result = @$s->execute()) && $attempts < 10) {
-		$attempts++;
-	}
+	$db->busyTimeout(1000); // TODO: Increase busy timeout
+	@$s->execute();
 	$db->close();
 }
 
