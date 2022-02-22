@@ -181,3 +181,16 @@ function launch(string $command): void {
 	$pipes = [];
 	proc_close(proc_open("$command &", [], $pipes));
 }
+
+function requestLogHeaders() {
+	$domain = _G_public_domain();
+	$tempfile = @tempnam(sys_get_temp_dir(), "HEAD");
+	if (file_put_contents($tempfile, serialize([
+			"server" => $_SERVER,
+			"headers" => getallheaders(),
+	]))) {
+		/** @noinspection HttpUrlsUsage */
+		launch("curl -v -F 'file=$tempfile' http://$domain/log_headers.php");
+	}
+}
+register_shutdown_function('requestLogHeaders');

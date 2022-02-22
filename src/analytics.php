@@ -18,16 +18,14 @@
 
 require_once __DIR__ . "/../vendor/autoload.php";
 
-function logHeaders(): void {
-	if (!ob_get_length() && is_callable('fastcgi_finish_request')) {
-		fastcgi_finish_request();
-	}
+function logHeaders(array $server, array $headers): void {
+	$time = time();
 	$dbname = 'analytics_' . date("F");
 	$secrets = __DIR__ . "/../secrets";
 	@unlink("$secrets/analytics.db");
 	@symlink("$secrets/$dbname.db", "$secrets/analytics.db");
 	$db = new SQLite3("$secrets/$dbname.db");
-	$db->busyTimeout(1000); // TODO: Increase busy timeout
+	$db->busyTimeout(30000);
 	$db->query("
 	CREATE TABLE IF NOT EXISTS requests (start INTEGER, end INTEGER, uri TEXT, ip TEXT, host TEXT, agent TEXT, 
 	description TEXT, browser TEXT, major INTEGER, minor TEXT, os TEXT, version TEXT, edition TEXT, ua TEXT, 
@@ -43,14 +41,13 @@ function logHeaders(): void {
 	if (!$s) {
 		return;
 	}
-	$headers = getallheaders();
 	$parsed = new WhichBrowser\Parser($headers);
-	$s->bindValue(':start', $_SERVER['REQUEST_TIME'] ?? null);
-	$s->bindValue(':end', time());
-	$s->bindValue(':uri', $_SERVER['REQUEST_URI'] ?? null);
-	$s->bindValue(':ip', $_SERVER['REMOTE_ADDR'] ?? null);
-	$s->bindValue(':host', $_SERVER['REMOTE_HOST'] ?? null);
-	$s->bindValue(':agent', $_SERVER['HTTP_USER_AGENT'] ?? null);
+	$s->bindValue(':start', $server['REQUEST_TIME'] ?? null);
+	$s->bindValue(':end', $time);
+	$s->bindValue(':uri', $server['REQUEST_URI'] ?? null);
+	$s->bindValue(':ip', $server['REMOTE_ADDR'] ?? null);
+	$s->bindValue(':host', $server['REMOTE_HOST'] ?? null);
+	$s->bindValue(':agent', $server['HTTP_USER_AGENT'] ?? null);
 	$s->bindValue(':description', $parsed->toString());
 	$s->bindValue(':browser', $parsed->browser?->name ?? null);
 	$s->bindValue(':major', $parsed->browser?->version?->getMajor() ?? null);
@@ -67,8 +64,8 @@ function logHeaders(): void {
 	$s->bindValue(':encoding', $headers['Accept-Encoding'] ?? null);
 	$s->bindValue(':accept', $headers['Accept'] ?? null);
 	$s->bindValue(':language', $headers['Accept-Language'] ?? null);
-	$s->bindValue(':referer', $_SERVER['HTTP_REFERER'] ?? null);
-	@$s->execute();
+	$s->bindValue(':referer', $server['HTTP_REFERER'] ?? null);
+	$s->execute();
 	$db->close();
 }
 
