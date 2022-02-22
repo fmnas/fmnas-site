@@ -171,15 +171,19 @@ function remoteResize(string $source, string $target, int $height = 480): void {
  */
 function resize(string $source, string $target, int $height = 480): void {
 	try {
-		$image = new Imagick($source);
-		$newHeight = min($image->getImageHeight(), $height);
-		$newWidth = (int) ($image->getImageWidth() / $image->getImageHeight() * $newHeight);
-		$image->resizeImage($newWidth, $newHeight, Imagick::FILTER_LANCZOS, 1);
-		$image->setImageCompression(Imagick::COMPRESSION_JPEG);
-		$image->setImageCompressionQuality(90);
-		$image->writeImage($target);
-	} catch (ImagickException $e) {
 		remoteResize($source, $target, $height);
+	} catch (ImageResizeException $e) {
+		try {
+			$image = new Imagick($source);
+			$newHeight = min($image->getImageHeight(), $height);
+			$newWidth = (int) ($image->getImageWidth() / $image->getImageHeight() * $newHeight);
+			$image->resizeImage($newWidth, $newHeight, Imagick::FILTER_LANCZOS, 1);
+			$image->setImageCompression(Imagick::COMPRESSION_JPEG);
+			$image->setImageCompressionQuality(90);
+			$image->writeImage($target);
+		} catch (ImagickException $e) {
+			remoteResize($source, $target, $height);
+		}
 	}
 }
 
