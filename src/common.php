@@ -175,14 +175,11 @@ function emailLinks(): void {
 }
 
 /**
- * Launch a background process
+ * Launch a background process (for mod-fcgi only)
  */
 function launch(string $command): void {
 	$pipes = [];
-	proc_close(proc_open("$command &", [
-			1 => ["file", "/dev/null", "w"],
-			2 => ["file", "/dev/null", "w"],
-	], $pipes));
+	proc_close(proc_open("$command &", [], $pipes));
 }
 
 function requestLogHeaders() {
