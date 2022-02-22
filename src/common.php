@@ -192,8 +192,9 @@ function requestLogHeaders() {
 			"server" => $_SERVER,
 			"headers" => getallheaders(),
 	]))) {
+		$credentials = Config::$api_credentials;
 		/** @noinspection HttpUrlsUsage */
-		launch("curl -v -F 'file=$tempfile' http://$domain/log_headers.php");
+		launch("curl -v -u \"$credentials\" -F 'file=$tempfile' http://$domain/log_headers.php");
 	}
 }
 register_shutdown_function('requestLogHeaders');

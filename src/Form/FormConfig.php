@@ -90,6 +90,10 @@ class FormConfig {
 	 */
 	public HTTPMethod $method;
 
+	/**
+	 * HTTP credentials needed for requests to the local server.
+	 */
+	public string $httpCredentials = "";
 
 	public function __construct() {
 		$this->confirm = function(array $formData): void {

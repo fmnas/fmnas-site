@@ -334,6 +334,7 @@ $formConfig->fileTransformers["url"] = function(array $metadata): string {
 $formConfig->transformers["mailto"] = function(string $email): string {
 	return "mailto:$email";
 };
+$formConfig->httpCredentials = Config::$api_credentials;
 
 $processor = new FormProcessor($formConfig);
 ob_start();

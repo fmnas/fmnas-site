@@ -77,7 +77,7 @@ class FormProcessor {
 						foreach ($_FILES as $file) {
 							// Explicitly delete the files, as they were moved by the previous stage to be persistent.
 							if (is_array($file["tmp_name"])) {
-								foreach($file["tmp_name"] as $filename) {
+								foreach ($file["tmp_name"] as $filename) {
 									@unlink($filename);
 								}
 							} else {
@@ -119,9 +119,9 @@ class FormProcessor {
 		($this->formConfig->received)($data);
 		if ($this->formConfig->returnEarly) {
 			// Move uploaded files to be persistent.
-			foreach($_FILES as &$file) {
+			foreach ($_FILES as &$file) {
 				if (is_array($file["tmp_name"])) {
-					foreach($file["tmp_name"] as &$oldname) {
+					foreach ($file["tmp_name"] as &$oldname) {
 						$newname = tempnam(sys_get_temp_dir(), "PERSIST_");
 						@move_uploaded_file($oldname, $newname);
 						$oldname = $newname;
@@ -151,7 +151,8 @@ class FormProcessor {
 			$uri = $_SERVER["REQUEST_URI"];
 			$relative = parse_url($uri, PHP_URL_PATH);
 			$path = "$scheme://$host$relative";
-			$command = "curl -v -F '_form_stage=processForm' -F 'data=@$tempfile' $path";
+			$command =
+					"curl -v -u \"{$this->formConfig->httpCredentials}\" -F '_form_stage=processForm' -F 'data=@$tempfile' $path";
 			proc_close(proc_open("$command &", [], $pipes));
 		} else {
 			$this->processForm($data);
