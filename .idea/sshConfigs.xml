@@ -2,7 +2,7 @@
 <project version="4">
   <component name="SshConfigs">
     <configs>
-      <sshConfig host="forgetmenotshelter.org" id="6b4e6d45-47ce-4670-9b90-f811481ec97b" keyPath="D:\fmnas\secrets\dreamhostprivatekey" nameFormat="DESCRIPTIVE" username="kimgil5" />
+      <sshConfig host="forgetmenotshelter.org" id="6b4e6d45-47ce-4670-9b90-f811481ec97b" keyPath="$PROJECT_DIR$/secrets/dreamhostprivatekey" port="22" nameFormat="DESCRIPTIVE" username="kimgil5" useOpenSSHConfig="true" />
     </configs>
   </component>
 </project>

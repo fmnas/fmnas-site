@@ -19,8 +19,8 @@
 require_once __DIR__ . "/../vendor/autoload.php";
 
 function logHeaders(): void {
-	if (!ob_get_length()) {
-		@fastcgi_finish_request();
+	if (!ob_get_length() && is_callable('fastcgi_finish_request')) {
+		fastcgi_finish_request();
 	}
 	$dbname = 'analytics_' . date("F");
 	$secrets = __DIR__ . "/../secrets";
