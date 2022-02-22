@@ -211,7 +211,12 @@ jobs:
           host: ${{ secrets.PROD_SFTP_HOST }}
           username: ${{ secrets.PROD_SFTP_USER }}
           password: ${{ secrets.PROD_SFTP_PASS }}
-          script: cd ${{ secrets.PROD_SITE_ROOT }}/secrets; mv $(readlink -f analytics.db) analytics_$(date +%s).db; rm analytics.db
+          script: |
+            cd ${{ secrets.PROD_SITE_ROOT }}/secrets
+            if [ ! -f analytics.db ]; then exit 0; fi
+            mv $(readlink -f analytics.db) analytics_$(date +%s).db
+            rm analytics.db
+        continue-on-error: true
   badge:
     name: Update status badge
     if: ${{ always() }}

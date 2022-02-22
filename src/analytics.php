@@ -19,8 +19,8 @@
 require_once __DIR__ . "/../vendor/autoload.php";
 
 function logHeaders(): void {
-	if (!ob_get_length()) {
-		@fastcgi_finish_request();
+	if (!ob_get_length() && is_callable('fastcgi_finish_request')) {
+		fastcgi_finish_request();
 	}
 	$dbname = 'analytics_' . date("F");
 	$secrets = __DIR__ . "/../secrets";
@@ -64,7 +64,8 @@ function logHeaders(): void {
 	$s->bindValue(':accept', $headers['Accept'] ?? null);
 	$s->bindValue(':language', $headers['Accept-Language'] ?? null);
 	$s->bindValue(':referer', $_SERVER['HTTP_REFERER'] ?? null);
-	$s->execute();
+	$db->busyTimeout(1000); // TODO: Increase busy timeout
+	@$s->execute();
 	$db->close();
 }
 
