@@ -160,6 +160,9 @@ class Database {
 		$a->path = $asset["path"];
 		$a->setType($asset["type"]);
 		$a->data = ($asset["data"] ? unserialize($asset["data"]) : []);
+		if ($asset["width"] || $asset["height"]) {
+			$a->size = [$asset["width"] ?? 1, $asset["height"] ?? 1];
+		}
 		return $a;
 	}
 
