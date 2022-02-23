@@ -196,11 +196,13 @@ class FormConfig {
 				},
 		];
 		$this->fileValidator = function(array $metadata): bool {
-			return !$metadata["error"];
+			return (is_uploaded_file($metadata["tmp_name"]) || ($metadata["ignore_is_uploaded"] ?? false)) &&
+					!$metadata["error"];
 		};
 		$this->received = function(array $formData): void {
 
 		};
-		$this->updateData = function(array &$data, array &$files): void {};
+		$this->updateData = function(array &$data, array &$files): void {
+		};
 	}
 }

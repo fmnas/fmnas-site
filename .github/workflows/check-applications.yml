@@ -29,9 +29,7 @@ jobs:
           password: ${{ secrets.PROD_SFTP_PASS }}
           script: |
             cd ${{ secrets.PROD_SITE_ROOT }}/public/application/received
-            tar -czvf serialized.tar.gz *.serialized 2>/dev/null
-      - name: Install sshpass
-        run: sudo apt install -y sshpass
+            tar -czvf serialized.tar.gz *.serialized 2>/dev/null || exit 0
       - name: Fetch serialized applications
         run: sshpass -p "${{ secrets.PROD_SFTP_PASS }}" scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ secrets.PROD_SFTP_USER }}@${{ secrets.PROD_SFTP_HOST}}:${{ secrets.PROD_SITE_ROOT }}/public/application/received/serialized.tar.gz .
       - name: Count serialized applications
@@ -49,7 +47,7 @@ jobs:
           password: ${{ secrets.PROD_SFTP_PASS }}
           script: |
             cd ${{ secrets.PROD_SITE_ROOT }}/public/application/received
-            tar -czvf serialized2.tar.gz *.serialized 2>/dev/null
+            tar -czvf serialized2.tar.gz *.serialized 2>/dev/null || exit 0
       - name: Fetch serialized applications again
         if: steps.count.outputs.count != 0
         run: sshpass -p "${{ secrets.PROD_SFTP_PASS }}" scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ secrets.PROD_SFTP_USER }}@${{ secrets.PROD_SFTP_HOST}}:${{ secrets.PROD_SITE_ROOT }}/public/application/received/serialized2.tar.gz .
