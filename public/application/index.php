@@ -55,7 +55,7 @@ $smtpConfig = new SMTPConfig(
 );
 
 $formConfig->returnEarly = true;
-$formConfig->received = function(array $formData) use ($cwd): void {
+$formConfig->received = function(array &$formData) use ($cwd): void {
 	?>
 	<!DOCTYPE html>
 	<html lang="en-US">
@@ -75,9 +75,13 @@ $formConfig->received = function(array $formData) use ($cwd): void {
 	</article>
 	</html>
 	<?php
-	// TODO: Delete serialized in confirm()
 	// TODO: Periodically check for persisted serialized applications indicating unreported failures
-	file_put_contents("$cwd/received/" . microtime(true) . ".serialized", serialize($formData));
+	$formData["_received_time"] = microtime(true);
+	file_put_contents("$cwd/received/" . $formData["_received_time"] . ".serialized", serialize($formData));
+};
+
+$formConfig->confirm = function(array $formData) use ($cwd): void {
+	unlink("$cwd/received/" . $formData["_received_time"] . ".serialized");
 };
 
 $formConfig->handler = function(FormException $e) use ($smtpConfig): void {
