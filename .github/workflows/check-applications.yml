@@ -95,3 +95,17 @@ jobs:
           label: failed applications
           message: ${{ steps.diff.outputs.count }}
           color: critical
+  failure-badge:
+    runs-on: ubuntu-latest
+    needs: check-applications
+    if: ${{ failure() }}
+    steps:
+      - name: Update badge
+        uses: schneegans/dynamic-badges-action@v1.1.0
+        with:
+          auth: ${{ secrets.TORTOISEWRATH_GIST_TOKEN }}
+          gistID: e38e961e5c08b2bdf4d78c800d851203
+          filename: backups.json
+          label: backup
+          message: '?'
+          color: important
