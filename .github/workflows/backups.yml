@@ -93,4 +93,4 @@ jobs:
           filename: backups.json
           label: backup
           message: ${{ steps.date.outputs.date }}
-          color: 090
+          color: '090'

@@ -21,6 +21,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/base.php';
 
 use Masterminds\HTML5;
+use fmnas\Form\DOMHelpers;
 
 class MinifyException extends Exception {
 }
@@ -79,7 +80,7 @@ function remoteMinify(string $html, string|null $base = null): string {
 function inlineStyles(DOMDocument $dom, string $pwd): string {
 	try {
 		$stylesToInject = [];
-		foreach (collectElements($dom, "link", attr("rel", "stylesheet")) as $link) {
+		foreach (DOMHelpers::collectElements($dom, "link", DOMHelpers::attr("rel", "stylesheet")) as $link) {
 			/** @var $link DOMElement */
 			$href = $link->getAttribute("href");
 			$url = parse_url($href);
@@ -123,7 +124,7 @@ function inlineStyles(DOMDocument $dom, string $pwd): string {
 			$style = $dom->createElement("style");
 			$style->setAttribute("type", "text/css");
 			$style->setAttribute("data-type", "link");
-			copyAttributes($link, $style, "rel", "href");
+			DOMHelpers::copyAttributes($link, $style, "rel", "href");
 			$locator = "/* INJECT STYLE HERE: " . sha1($styles) . " */";
 			$stylesToInject[$locator] = $styles;
 			$style->nodeValue = $locator; // Can't inject right now because we would end up with HTML entities, etc.

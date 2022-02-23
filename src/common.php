@@ -175,11 +175,23 @@ function emailLinks(): void {
 }
 
 /**
- * Launch a background process
+ * Launch a background process (for mod-fcgi only)
  */
 function launch(string $command): void {
 	$pipes = [];
 	proc_close(proc_open("$command &", [], $pipes));
 }
 
-require_once "$src/analytics.php";
+function requestLogHeaders() {
+	$domain = _G_public_domain();
+	$tempfile = @tempnam(sys_get_temp_dir(), "HEAD");
+	if (file_put_contents($tempfile, serialize([
+			"server" => $_SERVER,
+			"headers" => getallheaders(),
+	]))) {
+		$credentials = Config::$api_credentials;
+		/** @noinspection HttpUrlsUsage */
+		launch("curl -v -u \"$credentials\" -F 'file=$tempfile' http://$domain/log_headers.php");
+	}
+}
+register_shutdown_function('requestLogHeaders');

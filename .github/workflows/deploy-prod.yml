@@ -51,7 +51,7 @@ jobs:
       - name: Compile public site stylesheets
         run: npx sass --style=compressed public:public
       - name: Compile public site scripts
-        run: npx tsc -p public
+        run: npm run build
       - name: Build admin client
         run: npx vite build admin/client
       - name: Set config values

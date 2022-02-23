@@ -14,7 +14,18 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 require_once "../../src/common.php";
-require_once "$src/form.php";
+
+use fmnas\Form\AttachmentInfo;
+use fmnas\Form\EmailAddress;
+use fmnas\Form\FormConfig;
+use fmnas\Form\FormEmailConfig;
+use fmnas\Form\FormException;
+use fmnas\Form\FormProcessor;
+use fmnas\Form\HashOptions;
+use fmnas\Form\HTTPMethod;
+use fmnas\Form\RenderedEmail;
+use fmnas\Form\SMTPConfig;
+
 require_once "$src/db.php";
 require_once "$src/resize.php";
 require_once "$src/minify.php";
@@ -23,20 +34,28 @@ require_once "$t/header.php";
 require_once "$t/application_response.php";
 require_once "$t/footer.php";
 
+// Useful for debugging.
+// TODO [#365]: Check that $DEDUPLICATE is true when merging.
+$DEDUPLICATE = false;
+
 ini_set('memory_limit', '2048M');
 setlocale(LC_ALL, 'en_US.UTF-8');
 set_time_limit(3600);
+$formConfig = new FormConfig();
 $formConfig->method = HTTPMethod::POST;
 $db ??= new Database();
 $cwd = getcwd();
 
-ignore_user_abort(true);
-function sendResponseEarly() {
-	if (is_callable('fastcgi_finish_request')) {
-		fastcgi_finish_request();
-	}
-}
+$smtpConfig = new SMTPConfig(
+		host: Config::$smtp_host,
+		security: Config::$smtp_security,
+		port: Config::$smtp_port,
+		auth: Config::$smtp_auth,
+		user: Config::$smtp_username,
+		password: Config::$smtp_password
+);
 
+$formConfig->returnEarly = true;
 $formConfig->received = function(array $formData) use ($cwd): void {
 	?>
 	<!DOCTYPE html>
@@ -57,11 +76,11 @@ $formConfig->received = function(array $formData) use ($cwd): void {
 	</article>
 	</html>
 	<?php
-	sendResponseEarly();
 	file_put_contents("$cwd/received/" . microtime(true) . ".serialized", serialize($formData));
 };
 
-$formConfig->handler = function(FormException $e): void {
+$formConfig->handler = function(FormException $e) use ($smtpConfig): void {
+	log_err(print_r($e, true));
 	http_response_code(500);
 	?>
 	<!DOCTYPE html>
@@ -91,20 +110,17 @@ $formConfig->handler = function(FormException $e): void {
 	</html>
 	<?php
 	// Attempt to email the PHP context to admin@ so we can fix it.
-	@sendEmail(
-			new FormEmailConfig(
-					new EmailAddress("admin@" . _G_public_domain()),
-					[new EmailAddress("admin@" . _G_public_domain())],
-					"Application Error Context"),
-			new RenderedEmail(
-					'<pre>' . print_r(get_defined_vars(), true) . '</pre>',
-					[]));
-	sendResponseEarly();
+	$email = new FormEmailConfig(
+			new EmailAddress("admin@" . _G_public_domain()),
+			[new EmailAddress("admin@" . _G_public_domain())],
+			"Application Error Context",
+			$smtpConfig);
+	@$email->send(new RenderedEmail(
+			'<pre>' . print_r(get_defined_vars(), true) . '</pre>',
+			[]));
 };
 
-$formConfig->confirm = function(array $formData): void {};
-
-$formConfig->emails = function(array $formData) use ($cwd): array {
+$formConfig->emails = function(array $formData) use ($DEDUPLICATE, $smtpConfig, $cwd): array {
 	$shelterEmail = new EmailAddress(_G_default_email_user() . '@' . _G_public_domain(), _G_shortname());
 	$applicantEmail = new EmailAddress(trim($formData['AEmail']), trim($formData['AName']));
 	$applicantFakeEmail = new EmailAddress('noreply@' . _G_public_domain(), trim($formData['AName']));
@@ -119,6 +135,7 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 			null,
 			[],
 			'',
+			$smtpConfig,
 			['main' => true, 'path' => $path, 'thumbnails' => true, 'minhead' => true,
 					'outside_warn' => $outside_warn, 'outside_message' => $outside_message,]
 	);
@@ -128,54 +145,6 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 	};
 	$save->hashFilenames = HashOptions::SAVED_ONLY;
 	$save->filesConverter = function(array &$files) use (&$total_size): void {
-		$total_size = 0;
-		$filespecs = [];
-		$count = 0;
-		$heic_count = 0;
-		foreach ($files as $index => &$file) {
-			if (!startsWith($file["type"], "image/")) {
-				$filespecs[$index] = null;
-				continue;
-			}
-			$filespec = new FileSpec();
-			$filespec->source = $file["tmp_name"];
-			$filespec->target = $file["tmp_name"] . ".jpg";
-			$filespec->height = 8640;
-			$filespecs[$index] = $filespec;
-			if (startsWith($file["type"], "image/hei")) {
-				$heic_count++;
-			}
-			$count++;
-		}
-		if ($count < 10 && $heic_count < 3) {
-			// Probably better to do the resizing locally in this case.
-			foreach ($filespecs as $index => $filespec) {
-				try {
-					resize($filespec->source, $filespec->target, $filespec->height);
-					if ($files[$index]["type"] !== "image/jpeg") {
-						$files[$index]["type"] = "image/jpeg";
-						$files[$index]["name"] .= ".jpg";
-					}
-					$files[$index]["tmp_name"] = $filespec->target;
-					$files[$index]["size"] = filesize($filespec->target);
-				} catch (ImageResizeException $e) {
-					continue;
-				}
-			}
-		} else {
-			$results = resizeMultiple($filespecs);
-			foreach ($results as $index => $result) {
-				if ($result === true) {
-					if ($files[$index]["type"] !== "image/jpeg") {
-						$files[$index]["type"] = "image/jpeg";
-						$files[$index]["name"] .= ".jpg";
-					}
-					$files[$index]["tmp_name"] = $filespecs[$index]->target;
-					$files[$index]["size"] = filesize($files[$index]["tmp_name"]);
-				}
-			}
-		}
-		unset($file);
 		foreach ($files as $file) {
 			$total_size += $file["size"];
 		}
@@ -193,6 +162,7 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 			null,
 			[],
 			'',
+			$smtpConfig,
 			['main' => true, 'path' => $path, 'weblink' => true,
 					'outside_warn' => $outside_warn, 'outside_message' => $outside_message,]
 	);
@@ -210,6 +180,7 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 			$applicantFakeEmail,
 			[$shelterEmail],
 			$primarySubject,
+			$smtpConfig,
 			['main' => true, 'path' => $path, 'weblink' => true,
 					'outside_warn' => $outside_warn, 'outside_message' => $outside_message,]
 	);
@@ -225,7 +196,7 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 					renderPdf($dom, $file, "https://forgetmenotshelter.org/application/", "0.5in");
 					// Attach the PDF
 					$filename = preg_replace('/[^a-zA-Z0-9& _+-]+/', '-', $primarySubject) . ".pdf";
-					$attachments[] = new AttachmentInfo($file, $filename, "application/pdf");
+					$attachments[] = new AttachmentInfo($file, $filename, "application/pdf", true);
 				} catch (PdfException $e) {
 					log_err($e->getMessage());
 				}
@@ -243,6 +214,7 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 			$shelterEmail,
 			[$applicantEmail],
 			'Your ' . _G_shortname() . ' Adoption Application',
+			$smtpConfig,
 			['main' => false, 'minhead' => true, 'showrentp' => true]
 	);
 	$secondaryEmail->attachFiles = false;
@@ -256,7 +228,7 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 					$file = tempnam(sys_get_temp_dir(), "PDF");
 					renderPdf($dom, $file, "https://forgetmenotshelter.org/application/", "0.5in");
 					// Attach the PDF
-					$attachments[] = new AttachmentInfo($file, "Adoption Application.pdf", "application/pdf");
+					$attachments[] = new AttachmentInfo($file, "Adoption Application.pdf", "application/pdf", true);
 					$dom->getElementById('response_injection')?->appendChild($dom->createTextNode(
 							'A copy of your application is attached for your records.'
 					));
@@ -301,7 +273,9 @@ $formConfig->emails = function(array $formData) use ($cwd): array {
 
 	if (file_exists($save->saveFile)) {
 		echo '<!-- Application not sent - detected duplicate at ' . $save->saveFile . ' -->';
-		return [];
+		if ($DEDUPLICATE) {
+			return [];
+		}
 	}
 
 	return [$save, $primaryEmail, $secondaryEmail];
@@ -312,12 +286,49 @@ $formConfig->fileTransformers["url"] = function(array $metadata): string {
 $formConfig->transformers["mailto"] = function(string $email): string {
 	return "mailto:$email";
 };
-$formConfig->smtpHost = Config::$smtp_host;
-$formConfig->smtpSecurity = Config::$smtp_security;
-$formConfig->smtpPort = Config::$smtp_port;
-$formConfig->smtpUser = Config::$smtp_username;
-$formConfig->smtpPassword = Config::$smtp_password;
-$formConfig->smtpAuth = Config::$smtp_auth;
+$formConfig->httpCredentials = Config::$api_credentials;
+function mapTemp(string $key): string {
+	return __DIR__ . "/received/tmp_" . explode(':', $key)[0];
+}
+function mapName(string $key): string {
+	return implode(':',array_slice(explode(':', $key), 1));
+}
+
+$formConfig->updateData = function(array &$data, array &$files): void {
+	$u = $data["images"] ?? []; // Keys for files uploaded asynchronously
+	$files["attachments"] = [
+			"name" => array_map(function(string $key) {
+				return mapName($key);
+			}, $u),
+			"type" => array_map(function(string $key) {
+				return mime_content_type(mapTemp($key));
+			}, $u),
+			"size" => array_map(function(string $key) {
+				return filesize(mapTemp($key));
+			}, $u),
+			"tmp_name" => array_map(function(string $key) {
+				return mapTemp($key);
+			}, $u),
+			"error" => array_map(function() {
+				return UPLOAD_ERR_OK;
+			}, $u),
+			"full_path" => array_map(function() {
+				return "";
+			}, $u),
+			"ignore_is_uploaded" => array_map(function() {
+				return true;
+			}, $u),
+	];
+};
+
+$processor = new FormProcessor($formConfig);
+ob_start();
+function collect() {
+	global $processor;
+	$processor->collectForm();
+}
+
+register_shutdown_function('collect');
 
 function options(array $opts): string {
 	$options = "";
@@ -453,7 +464,7 @@ function addressInput(string $label, string $prefix, bool $required = false): st
 	style("application", true, "20220219");
 	style("minheader", true, "20220219");
 	?>
-	<script src="events.js"></script>
+	<script src="events.bundle.js"></script>
 	<script src="/formenter.js"></script>
 	<link rel="canonical" href="https://<?=_G_public_domain()?>/application">
 	<link href="https://unpkg.com/filepond/dist/filepond.css" rel="stylesheet" data-remove="true">
@@ -797,31 +808,6 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 			<button type="submit">Submit Application</button>
 		</section>
 	</form>
-	<script src="https://unpkg.com/filepond/dist/filepond.js"></script>
-	<script
-			src="https://unpkg.com/filepond-plugin-image-exif-orientation/dist/filepond-plugin-image-exif-orientation.js"></script>
-	<script src="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.js"></script>
-	<script src="https://unpkg.com/filepond-plugin-image-transform/dist/filepond-plugin-image-transform.js"></script>
-	<script
-			src="https://unpkg.com/filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.js"></script>
-	<script
-			src="https://unpkg.com/filepond-plugin-file-validate-size/dist/filepond-plugin-file-validate-size.js"></script>
-	<script>
-		// TODO [#66]: Asynchronous attachment upload
-		// TODO [#276]: Use image editor plugin
-		FilePond.registerPlugin(FilePondPluginImageExifOrientation);
-		FilePond.registerPlugin(FilePondPluginImagePreview);
-		FilePond.registerPlugin(FilePondPluginImageTransform);
-		FilePond.registerPlugin(FilePondPluginFileValidateType);
-		FilePond.registerPlugin(FilePondPluginFileValidateSize);
-		const pond = FilePond.create(document.querySelector('input#images'), {
-			maxFileSize: '64MB',
-			maxTotalFileSize: '512MB',
-			imagePreviewMinHeight: 0,
-			imagePreviewMaxHeight: 128,
-			storeAsFile: true,
-		});
-	</script>
 </article>
 
 <?php
