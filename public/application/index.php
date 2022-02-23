@@ -20,9 +20,9 @@ use fmnas\Form\EmailAddress;
 use fmnas\Form\FormConfig;
 use fmnas\Form\FormEmailConfig;
 use fmnas\Form\FormException;
+use fmnas\Form\FormProcessor;
 use fmnas\Form\HashOptions;
 use fmnas\Form\HTTPMethod;
-use fmnas\Form\FormProcessor;
 use fmnas\Form\RenderedEmail;
 use fmnas\Form\SMTPConfig;
 
@@ -145,54 +145,6 @@ $formConfig->emails = function(array $formData) use ($DEDUPLICATE, $smtpConfig, 
 	};
 	$save->hashFilenames = HashOptions::SAVED_ONLY;
 	$save->filesConverter = function(array &$files) use (&$total_size): void {
-		$total_size = 0;
-		$filespecs = [];
-		$count = 0;
-		$heic_count = 0;
-		foreach ($files as $index => $file) {
-			if (!startsWith($file["type"], "image/")) {
-				$filespecs[$index] = null;
-				continue;
-			}
-			$filespec = new FileSpec();
-			$filespec->source = $file["tmp_name"];
-			$filespec->target = $file["tmp_name"] . ".jpg";
-			$filespec->height = 8640;
-			$filespecs[$index] = $filespec;
-			if (startsWith($file["type"], "image/hei")) {
-				$heic_count++;
-			}
-			$count++;
-		}
-		if ($count < 10 && $heic_count < 3) {
-			// Probably better to do the resizing locally in this case.
-			foreach ($filespecs as $index => $filespec) {
-				try {
-					resize($filespec->source, $filespec->target, $filespec->height);
-					if ($files[$index]["type"] !== "image/jpeg") {
-						$files[$index]["type"] = "image/jpeg";
-						$files[$index]["name"] .= ".jpg";
-					}
-					$files[$index]["tmp_name"] = $filespec->target;
-					$files[$index]["size"] = filesize($filespec->target);
-				} catch (ImageResizeException $e) {
-					continue;
-				}
-			}
-		} else {
-			$results = resizeMultiple($filespecs);
-			foreach ($results as $index => $result) {
-				if ($result === true) {
-					if ($files[$index]["type"] !== "image/jpeg") {
-						$files[$index]["type"] = "image/jpeg";
-						$files[$index]["name"] .= ".jpg";
-					}
-					$files[$index]["tmp_name"] = $filespecs[$index]->target;
-					$files[$index]["size"] = filesize($files[$index]["tmp_name"]);
-				}
-			}
-		}
-		unset($file);
 		foreach ($files as $file) {
 			$total_size += $file["size"];
 		}
@@ -335,6 +287,39 @@ $formConfig->transformers["mailto"] = function(string $email): string {
 	return "mailto:$email";
 };
 $formConfig->httpCredentials = Config::$api_credentials;
+function mapTemp(string $key): string {
+	return __DIR__ . "/received/tmp_" . explode(':', $key)[0];
+}
+function mapName(string $key): string {
+	return implode(':',array_slice(explode(':', $key), 1));
+}
+
+$formConfig->updateData = function(array &$data, array &$files): void {
+	$u = $data["images"] ?? []; // Keys for files uploaded asynchronously
+	$files["attachments"] = [
+			"name" => array_map(function(string $key) {
+				return mapName($key);
+			}, $u),
+			"type" => array_map(function(string $key) {
+				return mime_content_type(mapTemp($key));
+			}, $u),
+			"size" => array_map(function(string $key) {
+				return filesize(mapTemp($key));
+			}, $u),
+			"tmp_name" => array_map(function(string $key) {
+				return mapTemp($key);
+			}, $u),
+			"error" => array_map(function() {
+				return UPLOAD_ERR_OK;
+			}, $u),
+			"full_path" => array_map(function() {
+				return "";
+			}, $u),
+			"ignore_is_uploaded" => array_map(function() {
+				return true;
+			}, $u),
+	];
+};
 
 $processor = new FormProcessor($formConfig);
 ob_start();
@@ -342,6 +327,7 @@ function collect() {
 	global $processor;
 	$processor->collectForm();
 }
+
 register_shutdown_function('collect');
 
 function options(array $opts): string {
@@ -832,7 +818,6 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 	<script
 			src="https://unpkg.com/filepond-plugin-file-validate-size/dist/filepond-plugin-file-validate-size.js"></script>
 	<script>
-		// TODO [#66]: Asynchronous attachment upload
 		// TODO [#276]: Use image editor plugin
 		FilePond.registerPlugin(FilePondPluginImageExifOrientation);
 		FilePond.registerPlugin(FilePondPluginImagePreview);
@@ -844,7 +829,8 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 			maxTotalFileSize: '512MB',
 			imagePreviewMinHeight: 0,
 			imagePreviewMaxHeight: 128,
-			storeAsFile: true,
+			maxParallelUploads: 5,
+			server: '/application/upload.php',
 		});
 	</script>
 </article>

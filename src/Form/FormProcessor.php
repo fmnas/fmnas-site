@@ -115,6 +115,7 @@ class FormProcessor {
 	 * @throws \PHPMailer\PHPMailer\Exception
 	 */
 	private function receiveData(array &$data) {
+		($this->formConfig->updateData)($data, $_FILES);
 		$this->collectHtml($data);
 		($this->formConfig->received)($data);
 		if ($this->formConfig->returnEarly) {
@@ -123,12 +124,16 @@ class FormProcessor {
 				if (is_array($file["tmp_name"])) {
 					foreach ($file["tmp_name"] as &$oldname) {
 						$newname = tempnam(sys_get_temp_dir(), "PERSIST_");
-						@move_uploaded_file($oldname, $newname);
+						if (is_uploaded_file($oldname) || ($file["ignore_is_uploaded"] ?? false)) {
+							@rename($oldname, $newname) || copy($oldname, $newname);
+						}
 						$oldname = $newname;
 					}
 				} else {
 					$newname = tempnam(sys_get_temp_dir(), "PERSIST_");
-					@move_uploaded_file($file["tmp_name"], $newname);
+					if (is_uploaded_file($file["tmp_name"]) || ($file["ignore_is_uploaded"] ?? false)) {
+						@rename($file["tmp_name"], $newname) || copy($file["tmp_name"], $newname);
+					}
 					$file["tmp_name"] = $newname;
 				}
 			}

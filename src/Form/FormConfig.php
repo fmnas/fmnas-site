@@ -95,6 +95,15 @@ class FormConfig {
 	 */
 	public string $httpCredentials = "";
 
+	/**
+	 * Closure to update data before processing.
+	 * Note that ["ignore_is_uploaded" => true] must be added to any files added/modified in $_FILES.
+	 * @param array &$data form data
+	 * @param array &$files $_FILES
+	 * @return void
+	 */
+	public Closure $updateData;
+
 	public function __construct() {
 		$this->confirm = function(array $formData): void {
 			?>
@@ -192,5 +201,6 @@ class FormConfig {
 		$this->received = function(array $formData): void {
 
 		};
+		$this->updateData = function(array &$data, array &$files): void {};
 	}
 }
