@@ -19,7 +19,7 @@
 require_once __DIR__ . "/../../src/resize.php";
 $dir = __DIR__ . "/received";
 
-// TODO [$621587bc982c03000afca1bf]: Allow chunked filepond uploads.
+// TODO [#368]: Allow chunked filepond uploads.
 switch ($_SERVER['REQUEST_METHOD']) {
 case 'POST':
 	header("Content-Type: text/plain");
