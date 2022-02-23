@@ -31,7 +31,6 @@ class FormProcessor {
 	public Closure $collector;
 
 	// Useful for debugging.
-	// TODO [#366]: Check that $PERSIST_TEMP_FILES is false when merging.
 	private bool $PERSIST_TEMP_FILES = false;
 
 	public function __construct(
