@@ -437,7 +437,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	form.addEventListener('submit', (e: Event) => {
 		// Presubmit checks, after the browser's.
 		form.classList.add('submitted');
-		if (pond.status != Status.READY) {
+		if (pond.status == Status.BUSY) {
 			// TODO [#367]: Use something nicer than window.alert for file upload warning.
 			alert('Please wait for file uploads to complete');
 			e.preventDefault();

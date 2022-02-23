@@ -35,8 +35,7 @@ require_once "$t/application_response.php";
 require_once "$t/footer.php";
 
 // Useful for debugging.
-// TODO [#365]: Check that $DEDUPLICATE is true when merging.
-$DEDUPLICATE = false;
+$DEDUPLICATE = true;
 
 ini_set('memory_limit', '2048M');
 setlocale(LC_ALL, 'en_US.UTF-8');
@@ -44,7 +43,7 @@ set_time_limit(3600);
 $formConfig = new FormConfig();
 $formConfig->method = HTTPMethod::POST;
 $db ??= new Database();
-$cwd = getcwd();
+$cwd = __DIR__;
 
 $smtpConfig = new SMTPConfig(
 		host: Config::$smtp_host,
@@ -56,7 +55,7 @@ $smtpConfig = new SMTPConfig(
 );
 
 $formConfig->returnEarly = true;
-$formConfig->received = function(array $formData) use ($cwd): void {
+$formConfig->received = function(array &$formData) use ($cwd): void {
 	?>
 	<!DOCTYPE html>
 	<html lang="en-US">
@@ -76,7 +75,12 @@ $formConfig->received = function(array $formData) use ($cwd): void {
 	</article>
 	</html>
 	<?php
-	file_put_contents("$cwd/received/" . microtime(true) . ".serialized", serialize($formData));
+	$formData["_received_time"] = microtime(true);
+	file_put_contents("$cwd/received/" . $formData["_received_time"] . ".serialized", serialize($formData));
+};
+
+$formConfig->confirm = function(array $formData) use ($cwd): void {
+	unlink("$cwd/received/" . $formData["_received_time"] . ".serialized");
 };
 
 $formConfig->handler = function(FormException $e) use ($smtpConfig): void {
@@ -464,7 +468,7 @@ function addressInput(string $label, string $prefix, bool $required = false): st
 	style("application", true, "20220219");
 	style("minheader", true, "20220219");
 	?>
-	<script src="events.bundle.js"></script>
+	<script src="events.bundle.js?buster=42"></script>
 	<script src="/formenter.js"></script>
 	<link rel="canonical" href="https://<?=_G_public_domain()?>/application">
 	<link href="https://unpkg.com/filepond/dist/filepond.css" rel="stylesheet" data-remove="true">

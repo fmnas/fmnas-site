@@ -60,3 +60,21 @@ jobs:
         run: git merge-base --is-ancestor origin/main HEAD
       - name: Check that branch is past origin/test
         run: git merge-base --is-ancestor origin/test HEAD
+  persist-temp-files:
+    name: '$PERSIST_TEMP_FILES is false in src/Form/FormProcessor.php'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+        with:
+          fetch-depth: 0
+      - run: grep -q '$PERSIST_TEMP_FILES = false' src/Form/FormProcessor.php
+  deduplicate:
+    name: '$DEDUPLICATE is true in public/application/index.php'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+        with:
+          fetch-depth: 0
+      - run: grep -q '$DEDUPLICATE = true' public/application/index.php

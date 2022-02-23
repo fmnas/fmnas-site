@@ -28,8 +28,7 @@ use Closure;
  */
 class FormConfig {
 	/**
-	 * Callback for when the form is submitted. This should be used to output
-	 * a thank-you message, etc.
+	 * Callback for when the form is submitted. This can be used to output a thank-you message, etc.
 	 * @param array form data ($_POST or $_GET)
 	 * @return void
 	 */
@@ -44,6 +43,7 @@ class FormConfig {
 
 	/**
 	 * Callback for when the form data is received but has not been processed yet.
+	 * If you have expensive processing operations, this can be used to send an HTTP response early.
 	 * @param array form data ($_POST or $_GET)
 	 * @return void
 	 */
