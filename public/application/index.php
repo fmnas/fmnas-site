@@ -789,19 +789,19 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
             (max. 64 MB each, 512 MB total)
 			</span>
 			<ul class="thumbnails" data-if-config="thumbnails">
-				<li data-foreach="images" data-as="image">
+				<li data-foreach="attachments" data-as="image">
 					<a data-href="image" data-file-transformer="url">
 						<span data-value="image" data-file-transformer="thumbnail"></span>
 					</a>
 				</li>
 			</ul>
 			<ul data-if-config="thumbnails" data-rhs="false">
-				<li data-foreach="images" data-as="image" data-if-config="main">
+				<li data-foreach="attachments" data-as="image" data-if-config="main">
 					<a data-href="image" data-file-transformer="url">
 						<span data-value="image" data-if-config="thumbnails" data-rhs="false"></span>
 					</a>
 				</li>
-				<li data-foreach="images" data-if-config="main" data-rhs="false"></li>
+				<li data-foreach="attachments" data-if-config="main" data-rhs="false"></li>
 			</ul>
 		</section>
 		<section id="comments" data-if="comments" data-hidden="false">
