@@ -214,7 +214,7 @@ files that return `false` will be ignored.
 
 ```php
 $this->formConfig->fileValidator = function(array $metadata): bool {
-  if ($metadata["error"]) {
+  if ($metadata["error"] || !is_uploaded_file($metadata["tmp_name"]) {
     return false;
   }
   $finfo = new finfo(FILEINFO_MIME_TYPE);
@@ -222,7 +222,7 @@ $this->formConfig->fileValidator = function(array $metadata): bool {
 }
 ```
 
-The default fileValidator simply returns `!$metadata["error"]`.
+The default fileValidator simply returns `(is_uploaded_file($metadata["tmp_name"]) || ($metadata["ignore_is_uploaded"] ?? false)) && !$metadata["error"]`.
 
 For radio buttons and checkboxes, the output span for each button will contain the submitted value and have
 `data-selected="1"` or `data-selected="0"`. Additionally, the output span for any associated labels will have the

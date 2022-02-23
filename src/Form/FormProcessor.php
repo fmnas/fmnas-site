@@ -69,6 +69,9 @@ class FormProcessor {
 				if (count($receivedData) === 1) {
 					// This request was made from the return-early stage of receiveData,
 					// and the form data will be serialized in an attached file.
+					if (!is_uploaded_file($_FILES["data"]["tmp_name"])) {
+						die();
+					}
 					$data = unserialize(file_get_contents($_FILES["data"]["tmp_name"]));
 					$_FILES = $data["_form_files"];
 					$this->processForm($data);
