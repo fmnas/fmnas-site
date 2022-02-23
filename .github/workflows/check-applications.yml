@@ -75,7 +75,6 @@ jobs:
           subject: ${{ steps.diff.outputs.count }} serialized applications failed to send
           to: admin@forgetmenotshelter.org
           from: FMNAS Automation <admin+automation@forgetmenotshelter.org>
-          secure: true
           body: See attached applications.
           attachments: common.tar.gz
       - name: Update badge (ok)
