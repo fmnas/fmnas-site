@@ -76,8 +76,8 @@ $formConfig->received = function(array $formData) use ($cwd): void {
 	</article>
 	</html>
 	<?php
-	// TODO [$62159080aa826200095d157c]: Delete serialized in confirm()
-	// TODO [$62159080aa826200095d157d]: Periodically check for persisted serialized applications indicating unreported failures
+	// TODO [#370]: Delete serialized in confirm()
+	// TODO [#371]: Periodically check for persisted serialized applications indicating unreported failures
 	file_put_contents("$cwd/received/" . microtime(true) . ".serialized", serialize($formData));
 };
 
