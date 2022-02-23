@@ -29,16 +29,10 @@ jobs:
           password: ${{ secrets.PROD_SFTP_PASS }}
           script: |
             cd ${{ secrets.PROD_SITE_ROOT }}/public/application/received
-            touch serialized.tar.gz
             tar -czvf serialized.tar.gz *.serialized 2>/dev/null
       - name: Fetch serialized applications
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.PROD_SFTP_HOST }}
-          username: ${{ secrets.PROD_SFTP_USER }}
-          password: ${{ secrets.PROD_SFTP_PASS }}
-          source: ${{ secrets.PROD_SITE_ROOT }}/public/application/received/serialized.tar.gz
-          target: serialized.tar.gz
+        run: |
+          sshpass -p "${{ secrets.PROD_SFTP_PASS }}" scp ${{ secrets.PROD_SFTP_USER }}@${{ secrets.PROD_SFTP_HOST}}:${{ secrets.PROD_SITE_ROOT }}/public/application/received/serialized.tar.gz .
       - name: Count serialized applications
         id: count
         run: echo "::set-output name=serialized::$(tar -tzf serialized.tar.gz | wc -l)"
@@ -54,7 +48,6 @@ jobs:
           password: ${{ secrets.PROD_SFTP_PASS }}
           script: |
             cd ${{ secrets.PROD_SITE_ROOT }}/public/application/received
-            touch serialized.tar.gz
             tar -czvf serialized.tar.gz *.serialized 2>/dev/null
       - name: Fetch serialized applications
         if: steps.count.outputs.name != 0
