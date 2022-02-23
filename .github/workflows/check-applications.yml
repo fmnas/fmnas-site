@@ -49,16 +49,16 @@ jobs:
           password: ${{ secrets.PROD_SFTP_PASS }}
           script: |
             cd ${{ secrets.PROD_SITE_ROOT }}/public/application/received
-            tar -czvf serialized.tar.gz *.serialized 2>/dev/null
+            tar -czvf serialized2.tar.gz *.serialized 2>/dev/null
       - name: Fetch serialized applications again
         if: steps.count.outputs.count != 0
-        run: sshpass -p "${{ secrets.PROD_SFTP_PASS }}" scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ secrets.PROD_SFTP_USER }}@${{ secrets.PROD_SFTP_HOST}}:${{ secrets.PROD_SITE_ROOT }}/public/application/received/serialized.tar.gz .
+        run: sshpass -p "${{ secrets.PROD_SFTP_PASS }}" scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ secrets.PROD_SFTP_USER }}@${{ secrets.PROD_SFTP_HOST}}:${{ secrets.PROD_SITE_ROOT }}/public/application/received/serialized2.tar.gz .
       - name: Identify broken applications
         if: steps.count.outputs.count != 0
         id: diff
         run: |
           comm -12 <(tar -tzf serialized.tar.gz | sort) <(tar -tzf serialized2.tar.gz | sort) | tee common.txt
-          echo "::set-output name=count::$(wc -l common.txt)"
+          echo "::set-output name=count::$(wc -l < common.txt)"
       - name: Compress serialized applications that are still around
         if: steps.count.outputs.count != 0 && steps.diff.outputs.count != 0
         run: |
@@ -75,7 +75,6 @@ jobs:
           subject: ${{ steps.diff.outputs.count }} serialized applications failed to send
           to: admin@forgetmenotshelter.org
           from: FMNAS Automation <admin+automation@forgetmenotshelter.org>
-          secure: true
           body: See attached applications.
           attachments: common.tar.gz
       - name: Update badge (ok)

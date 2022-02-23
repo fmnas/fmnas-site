@@ -1,0 +1,81 @@
+# Copyright 2022 Google LLC
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+version: 2
+updates:
+  - package-ecosystem: composer
+    directory: /
+    schedule:
+      interval: weekly
+    versioning-strategy: increase
+    allow:
+      - dependency-name: whichbrowser/parser
+    target-branch: test
+    labels: [ ]
+    commit-message:
+      prefix: whichbrowser
+  - package-ecosystem: composer
+    directory: /
+    schedule:
+      interval: monthly
+    versioning-strategy: increase
+    target-branch: test
+    ignore:
+      - dependency-name: whichbrowser/parser
+    labels: [ ]
+    commit-message:
+      prefix: composer
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    versioning-strategy: increase
+    target-branch: test
+    labels: [ ]
+    commit-message:
+      prefix: npm
+  - package-ecosystem: npm
+    directory: /gcp/minify-html
+    schedule:
+      interval: monthly
+    versioning-strategy: increase
+    target-branch: test
+    labels: [ ]
+    commit-message:
+      prefix: minify-html
+  - package-ecosystem: npm
+    directory: /gcp/print-pdf
+    schedule:
+      interval: monthly
+    versioning-strategy: increase
+    target-branch: test
+    labels: [ ]
+    commit-message:
+      prefix: print-pdf
+  - package-ecosystem: gomod
+    directory: /gcp/image-size
+    schedule:
+      interval: monthly
+    target-branch: test
+    labels: [ ]
+    commit-message:
+      prefix: image-size
+  - package-ecosystem: gomod
+    directory: /gcp/resize-image
+    schedule:
+      interval: monthly
+    target-branch: test
+    labels: [ ]
+    commit-message:
+      prefix: resize-image
