@@ -17,7 +17,7 @@ go.mod
 go.sum
 composer.lock
 /.idea
-.github/codeql-analysis.yml
+.github/workflows/codeql-analysis.yml
 
 # Files that don't support comments
 *.json
