@@ -29,24 +29,19 @@ jobs:
           password: ${{ secrets.PROD_SFTP_PASS }}
           script: |
             cd ${{ secrets.PROD_SITE_ROOT }}/public/application/received
-            touch serialized.tar.gz
             tar -czvf serialized.tar.gz *.serialized 2>/dev/null
+      - name: Install sshpass
+        run: sudo apt install -y sshpass
       - name: Fetch serialized applications
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.PROD_SFTP_HOST }}
-          username: ${{ secrets.PROD_SFTP_USER }}
-          password: ${{ secrets.PROD_SFTP_PASS }}
-          source: ${{ secrets.PROD_SITE_ROOT }}/public/application/received/serialized.tar.gz
-          target: serialized.tar.gz
+        run: sshpass -p "${{ secrets.PROD_SFTP_PASS }}" scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ secrets.PROD_SFTP_USER }}@${{ secrets.PROD_SFTP_HOST}}:${{ secrets.PROD_SITE_ROOT }}/public/application/received/serialized.tar.gz .
       - name: Count serialized applications
         id: count
-        run: echo "::set-output name=serialized::$(tar -tzf serialized.tar.gz | wc -l)"
+        run: echo "::set-output name=count::$(tar -tzf serialized.tar.gz | wc -l)"
       - name: Wait 3 minutes if there are serialized applications
-        if: steps.count.outputs.name != 0
+        if: steps.count.outputs.count != 0
         run: sleep 180
       - name: Collect serialized applications again
-        if: steps.count.outputs.name != 0
+        if: steps.count.outputs.count != 0
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.PROD_SFTP_HOST }}
@@ -54,30 +49,23 @@ jobs:
           password: ${{ secrets.PROD_SFTP_PASS }}
           script: |
             cd ${{ secrets.PROD_SITE_ROOT }}/public/application/received
-            touch serialized.tar.gz
             tar -czvf serialized.tar.gz *.serialized 2>/dev/null
-      - name: Fetch serialized applications
-        if: steps.count.outputs.name != 0
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.PROD_SFTP_HOST }}
-          username: ${{ secrets.PROD_SFTP_USER }}
-          password: ${{ secrets.PROD_SFTP_PASS }}
-          source: ${{ secrets.PROD_SITE_ROOT }}/public/application/received/serialized.tar.gz
-          target: serialized2.tar.gz
+      - name: Fetch serialized applications again
+        if: steps.count.outputs.count != 0
+        run: sshpass -p "${{ secrets.PROD_SFTP_PASS }}" scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ secrets.PROD_SFTP_USER }}@${{ secrets.PROD_SFTP_HOST}}:${{ secrets.PROD_SITE_ROOT }}/public/application/received/serialized.tar.gz .
       - name: Identify broken applications
-        if: steps.count.outputs.name != 0
+        if: steps.count.outputs.count != 0
         id: diff
         run: |
           comm -12 <(tar -tzf serialized.tar.gz | sort) <(tar -tzf serialized2.tar.gz | sort) | tee common.txt
           echo "::set-output name=count::$(wc -l common.txt)"
       - name: Compress serialized applications that are still around
-        if: steps.count.outputs.name != 0 && steps.diff.outputs.count != 0
+        if: steps.count.outputs.count != 0 && steps.diff.outputs.count != 0
         run: |
           tar -xzf serialized.tar.gz --files-from common.txt
           tar -czf common.tar.gz --files-from common.txt
       - name: Mail broken applications to admin
-        if: steps.count.outputs.name != 0 && steps.diff.outputs.count != 0
+        if: steps.count.outputs.count != 0 && steps.diff.outputs.count != 0
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: ${{ secrets.SMTP_HOST }}
@@ -91,7 +79,7 @@ jobs:
           body: See attached applications.
           attachments: common.tar.gz
       - name: Update badge (ok)
-        if: steps.count.outputs.name == 0 || steps.diff.outputs.count == 0
+        if: steps.count.outputs.count == 0 || steps.diff.outputs.count == 0
         uses: schneegans/dynamic-badges-action@v1.1.0
         with:
           auth: ${{ secrets.TORTOISEWRATH_GIST_TOKEN }}
@@ -101,7 +89,7 @@ jobs:
           message: 0
           color: '090'
       - name: Update badge (fail)
-        if: steps.count.outputs.name != 0 && steps.diff.outputs.count != 0
+        if: steps.count.outputs.count != 0 && steps.diff.outputs.count != 0
         uses: schneegans/dynamic-badges-action@v1.1.0
         with:
           auth: ${{ secrets.TORTOISEWRATH_GIST_TOKEN }}
