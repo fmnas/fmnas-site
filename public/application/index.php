@@ -75,7 +75,6 @@ $formConfig->received = function(array &$formData) use ($cwd): void {
 	</article>
 	</html>
 	<?php
-	// TODO: Periodically check for persisted serialized applications indicating unreported failures
 	$formData["_received_time"] = microtime(true);
 	file_put_contents("$cwd/received/" . $formData["_received_time"] . ".serialized", serialize($formData));
 };
