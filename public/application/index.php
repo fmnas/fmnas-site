@@ -464,7 +464,7 @@ function addressInput(string $label, string $prefix, bool $required = false): st
 	style("application", true, "20220219");
 	style("minheader", true, "20220219");
 	?>
-	<script src="events.js"></script>
+	<script src="events.bundle.js"></script>
 	<script src="/formenter.js"></script>
 	<link rel="canonical" href="https://<?=_G_public_domain()?>/application">
 	<link href="https://unpkg.com/filepond/dist/filepond.css" rel="stylesheet" data-remove="true">
@@ -808,31 +808,6 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 			<button type="submit">Submit Application</button>
 		</section>
 	</form>
-	<script src="https://unpkg.com/filepond/dist/filepond.js"></script>
-	<script
-			src="https://unpkg.com/filepond-plugin-image-exif-orientation/dist/filepond-plugin-image-exif-orientation.js"></script>
-	<script src="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.js"></script>
-	<script src="https://unpkg.com/filepond-plugin-image-transform/dist/filepond-plugin-image-transform.js"></script>
-	<script
-			src="https://unpkg.com/filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.js"></script>
-	<script
-			src="https://unpkg.com/filepond-plugin-file-validate-size/dist/filepond-plugin-file-validate-size.js"></script>
-	<script>
-		// TODO [#276]: Use image editor plugin
-		FilePond.registerPlugin(FilePondPluginImageExifOrientation);
-		FilePond.registerPlugin(FilePondPluginImagePreview);
-		FilePond.registerPlugin(FilePondPluginImageTransform);
-		FilePond.registerPlugin(FilePondPluginFileValidateType);
-		FilePond.registerPlugin(FilePondPluginFileValidateSize);
-		const pond = FilePond.create(document.querySelector('input#images'), {
-			maxFileSize: '64MB',
-			maxTotalFileSize: '512MB',
-			imagePreviewMinHeight: 0,
-			imagePreviewMaxHeight: 128,
-			maxParallelUploads: 5,
-			server: '/application/upload.php',
-		});
-	</script>
 </article>
 
 <?php

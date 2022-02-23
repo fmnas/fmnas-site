@@ -102,7 +102,7 @@ After checking out the repository, run:
   ```
 * `composer install` for PHP dependencies
 * `sass public:public` for public site stylesheets
-* `tsc -p public` for public site scripts
+* `npm run build` for public site scripts
 * `vite build --mode development admin/client` for the admin site
 
 ### Watch and build
@@ -111,6 +111,7 @@ The IntelliJ config includes file watchers to automatically build files. To do t
 
 * `sass -w public:public` for public site stylesheets
 * `tsc -w -p public` for public site scripts
+* `watchify public/application/events.js -o public/application/events.bundle.js` for application bundle
 * `vite build -w --mode development admin/client` for the admin site
 
 Prefix these commands with `npx` to use the local version of the CLIs from Node.
@@ -290,7 +291,7 @@ On the build machine:
 
 * Install NPM build dependencies: `npm install --only=dev`
 * Build the stylesheets for the public site: `npx sass --style=compressed public:public`
-* Build the scripts for the public site: `npx tsc -p public`
+* Build the scripts for the public site: `npm run build`
 * Build the admin site client: `npx vite build admin/client`
 * Set the config values in config.php.
 	* Run, for instance:

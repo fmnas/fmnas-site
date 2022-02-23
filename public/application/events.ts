@@ -4,6 +4,14 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import * as FilePond from 'filepond';
+import {Status} from 'filepond';
+import * as FilePondPluginFileValidateSize from 'filepond-plugin-file-validate-size';
+import * as FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type';
+import * as FilePondPluginImageTransform from 'filepond-plugin-image-transform';
+import * as FilePondPluginImagePreview from 'filepond-plugin-image-preview';
+import * as FilePondPluginImageExifOrientation from 'filepond-plugin-image-exif-orientation';
+
 /**
  * Get a function that adds 'filled' to an element if its value is truthy and removes it otherwise.
  * Useful as a listener on input elements to add a filled class.
@@ -410,9 +418,31 @@ document.addEventListener('DOMContentLoaded', () => {
 		form.classList.add('submitted');
 	});
 
+	const imageInput = document.querySelector('input#images')!
+	FilePond.registerPlugin(FilePondPluginFileValidateSize);
+	FilePond.registerPlugin(FilePondPluginFileValidateType);
+	FilePond.registerPlugin(FilePondPluginImageExifOrientation);
+	FilePond.registerPlugin(FilePondPluginImagePreview);
+	FilePond.registerPlugin(FilePondPluginImageTransform);
+	// TODO [#276]: Use FilePond image editor plugin for application
+	const pond = FilePond.create(imageInput, {
+		maxFileSize: '64MB',
+		maxTotalFileSize: '512MB',
+		imagePreviewMinHeight: 0,
+		imagePreviewMaxHeight: 128,
+		maxParallelUploads: 5,
+		server: '/application/upload.php',
+	});
+
 	form.addEventListener('submit', (e: Event) => {
 		// Presubmit checks, after the browser's.
 		form.classList.add('submitted');
+		if (pond.status != Status.READY) {
+			// TODO: Use something nicer than window.alert for file upload warning.
+			alert('Please wait for file uploads to complete');
+			e.preventDefault();
+			return false;
+		}
 		const fileInput: HTMLInputElement = form.querySelector('input[type="file"]')!;
 		let validity = '';
 		let totalSize = 0;
@@ -435,7 +465,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			fileInput.setCustomValidity('');
 			e.preventDefault();
 			console.log(fileInput);
-			return;
+			return false;
 		}
 		prune(otherPeople, anyValueInput);
 		prune(currentAnimals, anyValueInput);

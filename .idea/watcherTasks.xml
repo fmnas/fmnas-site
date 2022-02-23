@@ -22,7 +22,7 @@
       <envs />
     </TaskOptions>
     <TaskOptions isEnabled="true">
-      <option name="arguments" value="tsc -p public" />
+      <option name="arguments" value="run build" />
       <option name="checkSyntaxErrors" value="true" />
       <option name="description" />
       <option name="exitCodeBehavior" value="ERROR" />
@@ -34,7 +34,7 @@
         <array />
       </option>
       <option name="outputFromStdout" value="false" />
-      <option name="program" value="npx" />
+      <option name="program" value="npm" />
       <option name="runOnExternalChanges" value="true" />
       <option name="scopeName" value="Public site" />
       <option name="trackOnlyRoot" value="false" />
