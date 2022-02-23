@@ -430,7 +430,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		maxTotalFileSize: '512MB',
 		imagePreviewMinHeight: 0,
 		imagePreviewMaxHeight: 128,
-		maxParallelUploads: 5,
+		maxParallelUploads: 2,
 		server: '/application/upload.php',
 	});
 
