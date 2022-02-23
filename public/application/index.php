@@ -43,7 +43,7 @@ set_time_limit(3600);
 $formConfig = new FormConfig();
 $formConfig->method = HTTPMethod::POST;
 $db ??= new Database();
-$cwd = getcwd();
+$cwd = __DIR__;
 
 $smtpConfig = new SMTPConfig(
 		host: Config::$smtp_host,
@@ -468,7 +468,7 @@ function addressInput(string $label, string $prefix, bool $required = false): st
 	style("application", true, "20220219");
 	style("minheader", true, "20220219");
 	?>
-	<script src="events.bundle.js"></script>
+	<script src="events.bundle.js?buster=42"></script>
 	<script src="/formenter.js"></script>
 	<link rel="canonical" href="https://<?=_G_public_domain()?>/application">
 	<link href="https://unpkg.com/filepond/dist/filepond.css" rel="stylesheet" data-remove="true">

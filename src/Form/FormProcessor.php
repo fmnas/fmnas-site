@@ -222,6 +222,8 @@ class FormProcessor {
 
 			$this->sendEmail($emailConfig, $renderedForm);
 		}
+
+		($this->formConfig->confirm)($data);
 	}
 
 	/**
