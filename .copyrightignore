@@ -17,14 +17,15 @@ go.mod
 go.sum
 composer.lock
 /.idea
+.github/codeql-analysis.yml
 
 # Files that don't support comments
 *.json
 .nvmrc
 
-# Don't need copyright headers in documentation
+# Documentation
 *.md
 
-# Can't use copyright headers in template files
+# Impractical in template files
 /admin/templates
 /src/templates
