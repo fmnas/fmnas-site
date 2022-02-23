@@ -13,9 +13,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 .gcloudignore
-.git
 .gitignore
 .nvmrc
 /src
 *.map
 node_modules
+README.md
