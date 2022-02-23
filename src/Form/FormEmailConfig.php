@@ -191,5 +191,12 @@ class FormEmailConfig {
 		$mailer->Subject = $this->subject;
 		$mailer->Body = $emailBody;
 		$mailer->Send();
+
+		foreach($attachments as $attachment) {
+			/** @var $attachment AttachmentInfo */
+			if ($attachment->delete) {
+				unlink($attachment->path);
+			}
+		}
 	}
 }

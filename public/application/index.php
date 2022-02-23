@@ -196,7 +196,7 @@ $formConfig->emails = function(array $formData) use ($DEDUPLICATE, $smtpConfig, 
 					renderPdf($dom, $file, "https://forgetmenotshelter.org/application/", "0.5in");
 					// Attach the PDF
 					$filename = preg_replace('/[^a-zA-Z0-9& _+-]+/', '-', $primarySubject) . ".pdf";
-					$attachments[] = new AttachmentInfo($file, $filename, "application/pdf");
+					$attachments[] = new AttachmentInfo($file, $filename, "application/pdf", true);
 				} catch (PdfException $e) {
 					log_err($e->getMessage());
 				}
@@ -228,7 +228,7 @@ $formConfig->emails = function(array $formData) use ($DEDUPLICATE, $smtpConfig, 
 					$file = tempnam(sys_get_temp_dir(), "PDF");
 					renderPdf($dom, $file, "https://forgetmenotshelter.org/application/", "0.5in");
 					// Attach the PDF
-					$attachments[] = new AttachmentInfo($file, "Adoption Application.pdf", "application/pdf");
+					$attachments[] = new AttachmentInfo($file, "Adoption Application.pdf", "application/pdf", true);
 					$dom->getElementById('response_injection')?->appendChild($dom->createTextNode(
 							'A copy of your application is attached for your records.'
 					));

@@ -19,6 +19,6 @@
 namespace fmnas\Form;
 
 class AttachmentInfo {
-	public function __construct(public string $path, public string $filename, public string $type) {
+	public function __construct(public string $path, public string $filename, public string $type, public bool $delete = false) {
 	}
 }
