@@ -30,8 +30,6 @@ jobs:
           script: |
             cd ${{ secrets.PROD_SITE_ROOT }}/public/application/received
             tar -czvf serialized.tar.gz *.serialized 2>/dev/null
-      - name: Install sshpass
-        run: sudo apt install -y sshpass
       - name: Fetch serialized applications
         run: sshpass -p "${{ secrets.PROD_SFTP_PASS }}" scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ secrets.PROD_SFTP_USER }}@${{ secrets.PROD_SFTP_HOST}}:${{ secrets.PROD_SITE_ROOT }}/public/application/received/serialized.tar.gz .
       - name: Count serialized applications
