@@ -23,7 +23,7 @@ import '../bin/image_size.dart';
 const imageDir = '../data/images';
 const imageSizes = {
   'dubai.heic': [9248, 6936],
-  'george.jpg': [4624, 3468],
+  'george.jpg': [4322, 3289],
   'litter.jpg': [8384, 6035],
   'pigeons.jpg': [4656, 3492],
   'puget.heic': [9248, 6936],
