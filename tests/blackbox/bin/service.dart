@@ -140,7 +140,7 @@ abstract class Service {
   }
 
   Future<ParallelResults> benchmarkParallel(Future<FormData> Function() data,
-      List<int> parallelColumns, int binarySearchLimit) async {
+      Iterable<int> parallelColumns, int binarySearchLimit) async {
     final result = ParallelResults();
 
     // Benchmark with predefined parallelism values

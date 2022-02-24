@@ -36,8 +36,21 @@ Memory monitoring depends on docker, netstat, grep, awk, and perl.
 
 ### resize_image
 
-Run with `dart run :resize_image [endpoint]`. The endpoint defaults to `http://localhost:50000`.
+Run with `dart run :resize_image`.
+
+#### Arguments
+
+* Endpoint (`--endpoint`, `-e`): defaults to `http://localhost:50000`.
+* Height (`--height`, `-h`): defaults to 64,192,300,480,2160,4320,100000.
+* Concurrency search limit (`--max`, `-n`): defaults to 50.
+* Parallel requests (positional arguments): defaults to `1 2 5 10 25`.
 
 ### image_size_benchmark
 
-Run with `dart run :image_size [endpoint]`. The endpoint defaults to `http://localhost:50001`.
+Run with `dart run :image_size`.
+
+#### Arguments
+
+* Endpoint (`--endpoint`, `-e`): defaults to `http://localhost:50000`.
+* Concurrency search limit (`--max`, `-n`): defaults to 50.
+* Parallel requests (positional arguments): defaults to `1 2 5 10 25`.

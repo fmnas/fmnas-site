@@ -42,6 +42,10 @@ dubai.heic  | 18.6 MB  | 9248x6936 | 1/1 in 7092 ms, avg 7092 ms | 2/2 in 12154 
 george.jpg  | 1.4 MB   | 4322x3289 | 1/1 in 609 ms, avg 609 ms   | 2/2 in 583 ms, avg 567 ms     | 5/5 in 646 ms, avg 553 ms     | 10/10 in 640 ms, avg 515 ms     | 25/25 in 1152 ms, avg 681 ms    |                   50
 ```
 
+### Benchmark results on Cloud Run with 4 vCPU, 4 GiB RAM, concurrency limit 100
+
+### Benchmark results on Cloud Run with 4 vCPU, 8 GiB RAM, concurrency limit 100
+
 ### Benchmark results in Docker container on GitHub Actions (used for regression tests)
 
 

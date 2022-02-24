@@ -25,14 +25,14 @@ import 'image_size.dart';
 import 'results.dart';
 import 'service.dart';
 
-const parallelColumns = [1, 2, 5, 10, 20];
-const heights = [64, 192, 300, 480, 2160, 4320, 10000];
-const binarySearchLimit = 50;
-
 class ResizeImage extends Service {
-  ResizeImage(String endpoint) : super(endpoint, 'resize-image', ResponseType.stream);
+  ResizeImage(String endpoint)
+      : super(endpoint, 'resize-image', ResponseType.stream);
 
   static const defaultEndpoint = 'http://localhost:50000';
+  static const defaultParallelColumns = [1, 2, 5, 10, 25];
+  static const defaultHeights = [64, 192, 300, 480, 2160, 4320, 100000];
+  static const defaultBinarySearchLimit = 50;
 
   static Future<FormData> data(String file, int height) async {
     return FormData.fromMap({
@@ -45,23 +45,27 @@ class ResizeImage extends Service {
     return () async => await data(file, height);
   }
 
-  static Stream<ImageResult> runBenchmark(String endpoint) async* {
+  static Stream<ImageResult> runBenchmark(String endpoint,
+      [Iterable<int> parallelColumns = defaultParallelColumns,
+      Iterable<int> heights = defaultHeights,
+      int binarySearchLimit = defaultBinarySearchLimit]) async* {
     print('Benchmarking resize-image at $endpoint');
     final resizeImage = ResizeImage(endpoint);
     final imageSize = ImageSize(ImageSize.defaultEndpoint);
     for (final height in heights) {
       print('Benchmarking height $height');
       for (final file
-      in Glob('../data/images/*').listFileSystemSync(LocalFileSystem())) {
+          in Glob('../data/images/*').listFileSystemSync(LocalFileSystem())) {
         await resizeImage.waitForService();
         final result = ImageResult();
+        result.group = height;
         result.name = file.basename;
         result.size = filesize(file.statSync().size, 1);
         try {
           final dimensions =
-          await imageSize.request(ImageSize.generator(file.path));
+              await imageSize.request(ImageSize.generator(file.path));
           result.dimensions =
-          '${dimensions.data['width']}x${dimensions.data['height']}';
+              '${dimensions.data['width']}x${dimensions.data['height']}';
         } on Exception {
           // ignore
         }
@@ -77,12 +81,23 @@ class ResizeImage extends Service {
 
 void main(List<String> args) async {
   final parser = ArgParser();
-  final positional = parser.parse(args).rest;
-  final endpoint =
-      positional.isEmpty ? ResizeImage.defaultEndpoint : positional[0];
+  parser.addOption('endpoint',
+      abbr: 'e', defaultsTo: ResizeImage.defaultEndpoint);
+  parser.addOption('max',
+      abbr: 'n', defaultsTo: ResizeImage.defaultBinarySearchLimit.toString());
+  parser.addMultiOption('height',
+      abbr: 'h',
+      defaultsTo: ResizeImage.defaultHeights.map((h) => h.toString()));
+  final parsed = parser.parse(args);
+  final Iterable<String> heights = parsed['height'];
 
   final Map<int, List<ImageResult>> results = {};
-  await ResizeImage.runBenchmark(endpoint).listen((result) {
+  await ResizeImage.runBenchmark(
+    parsed['endpoint'],
+    parsed.rest.map(int.parse),
+    heights.map(int.parse),
+    int.parse(parsed['max']),
+  ).listen((result) {
     print(result);
     results[result.group] ??= [];
     results[result.group]!.add(result);

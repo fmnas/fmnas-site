@@ -24,13 +24,12 @@ import 'package:glob/glob.dart';
 import 'results.dart';
 import 'service.dart';
 
-const parallelColumns = [1, 2, 5, 10, 25];
-const binarySearchLimit = 50;
-
 class ImageSize extends Service {
   ImageSize(String endpoint) : super(endpoint, 'image-size');
 
   static const defaultEndpoint = 'http://localhost:50001';
+  static const defaultParallelColumns = [1, 2, 5, 10, 25];
+  static const defaultBinarySearchLimit = 50;
 
   static Future<FormData> data(String file) async {
     return FormData.fromMap({'image': await MultipartFile.fromFile(file)});
@@ -40,22 +39,25 @@ class ImageSize extends Service {
     return () async => await data(file);
   }
 
-  static Stream<ImageResult> runBenchmark(String endpoint) async* {
+  static Stream<ImageResult> runBenchmark(String endpoint,
+      [Iterable<int> parallelColumns = defaultParallelColumns,
+      int binarySearchLimit = defaultBinarySearchLimit]) async* {
     print('Benchmarking image-size at $endpoint');
     final imageSize = ImageSize(endpoint);
     final Map<String, ImageResult> results = {};
 
     for (final file
-    in Glob('../data/images/*').listFileSystemSync(LocalFileSystem())) {
+        in Glob('../data/images/*').listFileSystemSync(LocalFileSystem())) {
       await imageSize.waitForService();
       final result = ImageResult();
       result.name = file.basename;
       result.size = filesize(file.statSync().size, 1);
       final response = await imageSize.request(ImageSize.generator(file.path));
-      result.dimensions = '${response.data['width']}x${response.data['height']}';
+      result.dimensions =
+          '${response.data['width']}x${response.data['height']}';
       result.parallel = await imageSize.benchmarkParallel(
           ImageSize.generator(file.path),
-          parallelColumns,
+          parallelColumns.isEmpty ? defaultParallelColumns : parallelColumns,
           binarySearchLimit);
       results[file.basename] = result;
       yield result;
@@ -65,12 +67,17 @@ class ImageSize extends Service {
 
 void main(List<String> args) async {
   final parser = ArgParser();
-  final positional = parser.parse(args).rest;
-  final endpoint =
-      positional.isEmpty ? ImageSize.defaultEndpoint : positional[0];
-
+  parser.addOption('endpoint',
+      abbr: 'e', defaultsTo: ImageSize.defaultEndpoint);
+  parser.addOption('max',
+      abbr: 'n', defaultsTo: ImageSize.defaultBinarySearchLimit.toString());
+  final parsed = parser.parse(args);
   final List<ImageResult> results = [];
-  await ImageSize.runBenchmark(endpoint).listen((result) {
+  await ImageSize.runBenchmark(
+    parsed['endpoint'],
+    parsed.rest.map(int.parse),
+    int.parse(parsed['max']),
+  ).listen((result) {
     print(result);
     results.add(result);
   }).asFuture();
