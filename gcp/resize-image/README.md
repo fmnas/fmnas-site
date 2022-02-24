@@ -49,3 +49,5 @@ curl -v -F height=200 -F 'image=@/path/to/in.jpg' http://localhost:50000 > out.j
 ```
 
 Or use the resize-image task in public/tester.php.
+
+There are blackbox tests for this in /tests/blackbox/test/resize_image_test.dart.

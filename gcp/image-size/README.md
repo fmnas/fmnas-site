@@ -98,3 +98,5 @@ curl -v -F 'image=@/path/to/in.jpg' http://localhost:50001
 ```
 
 Or use the image-size task in public/tester.php.
+
+There are blackbox tests for this in /tests/blackbox/test/image_size_test.dart.
