@@ -7,6 +7,8 @@ such as HEIC and WebP.
 
 I suggest running this with 4 vCPU / 8 GiB to prevent OOM and optimize performance.
 
+Performance is important here, as this blocks application submission after uploading attachments.
+
 
 ### Benchmark results in Docker container (local)
 
@@ -16,17 +18,33 @@ I suggest running this with 4 vCPU / 8 GiB to prevent OOM and optimize performan
 
 ### Benchmark results in Cloud Code container with 2 GiB RAM
 
-### Benchmark results on Cloud Run with 1 vCPU, 2 GiB RAM, concurrency limit 100
+```
+TODO
+```
 
 ### Benchmark results on Cloud Run with 2 vCPU, 4 GiB RAM, concurrency limit 100
 
 ```
+TODO
+```
 
+### Benchmark results on Cloud Run with 2 vCPU, 8 GiB RAM, concurrency limit 100
+
+```
+TODO
+```
+
+### Benchmark results on Cloud Run with 4 vCPU, 8 GiB RAM, concurrency limit 100
+
+```
+TODO
 ```
 
 ### Benchmark results in Docker container on GitHub Actions (used for regression tests)
 
+```
 TODO
+```
 
 ## Manual deployment
 

@@ -5,9 +5,10 @@ image formats such as HEIC and WebP.
 
 ## Resources
 
-I suggest running this with 2 vCPU / 4 GiB to prevent OOM.
+I suggest running this with 2 vCPU / 4 GiB / 100 concurrency to prevent OOM.
 
-Concurrency doesn't seem to be a concern with this configuration, based on the below results.
+Performance isn't a big concern here, as this doesn't block any user flows (assuming the async image tag generation
+is working right in the admin interface).
 
 ### Benchmark results in Docker container (local)
 
@@ -24,7 +25,9 @@ george.jpg  | 1.4 MB   | 4322x3289 | 1/1 in 78 ms, avg 78 ms (2.74 GB)     | 2/2
 
 ### Benchmark results in Cloud Code container with 2 GiB RAM
 
-
+```
+TODO
+```
 
 ### Benchmark results on Cloud Run with 1 vCPU, 2 GiB RAM, concurrency limit 50
 
@@ -37,6 +40,12 @@ train.heic  | 16.4 MB  | 9248x6936 | 1/1 in 10936 ms, avg 10936 ms | 2/2 in 2489
 litter.jpg  | 12.6 MB  | 8384x6035 | 1/1 in 1300 ms, avg 1300 ms   | 2/2 in 1361 ms, avg 1321 ms   | 5/5 in 2865 ms, avg 2440 ms   | 10/10 in 2877 ms, avg 2312 ms  | 25/25 in 5115 ms, avg 2793 ms   |              37
 dubai.heic  | 18.6 MB  | 9248x6936 | 1/1 in 11855 ms, avg 11855 ms | 2/2 in 26675 ms, avg 26394 ms | 5/5 in 26802 ms, avg 23323 ms | 7/10 in 26757 ms, avg 23895 ms | 10/25 in 29229 ms, avg 17208 ms |               8
 george.jpg  | 1.4 MB   | 4322x3289 | 1/1 in 546 ms, avg 546 ms     | 2/2 in 550 ms, avg 531 ms     | 5/5 in 890 ms, avg 761 ms     | 10/10 in 2460 ms, avg 1483 ms  | 25/25 in 5327 ms, avg 2925 ms   |              50
+```
+
+### Benchmark results on Cloud Run with 1 vCPU, 4 GiB RAM, concurrency limit 100
+
+```
+TODO
 ```
 
 ### Benchmark results on Cloud Run with 2 vCPU, 4 GiB RAM, concurrency limit 100
@@ -67,9 +76,28 @@ george.jpg  | 1.4 MB   | 4322x3289 | 1/1 in 561 ms, avg 561 ms   | 2/2 in 527 ms
 
 ### Benchmark results on Cloud Run with 4 vCPU, 8 GiB RAM, concurrency limit 100
 
+```
+Image       | Filesize | Size      | 1 requests                  | 2 requests                  | 5 requests                    | 10 requests                     | 25 requests                     | Est. max concurrency
+------------|----------|-----------|-----------------------------|-----------------------------|-------------------------------|---------------------------------|---------------------------------|---------------------
+puget.heic  | 16.7 MB  | 9248x6936 | 1/1 in 5124 ms, avg 5124 ms | 2/2 in 7639 ms, avg 7503 ms | 5/5 in 13839 ms, avg 11464 ms | 10/10 in 13844 ms, avg 11709 ms | 25/25 in 14300 ms, avg 10827 ms |                  100
+pigeons.jpg | 12.1 MB  | 4656x3492 | 1/1 in 623 ms, avg 623 ms   | 2/2 in 759 ms, avg 685 ms   | 5/5 in 877 ms, avg 667 ms     | 10/10 in 856 ms, avg 654 ms     | 25/25 in 1476 ms, avg 864 ms    |                  100
+train.heic  | 16.4 MB  | 9248x6936 | 1/1 in 4110 ms, avg 4110 ms | 2/2 in 6173 ms, avg 5936 ms | 5/5 in 11073 ms, avg 9343 ms  | 10/10 in 11984 ms, avg 7754 ms  | 25/25 in 15824 ms, avg 10076 ms |                   99
+litter.jpg  | 12.6 MB  | 8384x6035 | 1/1 in 1409 ms, avg 1409 ms | 2/2 in 1305 ms, avg 1267 ms | 5/5 in 1305 ms, avg 1251 ms   | 10/10 in 2345 ms, avg 1420 ms   | 25/25 in 2374 ms, avg 1553 ms   |                  100
+dubai.heic  | 18.6 MB  | 9248x6936 | 1/1 in 4660 ms, avg 4660 ms | 2/2 in 7689 ms, avg 7517 ms | 5/5 in 10958 ms, avg 8241 ms  | 10/10 in 11621 ms, avg 7250 ms  | 25/25 in 17138 ms, avg 10088 ms |                  100
+george.jpg  | 1.4 MB   | 4322x3289 | 1/1 in 499 ms, avg 499 ms   | 2/2 in 642 ms, avg 609 ms   | 5/5 in 593 ms, avg 501 ms     | 10/10 in 789 ms, avg 547 ms     | 25/25 in 926 ms, avg 674 ms     |                  100
+```
+
+### Benchmark results on Cloud Run with 4 vCPU, 16 GiB RAM, concurrency limit 100
+
+```
+TODO
+```
+
 ### Benchmark results in Docker container on GitHub Actions (used for regression tests)
 
-TODO (use 1, 2, and 3 requests)
+```
+TODO
+```
 
 
 ## Manual deployment
