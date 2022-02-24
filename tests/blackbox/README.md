@@ -11,8 +11,7 @@ Run all tests with `dart test`
 
 Tests /gcp/resize-image. Run with `dart test test/resize_image_test.dart`.
 
-If you must run with a non-default endpoint: `dart run test/resize_image_test.dart [endpoint]` though the output
-isn't as nice as `dart test`.
+To run with a non-default endpoint, set the `RESIZE_IMAGE_ENDPOINT` environment variable.
 
 #### Updating goldens
 
@@ -22,8 +21,7 @@ isn't as nice as `dart test`.
 
 Tests /gcp/image-size. Run with `dart test test/image_size_test.dart`.
 
-If you must run with a non-default endpoint: `dart run test/image_size_test.dart [endpoint]` though the output
-isn't as nice as `dart test`.
+To run with a non-default endpoint, set the `IMAGE_SIZE_ENDPOINT` environment variable.
 
 ## Benchmarks
 

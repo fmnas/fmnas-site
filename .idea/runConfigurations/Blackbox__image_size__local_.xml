@@ -1,0 +1,6 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Blackbox: image-size (local)" type="DartTestRunConfigurationType" factoryName="Dart Test">
+    <option name="filePath" value="$PROJECT_DIR$/tests/blackbox/test/image_size_test.dart" />
+    <method v="2" />
+  </configuration>
+</component>

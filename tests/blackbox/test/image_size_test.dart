@@ -15,7 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import 'package:args/args.dart';
+import 'dart:io';
+
 import 'package:test/test.dart';
 
 import '../bin/image_size.dart';
@@ -31,11 +32,9 @@ const imageSizes = {
   'callie.jpg': [800, 600],
 };
 
-void main([List<String>? args]) async {
-  final parser = ArgParser();
-  final positional = parser.parse(args ?? []).rest;
+void main() async {
   final endpoint =
-      positional.isEmpty ? ImageSize.defaultEndpoint : positional[0];
+      Platform.environment['IMAGE_SIZE_ENDPOINT'] ?? ImageSize.defaultEndpoint;
   final imageSize = ImageSize(endpoint);
 
   imageSizes.forEach((image, size) {
@@ -45,7 +44,7 @@ void main([List<String>? args]) async {
           await imageSize.request(ImageSize.generator('$imageDir/$image'));
       final responseSize = [response.data['width'], response.data['height']];
       expect(responseSize, equals(size));
-    });
+    }, timeout: Timeout(Duration(minutes: 2)));
   });
 
   // TODO [#381]: Add image-size failure tests.

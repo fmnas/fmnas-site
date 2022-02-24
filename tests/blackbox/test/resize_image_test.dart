@@ -33,9 +33,9 @@ void main([List<String>? args]) async {
   parser.addFlag('update', defaultsTo: false);
   final parsed = parser.parse(args ?? []);
   final update = parsed['update'];
-  final positional = parsed.rest;
-  final endpoint =
-      positional.isEmpty ? ResizeImage.defaultEndpoint : positional[0];
+
+  final endpoint = Platform.environment['RESIZE_IMAGE_ENDPOINT'] ??
+      ResizeImage.defaultEndpoint;
   final resizeImage = ResizeImage(endpoint);
 
   for (final image in Glob('$imageDir/*')
@@ -60,7 +60,7 @@ void main([List<String>? args]) async {
           tempFile.delete();
           expect(goldenBytes, equals(responseBytes));
         }
-      });
+      }, timeout: Timeout(Duration(minutes: 2)));
     }
 
     for (final filter in ResizeImage.filters) {
@@ -82,7 +82,7 @@ void main([List<String>? args]) async {
           tempFile.delete();
           expect(goldenBytes, equals(responseBytes));
         }
-      });
+      }, timeout: Timeout(Duration(minutes: 2)));
     }
   }
 

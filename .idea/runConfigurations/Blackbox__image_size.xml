@@ -1,8 +1,0 @@
-<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Blackbox: image-size" type="DartTestRunConfigurationType" factoryName="Dart Test">
-    <option name="filePath" value="$PROJECT_DIR$/tests/blackbox/test/image_size_test.dart" />
-    <method v="2">
-      <option name="RunConfigurationTask" enabled="true" run_configuration_name="Run image-size on port 50001" run_configuration_type="docker-deploy" />
-    </method>
-  </configuration>
-</component>

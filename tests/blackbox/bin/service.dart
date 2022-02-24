@@ -42,7 +42,9 @@ abstract class Service {
           receiveTimeout: 120000,
           responseType: type,
         )),
-        pid = enableMemory ? dockerPid(name) ?? nodePid(endpoint) : null;
+        pid = enableMemory ? dockerPid(name) ?? nodePid(endpoint) : null {
+    print('Connecting to $name at $endpoint');
+  }
 
   final String name;
   final String endpoint;

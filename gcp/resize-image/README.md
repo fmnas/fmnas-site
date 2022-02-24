@@ -168,18 +168,16 @@ TODO
 
 ### Filter benchmark results (local)
 
-```
 TODO
-```
 
 ### Filter benchmark results on Cloud Run with 2 vCPU, 8 GiB RAM, concurrency limit 100
 
-```
 TODO
-```
 
 ### Filter benchmark results in Docker container on GitHub Actions (used for regression tests)
 
-```
 TODO
-```
+
+### Subjective results of which filters are acceptable for application attachments
+
+TODO

@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Blackbox: resize-image (remote)" type="DartTestRunConfigurationType" factoryName="Dart Test">
+    <option name="envs">
+      <entry key="RESIZE_IMAGE_ENDPOINT" value="https://resize-image-test.gcp.forgetmenotshelter.org" />
+    </option>
+    <option name="filePath" value="$PROJECT_DIR$/tests/blackbox/test/resize_image_test.dart" />
+    <method v="2" />
+  </configuration>
+</component>
