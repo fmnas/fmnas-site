@@ -174,10 +174,36 @@ TODO
 
 TODO
 
-### Filter benchmark results in Docker container on GitHub Actions (used for regression tests)
-
-TODO
-
 ### Subjective results of which filters are acceptable for application attachments
 
-TODO
+| Filter         | puget.heic | pigeons.jpg | train.heic | litter.jpg | dubai.heic | george.jpg | callie.jpg |
+|----------------|------------|-------------|------------|------------|------------|------------|------------|
+| point          |            |             |            |            |            |            | ✔          |
+| box            | ✔          | ✔           |            | ✔          | ✔          | ✔          | ✔          |
+| triangle       | ✔          | ✔           | ✔          | ✔          | ✔          |            | ✔          |
+| hermite        | ✔          | ✔           | ✔          | ✔          | ✔          | ✔          | ✔          |
+| hanning        | ✔          | ✔           | ✔          | ✔          | ✔          | ✔          | ✔          |
+| hamming        | ✔          | ✔           | ✔          | ✔          | ✔          | ✔          | ✔          |
+| blackman       | ✔          | ✔           | ✔          | ✔          | ✔          | ✔          | ✔          |
+| gaussian       |            | ✔           |            |            |            |            |            |
+| quadratic      | ✔          |             | ✔          |            |            | ✔          | ✔          |
+| cubic          |            |             |            |            |            |            |            |
+| catrom         | ✔          | ✔           | ✔          | ✔          | ✔          | ✔          | ✔          |
+| mitchell       | ✔          | ✔           | ✔          |            | ✔          | ✔          | ✔          |
+| jinc           | ✔          | ✔           | ✔          |            | ✔          |            | ✔          |
+| sinc           | ✔          |             | ✔          |            |            | ✔          | ✔          |
+| sinc_fast      | ✔          |             | ✔          |            |            | ✔          | ✔          |
+| kaiser         | ✔          | ✔           | ✔          | ✔          | ✔          | ✔          | ✔          |
+| welsh          | ✔          | ✔           | ✔          | ✔          | ✔          | ✔          | ✔          |
+| parzen         | ✔          | ✔           | ✔          | ✔          | ✔          | ✔          | ✔          |
+| bohman         | ✔          | ✔           | ✔          | ✔          | ✔          | ✔          | ✔          |
+| bartlett       | ✔          | ✔           | ✔          | ✔          | ✔          | ✔          | ✔          |
+| lagrange       | ✔          | ✔           | ✔          | ✔          | ✔          | ✔          | ✔          |
+| lanczos        | ✔          | ✔           | ✔          | ✔          | ✔          | ✔          | ✔          |
+| lanczos_sharp  | ✔          | ✔           | ✔          | ✔          | ✔          | ✔          | ✔          |
+| lanczos2       | ✔          | ✔           | ✔          | ✔          | ✔          | ✔          | ✔          |
+| lanczos2_sharp | ✔          | ✔           | ✔          | ✔          | ✔          | ✔          | ✔          |
+| robidoux       | ✔          | ✔           | ✔          | ✔          | ✔          | ✔          | ✔          |
+| robidoux_sharp | ✔          | ✔           | ✔          | ✔          | ✔          | ✔          | ✔          |
+| cosine         | ✔          | ✔           | ✔          | ✔          | ✔          | ✔          | ✔          |
+| spline         | ✔          |             |            |            |            |            |            |
