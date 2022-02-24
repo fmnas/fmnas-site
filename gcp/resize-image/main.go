@@ -157,8 +157,6 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		filter = imagick.FILTER_COSINE
 	case "spline":
 		filter = imagick.FILTER_SPLINE
-	case "sentinel":
-		filter = imagick.FILTER_SENTINEL
 	default:
 		http.Error(w, fmt.Sprintf("Unrecognized filter %v", rf), http.StatusBadRequest)
 		log.Printf("Unrecognized filter %v", rf)

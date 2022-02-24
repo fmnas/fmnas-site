@@ -65,7 +65,6 @@ class ResizeImage extends Service {
     'robidoux_sharp',
     'cosine',
     'spline',
-    'sentinel',
   ];
 
   static Future<FormData> data(String file, int height, String? filter) async {
