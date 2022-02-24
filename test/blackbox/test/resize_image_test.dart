@@ -64,7 +64,7 @@ void main([List<String>? args]) async {
     }
   }
 
-  // TODO [$6216f33d397479000940d94f]: Add resize-image failure tests.
+  // TODO [#382]: Add resize-image failure tests.
 
-  // TODO [$6216f33d397479000940d950]: Test characteristics of the resized image.
+  // TODO [#383]: Test characteristics of the resized image.
 }
