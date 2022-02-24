@@ -24,6 +24,17 @@ class ImageResult {
   String size = '';
   String dimensions = '';
   ParallelResults parallel = ParallelResults();
+  dynamic group;
+
+  @override
+  String toString() {
+    var str = '$name ($size, $dimensions)\n';
+    parallel.columns.forEach((int count, ParallelResult result) {
+      str += '  $count requests: ${result.display}\n';
+    });
+    str += 'Est. max concurrency: ${parallel.parallelLimit}\n\n';
+    return str;
+  }
 
   static void printAll(Iterable<ImageResult> results) {
     final parallelColumns = results.first.parallel.columns.keys;

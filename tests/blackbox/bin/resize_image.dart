@@ -44,6 +44,35 @@ class ResizeImage extends Service {
   static Future<FormData> Function() generator(String file, int height) {
     return () async => await data(file, height);
   }
+
+  static Stream<ImageResult> runBenchmark(String endpoint) async* {
+    print('Benchmarking resize-image at $endpoint');
+    final resizeImage = ResizeImage(endpoint);
+    final imageSize = ImageSize(ImageSize.defaultEndpoint);
+    for (final height in heights) {
+      print('Results for output height $height');
+      for (final file
+      in Glob('../data/images/*').listFileSystemSync(LocalFileSystem())) {
+        await resizeImage.waitForService();
+        final result = ImageResult();
+        result.name = file.basename;
+        result.size = filesize(file.statSync().size, 1);
+        try {
+          final dimensions =
+          await imageSize.request(ImageSize.generator(file.path));
+          result.dimensions =
+          '${dimensions.data['width']}x${dimensions.data['height']}';
+        } on Exception {
+          // ignore
+        }
+        result.parallel = await resizeImage.benchmarkParallel(
+            ResizeImage.generator(file.path, height),
+            parallelColumns,
+            binarySearchLimit);
+        yield result;
+      }
+    }
+  }
 }
 
 void main(List<String> args) async {
@@ -51,33 +80,16 @@ void main(List<String> args) async {
   final positional = parser.parse(args).rest;
   final endpoint =
       positional.isEmpty ? ResizeImage.defaultEndpoint : positional[0];
-  print('Benchmarking resize-image at $endpoint');
-  final resizeImage = ResizeImage(endpoint);
-  final imageSize = ImageSize(ImageSize.defaultEndpoint);
-  final List<ImageResult> results = [];
 
-  for (final height in heights) {
-    print('Results for output height $height');
-    for (final file
-        in Glob('../data/images/*').listFileSystemSync(LocalFileSystem())) {
-      await resizeImage.waitForService();
-      final result = ImageResult();
-      result.name = file.basename;
-      result.size = filesize(file.statSync().size, 1);
-      try {
-        final dimensions =
-            await imageSize.request(ImageSize.generator(file.path));
-        result.dimensions =
-            '${dimensions.data['width']}x${dimensions.data['height']}';
-      } on Exception {
-        // ignore
-      }
-      result.parallel = await resizeImage.benchmarkParallel(
-          ResizeImage.generator(file.path, height),
-          parallelColumns,
-          binarySearchLimit);
-      results.add(result);
-    }
-    ImageResult.printAll(results);
-  }
+  final Map<int, List<ImageResult>> results = {};
+  ResizeImage.runBenchmark(endpoint).listen((result) {
+    print(result);
+    results[result.group] ??= [];
+    results[result.group]!.add(result);
+  });
+
+  results.forEach((group, values) {
+    print('\nResults for height $group:');
+    ImageResult.printAll(values);
+  });
 }

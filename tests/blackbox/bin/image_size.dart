@@ -40,7 +40,7 @@ class ImageSize extends Service {
     return () async => await data(file);
   }
 
-  static Future<Map<String, ImageResult>> runBenchmark(String endpoint) async {
+  static Stream<ImageResult> runBenchmark(String endpoint) async* {
     print('Benchmarking image-size at $endpoint');
     final imageSize = ImageSize(endpoint);
     final Map<String, ImageResult> results = {};
@@ -58,9 +58,8 @@ class ImageSize extends Service {
           parallelColumns,
           binarySearchLimit);
       results[file.basename] = result;
+      yield result;
     }
-
-    return results;
   }
 }
 
@@ -70,6 +69,10 @@ void main(List<String> args) async {
   final endpoint =
       positional.isEmpty ? ImageSize.defaultEndpoint : positional[0];
 
-  final results = await ImageSize.runBenchmark(endpoint);
-  ImageResult.printAll(results.values);
+  final List<ImageResult> results = [];
+  await ImageSize.runBenchmark(endpoint).listen((result) {
+    print(result);
+    results.add(result);
+  }).asFuture();
+  ImageResult.printAll(results);
 }
