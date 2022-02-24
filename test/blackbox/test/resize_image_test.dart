@@ -27,7 +27,7 @@ import 'package:test/test.dart';
 import '../bin/resize_image.dart';
 
 const imageDir = '../data/images';
-const heights = [64, 192, 300, 480, 2160, 4320, 10000];
+const heights = [64];
 
 void main([List<String>? args]) async {
   final parser = ArgParser();

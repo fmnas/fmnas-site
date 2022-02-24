@@ -2,7 +2,7 @@
   <configuration default="false" name="Run image-size on port 50001" type="docker-deploy" factoryName="dockerfile" server-name="Docker">
     <deployment type="dockerfile">
       <settings>
-        <option name="containerName" value="resize-image" />
+        <option name="containerName" value="image-size" />
         <option name="portBindings">
           <list>
             <DockerPortBindingImpl>

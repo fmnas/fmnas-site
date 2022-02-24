@@ -25,12 +25,12 @@ import 'image_size.dart';
 import 'results.dart';
 import 'service.dart';
 
-const parallelColumns = [1, 2];
+const parallelColumns = [1, 2, 3, 5];
 const heights = [64, 192, 300, 480, 2160, 4320, 10000];
-const binarySearchLimit = 5;
+const binarySearchLimit = 10;
 
 class ResizeImage extends Service {
-  ResizeImage(String endpoint) : super(endpoint, ResponseType.stream);
+  ResizeImage(String endpoint) : super(endpoint, 'resize-image', ResponseType.stream);
 
   static const defaultEndpoint = 'http://localhost:50000';
 
@@ -51,7 +51,7 @@ void main(List<String> args) async {
   final positional = parser.parse(args).rest;
   final endpoint =
       positional.isEmpty ? ResizeImage.defaultEndpoint : positional[0];
-  print('Benchmarking resize_image at $endpoint');
+  print('Benchmarking resize-image at $endpoint');
   final resizeImage = ResizeImage(endpoint);
   final imageSize = ImageSize(ImageSize.defaultEndpoint);
   final List<ImageResult> results = [];

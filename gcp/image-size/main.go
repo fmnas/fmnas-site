@@ -102,6 +102,5 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error writing response", http.StatusInternalServerError)
 		log.Printf("Error writing response: %v", err)
 	}
-
 	mw.Destroy()
 }

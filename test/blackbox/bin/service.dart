@@ -16,6 +16,7 @@
  */
 
 import 'dart:collection';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -30,20 +31,74 @@ class ParallelResult {
 class ParallelResults {
   SplayTreeMap<int, ParallelResult> columns = SplayTreeMap();
   int parallelLimit = 0;
+  int? memory;
 }
 
 class Service {
-  Service(this.endpoint, [ResponseType? type])
+  Service(this.endpoint, this.name, [ResponseType? type])
       : dio = Dio(BaseOptions(
           connectTimeout: 120000,
           receiveTimeout: 120000,
           responseType: type ?? ResponseType.json,
-        ));
+        )),
+        pid = dockerPid(name) ?? nodePid(endpoint);
 
+  final String name;
   final String endpoint;
   final Dio dio;
+  final int? pid;
+  Process? monitor;
+
+  static int? dockerPid(String name) {
+    final command =
+        'docker top $name | awk \'{ print \$2 }\' | grep -v PID';
+    final String output = Process.runSync('bash', ['-c', command]).stdout;
+    final dockerPid = output.trim().isEmpty ? null : int.tryParse(output.trim());
+    print(dockerPid == null ? 'Didn\'t find Docker' : 'Found docker pid $dockerPid');
+    return dockerPid;
+  }
+
+  static int? nodePid(String endpoint) {
+    final port = Uri.parse(endpoint).port;
+    final command = "netstat -anp | perl -F'[/\\s]' -lane 'print \$F[-2] if /^tcp.+:$port.+LISTEN/'";
+    final String output = Process.runSync('bash', ['-c', command]).stdout;
+    final nodePid = output.trim().isEmpty ? null : int.tryParse(output.trim());
+    print(nodePid == null ? 'Didn\'t find Node' : 'Found node pid $nodePid');
+    return nodePid;
+  }
+
+  Future<void> startMemoryMonitoring() async {
+    if (pid == null) {
+      return;
+    }
+    final loop = 'while true; do ps -ho rss $pid; sleep 0.1; done';
+    monitor = await Process.start('bash', ['-c', loop]);
+  }
+
+  Future<int?> getPeakMemory() async {
+    if (monitor == null) {
+      return null;
+    }
+    monitor!.kill();
+    int maxMemory = 0;
+    await monitor!.stdout
+        .transform(const Utf8Decoder())
+        .transform(const LineSplitter())
+        .listen((line) {
+      final memory = int.tryParse(line);
+      if (memory != null && memory > maxMemory) {
+        maxMemory = memory;
+      }
+    }).asFuture();
+    monitor = null;
+    return maxMemory;
+  }
 
   Future<void> waitForService() async {
+    if (pid != null) {
+      // Wait for GC
+      sleep(Duration(seconds: 3));
+    }
     var down = true;
     while (down) {
       try {
@@ -91,7 +146,8 @@ class Service {
     // Benchmark with predefined parallelism values
     for (final parallelism in parallelColumns) {
       await waitForService();
-      print('Making $parallelism requests');
+      await startMemoryMonitoring();
+      print('Making $parallelism $name requests');
       final List<Future<Duration>> futures =
           List.generate(parallelism, (_) => benchmark(data), growable: false);
       var failed = 0;
@@ -117,9 +173,15 @@ class Service {
       if (failed > 0) {
         await waitForService();
       }
-      result.columns[parallelism] = ParallelResult(
-          '$succeeded/$parallelism in $maxDuration ms, avg ${totalDuration ~/ succeeded} ms',
-          failed > 0);
+      var display =
+          '$succeeded/$parallelism in $maxDuration ms, avg ${totalDuration ~/ succeeded} ms';
+      final memory = await getPeakMemory();
+      if (memory != null) {
+        final mb = memory ~/ 1024;
+        final displayMemory = mb > 1024 ? (mb / 1024).toStringAsFixed(2) + ' GB' : '$mb MB';
+        display += ' ($displayMemory)';
+      }
+      result.columns[parallelism] = ParallelResult(display, failed > 0);
     }
 
     // Binary search to estimate max concurrency
@@ -139,7 +201,7 @@ class Service {
       if (est == lower && est == upper - 1) {
         est++;
       }
-      print('Making $est requests (binary search)');
+      print('Making $est $name requests (binary search)');
       final List<Future<Response>> futures =
           List.generate(est, (_) => request(data), growable: false);
       var failed = false;
@@ -159,8 +221,6 @@ class Service {
       }
     }
     result.parallelLimit = lower;
-
-    // TODO: Measure Docker container memory usage.
 
     return result;
   }

@@ -30,6 +30,10 @@ isn't as nice as `dart test`.
 Run all benchmarks with `dart run`
 (this requires that all services are running on localhost on the default ports mentioned below).
 
+### Memory monitoring
+
+Memory monitoring depends on docker, netstat, grep, awk, and perl.
+
 ### resize_image
 
 Run with `dart run :resize_image [endpoint]`. The endpoint defaults to `http://localhost:50000`.

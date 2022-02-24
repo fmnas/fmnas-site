@@ -24,11 +24,11 @@ import 'package:glob/glob.dart';
 import 'results.dart';
 import 'service.dart';
 
-const parallelColumns = [1, 2, 3];
-const binarySearchLimit = 5;
+const parallelColumns = [1, 2, 3, 5];
+const binarySearchLimit = 10;
 
 class ImageSize extends Service {
-  ImageSize(String endpoint) : super(endpoint);
+  ImageSize(String endpoint) : super(endpoint, 'image-size');
 
   static const defaultEndpoint = 'http://localhost:50001';
 
@@ -46,7 +46,7 @@ void main(List<String> args) async {
   final positional = parser.parse(args).rest;
   final endpoint =
       positional.isEmpty ? ImageSize.defaultEndpoint : positional[0];
-  print('Benchmarking image_size at $endpoint');
+  print('Benchmarking image-size at $endpoint');
   final imageSize = ImageSize(endpoint);
   final List<ImageResult> results = [];
 
