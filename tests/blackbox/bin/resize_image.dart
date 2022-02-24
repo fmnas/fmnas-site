@@ -50,7 +50,7 @@ class ResizeImage extends Service {
     final resizeImage = ResizeImage(endpoint);
     final imageSize = ImageSize(ImageSize.defaultEndpoint);
     for (final height in heights) {
-      print('Results for output height $height');
+      print('Benchmarking height $height');
       for (final file
       in Glob('../data/images/*').listFileSystemSync(LocalFileSystem())) {
         await resizeImage.waitForService();
@@ -82,11 +82,11 @@ void main(List<String> args) async {
       positional.isEmpty ? ResizeImage.defaultEndpoint : positional[0];
 
   final Map<int, List<ImageResult>> results = {};
-  ResizeImage.runBenchmark(endpoint).listen((result) {
+  await ResizeImage.runBenchmark(endpoint).listen((result) {
     print(result);
     results[result.group] ??= [];
     results[result.group]!.add(result);
-  });
+  }).asFuture();
 
   results.forEach((group, values) {
     print('\nResults for height $group:');
