@@ -95,14 +95,13 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	imagick.Initialize()
 	defer imagick.Terminate()
-	omw := imagick.NewMagickWand()
-	if err := omw.ReadImageBlob(b); err != nil {
+	mw := imagick.NewMagickWand()
+	if err := mw.ReadImageBlob(b); err != nil {
 		http.Error(w, "Error reading image", http.StatusBadRequest)
 		log.Printf("Error reading image: %v", err)
 		return
 	}
 
-	mw := omw.Clone()
 	ow := mw.GetImageWidth()
 	oh := mw.GetImageHeight()
 	if oh < nh {
@@ -113,24 +112,28 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	if err := mw.ResizeImage(nw, nh, imagick.FILTER_LANCZOS); err != nil {
 		http.Error(w, "Error resizing image", http.StatusInternalServerError)
 		log.Printf("Error resizing image: %v", err)
+		mw.Destroy()
 		return
 	}
 
 	if err := mw.SetImageCompression(imagick.COMPRESSION_JPEG); err != nil {
 		http.Error(w, "Error setting compression type", http.StatusInternalServerError)
 		log.Printf("Error setting compression type: %v", err)
+		mw.Destroy()
 		return
 	}
 
 	if err := mw.SetImageCompressionQuality(90); err != nil {
 		http.Error(w, "Error setting compression quality", http.StatusInternalServerError)
 		log.Printf("Error setting compression quality: %v", err)
+		mw.Destroy()
 		return
 	}
 
 	if err := mw.SetFormat("jpg"); err != nil {
 		http.Error(w, "Error setting format", http.StatusInternalServerError)
 		log.Printf("Error setting format: %v", err)
+		mw.Destroy()
 		return
 	}
 
@@ -142,4 +145,5 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error writing response", http.StatusInternalServerError)
 		log.Printf("Error writing response: %v", err)
 	}
+	mw.Destroy()
 }
