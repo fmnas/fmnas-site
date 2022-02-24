@@ -5,9 +5,8 @@ image formats such as HEIC and WebP.
 
 ## Resources
 
-This can be memory-intensive with large images, so keep the concurrency low.
-
-I suggest running this with 2 vCPU / 4 GiB / 4 concurrency to reduce OOM and optimize costs.
+I suggest running this with 2 vCPU / 4 GiB to prevent OOM. Google seems to handle large concurrency values well - this
+scales to 20+ instances when making 100 simultaneous requests to resize a large image.
 
 ### Benchmark results in Docker container
 
@@ -22,37 +21,15 @@ dubai.heic  | 18.6 MB  | 9248x6936 | 1/1 in 2107 ms, avg 2107 ms (1.43 GB) | 2/2
 george.jpg  | 1.4 MB   | 4322x3289 | 1/1 in 115 ms, avg 115 ms (1.07 GB)   | 2/2 in 116 ms, avg 116 ms (971 MB)    | 3/3 in 119 ms, avg 118 ms (985 MB)    | 5/5 in 113 ms, avg 112 ms (977 MB)    |                   10
 ```
 
-### Benchmark results in Cloud Code container
+### Benchmark results in Cloud Code container with 2 GiB RAM
 
-(outdated)
 
-```
-Image       | Filesize | Size      | 1x                          | 2x                      | 3x                      | Est. max concurrency
-------------|----------|-----------|-----------------------------|-------------------------|-------------------------|---------------------
-puget.heic  | 16.7 MB  | 9248x6936 | 1/1 in 2358 ms, avg 2358 ms | 0/2 in 0 ms, avg NaN ms | 0/3 in 0 ms, avg NaN ms |                    1
-pigeons.jpg | 12.1 MB  | 4656x3492 | 1/1 in 228 ms, avg 228 ms   | 0/2 in 0 ms, avg NaN ms | 0/3 in 0 ms, avg NaN ms |                    1
-train.heic  | 16.4 MB  | 9248x6936 | 1/1 in 2386 ms, avg 2386 ms | 0/2 in 0 ms, avg NaN ms | 0/3 in 0 ms, avg NaN ms |                    1
-litter.jpg  | 12.6 MB  | 8384x6035 | 1/1 in 398 ms, avg 398 ms   | 0/2 in 0 ms, avg NaN ms | 0/3 in 0 ms, avg NaN ms |                    1
-george.heif | 3.6 MB   | 4624x3468 | 1/1 in 519 ms, avg 519 ms   | 0/2 in 0 ms, avg NaN ms | 0/3 in 0 ms, avg NaN ms |                    1
-dubai.heic  | 18.6 MB  | 9248x6936 | 1/1 in 2675 ms, avg 2675 ms | 0/2 in 0 ms, avg NaN ms | 0/3 in 0 ms, avg NaN ms |                    1
-```
 
-### Benchmark results on Cloud Run with 1 vCPU, 2 GiB RAM
+### Benchmark results on Cloud Run with 1 vCPU, 2 GiB RAM per container
 
-(outdated)
 
-```
-Image       | Filesize | Size      | 1 requests                    | 2 requests                    | 3 requests                  | Est. max concurrency
-------------|----------|-----------|-------------------------------|-------------------------------|-----------------------------|---------------------
-puget.heic  | 16.7 MB  | 9248x6936 | 1/1 in 10105 ms, avg 10105 ms | 2/2 in 12301 ms, avg 11239 ms | 0/3 in 0 ms, avg NaN ms     |                    2
-pigeons.jpg | 12.1 MB  | 4656x3492 | 1/1 in 779 ms, avg 779 ms     | 0/2 in 0 ms, avg NaN ms       | 0/3 in 0 ms, avg NaN ms     |                    1
-train.heic  | 16.4 MB  | 9248x6936 | 1/1 in 12159 ms, avg 12159 ms | 0/2 in 0 ms, avg NaN ms       | 0/3 in 0 ms, avg NaN ms     |                    1
-litter.jpg  | 12.6 MB  | 8384x6035 | 1/1 in 1364 ms, avg 1364 ms   | 2/2 in 1279 ms, avg 1256 ms   | 1/3 in 1326 ms, avg 1326 ms |                    2
-george.heif | 3.6 MB   | 4624x3468 | 1/1 in 2983 ms, avg 2983 ms   | 2/2 in 63078 ms, avg 33012 ms | 1/3 in 2771 ms, avg 2771 ms |                    2
-dubai.heic  | 18.6 MB  | 9248x6936 | 1/1 in 12796 ms, avg 12796 ms | 0/2 in 0 ms, avg NaN ms       | 0/3 in 0 ms, avg NaN ms     |                    1
-```
 
-### Benchmark results on Cloud Run with 2 vCPU, 4 GiB RAM
+### Benchmark results on Cloud Run with 2 vCPU, 4 GiB RAM per container
 
 ```
 

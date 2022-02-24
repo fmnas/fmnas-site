@@ -24,8 +24,8 @@ import 'package:glob/glob.dart';
 import 'results.dart';
 import 'service.dart';
 
-const parallelColumns = [1, 2, 3, 5];
-const binarySearchLimit = 10;
+const parallelColumns = [1, 2, 5, 10, 25];
+const binarySearchLimit = 100;
 
 class ImageSize extends Service {
   ImageSize(String endpoint) : super(endpoint, 'image-size');
@@ -39,6 +39,29 @@ class ImageSize extends Service {
   static Future<FormData> Function() generator(String file) {
     return () async => await data(file);
   }
+
+  static Future<Map<String, ImageResult>> runBenchmark(String endpoint) async {
+    print('Benchmarking image-size at $endpoint');
+    final imageSize = ImageSize(endpoint);
+    final Map<String, ImageResult> results = {};
+
+    for (final file
+    in Glob('../data/images/*').listFileSystemSync(LocalFileSystem())) {
+      await imageSize.waitForService();
+      final result = ImageResult();
+      result.name = file.basename;
+      result.size = filesize(file.statSync().size, 1);
+      final response = await imageSize.request(ImageSize.generator(file.path));
+      result.dimensions = '${response.data['width']}x${response.data['height']}';
+      result.parallel = await imageSize.benchmarkParallel(
+          ImageSize.generator(file.path),
+          parallelColumns,
+          binarySearchLimit);
+      results[file.basename] = result;
+    }
+
+    return results;
+  }
 }
 
 void main(List<String> args) async {
@@ -46,24 +69,7 @@ void main(List<String> args) async {
   final positional = parser.parse(args).rest;
   final endpoint =
       positional.isEmpty ? ImageSize.defaultEndpoint : positional[0];
-  print('Benchmarking image-size at $endpoint');
-  final imageSize = ImageSize(endpoint);
-  final List<ImageResult> results = [];
 
-  for (final file
-      in Glob('../data/images/*').listFileSystemSync(LocalFileSystem())) {
-    await imageSize.waitForService();
-    final result = ImageResult();
-    result.name = file.basename;
-    result.size = filesize(file.statSync().size, 1);
-    final response = await imageSize.request(ImageSize.generator(file.path));
-    result.dimensions = '${response.data['width']}x${response.data['height']}';
-    result.parallel = await imageSize.benchmarkParallel(
-        ImageSize.generator(file.path),
-        parallelColumns,
-        binarySearchLimit);
-    results.add(result);
-  }
-
-  ImageResult.printAll(results);
+  final results = await ImageSize.runBenchmark(endpoint);
+  ImageResult.printAll(results.values);
 }

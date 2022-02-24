@@ -25,8 +25,8 @@ class ImageResult {
   String dimensions = '';
   ParallelResults parallel = ParallelResults();
 
-  static void printAll(List<ImageResult> results) {
-    final parallelColumns = results[0].parallel.columns.keys;
+  static void printAll(Iterable<ImageResult> results) {
+    final parallelColumns = results.first.parallel.columns.keys;
     final headers = [
       'Image',
       'Filesize',

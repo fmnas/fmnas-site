@@ -53,18 +53,18 @@ class Service {
     final command =
         'docker top $name | awk \'{ print \$2 }\' | grep -v PID';
     final String output = Process.runSync('bash', ['-c', command]).stdout;
-    final dockerPid = output.trim().isEmpty ? null : int.tryParse(output.trim());
-    print(dockerPid == null ? 'Didn\'t find Docker' : 'Found docker pid $dockerPid');
-    return dockerPid;
+    final pid = output.trim().isEmpty ? null : int.tryParse(output.trim());
+    print(pid == null ? 'Didn\'t find Docker $name' : 'Found docker pid $pid');
+    return pid;
   }
 
   static int? nodePid(String endpoint) {
     final port = Uri.parse(endpoint).port;
     final command = "netstat -anp | perl -F'[/\\s]' -lane 'print \$F[-2] if /^tcp.+:$port.+LISTEN/'";
     final String output = Process.runSync('bash', ['-c', command]).stdout;
-    final nodePid = output.trim().isEmpty ? null : int.tryParse(output.trim());
-    print(nodePid == null ? 'Didn\'t find Node' : 'Found node pid $nodePid');
-    return nodePid;
+    final pid = output.trim().isEmpty ? null : int.tryParse(output.trim());
+    print(pid == null ? 'Didn\'t find Node $endpoint' : 'Found node pid $pid');
+    return pid;
   }
 
   Future<void> startMemoryMonitoring() async {
@@ -197,7 +197,7 @@ class Service {
     });
     while (lower < upper) {
       await waitForService();
-      int est = (lower + upper) ~/ 2;
+      int est = upper == binarySearchLimit ? upper : (lower + upper) ~/ 2;
       if (est == lower && est == upper - 1) {
         est++;
       }
