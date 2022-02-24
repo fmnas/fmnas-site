@@ -22,6 +22,8 @@ george.jpg  | 1.4 MB   | 4322x3289 | 1/1 in 115 ms, avg 115 ms (1.07 GB)   | 2/2
 
 ### Benchmark results in Cloud Code container
 
+(outdated)
+
 ```
 Image       | Filesize | Size      | 1x                          | 2x                      | 3x                      | Est. max concurrency
 ------------|----------|-----------|-----------------------------|-------------------------|-------------------------|---------------------
@@ -34,6 +36,8 @@ dubai.heic  | 18.6 MB  | 9248x6936 | 1/1 in 2675 ms, avg 2675 ms | 0/2 in 0 ms, 
 ```
 
 ### Benchmark results on Cloud Run with 1 vCPU, 2 GiB RAM
+
+(outdated)
 
 ```
 Image       | Filesize | Size      | 1 requests                    | 2 requests                    | 3 requests                  | Est. max concurrency
@@ -48,6 +52,9 @@ dubai.heic  | 18.6 MB  | 9248x6936 | 1/1 in 12796 ms, avg 12796 ms | 0/2 in 0 ms
 
 ### Benchmark results on Cloud Run with 2 vCPU, 4 GiB RAM
 
+```
+
+```
 
 ## Manual deployment
 
