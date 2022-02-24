@@ -33,7 +33,7 @@ void main([List<String>? args]) async {
     print('Benchmarking filter $filter');
     await ResizeImage.runBenchmark(
       endpoint: parsed['endpoint'],
-      parallelColumns: [1],
+      parallelColumns: [5],
       heights: [int.parse(parsed['height'])],
       binarySearchLimit: 1,
       enableMemory: !parsed['no-memory'],
