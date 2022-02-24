@@ -12,6 +12,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Dockerfile for Docker Compose tests. Not required for local development or deployment.
+
 FROM node:lts AS node
 WORKDIR /fmnas
 

@@ -29,7 +29,7 @@ void main([List<String>? args]) async {
   final parsed = parser.parse(args ?? []);
 
   final Map<String, List<ImageResult>> results = {};
-  for (String filter in ResizeImage.filters) {
+  for (final filter in ResizeImage.filters) {
     print('Benchmarking filter $filter');
     await ResizeImage.runBenchmark(
       endpoint: parsed['endpoint'],
