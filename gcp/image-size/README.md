@@ -19,6 +19,12 @@ gcloud artifacts docker images list us-central1-docker.pkg.dev/fmnas-automation/
 
 ## Running locally
 
+### With Docker
+
+Cloud Code extension containers are limited to 2 GiB RAM and crash readily if there are many concurrent requests.
+In lieu of local load balancing between containers, you can instead use "Run image-size on port 50001" or
+`docker run -p 50001:8080 image-size` to run a single container with unlimited resources.
+
 ### With Cloud Code
 
 The "Run image-size" IntelliJ run configuration uses the Cloud Code extension to run the service.
@@ -29,10 +35,6 @@ setting the dependency paths manually in the extension settings.
 This uses an automatically selected ephemeral port. To forward a specific port to the service, use
 `kubectl port-forward service/image-size $PORT:8080`. Another IntelliJ run configuration is included to forward
 port 50001 to image-size. This must be run while image-size is running.
-
-### With Docker
-
-`docker run -p 50001:8080 image-size`
 
 ### Testing
 
