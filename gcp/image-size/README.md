@@ -26,8 +26,16 @@ george.jpg  | 1.4 MB   | 4322x3289 | 1/1 in 78 ms, avg 78 ms (2.74 GB)     | 2/2
 
 
 ### Benchmark results on Cloud Run with 1 vCPU, 2 GiB RAM, concurrency limit 100
-
-
+```
+Image       | Filesize | Size      | 1 requests                    | 2 requests                    | 5 requests                    | 10 requests                    | 25 requests                     | Est. max concurrency
+------------|----------|-----------|-------------------------------|-------------------------------|-------------------------------|--------------------------------|---------------------------------|---------------------
+puget.heic  | 16.7 MB  | 9248x6936 | 1/1 in 11964 ms, avg 11964 ms | 2/2 in 26310 ms, avg 26100 ms | 2/5 in 12877 ms, avg 12725 ms | 2/10 in 12871 ms, avg 12256 ms | 10/25 in 29029 ms, avg 16585 ms |                    4
+pigeons.jpg | 12.1 MB  | 4656x3492 | 1/1 in 679 ms, avg 679 ms     | 2/2 in 717 ms, avg 703 ms     | 5/5 in 791 ms, avg 706 ms     | 10/10 in 2063 ms, avg 1102 ms  | 25/25 in 3147 ms, avg 1701 ms   |                   50
+train.heic  | 16.4 MB  | 9248x6936 | 1/1 in 10936 ms, avg 10936 ms | 2/2 in 24896 ms, avg 24635 ms | 5/5 in 25948 ms, avg 22473 ms | 6/10 in 25438 ms, avg 16789 ms | 9/25 in 28717 ms, avg 17254 ms  |                    8
+litter.jpg  | 12.6 MB  | 8384x6035 | 1/1 in 1300 ms, avg 1300 ms   | 2/2 in 1361 ms, avg 1321 ms   | 5/5 in 2865 ms, avg 2440 ms   | 10/10 in 2877 ms, avg 2312 ms  | 25/25 in 5115 ms, avg 2793 ms   |                   37
+dubai.heic  | 18.6 MB  | 9248x6936 | 1/1 in 11855 ms, avg 11855 ms | 2/2 in 26675 ms, avg 26394 ms | 5/5 in 26802 ms, avg 23323 ms | 7/10 in 26757 ms, avg 23895 ms | 10/25 in 29229 ms, avg 17208 ms |                    8
+george.jpg  | 1.4 MB   | 4322x3289 | 1/1 in 546 ms, avg 546 ms     | 2/2 in 550 ms, avg 531 ms     | 5/5 in 890 ms, avg 761 ms     | 10/10 in 2460 ms, avg 1483 ms  | 25/25 in 5327 ms, avg 2925 ms   |                   50
+```
 
 ### Benchmark results on Cloud Run with 2 vCPU, 4 GiB RAM, concurrency limit 100
 
