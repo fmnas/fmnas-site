@@ -17,8 +17,6 @@ gcloud artifacts docker images list us-central1-docker.pkg.dev/fmnas-automation/
   us-central1-docker.pkg.dev/fmnas-automation/image-size-docker/image-size@%
 ```
 
-I suggest running this with 1 vCPU / 2 GiB / 4 concurrency to reduce OOM and optimize costs.
-
 ## Running locally
 
 ### With Cloud Code
