@@ -67,14 +67,14 @@ class ImageSize extends Service {
   }
 }
 
-void main(List<String> args) async {
+void main([List<String>? args]) async {
   final parser = ArgParser();
   parser.addOption('endpoint',
       abbr: 'e', defaultsTo: ImageSize.defaultEndpoint);
   parser.addOption('max',
       abbr: 'n', defaultsTo: ImageSize.defaultBinarySearchLimit.toString());
   parser.addFlag('no-memory');
-  final parsed = parser.parse(args);
+  final parsed = parser.parse(args ?? []);
   final List<ImageResult> results = [];
   await ImageSize.runBenchmark(
     parsed['endpoint'],

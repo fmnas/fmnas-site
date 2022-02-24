@@ -16,7 +16,9 @@
  */
 
 import 'image_size.dart' as image_size;
+import 'resize_image.dart' as resize_image;
 
 void main() {
-  image_size.main([]);
+  image_size.main();
+  resize_image.main();
 }

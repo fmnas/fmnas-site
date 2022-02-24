@@ -81,7 +81,7 @@ class ResizeImage extends Service {
   }
 }
 
-void main(List<String> args) async {
+void main([List<String>? args]) async {
   final parser = ArgParser();
   parser.addOption('endpoint',
       abbr: 'e', defaultsTo: ResizeImage.defaultEndpoint);
@@ -91,7 +91,7 @@ void main(List<String> args) async {
       abbr: 'h',
       defaultsTo: ResizeImage.defaultHeights.map((h) => h.toString()));
   parser.addFlag('no-memory');
-  final parsed = parser.parse(args);
+  final parsed = parser.parse(args ?? []);
   final Iterable<String> heights = parsed['height'];
 
   final Map<int, List<ImageResult>> results = {};
