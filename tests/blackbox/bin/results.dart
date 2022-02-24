@@ -32,7 +32,7 @@ class ImageResult {
     parallel.columns.forEach((int count, ParallelResult result) {
       str += '  $count requests: ${result.display}\n';
     });
-    str += 'Est. max concurrency: ${parallel.parallelLimit}\n\n';
+    str += 'Max concurrency: ${parallel.parallelLimit}\n\n';
     return str;
   }
 
@@ -43,7 +43,7 @@ class ImageResult {
       'Filesize',
       'Size',
       ...parallelColumns.map((int parallelism) => '$parallelism requests'),
-      'Est. max concurrency'
+      'Max concurrency'
     ];
     print(tabular([
       headers,

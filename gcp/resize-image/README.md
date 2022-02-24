@@ -5,9 +5,8 @@ such as HEIC and WebP.
 
 ## Resources
 
-This can be memory-intensive with large images, so keep the concurrency low.
+I suggest running this with 4 vCPU / 8 GiB to prevent OOM and optimize performance.
 
-I suggest running this with 2 vCPU / 4 GiB / 4 concurrency to reduce OOM and optimize costs.
 
 ### Benchmark results in Docker container (local)
 
@@ -20,6 +19,10 @@ I suggest running this with 2 vCPU / 4 GiB / 4 concurrency to reduce OOM and opt
 ### Benchmark results on Cloud Run with 1 vCPU, 2 GiB RAM, concurrency limit 100
 
 ### Benchmark results on Cloud Run with 2 vCPU, 4 GiB RAM, concurrency limit 100
+
+```
+
+```
 
 ### Benchmark results in Docker container on GitHub Actions (used for regression tests)
 
