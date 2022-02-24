@@ -5,7 +5,9 @@ image formats such as HEIC and WebP.
 
 ## Resources
 
-I suggest running this with 2 vCPU / 4 GiB / 4 concurrency to reduce OOM and optimize costs in the face of large HEIC files.
+This can be memory-intensive with large images, so keep the concurrency low.
+
+I suggest running this with 2 vCPU / 4 GiB / 4 concurrency to reduce OOM and optimize costs.
 
 ### Benchmark results in Docker container
 

@@ -35,16 +35,12 @@ G
 gcp/print-pdf/README.md,7/7/779ea0c4cb4255f2f5145f1beb16c1642f1e3663
 I
 gcp/minify-html/README.md,9/9/99f6785dea01b27aa689073c75bd44117d35e9ea
-F
-.github/dependabot.yml,0/9/091aff741808a09242f252264b14f4a9adaa5305
 G
 src/Form/SMTPConfig.php,1/d/1d5fbf1ef05c3e8306c91e89fd879827022fdd09
 G
 src/Form/FormConfig.php,2/5/250b6c647e0ad47aace24ad43989341d59f8da83
 J
 admin/api/regen_images.php,9/9/99bd598ebb509034762a021d9232565896a54e9b
-J
-gcp/resize-image/README.md,3/b/3b4ec8d289ffaed30f8f81a719c4bf113ea2cd4f
 K
 gcp/resize-image/Dockerfile,8/f/8f8fd07f4d92109f39526b6d5413aaab134a8fcf
 L

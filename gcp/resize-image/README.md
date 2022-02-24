@@ -7,8 +7,6 @@ such as HEIC and WebP.
 
 This can be memory-intensive with large images, so keep the concurrency low.
 
-To optimize billing for Google Cloud Run free tier, RAM should be 2 \* vCPU.
-
 I suggest running this with 2 vCPU / 4 GiB / 4 concurrency to reduce OOM and optimize costs.
 
 ## Manual deployment
