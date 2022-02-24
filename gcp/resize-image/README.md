@@ -60,7 +60,7 @@ There are benchmarks for this at /tests/blackbox/bin/resize_image.dart and /test
 ### Benchmark results in Docker container (local), default filter
 
 ```
-
+TODO
 ```
 
 ### Benchmark results in Cloud Code container with 2 GiB RAM, default filter
@@ -161,7 +161,13 @@ TODO
 TODO
 ```
 
-### Benchmark results in Docker container on GitHub Actions (used for regression tests), default filter
+### Benchmark results in Docker container on GitHub Actions (used for regression tests), lanczos
+
+```
+TODO
+```
+
+### Benchmark results in Docker container on GitHub Actions (used for regression tests), hermite
 
 ```
 TODO
