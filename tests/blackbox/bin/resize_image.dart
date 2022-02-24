@@ -31,9 +31,9 @@ class ResizeImage extends Service {
             type: ResponseType.stream, enableMemory: enableMemory);
 
   static const defaultEndpoint = 'http://localhost:50000';
-  static const defaultParallelColumns = [1, 2, 5, 10];
+  static const defaultParallelColumns = [1, 2, 5, 10, 25];
   static const defaultHeights = [64, 192, 300, 480, 2160, 4320, 100000];
-  static const defaultBinarySearchLimit = 10;
+  static const defaultBinarySearchLimit = 25;
 
   static Future<FormData> data(String file, int height) async {
     return FormData.fromMap({

@@ -38,6 +38,10 @@ Memory monitoring depends on docker, netstat, grep, awk, and perl.
 
 Run with `dart run :resize_image`.
 
+Note that when running against a local docker container, this will use a LOT of memory and perhaps crash everything.
+You can limit this with the parallel requests arguments. See the benchmark results in the resize-image docs for
+estimated memory usage.
+
 #### Arguments
 
 * Endpoint (`--endpoint`, `-e`): defaults to `http://localhost:50000`.
