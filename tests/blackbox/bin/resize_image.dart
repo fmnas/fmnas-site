@@ -26,14 +26,14 @@ import 'results.dart';
 import 'service.dart';
 
 class ResizeImage extends Service {
-  ResizeImage(String endpoint, [bool enableMemory = true])
+  ResizeImage(String endpoint, {bool enableMemory = true})
       : super(endpoint, 'resize-image',
             type: ResponseType.stream, enableMemory: enableMemory);
 
   static const defaultEndpoint = 'http://localhost:50000';
   static const defaultParallelColumns = [1, 2, 5, 10, 25];
   static const defaultHeights = [64, 192, 300, 480, 2160, 4320, 100000];
-  static const defaultBinarySearchLimit = 50;
+  static const defaultBinarySearchLimit = 25;
 
   static Future<FormData> data(String file, int height) async {
     return FormData.fromMap({
@@ -46,14 +46,15 @@ class ResizeImage extends Service {
     return () async => await data(file, height);
   }
 
-  static Stream<ImageResult> runBenchmark(String endpoint,
-      [Iterable<int> parallelColumns = defaultParallelColumns,
+  static Stream<ImageResult> runBenchmark(
+      {String endpoint = defaultEndpoint,
+      Iterable<int> parallelColumns = defaultParallelColumns,
       Iterable<int> heights = defaultHeights,
       int binarySearchLimit = defaultBinarySearchLimit,
-      bool enableMemory = true]) async* {
+      bool enableMemory = true}) async* {
     print('Benchmarking resize-image at $endpoint');
-    final resizeImage = ResizeImage(endpoint);
-    final imageSize = ImageSize(ImageSize.defaultEndpoint);
+    final resizeImage = ResizeImage(endpoint, enableMemory: enableMemory);
+    final imageSize = ImageSize(ImageSize.defaultEndpoint, enableMemory: false);
     for (final height in heights) {
       print('Benchmarking height $height');
       for (final file
@@ -96,11 +97,11 @@ void main([List<String>? args]) async {
 
   final Map<int, List<ImageResult>> results = {};
   await ResizeImage.runBenchmark(
-    parsed['endpoint'],
-    parsed.rest.map(int.parse),
-    heights.map(int.parse),
-    int.parse(parsed['max']),
-    !parsed['no-memory'],
+    endpoint: parsed['endpoint'],
+    parallelColumns: parsed.rest.map(int.parse),
+    heights: heights.map(int.parse),
+    binarySearchLimit: int.parse(parsed['max']),
+    enableMemory: !parsed['no-memory'],
   ).listen((result) {
     print(result);
     results[result.group] ??= [];

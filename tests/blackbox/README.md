@@ -53,6 +53,6 @@ Run with `dart run :image_size`.
 #### Arguments
 
 * Endpoint (`--endpoint`, `-e`): defaults to `http://localhost:50000`.
-* Concurrency search limit (`--max`, `-n`): defaults to 50.
+* Concurrency search limit (`--max`, `-n`): defaults to 25.
 * Parallel requests (positional arguments): defaults to `1 2 5 10 25`.
 * Disable memory profiling (`--no-memory`)

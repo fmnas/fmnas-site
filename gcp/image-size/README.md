@@ -71,6 +71,8 @@ george.jpg  | 1.4 MB   | 4322x3289 | 1/1 in 561 ms, avg 561 ms   | 2/2 in 527 ms
 
 ### Benchmark results in Docker container on GitHub Actions (used for regression tests)
 
+TODO (use 1, 2, and 3 requests)
+
 
 ## Manual deployment
 

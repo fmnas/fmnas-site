@@ -25,7 +25,7 @@ import 'results.dart';
 import 'service.dart';
 
 class ImageSize extends Service {
-  ImageSize(String endpoint, [bool enableMemory = true])
+  ImageSize(String endpoint, {bool enableMemory = true})
       : super(endpoint, 'image-size', enableMemory: enableMemory);
 
   static const defaultEndpoint = 'http://localhost:50001';
@@ -40,12 +40,13 @@ class ImageSize extends Service {
     return () async => await data(file);
   }
 
-  static Stream<ImageResult> runBenchmark(String endpoint,
-      [Iterable<int> parallelColumns = defaultParallelColumns,
+  static Stream<ImageResult> runBenchmark(
+      {String endpoint = defaultEndpoint,
+      Iterable<int> parallelColumns = defaultParallelColumns,
       int binarySearchLimit = defaultBinarySearchLimit,
-      bool enableMemory = true]) async* {
+      bool enableMemory = true}) async* {
     print('Benchmarking image-size at $endpoint');
-    final imageSize = ImageSize(endpoint);
+    final imageSize = ImageSize(endpoint, enableMemory: enableMemory);
     final Map<String, ImageResult> results = {};
 
     for (final file
@@ -73,14 +74,14 @@ void main([List<String>? args]) async {
       abbr: 'e', defaultsTo: ImageSize.defaultEndpoint);
   parser.addOption('max',
       abbr: 'n', defaultsTo: ImageSize.defaultBinarySearchLimit.toString());
-  parser.addFlag('no-memory');
+  parser.addFlag('no-memory', defaultsTo: false);
   final parsed = parser.parse(args ?? []);
   final List<ImageResult> results = [];
   await ImageSize.runBenchmark(
-    parsed['endpoint'],
-    parsed.rest.map(int.parse),
-    int.parse(parsed['max']),
-    !parsed['no-memory'],
+    endpoint: parsed['endpoint'],
+    parallelColumns: parsed.rest.map(int.parse),
+    binarySearchLimit: int.parse(parsed['max']),
+    enableMemory: !parsed['no-memory'],
   ).listen((result) {
     print(result);
     results.add(result);
