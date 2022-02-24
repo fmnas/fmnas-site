@@ -256,3 +256,6 @@ composer.phar
 
 # Nano
 *.swp
+
+
+.idea/sonarlint
