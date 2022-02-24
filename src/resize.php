@@ -79,7 +79,38 @@ function size(string $path): array {
  * @throws ImageResizeException
  */
 // TODO [#279]: Parallel resizing is much slower than it should be.
-function resizeMultiple(array $files): array {
+function resizeMultiple(array $files, int $filter = Imagick::FILTER_LANCZOS): array {
+	$filters = [
+			Imagick::FILTER_POINT => 'point',
+			Imagick::FILTER_BOX => 'box',
+			Imagick::FILTER_TRIANGLE => 'triangle',
+			Imagick::FILTER_HERMITE => 'hermite',
+			Imagick::FILTER_HANNING => 'hanning',
+			Imagick::FILTER_HAMMING => 'hamming',
+			Imagick::FILTER_BLACKMAN => 'blackman',
+			Imagick::FILTER_GAUSSIAN => 'gaussian',
+			Imagick::FILTER_QUADRATIC => 'quadratic',
+			Imagick::FILTER_CUBIC => 'cubic',
+			Imagick::FILTER_CATROM => 'catrom',
+			Imagick::FILTER_MITCHELL => 'mitchell',
+			Imagick::FILTER_JINC => 'jinc',
+			Imagick::FILTER_SINC => 'sinc',
+			Imagick::FILTER_SINCFAST => 'sinc_fast',
+			Imagick::FILTER_KAISER => 'kaiser',
+			Imagick::FILTER_WELSH => 'welsh',
+			Imagick::FILTER_PARZEN => 'parzen',
+			Imagick::FILTER_BOHMAN => 'bohman',
+			Imagick::FILTER_BARTLETT => 'bartlett',
+			Imagick::FILTER_LAGRANGE => 'lagrange',
+			Imagick::FILTER_LANCZOS => 'lanczos',
+			Imagick::FILTER_LANCZOSSHARP => 'lanczos_sharp',
+			Imagick::FILTER_LANCZOS2 => 'lanczos2',
+			Imagick::FILTER_LANCZOS2SHARP => 'lanczos2_sharp',
+			Imagick::FILTER_ROBIDOUX => 'robidoux',
+			Imagick::FILTER_ROBIDOUXSHARP => 'robidoux_sharp',
+			Imagick::FILTER_COSINE => 'cosine',
+	];
+
 	$results = [];
 	$curls = [];
 	foreach ($files as $index => $file) {
@@ -97,7 +128,8 @@ function resizeMultiple(array $files): array {
 		curl_setopt_array($curl, [
 				CURLOPT_URL => Config::$resize_image_endpoint,
 				CURLOPT_POST => true,
-				CURLOPT_POSTFIELDS => ["image" => new CURLFile($file->source), "height" => $file->height],
+				CURLOPT_POSTFIELDS => ["image" => new CURLFile($file->source), "height" => $file->height,
+						"filter" => $filters[$filter]],
 				CURLOPT_RETURNTRANSFER => true,
 		]);
 		$curls[$index] = $curl;
@@ -150,12 +182,12 @@ function resizeMultiple(array $files): array {
  * @return void
  * @throws ImageResizeException
  */
-function remoteResize(string $source, string $target, int $height = 480): void {
+function remoteResize(string $source, string $target, int $height = 480, int $filter = Imagick::FILTER_LANCZOS): void {
 	$filespec = new FileSpec();
 	$filespec->source = $source;
 	$filespec->target = $target;
 	$filespec->height = $height;
-	$result = resizeMultiple([$filespec])[0];
+	$result = resizeMultiple([$filespec], $filter)[0];
 	if ($result !== true) {
 		throw $result;
 	}
@@ -169,7 +201,7 @@ function remoteResize(string $source, string $target, int $height = 480): void {
  * @return void
  * @throws ImageResizeException
  */
-function resize(string $source, string $target, int $height = 480): void {
+function resize(string $source, string $target, int $height = 480, int $filter = Imagick::FILTER_LANCZOS): void {
 	try {
 		remoteResize($source, $target, $height);
 	} catch (ImageResizeException $e) {
@@ -177,7 +209,7 @@ function resize(string $source, string $target, int $height = 480): void {
 			$image = new Imagick($source);
 			$newHeight = min($image->getImageHeight(), $height);
 			$newWidth = (int) ($image->getImageWidth() / $image->getImageHeight() * $newHeight);
-			$image->resizeImage($newWidth, $newHeight, Imagick::FILTER_LANCZOS, 1);
+			$image->resizeImage($newWidth, $newHeight, $filter, 1);
 			$image->setImageCompression(Imagick::COMPRESSION_JPEG);
 			$image->setImageCompressionQuality(90);
 			$image->writeImage($target);
