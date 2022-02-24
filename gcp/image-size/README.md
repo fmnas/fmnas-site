@@ -46,7 +46,9 @@ There are blackbox tests for this in /tests/blackbox/test/image_size_test.dart.
 
 ## Resource provisioning
 
-I suggest running this with 2 vCPU / 4 GiB / 100 concurrency to prevent OOM.
+I suggest running this with 2 vCPU / 4 GiB to prevent OOM.
+
+This configuration seems to work fine with high concurrency values on Cloud run (see benchmark results).
 
 Performance isn't a big concern here, as this doesn't block any user flows (assuming the async image tag generation
 is working right in the admin interface).
@@ -67,7 +69,14 @@ george.jpg  | 1.4 MB   | 4322x3289 | 1/1 in 78 ms, avg 78 ms (2.74 GB)     | 2/2
 ### Benchmark results in Cloud Code container with 2 GiB RAM
 
 ```
-TODO
+Image       | Filesize | Size      | 1 requests                  | 2 requests                  | 5 requests                | 10 requests                 | 25 requests            | Max concurrency
+------------|----------|-----------|-----------------------------|-----------------------------|---------------------------|-----------------------------|------------------------|----------------
+puget.heic  | 16.7 MB  | 9248x6936 | 1/1 in 2372 ms, avg 2372 ms | 2/2 in 4728 ms, avg 4728 ms | 0/5 in 0 ms, avg 0 ms     | 0/10 in 0 ms, avg 0 ms      | 0/25 in 0 ms, avg 0 ms |               2
+pigeons.jpg | 12.1 MB  | 4656x3492 | 1/1 in 177 ms, avg 177 ms   | 2/2 in 225 ms, avg 208 ms   | 5/5 in 496 ms, avg 480 ms | 10/10 in 995 ms, avg 988 ms | 0/25 in 0 ms, avg 0 ms |              12
+train.heic  | 16.4 MB  | 9248x6936 | 1/1 in 2338 ms, avg 2338 ms | 2/2 in 4664 ms, avg 4661 ms | 0/5 in 0 ms, avg 0 ms     | 0/10 in 0 ms, avg 0 ms      | 0/25 in 0 ms, avg 0 ms |               2
+litter.jpg  | 12.6 MB  | 8384x6035 | 1/1 in 396 ms, avg 396 ms   | 2/2 in 393 ms, avg 384 ms   | 0/5 in 0 ms, avg 0 ms     | 0/10 in 0 ms, avg 0 ms      | 0/25 in 0 ms, avg 0 ms |               3
+dubai.heic  | 18.6 MB  | 9248x6936 | 1/1 in 2584 ms, avg 2584 ms | 2/2 in 5162 ms, avg 5156 ms | 0/5 in 0 ms, avg 0 ms     | 0/10 in 0 ms, avg 0 ms      | 0/25 in 0 ms, avg 0 ms |               2
+george.jpg  | 1.4 MB   | 4322x3289 | 1/1 in 76 ms, avg 76 ms     | 2/2 in 127 ms, avg 127 ms   | 5/5 in 214 ms, avg 213 ms | 10/10 in 588 ms, avg 587 ms | 0/25 in 0 ms, avg 0 ms |              17
 ```
 
 ### Benchmark results on Cloud Run with 1 vCPU, 2 GiB RAM, concurrency limit 50
