@@ -56,6 +56,17 @@ george.jpg  | 1.4 MB   | 4322x3289 | 1/1 in 609 ms, avg 609 ms   | 2/2 in 583 ms
 
 ### Benchmark results on Cloud Run with 4 vCPU, 4 GiB RAM, concurrency limit 100
 
+```
+Image       | Filesize | Size      | 1 requests                  | 2 requests                  | 5 requests                    | 10 requests                      | 25 requests                      | Est. max concurrency
+------------|----------|-----------|-----------------------------|-----------------------------|-------------------------------|----------------------------------|----------------------------------|---------------------
+puget.heic  | 16.7 MB  | 9248x6936 | 1/1 in 4191 ms, avg 4191 ms | 2/2 in 6800 ms, avg 6775 ms | 5/5 in 12033 ms, avg 10101 ms | 10/10 in 12330 ms, avg 9310 ms   | 25/25 in 12438 ms, avg 10228 ms  |                  100
+pigeons.jpg | 12.1 MB  | 4656x3492 | 1/1 in 525 ms, avg 525 ms   | 2/2 in 653 ms, avg 636 ms   | 5/5 in 672 ms, avg 625 ms     | 10/10 in 890 ms, avg 774 ms      | 25/25 in 1584 ms, avg 960 ms     |                  100
+train.heic  | 16.4 MB  | 9248x6936 | 1/1 in 4083 ms, avg 4083 ms | 2/2 in 6393 ms, avg 6380 ms | 5/5 in 9288 ms, avg 7315 ms   | 10/10 in 10872 ms, avg 7398 ms   | 25/25 in 13819 ms, avg 10860 ms  |                  100
+litter.jpg  | 12.6 MB  | 8384x6035 | 1/1 in 1236 ms, avg 1236 ms | 2/2 in 1273 ms, avg 1212 ms | 5/5 in 1579 ms, avg 1363 ms   | 10/10 in 1828 ms, avg 1444 ms    | 25/25 in 2776 ms, avg 2129 ms    |                  100
+dubai.heic  | 18.6 MB  | 9248x6936 | 1/1 in 4225 ms, avg 4225 ms | 2/2 in 6664 ms, avg 6625 ms | 5/5 in 13524 ms, avg 11639 ms | 10/10 in 15961 ms, avg 10637 ms  | 25/25 in 15642 ms, avg 13806 ms  |                  100
+george.jpg  | 1.4 MB   | 4322x3289 | 1/1 in 561 ms, avg 561 ms   | 2/2 in 527 ms, avg 493 ms   | 5/5 in 579 ms, avg 499 ms     | 10/10 in 605 ms, avg 502 ms      | 25/25 in 1215 ms, avg 757 ms     |                  100
+```
+
 ### Benchmark results on Cloud Run with 4 vCPU, 8 GiB RAM, concurrency limit 100
 
 ### Benchmark results in Docker container on GitHub Actions (used for regression tests)
