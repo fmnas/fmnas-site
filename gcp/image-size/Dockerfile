@@ -23,7 +23,6 @@ RUN apt update && \
     ./autogen.sh && ./configure --disable-dec265 --disable-sherlock265 && make -j4 && make install && cd .. && \
     tar xvf ImageMagick.tar.gz && cd ImageMagick* && \
     ./configure --without-magick-plus-plus --without-perl --disable-openmp --with-gvc=no --with-heic \
-    --with-quantum-depth=8 \
     --disable-docs && make -j$(nproc) && make install && ldconfig /usr/local/lib && cd .. && \
     apt clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp* ImageMagick* libde265 && identify --version
 
@@ -44,7 +43,6 @@ RUN set -x && apt update && \
     ./autogen.sh && ./configure --disable-dec265 --disable-sherlock265 && make -j4 && make install && cd .. && \
     tar xvf ImageMagick.tar.gz && cd ImageMagick* && \
     ./configure --without-magick-plus-plus --without-perl --disable-openmp --with-gvc=no --with-heic \
-    --with-quantum-depth=8 \
     --disable-docs && make -j$(nproc) && make install && ldconfig /usr/local/lib && cd .. && \
     apt remove -y build-essential wget autotools-dev automake libtool git-core autoconf pkg-config &&  \
     apt -y autoremove && \
