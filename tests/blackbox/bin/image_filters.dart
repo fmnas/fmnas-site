@@ -37,6 +37,7 @@ void main([List<String>? args]) async {
       heights: [int.parse(parsed['height'])],
       binarySearchLimit: 1,
       enableMemory: !parsed['no-memory'],
+      filter: filter
     ).listen((result) {
       print(result);
       results[filter] ??= [];
