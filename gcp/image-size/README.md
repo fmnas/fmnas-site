@@ -28,7 +28,8 @@ george.jpg  | 1.4 MB   | 4322x3289 | 1/1 in 78 ms, avg 78 ms (2.74 GB)     | 2/2
 
 
 
-### Benchmark results on Cloud Run with 1 vCPU, 2 GiB RAM, concurrency limit 100
+### Benchmark results on Cloud Run with 1 vCPU, 2 GiB RAM, concurrency limit 50
+
 ```
 Image       | Filesize | Size      | 1 requests                    | 2 requests                    | 5 requests                    | 10 requests                    | 25 requests                     | Est. max concurrency
 ------------|----------|-----------|-------------------------------|-------------------------------|-------------------------------|--------------------------------|---------------------------------|---------------------
@@ -45,12 +46,12 @@ george.jpg  | 1.4 MB   | 4322x3289 | 1/1 in 546 ms, avg 546 ms     | 2/2 in 550 
 ```
 Image       | Filesize | Size      | 1 requests                  | 2 requests                    | 5 requests                    | 10 requests                     | 25 requests                     | Est. max concurrency
 ------------|----------|-----------|-----------------------------|-------------------------------|-------------------------------|---------------------------------|---------------------------------|---------------------
-puget.heic  | 16.7 MB  | 9248x6936 | 1/1 in 6644 ms, avg 6644 ms | 2/2 in 11785 ms, avg 11568 ms | 5/5 in 26077 ms, avg 21966 ms | 10/10 in 27032 ms, avg 22694 ms | 25/25 in 28382 ms, avg 18779 ms |                   50
-pigeons.jpg | 12.1 MB  | 4656x3492 | 1/1 in 721 ms, avg 721 ms   | 2/2 in 755 ms, avg 680 ms     | 5/5 in 665 ms, avg 614 ms     | 10/10 in 803 ms, avg 657 ms     | 25/25 in 1280 ms, avg 817 ms    |                   50
-train.heic  | 16.4 MB  | 9248x6936 | 1/1 in 7060 ms, avg 7060 ms | 2/2 in 11887 ms, avg 11636 ms | 5/5 in 18192 ms, avg 15305 ms | 10/10 in 24953 ms, avg 17097 ms | 25/25 in 25996 ms, avg 19080 ms |                   50
-litter.jpg  | 12.6 MB  | 8384x6035 | 1/1 in 1161 ms, avg 1161 ms | 2/2 in 1274 ms, avg 1234 ms   | 5/5 in 1414 ms, avg 1288 ms   | 10/10 in 2414 ms, avg 1615 ms   | 25/25 in 3884 ms, avg 1942 ms   |                   50
-dubai.heic  | 18.6 MB  | 9248x6936 | 1/1 in 7092 ms, avg 7092 ms | 2/2 in 12154 ms, avg 11910 ms | 5/5 in 21040 ms, avg 15004 ms | 10/10 in 20796 ms, avg 16411 ms | 25/25 in 30479 ms, avg 16284 ms |                   50
-george.jpg  | 1.4 MB   | 4322x3289 | 1/1 in 609 ms, avg 609 ms   | 2/2 in 583 ms, avg 567 ms     | 5/5 in 646 ms, avg 553 ms     | 10/10 in 640 ms, avg 515 ms     | 25/25 in 1152 ms, avg 681 ms    |                   50
+puget.heic  | 16.7 MB  | 9248x6936 | 1/1 in 6644 ms, avg 6644 ms | 2/2 in 11785 ms, avg 11568 ms | 5/5 in 26077 ms, avg 21966 ms | 10/10 in 27032 ms, avg 22694 ms | 25/25 in 28382 ms, avg 18779 ms |                  100
+pigeons.jpg | 12.1 MB  | 4656x3492 | 1/1 in 721 ms, avg 721 ms   | 2/2 in 755 ms, avg 680 ms     | 5/5 in 665 ms, avg 614 ms     | 10/10 in 803 ms, avg 657 ms     | 25/25 in 1280 ms, avg 817 ms    |                  100
+train.heic  | 16.4 MB  | 9248x6936 | 1/1 in 7060 ms, avg 7060 ms | 2/2 in 11887 ms, avg 11636 ms | 5/5 in 18192 ms, avg 15305 ms | 10/10 in 24953 ms, avg 17097 ms | 25/25 in 25996 ms, avg 19080 ms |                  100
+litter.jpg  | 12.6 MB  | 8384x6035 | 1/1 in 1161 ms, avg 1161 ms | 2/2 in 1274 ms, avg 1234 ms   | 5/5 in 1414 ms, avg 1288 ms   | 10/10 in 2414 ms, avg 1615 ms   | 25/25 in 3884 ms, avg 1942 ms   |                  100
+dubai.heic  | 18.6 MB  | 9248x6936 | 1/1 in 7092 ms, avg 7092 ms | 2/2 in 12154 ms, avg 11910 ms | 5/5 in 21040 ms, avg 15004 ms | 10/10 in 20796 ms, avg 16411 ms | 25/25 in 30479 ms, avg 16284 ms |                  100 
+george.jpg  | 1.4 MB   | 4322x3289 | 1/1 in 609 ms, avg 609 ms   | 2/2 in 583 ms, avg 567 ms     | 5/5 in 646 ms, avg 553 ms     | 10/10 in 640 ms, avg 515 ms     | 25/25 in 1152 ms, avg 681 ms    |                  100
 ```
 
 ### Benchmark results on Cloud Run with 4 vCPU, 4 GiB RAM, concurrency limit 100

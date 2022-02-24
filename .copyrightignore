@@ -17,6 +17,7 @@ go.mod
 go.sum
 *.lock
 pubspec.yaml
+analysis_options.yaml
 /.idea
 .github/workflows/codeql-analysis.yml
 *.iml

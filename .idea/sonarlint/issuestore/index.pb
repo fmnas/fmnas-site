@@ -52,5 +52,3 @@ A
 :
 
 .gitignore,a/5/a5cc2925ca8258af241be7e5b0381edf30266302
-@
-.copyrightignore,6/f/6f07f8d015f54265e25fe9f3559c4010001c849f
