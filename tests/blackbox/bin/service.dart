@@ -35,11 +35,12 @@ class ParallelResults {
 }
 
 abstract class Service {
-  Service(this.endpoint, this.name, [ResponseType? type])
+  Service(this.endpoint, this.name,
+      {this.enableMemory = true, ResponseType type = ResponseType.json})
       : dio = Dio(BaseOptions(
           connectTimeout: 120000,
           receiveTimeout: 120000,
-          responseType: type ?? ResponseType.json,
+          responseType: type,
         )),
         pid = dockerPid(name) ?? nodePid(endpoint);
 
@@ -47,11 +48,11 @@ abstract class Service {
   final String endpoint;
   final Dio dio;
   final int? pid;
+  final bool enableMemory;
   Process? monitor;
 
   static int? dockerPid(String name) {
-    final command =
-        'docker top $name | awk \'{ print \$2 }\' | grep -v PID';
+    final command = 'docker top $name | awk \'{ print \$2 }\' | grep -v PID';
     final String output = Process.runSync('bash', ['-c', command]).stdout;
     final pid = output.trim().isEmpty ? null : int.tryParse(output.trim());
     print(pid == null ? 'Didn\'t find Docker $name' : 'Found docker pid $pid');
@@ -60,7 +61,8 @@ abstract class Service {
 
   static int? nodePid(String endpoint) {
     final port = Uri.parse(endpoint).port;
-    final command = "netstat -anp | perl -F'[/\\s]' -lane 'print \$F[-2] if /^tcp.+:$port.+LISTEN/'";
+    final command =
+        "netstat -anp | perl -F'[/\\s]' -lane 'print \$F[-2] if /^tcp.+:$port.+LISTEN/'";
     final String output = Process.runSync('bash', ['-c', command]).stdout;
     final pid = output.trim().isEmpty ? null : int.tryParse(output.trim());
     print(pid == null ? 'Didn\'t find Node $endpoint' : 'Found node pid $pid');
@@ -68,7 +70,7 @@ abstract class Service {
   }
 
   Future<void> startMemoryMonitoring() async {
-    if (pid == null) {
+    if (pid == null || !enableMemory) {
       return;
     }
     final loop = 'while true; do ps -ho rss $pid; sleep 0.1; done';
@@ -178,7 +180,8 @@ abstract class Service {
       final memory = await getPeakMemory();
       if (memory != null) {
         final mb = memory ~/ 1024;
-        final displayMemory = mb > 1024 ? (mb / 1024).toStringAsFixed(2) + ' GB' : '$mb MB';
+        final displayMemory =
+            mb > 1024 ? (mb / 1024).toStringAsFixed(2) + ' GB' : '$mb MB';
         display += ' ($displayMemory)';
       }
       result.columns[parallelism] = ParallelResult(display, failed > 0);

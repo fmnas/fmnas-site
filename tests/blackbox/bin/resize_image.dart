@@ -26,8 +26,9 @@ import 'results.dart';
 import 'service.dart';
 
 class ResizeImage extends Service {
-  ResizeImage(String endpoint)
-      : super(endpoint, 'resize-image', ResponseType.stream);
+  ResizeImage(String endpoint, [bool enableMemory = true])
+      : super(endpoint, 'resize-image',
+            type: ResponseType.stream, enableMemory: enableMemory);
 
   static const defaultEndpoint = 'http://localhost:50000';
   static const defaultParallelColumns = [1, 2, 5, 10, 25];
@@ -48,7 +49,8 @@ class ResizeImage extends Service {
   static Stream<ImageResult> runBenchmark(String endpoint,
       [Iterable<int> parallelColumns = defaultParallelColumns,
       Iterable<int> heights = defaultHeights,
-      int binarySearchLimit = defaultBinarySearchLimit]) async* {
+      int binarySearchLimit = defaultBinarySearchLimit,
+      bool enableMemory = true]) async* {
     print('Benchmarking resize-image at $endpoint');
     final resizeImage = ResizeImage(endpoint);
     final imageSize = ImageSize(ImageSize.defaultEndpoint);
@@ -88,6 +90,7 @@ void main(List<String> args) async {
   parser.addMultiOption('height',
       abbr: 'h',
       defaultsTo: ResizeImage.defaultHeights.map((h) => h.toString()));
+  parser.addFlag('no-memory');
   final parsed = parser.parse(args);
   final Iterable<String> heights = parsed['height'];
 
@@ -97,6 +100,7 @@ void main(List<String> args) async {
     parsed.rest.map(int.parse),
     heights.map(int.parse),
     int.parse(parsed['max']),
+    !parsed['no-memory'],
   ).listen((result) {
     print(result);
     results[result.group] ??= [];
