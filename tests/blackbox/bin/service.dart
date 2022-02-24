@@ -176,7 +176,7 @@ abstract class Service {
         await waitForService();
       }
       var display =
-          '$succeeded/$parallelism in $maxDuration ms, avg ${totalDuration ~/ succeeded} ms';
+          '$succeeded/$parallelism in $maxDuration ms, avg ${totalDuration ~/ (succeeded == 0 ? 1 : succeeded)} ms';
       final memory = await getPeakMemory();
       if (memory != null) {
         final mb = memory ~/ 1024;
