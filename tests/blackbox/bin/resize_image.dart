@@ -35,15 +35,51 @@ class ResizeImage extends Service {
   static const defaultHeights = [64, 192, 300, 480, 2160, 4320, 100000];
   static const defaultBinarySearchLimit = 25;
 
-  static Future<FormData> data(String file, int height) async {
+  static const filters = [
+    'point',
+    'box',
+    'triangle',
+    'hermite',
+    'hanning',
+    'hamming',
+    'blackman',
+    'gaussian',
+    'quadratic',
+    'cubic',
+    'catrom',
+    'mitchell',
+    'jinc',
+    'sinc',
+    'sinc_fast',
+    'kaiser',
+    'welsh',
+    'parzen',
+    'bohman',
+    'bartlett',
+    'lagrange',
+    'lanczos',
+    'lanczos_sharp',
+    'lanczos2',
+    'lanczos2_sharp',
+    'robidoux',
+    'robidoux_sharp',
+    'cosine',
+    'spline',
+    'sentinel',
+    'lanczos_radius',
+  ];
+
+  static Future<FormData> data(String file, int height, String? filter) async {
     return FormData.fromMap({
       'height': height,
       'image': await MultipartFile.fromFile(file),
+      'filter': filter ?? '',
     });
   }
 
-  static Future<FormData> Function() generator(String file, int height) {
-    return () async => await data(file, height);
+  static Future<FormData> Function() generator(String file, int height,
+      [String? filter]) {
+    return () async => await data(file, height, filter ?? '');
   }
 
   static Stream<ImageResult> runBenchmark(
@@ -51,7 +87,8 @@ class ResizeImage extends Service {
       Iterable<int> parallelColumns = defaultParallelColumns,
       Iterable<int> heights = defaultHeights,
       int binarySearchLimit = defaultBinarySearchLimit,
-      bool enableMemory = true}) async* {
+      bool enableMemory = true,
+      String? filter}) async* {
     print('Benchmarking resize-image at $endpoint');
     final resizeImage = ResizeImage(endpoint, enableMemory: enableMemory);
     final imageSize = ImageSize(ImageSize.defaultEndpoint, enableMemory: false);
@@ -73,7 +110,7 @@ class ResizeImage extends Service {
           // ignore
         }
         result.parallel = await resizeImage.benchmarkParallel(
-            ResizeImage.generator(file.path, height),
+            ResizeImage.generator(file.path, height, filter),
             parallelColumns.isEmpty ? defaultParallelColumns : parallelColumns,
             binarySearchLimit);
         yield result;
@@ -88,6 +125,7 @@ void main([List<String>? args]) async {
       abbr: 'e', defaultsTo: ResizeImage.defaultEndpoint);
   parser.addOption('max',
       abbr: 'n', defaultsTo: ResizeImage.defaultBinarySearchLimit.toString());
+  parser.addOption('filter', abbr: 'f', defaultsTo: '');
   parser.addMultiOption('height',
       abbr: 'h',
       defaultsTo: ResizeImage.defaultHeights.map((h) => h.toString()));
@@ -102,6 +140,7 @@ void main([List<String>? args]) async {
     heights: heights.map(int.parse),
     binarySearchLimit: int.parse(parsed['max']),
     enableMemory: !parsed['no-memory'],
+    filter: parsed['filter'],
   ).listen((result) {
     print(result);
     results[result.group] ??= [];

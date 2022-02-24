@@ -28,6 +28,7 @@ const imageSizes = {
   'pigeons.jpg': [4656, 3492],
   'puget.heic': [9248, 6936],
   'train.heic': [9248, 6936],
+  'callie.jpg': [800, 600],
 };
 
 void main([List<String>? args]) async {

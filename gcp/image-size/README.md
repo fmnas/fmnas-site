@@ -55,6 +55,8 @@ This configuration seems to work fine with high concurrency values on Cloud run 
 Performance isn't a big concern here, as this doesn't block any user flows (assuming the async image tag generation
 is working right in the admin interface).
 
+There is a benchmark for this at /tests/blackbox/bin/image_size.dart.
+
 ### Benchmark results in Docker container (local)
 
 ```

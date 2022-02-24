@@ -45,12 +45,22 @@ resize-image docs for estimated memory usage.
 #### Arguments
 
 * Endpoint (`--endpoint`, `-e`): defaults to `http://localhost:50000`.
-* Height (`--height`, `-h`): defaults to 64,192,300,480,2160,4320,100000.
+* Heights (`--height`, `-h`): defaults to 64,192,300,480,2160,4320,100000.
 * Concurrency search limit (`--max`, `-n`): defaults to 50.
 * Parallel requests (positional arguments): defaults to `1 2 5 10 25`.
 * Disable memory profiling (`--no-memory`)
+* Filter (`--filter`, `-f`): the imagemagick filter to use.
 
-### image_size_benchmark
+### image_filters
+
+Run with `dart run :image_filters`.
+
+#### Arguments
+* Endpoint (`--endpoint`, `-e`): defaults to `http://localhost:50000`.
+* Height (`--height`, `-h`): defaults to 1080.
+* Disable memory profiling (`--no-memory`)
+
+### image_size
 
 Run with `dart run :image_size`.
 

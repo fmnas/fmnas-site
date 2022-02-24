@@ -52,20 +52,23 @@ I suggest running this with 4 vCPU / 8 GiB to prevent OOM and optimize performan
 
 Performance is important here, as this blocks application submission after uploading attachments.
 
+This blocking flow uses filter TODO; non-blocking flows use the default filter LANCZOS.
 
-### Benchmark results in Docker container (local)
+There are benchmarks for this at /tests/blackbox/bin/resize_image.dart and /tests/blackbox/bin/image_filters.dart.
+
+### Benchmark results in Docker container (local), default filter
 
 ```
 
 ```
 
-### Benchmark results in Cloud Code container with 2 GiB RAM
+### Benchmark results in Cloud Code container with 2 GiB RAM, default filter
 
 ```
 TODO
 ```
 
-### Benchmark results on Cloud Run with 2 vCPU, 4 GiB RAM, concurrency limit 100
+### Benchmark results on Cloud Run with 2 vCPU, 4 GiB RAM, concurrency limit 100, default filter
 
 ```
 Results for height 64:
@@ -139,26 +142,34 @@ dubai.heic  | 18.6 MB  | 9248x6936 | 1/1 in 22094 ms, avg 22094 ms | 0/2 in 0 ms
 george.jpg  | 1.4 MB   | 4322x3289 | 1/1 in 4074 ms, avg 4074 ms   | 2/2 in 4169 ms, avg 4150 ms   | 5/5 in 4351 ms, avg 4052 ms   | 10/10 in 6322 ms, avg 5316 ms   | 25/25 in 12515 ms, avg 10682 ms |              26
 ```
 
-### Benchmark results on Cloud Run with 2 vCPU, 8 GiB RAM, concurrency limit 100
+### Benchmark results on Cloud Run with 2 vCPU, 8 GiB RAM, concurrency limit 100, default filter
 
 ```
 TODO
 ```
 
-### Benchmark results on Cloud Run with 4 vCPU, 8 GiB RAM, concurrency limit 100
+### Benchmark results on Cloud Run with 4 vCPU, 8 GiB RAM, concurrency limit 100, default filter
 
 ```
 TODO
 ```
 
-### Benchmark results on Cloud Run with 4 vCPU, 16 GiB RAM, concurrency limit 100
+### Benchmark results on Cloud Run with 4 vCPU, 16 GiB RAM, concurrency limit 100, default filter
 
 ```
 TODO
 ```
 
-### Benchmark results in Docker container on GitHub Actions (used for regression tests)
+### Benchmark results in Docker container on GitHub Actions (used for regression tests), default filter
 
 ```
 TODO
 ```
+
+### Filter benchmark results (local)
+
+```
+TODO
+```
+
+### Filter benchmark results on Cloud Run with 2 vCPU, 8 GiB RAM, concurrency limit 100
