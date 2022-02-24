@@ -9,6 +9,14 @@ This can be memory-intensive with large images, so keep the concurrency low.
 
 I suggest running this with 2 vCPU / 4 GiB / 4 concurrency to reduce OOM and optimize costs.
 
+### Benchmark results in Docker container
+
+### Benchmark results in Cloud Code container with 2 GiB RAM
+
+### Benchmark results on Cloud Run with 1 vCPU, 2 GiB RAM, concurrency limit 100
+
+### Benchmark results on Cloud Run with 2 vCPU, 4 GiB RAM, concurrency limit 100
+
 ## Manual deployment
 
 ```shell
