@@ -47,5 +47,5 @@ void main([List<String>? args]) async {
     });
   });
 
-  // TODO: Add image-size failure tests.
+  // TODO [#381]: Add image-size failure tests.
 }
