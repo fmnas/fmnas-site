@@ -30,7 +30,7 @@ case 'POST':
 			move_uploaded_file($_FILES["images"]["tmp_name"][0], $new);
 		} else {
 			try {
-				resize($old, $new, 8640);
+				resize($old, $new, 4320, Imagick::FILTER_HERMITE);
 			} catch (ImageResizeException $e) {
 				move_uploaded_file($_FILES["images"]["tmp_name"][0], $new);
 			}
@@ -65,7 +65,7 @@ case 'GET':
 		$new = tempnam($dir, "tmp_");
 		if (str_starts_with(mime_content_type($old), "image/")) {
 			try {
-				resize($old, $new, 8640);
+				resize($old, $new, 4320, Imagick::FILTER_HERMITE);
 				unlink($old);
 				echo explode("tmp_", $new)[0] . ':' . pathinfo($raw, PATHINFO_FILENAME);
 			} catch (ImageResizeException $e) {
