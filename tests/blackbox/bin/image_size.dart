@@ -25,7 +25,7 @@ import 'results.dart';
 import 'service.dart';
 
 const parallelColumns = [1, 2, 5, 10, 25];
-const binarySearchLimit = 100;
+const binarySearchLimit = 50;
 
 class ImageSize extends Service {
   ImageSize(String endpoint) : super(endpoint, 'image-size');

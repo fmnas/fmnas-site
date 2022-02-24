@@ -27,7 +27,7 @@ import 'service.dart';
 
 const parallelColumns = [1, 2, 5, 10, 20];
 const heights = [64, 192, 300, 480, 2160, 4320, 10000];
-const binarySearchLimit = 100;
+const binarySearchLimit = 50;
 
 class ResizeImage extends Service {
   ResizeImage(String endpoint) : super(endpoint, 'resize-image', ResponseType.stream);

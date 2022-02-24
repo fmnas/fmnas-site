@@ -34,7 +34,7 @@ class ParallelResults {
   int? memory;
 }
 
-class Service {
+abstract class Service {
   Service(this.endpoint, this.name, [ResponseType? type])
       : dio = Dio(BaseOptions(
           connectTimeout: 120000,
