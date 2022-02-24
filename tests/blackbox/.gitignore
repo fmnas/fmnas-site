@@ -4,3 +4,6 @@
 
 # Conventional directory for build output.
 build/
+
+# Temp files for golden tests
+*.tmp

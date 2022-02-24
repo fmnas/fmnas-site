@@ -16,18 +16,17 @@
  */
 
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:args/args.dart';
-import 'package:dio/dio.dart';
 import 'package:file/local.dart';
 import 'package:glob/glob.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 import '../bin/resize_image.dart';
 
 const imageDir = '../data/images';
-const heights = [64];
+const heights = [64, 480, 4320, 100000];
 
 void main([List<String>? args]) async {
   final parser = ArgParser();
@@ -45,24 +44,27 @@ void main([List<String>? args]) async {
     for (final height in heights) {
       test('resize $image to height $height', () async {
         await resizeImage.waitForService();
-        final file = File('goldens/resize_image_test/${image}_$height.jpg');
+        final golden = File('goldens/resize_image_test/${image}_$height.jpg');
         if (!update) {
-          expect(file.existsSync(), isTrue);
+          expect(golden.existsSync(), isTrue);
         }
-        final Stream<List<int>> golden =
-            file.existsSync() ? file.openRead() : Stream.empty();
-        final response = await resizeImage
+        final result = await resizeImage
             .request(ResizeImage.generator('$imageDir/$image', height));
-        final ResponseBody result = response.data;
+        final tempFile = File('${image}_$height.tmp');
         if (update) {
-          final output = file.openWrite();
-          await output.addStream(result.stream);
+          await golden.openWrite().addStream(result.data.stream);
         } else {
-          expect(await Rx.sequenceEqual(golden, result.stream).first, isTrue);
+          final Uint8List goldenBytes = await golden.readAsBytes();
+          await tempFile.openWrite().addStream(result.data.stream);
+          final Uint8List responseBytes = await tempFile.readAsBytes();
+          tempFile.delete();
+          expect(goldenBytes, equals(responseBytes));
         }
       });
     }
   }
+
+  // TODO: resize_image_test doesn't return after golden generation.
 
   // TODO: Add resize-image failure tests.
 
