@@ -271,44 +271,46 @@ The following workflows in `.github/workflows` are used for deployment:
 * Linux (any POSIX-compatible OS should work)
 * Apache (Litespeed or any other web server with .htaccess and PHP support should work)
 * PHP 8.1
-	* ImageMagick
-	* GD
-		* libJPEG
-		* libPNG
-	* mysqli
-	* mbstring
-	* imagick
-	* curl
-	* php-xml
-	* sqlite3
-	* Composer
-	* Needs shell access (with `shell_exec`) and the following executables in PATH:
-		* `curl` to request caching uploaded images
+  * ImageMagick
+  * GD
+    * libJPEG
+    * libPNG
+  * mysqli
+  * mbstring
+  * imagick
+  * curl
+  * php-xml
+  * sqlite3
+  * Composer
+  * Needs shell access (with `shell_exec`) and the following executables in PATH:
+    * `curl` to request caching uploaded images
 * MySQL or MariaDB
+* Composer
 
 #### Build
 
 On the build machine:
 
 * Install NPM build dependencies: `npm install --only=dev`
+* Install PHP dependencies: `composer build`
 * Build the stylesheets for the public site: `npx sass --style=compressed public:public`
 * Build the scripts for the public site: `npm run build`
 * Build the admin site client: `npx vite build admin/client`
 * Set the config values in config.php.
-	* Run, for instance:
-	  ```shell
-		npx ts-node handleparse.ts secrets/config.php.hbs --db_name=database --db_username=username --db_pass=password \
-		--db_host=localhost --smtp_host=smtp.gmail.com --smtp_auth=true --smtp_security=tls --smtp_port=587 \
-		--smtp_username=me@gmail.com --smtp_password=password \
-		--image_size_endpoint=https://image-size.gcp.forgetmenotshelter.org \
-		--resize_image_endpoint=https://resize-image.gcp.forgetmenotshelter.org \
-		--print_pdf_endpoint=https://us-central1-fmnas-automation.cloudfunctions.net/print-pdf \
-  	--minify_html_endpoint=https://us-central1-fmnas-automation.cloudfunctions.net/minify-html
-		```
-	* Alternatively, copy `secrets/config_sample.php` to `secrets/config.php` and update the configuration values
-	  manually.
+  * Run, for instance:
+    ```shell
+    npx ts-node handleparse.ts secrets/config.php.hbs --db_name=database --db_username=username --db_pass=password \
+    --db_host=localhost --smtp_host=smtp.gmail.com --smtp_auth=true --smtp_security=tls --smtp_port=587 \
+    --smtp_username=me@gmail.com --smtp_password=password \
+    --image_size_endpoint=https://image-size.gcp.forgetmenotshelter.org \
+    --resize_image_endpoint=https://resize-image.gcp.forgetmenotshelter.org \
+    --print_pdf_endpoint=https://us-central1-fmnas-automation.cloudfunctions.net/print-pdf \
+    --minify_html_endpoint=https://us-central1-fmnas-automation.cloudfunctions.net/minify-html
+    ```
+  * Alternatively, copy `secrets/config_sample.php` to `secrets/config.php` and update the configuration values
+    manually.
 * Update the public web templates in the `src/templates` and `src/errors` directories as desired.
-	* The current templates rely on the presence of `/assets/adopted.jpg` and `/assets/logo.png` in the public site.
+  * The current templates rely on the presence of `/assets/adopted.jpg` and `/assets/logo.png` in the public site.
 
 #### Deploy
 
