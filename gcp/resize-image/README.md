@@ -21,8 +21,8 @@ gcloud artifacts docker images list us-central1-docker.pkg.dev/fmnas-automation/
 
 ### With Docker
 
-Cloud Code extension containers are limited to 2 GiB RAM and crash readily if there are many concurrent requests.
-In lieu of local load balancing between containers, you can instead use "Run resize-image on port 50000" or
+Cloud Code extension containers are limited to 2 GiB RAM and crash readily if there are many concurrent requests. In
+lieu of local load balancing between containers, you can instead use "Run resize-image on port 50000" or
 `docker run -p 50000:8080 resize-image` to run a single container with unlimited resources.
 
 ### With Cloud Code
@@ -33,8 +33,8 @@ If it doesn't work with managed dependencies, try installing the latest minikube
 setting the dependency paths manually in the extension settings.
 
 This uses an automatically selected ephemeral port. To forward a specific port to the service, use
-`kubectl port-forward service/resize-image $PORT:8080`. Another IntelliJ run configuration is included to forward
-port 50000 to resize-image.
+`kubectl port-forward service/resize-image $PORT:8080`. Another IntelliJ run configuration is included to forward port
+50000 to resize-image.
 
 ### Testing
 
@@ -52,7 +52,8 @@ I suggest running this with 4 vCPU / 8 GiB to prevent OOM and optimize performan
 
 Performance is important here, as this blocks application submission after uploading attachments.
 
-This blocking flow uses filter TODO; non-blocking flows use the default filter LANCZOS.
+Informed by the benchmark results, this blocking flow uses the filter HERMITE, and non-blocking flows use the filter
+LANCZOS (LANCZOS2 is not supported locally on dreamhost yet).
 
 There are benchmarks for this at /tests/blackbox/bin/resize_image.dart and /tests/blackbox/bin/image_filters.dart.
 
@@ -168,7 +169,71 @@ TODO
 
 ### Filter benchmark results (local)
 
-TODO
+| Filter             | puget.heic | pigeons.jpg | train.heic | litter.jpg | dubai.heic | george.jpg | callie.jpg |
+|--------------------|------------|-------------|------------|------------|------------|------------|------------|
+| **lanczos**        |       3968 |         689 |       4047 |       1588 |       4119 |        563 |         66 |
+| point              |       2616 |         343 |       2992 |        609 |       2848 |        280 |         43 |
+| box                |       2776 |         365 |       3861 |        719 |       2946 |        276 |         43 |
+| triangle           |       2963 |         406 |       3003 |        853 |       3118 |        322 |         65 |
+| **hermite**        |       3006 |         416 |       3000 |        860 |       3265 |        315 |         55 |
+| **hanning**        |       4452 |         799 |       4411 |       2103 |       4644 |        642 |         75 |
+| **hamming**        |       4521 |         826 |       4479 |       2101 |       4779 |        628 |         91 |
+| **blackman**       |       4523 |         785 |       4701 |       2141 |       4636 |        638 |         91 |
+| gaussian           |       3478 |         532 |       3627 |       1238 |       3833 |        429 |         48 |
+| quadratic          |       3238 |         495 |       3255 |       1069 |       3411 |        357 |         58 |
+| cubic              |       3500 |         543 |       3664 |       1237 |       3679 |        443 |         60 |
+| **catrom**         |       3504 |         541 |       3515 |       1252 |       3661 |        397 |         70 |
+| mitchell           |       3503 |         549 |       3542 |       1206 |       3646 |        398 |         59 |
+| jinc               |       4039 |         691 |       4123 |       1794 |       4139 |        549 |         75 |
+| sinc               |       4419 |         783 |       4555 |       2122 |       4590 |        642 |         76 |
+| sinc_fast          |       4491 |         775 |       4469 |       2162 |       4519 |        615 |         67 |
+| **kaiser**         |       4427 |         784 |       4448 |       2078 |       4635 |        654 |         84 |
+| **welsh**          |       4012 |         662 |       4137 |       1597 |       4099 |        514 |         80 |
+| **parzen**         |       4363 |         795 |       4478 |       2099 |       4575 |        673 |         75 |
+| **bohman**         |       4388 |         792 |       4422 |       2093 |       4584 |        614 |         75 |
+| **bartlett**       |       4425 |         788 |       4539 |       2137 |       4518 |        621 |         64 |
+| **lagrange**       |       3530 |         555 |       3541 |       1219 |       3615 |        409 |         59 |
+| **lanczos_sharp**  |       3957 |         648 |       4007 |       1573 |       4105 |        509 |         69 |
+| **lanczos2**       |       3455 |         521 |       3446 |       1216 |       3619 |        395 |         56 |
+| **lanczos2_sharp** |       3376 |         539 |       3498 |       1175 |       3598 |        394 |         48 |
+| **robidoux**       |       3435 |         525 |       3518 |       1225 |       3664 |        406 |         62 |
+| **robidoux_sharp** |       3552 |         522 |       3575 |       1215 |       3666 |        417 |         54 |
+| **cosine**         |       3994 |         653 |       4058 |       1623 |       4123 |        533 |         54 |
+| spline             |       3446 |         536 |       3593 |       1225 |       3650 |        410 |         49 |
+
+# @formatter:off
+| Filter             | puget.heic | pigeons.jpg | train.heic | litter.jpg | dubai.heic | george.jpg | callie.jpg | Average |
+|--------------------|------------|-------------|------------|------------|------------|------------|------------|---------|
+| **lanczos**        |       100% |        100% |       100% |       100% |       100% |       100% |       100% |    100% |
+| point              |        66% |         50% |        74% |        38% |        69% |        50% |        65% |     59% |
+| box                |        70% |         53% |        95% |        45% |        72% |        49% |        65% |     64% |
+| triangle           |        75% |         59% |        74% |        54% |        76% |        57% |        98% |     70% |
+| **hermite**        |        76% |         60% |        74% |        54% |        79% |        56% |        83% |     69% |
+| **hanning**        |       112% |        116% |       109% |       132% |       113% |       114% |       114% |    116% |
+| **hamming**        |       114% |        120% |       111% |       132% |       116% |       112% |       138% |    120% |
+| **blackman**       |       114% |        114% |       116% |       135% |       113% |       113% |       138% |    120% |
+| gaussian           |        88% |         77% |        90% |        78% |        93% |        76% |        73% |     82% |
+| quadratic          |        82% |         72% |        80% |        67% |        83% |        63% |        88% |     76% |
+| cubic              |        88% |         79% |        91% |        78% |        89% |        79% |        91% |     85% |
+| **catrom**         |        88% |         79% |        87% |        79% |        89% |        71% |       106% |     85% |
+| mitchell           |        88% |         80% |        88% |        76% |        89% |        71% |        89% |     83% |
+| jinc               |       102% |        100% |       102% |       113% |       100% |        98% |       114% |    104% |
+| sinc               |       111% |        114% |       113% |       134% |       111% |       114% |       115% |    116% |
+| sinc_fast          |       113% |        112% |       110% |       136% |       110% |       109% |       102% |    113% |
+| **kaiser**         |       112% |        114% |       110% |       131% |       113% |       116% |       127% |    117% |
+| **welsh**          |       101% |         96% |       102% |       101% |       100% |        91% |       121% |    102% |
+| **parzen**         |       110% |        115% |       111% |       132% |       111% |       120% |       114% |    116% |
+| **bohman**         |       111% |        115% |       109% |       132% |       111% |       109% |       114% |    114% |
+| **bartlett**       |       112% |        114% |       112% |       135% |       110% |       110% |        97% |    113% |
+| **lagrange**       |        89% |         81% |        87% |        77% |        88% |        73% |        89% |     83% |
+| **lanczos_sharp**  |       100% |         94% |        99% |        99% |       100% |        90% |       105% |     98% |
+| **lanczos2**       |        87% |         76% |        85% |        77% |        88% |        70% |        85% |     81% |
+| **lanczos2_sharp** |        85% |         78% |        86% |        74% |        87% |        70% |        73% |     79% |
+| **robidoux**       |        87% |         76% |        87% |        77% |        89% |        72% |        94% |     83% |
+| **robidoux_sharp** |        90% |         76% |        88% |        77% |        89% |        74% |        82% |     82% |
+| **cosine**         |       101% |         95% |       100% |       102% |       100% |        95% |        82% |     96% |
+| spline             |        87% |         78% |        89% |        77% |        89% |        73% |        74% |     81% |
+# @formatter:on
 
 ### Filter benchmark results on Cloud Run with 2 vCPU, 8 GiB RAM, concurrency limit 100
 
