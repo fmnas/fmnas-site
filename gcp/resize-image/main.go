@@ -23,6 +23,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"gopkg.in/gographics/imagick.v3/imagick"
@@ -93,6 +94,79 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	}
 	nh := uint(h2)
 
+	filter := imagick.FILTER_LANCZOS
+	rf := strings.ToLower(r.PostFormValue("filter"))
+	switch rf {
+	case "":
+		filter = imagick.FILTER_LANCZOS
+	case "point":
+		filter = imagick.FILTER_POINT
+	case "box":
+		filter = imagick.FILTER_BOX
+	case "triangle":
+		filter = imagick.FILTER_TRIANGLE
+	case "hermite":
+		filter = imagick.FILTER_HERMITE
+	case "hanning":
+		filter = imagick.FILTER_HANNING
+	case "hamming":
+		filter = imagick.FILTER_HAMMING
+	case "blackman":
+		filter = imagick.FILTER_BLACKMAN
+	case "gaussian":
+		filter = imagick.FILTER_GAUSSIAN
+	case "quadratic":
+		filter = imagick.FILTER_QUADRATIC
+	case "cubic":
+		filter = imagick.FILTER_CUBIC
+	case "catrom":
+		filter = imagick.FILTER_CATROM
+	case "mitchell":
+		filter = imagick.FILTER_MITCHELL
+	case "jinc":
+		filter = imagick.FILTER_JINC
+	case "sinc":
+		filter = imagick.FILTER_SINC
+	case "sinc_fast":
+		filter = imagick.FILTER_SINC_FAST
+	case "kaiser":
+		filter = imagick.FILTER_KAISER
+	case "welsh":
+		filter = imagick.FILTER_WELSH
+	case "parzen":
+		filter = imagick.FILTER_PARZEN
+	case "bohman":
+		filter = imagick.FILTER_BOHMAN
+	case "bartlett":
+		filter = imagick.FILTER_BARTLETT
+	case "lagrange":
+		filter = imagick.FILTER_LAGRANGE
+	case "lanczos":
+		filter = imagick.FILTER_LANCZOS
+	case "lanczos_sharp":
+		filter = imagick.FILTER_LANCZOS_SHARP
+	case "lanczos2":
+		filter = imagick.FILTER_LANCZOS2
+	case "lanczos2_sharp":
+		filter = imagick.FILTER_LANCZOS2_SHARP
+	case "robidoux":
+		filter = imagick.FILTER_ROBIDOUX
+	case "robidoux_sharp":
+		filter = imagick.FILTER_ROBIDOUX_SHARP
+	case "cosine":
+		filter = imagick.FILTER_COSINE
+	case "spline":
+		filter = imagick.FILTER_SPLINE
+	case "sentinel":
+		filter = imagick.FILTER_SENTINEL
+	case "lanczos_radius":
+		filter = imagick.FILTER_LANCZOS_RADIUS
+	default:
+		http.Error(w, fmt.Sprintf("Unrecognized filter %v", rf), http.StatusBadRequest)
+		log.Printf("Unrecognized filter %v", rf)
+		return
+	}
+
 	imagick.Initialize()
 	defer imagick.Terminate()
 	mw := imagick.NewMagickWand()
@@ -109,7 +183,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	}
 	nw := ow * nh / oh
 
-	if err := mw.ResizeImage(nw, nh, imagick.FILTER_LANCZOS); err != nil {
+	if err := mw.ResizeImage(nw, nh, filter); err != nil {
 		http.Error(w, "Error resizing image", http.StatusInternalServerError)
 		log.Printf("Error resizing image: %v", err)
 		mw.Destroy()
