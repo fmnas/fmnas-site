@@ -64,7 +64,7 @@ void main([List<String>? args]) async {
     }
   }
 
-  // TODO: resize_image_test doesn't return after golden generation.
+  // TODO [#385]: resize_image_test doesn't return after golden generation.
 
   // TODO [#382]: Add resize-image failure tests.
 
