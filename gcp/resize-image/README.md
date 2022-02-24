@@ -11,6 +11,10 @@ I suggest running this with 2 vCPU / 4 GiB / 4 concurrency to reduce OOM and opt
 
 ### Benchmark results in Docker container (local)
 
+```
+
+```
+
 ### Benchmark results in Cloud Code container with 2 GiB RAM
 
 ### Benchmark results on Cloud Run with 1 vCPU, 2 GiB RAM, concurrency limit 100

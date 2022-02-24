@@ -8,6 +8,9 @@ image formats such as HEIC and WebP.
 I suggest running this with 2 vCPU / 4 GiB to prevent OOM. Google seems to handle large concurrency values well - this
 scales to 20+ instances when making 100 simultaneous requests to resize a large image.
 
+Performance for image-size is a much lower priority than resize-image, since the former never blocks user flow
+(assuming the asynchronous image tag generation is working right in the admin site).
+
 ### Benchmark results in Docker container (local)
 
 ```

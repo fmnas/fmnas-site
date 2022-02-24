@@ -71,7 +71,7 @@ class ResizeImage extends Service {
         }
         result.parallel = await resizeImage.benchmarkParallel(
             ResizeImage.generator(file.path, height),
-            parallelColumns,
+            parallelColumns.isEmpty ? defaultParallelColumns : parallelColumns,
             binarySearchLimit);
         yield result;
       }
