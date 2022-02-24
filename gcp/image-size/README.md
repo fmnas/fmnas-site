@@ -86,7 +86,14 @@ george.jpg  | 1.4 MB   | 4322x3289 | 1/1 in 546 ms, avg 546 ms     | 2/2 in 550 
 ### Benchmark results on Cloud Run with 1 vCPU, 4 GiB RAM, concurrency limit 100
 
 ```
-TODO
+Image       | Filesize | Size      | 1 requests                    | 2 requests                    | 5 requests                    | 10 requests                     | 25 requests                     | Max concurrency
+------------|----------|-----------|-------------------------------|-------------------------------|-------------------------------|---------------------------------|---------------------------------|----------------
+puget.heic  | 16.7 MB  | 9248x6936 | 1/1 in 10629 ms, avg 10629 ms | 2/2 in 23457 ms, avg 23247 ms | 5/5 in 49998 ms, avg 41774 ms | 10/10 in 47507 ms, avg 33983 ms | 25/25 in 59974 ms, avg 43137 ms |             100
+pigeons.jpg | 12.1 MB  | 4656x3492 | 1/1 in 840 ms, avg 840 ms     | 2/2 in 970 ms, avg 809 ms     | 5/5 in 844 ms, avg 754 ms     | 10/10 in 1403 ms, avg 831 ms    | 25/25 in 1659 ms, avg 1008 ms   |             100
+train.heic  | 16.4 MB  | 9248x6936 | 1/1 in 11715 ms, avg 11715 ms | 2/2 in 24789 ms, avg 24551 ms | 5/5 in 38877 ms, avg 32395 ms | 10/10 in 52909 ms, avg 32162 ms | 25/25 in 57172 ms, avg 31388 ms |              99
+litter.jpg  | 12.6 MB  | 8384x6035 | 1/1 in 1405 ms, avg 1405 ms   | 2/2 in 1582 ms, avg 1408 ms   | 5/5 in 1583 ms, avg 1431 ms   | 10/10 in 1897 ms, avg 1490 ms   | 25/25 in 4760 ms, avg 2554 ms   |             100
+dubai.heic  | 18.6 MB  | 9248x6936 | 1/1 in 13880 ms, avg 13880 ms | 1/2 in 12646 ms, avg 12646 ms | 5/5 in 29514 ms, avg 26284 ms | 10/10 in 27402 ms, avg 19976 ms | 25/25 in 60165 ms, avg 36415 ms |              25
+george.jpg  | 1.4 MB   | 4322x3289 | 1/1 in 495 ms, avg 495 ms     | 2/2 in 568 ms, avg 499 ms     | 5/5 in 1545 ms, avg 1044 ms   | 10/10 in 1460 ms, avg 674 ms    | 25/25 in 2479 ms, avg 1026 ms   |             100
 ```
 
 ### Benchmark results on Cloud Run with 2 vCPU, 4 GiB RAM, concurrency limit 100
