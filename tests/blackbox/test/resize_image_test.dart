@@ -45,7 +45,7 @@ void main([List<String>? args]) async {
     for (final height in heights) {
       test('resize $image to height $height', () async {
         await resizeImage.waitForService();
-        final file = File('goldens/resize_image_test/${height}_$image');
+        final file = File('goldens/resize_image_test/${image}_$height.jpg');
         if (!update) {
           expect(file.existsSync(), isTrue);
         }
