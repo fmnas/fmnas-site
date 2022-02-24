@@ -70,6 +70,9 @@
             </DockerEnvVarImpl>
           </list>
         </option>
+        <option name="buildCliOptions" value="--secret id=asm_pass,src=secrets/asm_pass.txt --secret id=db_pass,src=secrets/db_pass.txt --secret id=smtp_pass,src=secrets/smtp_pass.txt --secret id=api_credentials,src=secrets/api_credentials.txt " />
+        <option name="buildKitEnabled" value="true" />
+        <option name="command" value="" />
         <option name="containerName" value="" />
         <option name="sourceFilePath" value="apache.Dockerfile" />
       </settings>
