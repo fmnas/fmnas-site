@@ -25,7 +25,11 @@ jobs:
       - name: Enable Docker layer caching
         uses: satackey/action-docker-layer-caching@v0.0.11
         continue-on-error: true
-      - run: docker-compose up -d image-size.fmnas
+        with:
+          key: fmnas-{hash}
+          restore-keys: |
+            fmnas-
+      - run: docker-compose up -d --build image-size.fmnas
       - name: Find the ephemeral port
         run: |
           export IMAGE_SIZE_PORT=$(docker-compose ps | perl -lane '/image-size.+0:(\d+)->8080\/tcp/ && print $1')
