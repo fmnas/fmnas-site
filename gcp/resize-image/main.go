@@ -47,6 +47,10 @@ func main() {
 	}
 }
 
+func sanitize(s string) string {
+	return strings.Replace(strings.Replace(s, "\n", "", -1), "\r", "", -1)
+}
+
 func handler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Got a resize-image request, %v", time.Now())
 
@@ -89,7 +93,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	h2, err := strconv.Atoi(h1)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error parsing supplied height %v", h1), http.StatusBadRequest)
-		log.Printf("Error parsing supplied height %v", h1)
+		log.Printf("Error parsing supplied height %v", sanitize(h1))
 		return
 	}
 	nh := uint(h2)
@@ -159,7 +163,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		filter = imagick.FILTER_SPLINE
 	default:
 		http.Error(w, fmt.Sprintf("Unrecognized filter %v", rf), http.StatusBadRequest)
-		log.Printf("Unrecognized filter %v", rf)
+		log.Printf("Unrecognized filter %v", sanitize(rf))
 		return
 	}
 
