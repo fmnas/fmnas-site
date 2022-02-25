@@ -220,6 +220,10 @@ george.jpg  | 1.4 MB   | 4322x3289 | 1/1 in 4074 ms, avg 4074 ms   | 2/2 in 4169
 
 ### Benchmark results on Cloud Run with 2 vCPU, 8 GiB RAM, concurrency limit 100
 
+
+### Benchmark results on Cloud Run with 4 vCPU, 8 GiB RAM, concurrency limit 100
+
+
 ```
 Results for height 64:
 Image       | Filesize | Size      | 1 requests                  | 2 requests                    | 5 requests                    | 10 requests                     | 25 requests                     | Max concurrency
@@ -297,12 +301,6 @@ litter.jpg  | 12.6 MB  | 8384x6035 | 0/1 in 0 ms, avg 0 ms         | 0/2 in 0 ms
 dubai.heic  | 18.6 MB  | 9248x6936 | 0/1 in 0 ms, avg 0 ms         | 0/2 in 0 ms, avg 0 ms         | 2/5 in 26727 ms, avg 26661 ms | 8/10 in 24169 ms, avg 22453 ms  | 8/25 in 40661 ms, avg 30414 ms  |               1
 george.jpg  | 1.4 MB   | 4322x3289 | 1/1 in 4112 ms, avg 4112 ms   | 2/2 in 4024 ms, avg 3995 ms   | 5/5 in 6379 ms, avg 6182 ms   | 10/10 in 13588 ms, avg 13311 ms | 21/25 in 8564 ms, avg 6923 ms   |              20
 callie.jpg  | 352.6 KB | 800x600   | 1/1 in 705 ms, avg 705 ms     | 2/2 in 759 ms, avg 743 ms     | 5/5 in 27429 ms, avg 11358 ms | 10/10 in 1348 ms, avg 935 ms    | 25/25 in 1145 ms, avg 876 ms    |             100
-```
-
-### Benchmark results on Cloud Run with 4 vCPU, 8 GiB RAM, concurrency limit 100
-
-```
-TODO
 ```
 
 ### Benchmark results on Cloud Run with 4 vCPU, 16 GiB RAM, concurrency limit 100
