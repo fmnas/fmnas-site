@@ -69,8 +69,8 @@ services:
         - ga_id=
         - site_root=admin
     ports:
-      - "50080:80"
-      - "50443:443"
+      - "58080:80"
+      - "58443:443"
     secrets:
       - db_pass
       - smtp_pass
