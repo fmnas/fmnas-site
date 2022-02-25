@@ -2,7 +2,6 @@
   <configuration default="false" name="[Component] Apache - public" type="docker-deploy" factoryName="dockerfile" server-name="Docker">
     <deployment type="dockerfile">
       <settings>
-        <option name="imageTag" value="fmnas-public" />
         <option name="buildArgs">
           <list>
             <DockerEnvVarImpl>

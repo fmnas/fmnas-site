@@ -1,0 +1,87 @@
+# Copyright 2022 Google LLC
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# Docker Compose config used for tests. Not required for local development or deployment.
+
+version: "3.9"
+services:
+  public.fmnas:
+    build:
+      context: .
+      dockerfile: apache.Dockerfile
+      args:
+        - db_name=fmnas
+        - db_username=fmnas
+        - db_host=mysql.fmnas
+        - smtp_host=smtp.fmnas
+        - smtp_auth=false
+        - smtp_security=
+        - smtp_port=25
+        - smtp_username=
+        - image_size_endpoint=image-size.fmnas
+        - resize_image_endpoint=resize-image.fmnas
+        - print_pdf_endpoint=print-pdf.fmnas
+        - minify_html_endpoint=minify-html.fmnas
+        - asm_db=asm
+        - asm_host=mysql.fmnas
+        - asm_user=fmnas
+        - ga_id=
+        - site_root=public
+    ports:
+      - "50080:80"
+      - "50443:443"
+    secrets:
+      - db_pass
+      - smtp_pass
+      - asm_pass
+      - api_credentials
+  admin.fmnas:
+    build:
+      context: .
+      dockerfile: apache.Dockerfile
+      args:
+        - db_name=fmnas
+        - db_username=fmnas
+        - db_host=mysql.fmnas
+        - smtp_host=smtp.fmnas
+        - smtp_auth=false
+        - smtp_security=
+        - smtp_port=25
+        - smtp_username=
+        - image_size_endpoint=image-size.fmnas
+        - resize_image_endpoint=resize-image.fmnas
+        - print_pdf_endpoint=print-pdf.fmnas
+        - minify_html_endpoint=minify-html.fmnas
+        - asm_db=asm
+        - asm_host=mysql.fmnas
+        - asm_user=fmnas
+        - ga_id=
+        - site_root=admin
+    ports:
+      - "50080:80"
+      - "50443:443"
+    secrets:
+      - db_pass
+      - smtp_pass
+      - asm_pass
+      - api_credentials
+secrets:
+  db_pass:
+    file: secrets/db_pass.txt
+  smtp_pass:
+    file: secrets/smtp_pass.txt
+  asm_pass:
+    file: secrets/asm_pass.txt
+  api_credentials:
+    file: secrets/api_credentials.txt
