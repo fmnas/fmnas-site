@@ -25,6 +25,14 @@ import '../bin/service.dart';
 const imageDir = '../data/images';
 const parallelColumns = [1, 2, 3];
 
+const maxFailThreshold = 2;
+const maxUpdateThreshold = 0.7;
+const avgCompareThreshold = 3;
+const avgFailThreshold = 1.1;
+const avgUpdateThreshold = 0.9;
+const ramFailThreshold = 1.1;
+const ramUpdateThreshold = 0.9;
+
 void main() async {
   final List<ImageResult> results = [];
   final env = Service.environmentKey('IMAGE_SIZE_ENDPOINT');
