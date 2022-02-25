@@ -12,6 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+
 # Docker Compose config used for tests. Not required for local development or deployment.
 
 version: "3.9"
@@ -27,6 +28,13 @@ services:
     ports:
       - "51080:80"
       - "51443:443"
+    depends_on:
+      - mysql.fmnas
+      - smtp.fmnas
+      - resize-image.fmnas
+      - image-size.fmnas
+      - print-pdf.fmnas
+      - minify-html.fmnas
   admin.fmnas:
     build:
       context: .
@@ -38,6 +46,12 @@ services:
     ports:
       - "52080:80"
       - "52443:443"
+    depends_on:
+      - mysql.fmnas
+      - resize-image.fmnas
+      - image-size.fmnas
+      - print-pdf.fmnas
+      - minify-html.fmnas
   mysql.fmnas:
     build:
       context: .
@@ -54,20 +68,30 @@ services:
       - "50025:8025"
   resize-image.fmnas:
     build: gcp/resize-image
+    profiles:
+      - resize-image
   image-size.fmnas:
     build: gcp/image-size
+    profiles:
+      - image-size
   print-pdf.fmnas:
     image: node:lts
     volumes:
       - ./gcp/print-pdf:/gcp/print-pdf
     command: bash -c "cd /gcp/print-pdf && npm install && PORT=80 npm run start"
+    profiles:
+      - print-pdf
   minify-html.fmnas:
     image: node:lts
     volumes:
       - ./gcp/minify-html:/gcp/minify-html
     command: bash -c "cd /gcp/minify-html && npm install && PORT=80 npm run start"
-  dart:
-    image: dart
-    volumes:
-      - ./tests:/tests
-    command: bash -c "cd /tests/blackbox && dart pub get && sleep infinity"
+    profiles:
+      - minify-html
+  blackbox:
+    build: tests/blackbox
+    profiles:
+      - resize-image
+      - image-size
+      - print-pdf
+      - minify-html

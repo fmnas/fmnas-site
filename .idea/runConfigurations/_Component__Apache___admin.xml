@@ -14,7 +14,7 @@
             </DockerEnvVarImpl>
           </list>
         </option>
-        <option name="containerName" value="" />
+        <option name="containerName" value="fmnas_admin" />
         <option name="publishAllPorts" value="true" />
         <option name="sourceFilePath" value="apache.Dockerfile" />
       </settings>

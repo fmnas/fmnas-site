@@ -2,7 +2,7 @@
   <configuration default="false" name="[Component] MySQL" type="docker-deploy" factoryName="dockerfile" server-name="Docker">
     <deployment type="dockerfile">
       <settings>
-        <option name="containerName" value="" />
+        <option name="containerName" value="fmnas_mysql" />
         <option name="envVars">
           <list>
             <DockerEnvVarImpl>
