@@ -282,8 +282,8 @@ Image       | Filesize | Size      | 1 requests                    | 2 requests 
 puget.heic  | 16.7 MB  | 9248x6936 | 1/1 in 11965 ms, avg 11965 ms | 2/2 in 14934 ms, avg 14919 ms | 5/5 in 18159 ms, avg 17015 ms | 10/10 in 21540 ms, avg 18263 ms | 25/25 in 21948 ms, avg 17235 ms |             100
 pigeons.jpg | 12.1 MB  | 4656x3492 | 1/1 in 4106 ms, avg 4106 ms   | 2/2 in 4871 ms, avg 4862 ms   | 5/5 in 5165 ms, avg 5047 ms   | 10/10 in 5646 ms, avg 5266 ms   | 25/25 in 8040 ms, avg 6503 ms   |             100
 train.heic  | 16.4 MB  | 9248x6936 | 1/1 in 11887 ms, avg 11887 ms | 2/2 in 15036 ms, avg 15013 ms | 5/5 in 18102 ms, avg 16882 ms | 10/10 in 21434 ms, avg 18577 ms | 24/25 in 22712 ms, avg 19138 ms |              24
-litter.jpg  | 12.6 MB  |           | 1/1 in 8142 ms, avg 8142 ms   | 2/2 in 8848 ms, avg 8822 ms   | 5/5 in 10072 ms, avg 9805 ms  | 10/10 in 10173 ms, avg 9864 ms  | 25/25 in 11212 ms, avg 9590 ms  |              43
-dubai.heic  | 18.6 MB  |           | 1/1 in 12014 ms, avg 12014 ms | 2/2 in 15472 ms, avg 15416 ms | 5/5 in 18957 ms, avg 17761 ms | 10/10 in 19325 ms, avg 15679 ms | 25/25 in 23823 ms, avg 18543 ms |             100
+litter.jpg  | 12.6 MB  | 8384x6035 | 1/1 in 8142 ms, avg 8142 ms   | 2/2 in 8848 ms, avg 8822 ms   | 5/5 in 10072 ms, avg 9805 ms  | 10/10 in 10173 ms, avg 9864 ms  | 25/25 in 11212 ms, avg 9590 ms  |              43
+dubai.heic  | 18.6 MB  | 9248x6936 | 1/1 in 12014 ms, avg 12014 ms | 2/2 in 15472 ms, avg 15416 ms | 5/5 in 18957 ms, avg 17761 ms | 10/10 in 19325 ms, avg 15679 ms | 25/25 in 23823 ms, avg 18543 ms |             100
 george.jpg  | 1.4 MB   | 4322x3289 | 1/1 in 3831 ms, avg 3831 ms   | 2/2 in 3692 ms, avg 3650 ms   | 5/5 in 3912 ms, avg 3839 ms   | 10/10 in 5039 ms, avg 4710 ms   | 5/25 in 4007 ms, avg 3937 ms    |              24
 callie.jpg  | 352.6 KB | 800x600   | 1/1 in 714 ms, avg 714 ms     | 2/2 in 689 ms, avg 682 ms     | 5/5 in 712 ms, avg 702 ms     | 10/10 in 754 ms, avg 737 ms     | 25/25 in 1029 ms, avg 863 ms    |             100
 
