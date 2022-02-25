@@ -226,7 +226,6 @@ CREATE TABLE `statuses` (
 /*!50001 SET character_set_results     = utf8mb4 */;
 /*!50001 SET collation_connection      = utf8mb4_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
-/*!50013 DEFINER=`fmnas_web`@`localhost` SQL SECURITY DEFINER */
 /*!50001 VIEW `listings` AS select `lpet`.`id` AS `id`,`lpet`.`name` AS `name`,`lpet`.`species` AS `species`,`lpet`.`breed` AS `breed`,`lpet`.`dob` AS `dob`,`lpet`.`sex` AS `sex`,`lpet`.`fee` AS `fee`,`lpet`.`photo` AS `photo`,`lpet`.`description` AS `description`,`lpet`.`status` AS `status`,`lpet`.`bonded` AS `bonded`,`lpet`.`friend` AS `friend`,`lpet`.`adoption_date` AS `adoption_date`,`lpet`.`order` AS `order`,`lpet`.`legacy_path` AS `legacy_path`,`lpet`.`path` AS `path`,`lpet`.`modified` AS `modified`,`rpet`.`name` AS `friend_name`,`rpet`.`sex` AS `friend_sex`,`rpet`.`breed` AS `friend_breed`,`rpet`.`dob` AS `friend_dob`,`lpic`.`id` AS `pic_id`,`lpic`.`data` AS `pic_data`,`lpic`.`path` AS `pic_path`,`lpic`.`type` AS `pic_type`,`lpic`.`width` AS `pic_width`,`lpic`.`height` AS `pic_height`,`rpic`.`id` AS `friend_pic_id`,`rpic`.`data` AS `friend_pic_data`,`rpic`.`path` AS `friend_pic_path`,`rpic`.`type` AS `friend_pic_type`,`rpic`.`width` AS `friend_pic_width`,`rpic`.`height` AS `friend_pic_height`,`dsc`.`id` AS `dsc_id`,`dsc`.`data` AS `dsc_data`,`dsc`.`path` AS `dsc_path`,`dsc`.`type` AS `dsc_type`,if(`lpet`.`bonded` = 1,concat(`lpet`.`id`,replace(`lpet`.`name`,' ',''),`rpet`.`id`,replace(`rpet`.`name`,' ','')),concat(`lpet`.`id`,replace(`lpet`.`name`,' ',''))) AS `listing_path` from ((((`pets` `lpet` left join `pets` `rpet` on(`lpet`.`friend` = `rpet`.`id` and `lpet`.`bonded` = 1)) left join `assets` `dsc` on(`lpet`.`description` = `dsc`.`id`)) left join `assets` `lpic` on(`lpet`.`photo` = `lpic`.`id`)) left join `assets` `rpic` on(`rpet`.`photo` = `rpic`.`id`)) where `lpet`.`bonded` < 2 */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
@@ -241,4 +240,4 @@ CREATE TABLE `statuses` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-02-24 19:50:45
+-- Dump completed on 2022-02-24 22:25:34

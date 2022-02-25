@@ -42,16 +42,16 @@ Google owns the copyright to much of this code because it was written by a Googl
 To get a local server running, you will need:
 
 * Apache (or Litespeed, etc.)
-  * Debian packages: `apache2 libapache2-mod-php`
+	* Debian packages: `apache2 libapache2-mod-php`
 * PHP 8.1 and dependencies noted below
-  * Debian packages: `php php-gd php-mbstring php-mysql php-xml php-imagick php-curl php-sqlite3`
+	* Debian packages: `php php-gd php-mbstring php-mysql php-xml php-imagick php-curl php-sqlite3`
 * cURL on PATH
 * Node
-  * I suggest using NVM and enabling [deep shell integration](https://github.com/nvm-sh/nvm#deeper-shell-integration) to
-    avoid using the wrong node version.
+	* I suggest using NVM and enabling [deep shell integration](https://github.com/nvm-sh/nvm#deeper-shell-integration) to
+	  avoid using the wrong node version.
 * Composer
 * You may want to install the faster Dart version of [Sass](https://sass-lang.com/install):
-  * install the [Dart SDK](https://dart.dev/get-dart) and run `dart pub global activate sass`
+	* install the [Dart SDK](https://dart.dev/get-dart) and run `dart pub global activate sass`
 
 The [Dart SDK](https://dart.dev/get-dart) is required to run the blackbox tests locally.
 
@@ -98,10 +98,10 @@ After checking out the repository, run:
 * `npm install` for Node dependencies
 * Create the config file (change values as appropriate):
 	* ```shell
-    ts-node handleparse.ts secrets/config.php.hbs --db_name=database --db_username=username --db_pass=password \
-    --db_host=localhost --smtp_host=localhost --smtp_auth=false --smtp_port=25 \
-    --image_size_endpoint=https://localhost:50000 --resize_image_endpoint=https://localhost:50001 \
-    --print_pdf_endpoint=https://localhost:50002 --minify_html_endpoint=https://localhost:50003
+	ts-node handleparse.ts secrets/config.php.hbs --db_name=database --db_username=username --db_pass=password \
+	--db_host=localhost --smtp_host=localhost --smtp_auth=false --smtp_port=25 \
+	--image_size_endpoint=https://localhost:50000 --resize_image_endpoint=https://localhost:50001 \
+	--print_pdf_endpoint=https://localhost:50002 --minify_html_endpoint=https://localhost:50003
   ```
 * `composer install` for PHP dependencies
 * `sass public:public` for public site stylesheets
@@ -137,6 +137,10 @@ If the script is terminated abnormally, run it again so the cleanup steps run.
 
 ### Tests
 
+#### Blackbox tests
+
+There are blackbox tests for the GCP services located in tests/blackbox.
+
 #### Repo state tests
 
 The `.github/workflows/check-repo.yml` workflow checks that the repo is in a good state before merging. All of the
@@ -163,6 +167,13 @@ Don't try to change the name of one of the issues this creates. It will get chan
 ### Backups
 
 The `.github/workflows/backups.yml` workflow is used for nightly backups of untracked files on the FMNAS server.
+
+### Updating schema.sql and config.sql.hbs
+
+schema.sql is exported with `mysqldump --no-create-db --no-data [dbname] | grep -v DEFINER > schema.sql`.
+
+config.sql.hbs is made from a config.sql exported
+with `mysqldump --no-create-db --no-create-info --skip-triggers --skip-extended-insert [dbname] > config.sql`.
 
 ## Deployment
 
@@ -273,19 +284,19 @@ The following workflows in `.github/workflows` are used for deployment:
 * Linux (any POSIX-compatible OS should work)
 * Apache (Litespeed or any other web server with .htaccess and PHP support should work)
 * PHP 8.1
-  * ImageMagick
-  * GD
-    * libJPEG
-    * libPNG
-  * mysqli
-  * mbstring
-  * imagick
-  * curl
-  * php-xml
-  * sqlite3
-  * Composer
-  * Needs shell access (with `shell_exec`) and the following executables in PATH:
-    * `curl` to request caching uploaded images
+	* ImageMagick
+	* GD
+		* libJPEG
+		* libPNG
+	* mysqli
+	* mbstring
+	* imagick
+	* curl
+	* php-xml
+	* sqlite3
+	* Composer
+	* Needs shell access (with `shell_exec`) and the following executables in PATH:
+		* `curl` to request caching uploaded images
 * MySQL or MariaDB
 * Composer
 
@@ -299,24 +310,25 @@ On the build machine:
 * Build the scripts for the public site: `npm run build`
 * Build the admin site client: `npx vite build admin/client`
 * Set the config values in config.php.
-  * Run, for instance:
-    ```shell
-    npx ts-node handleparse.ts secrets/config.php.hbs --db_name=database --db_username=username --db_pass=password \
-    --db_host=localhost --smtp_host=smtp.gmail.com --smtp_auth=true --smtp_security=tls --smtp_port=587 \
-    --smtp_username=me@gmail.com --smtp_password=password \
-    --image_size_endpoint=https://image-size.gcp.forgetmenotshelter.org \
-    --resize_image_endpoint=https://resize-image.gcp.forgetmenotshelter.org \
-    --print_pdf_endpoint=https://us-central1-fmnas-automation.cloudfunctions.net/print-pdf \
-    --minify_html_endpoint=https://us-central1-fmnas-automation.cloudfunctions.net/minify-html
-    ```
-  * Alternatively, copy `secrets/config_sample.php` to `secrets/config.php` and update the configuration values
-    manually.
+	* Run, for instance:
+	  ```shell
+		npx ts-node handleparse.ts secrets/config.php.hbs --db_name=database --db_username=username --db_pass=password \
+		--db_host=localhost --smtp_host=smtp.gmail.com --smtp_auth=true --smtp_security=tls --smtp_port=587 \
+		--smtp_username=me@gmail.com --smtp_password=password \
+		--image_size_endpoint=https://image-size.gcp.forgetmenotshelter.org \
+		--resize_image_endpoint=https://resize-image.gcp.forgetmenotshelter.org \
+		--print_pdf_endpoint=https://us-central1-fmnas-automation.cloudfunctions.net/print-pdf \
+		--minify_html_endpoint=https://us-central1-fmnas-automation.cloudfunctions.net/minify-html
+		```
+	* Alternatively, copy `secrets/config_sample.php` to `secrets/config.php` and update the configuration values
+	  manually.
 * Update the public web templates in the `src/templates` and `src/errors` directories as desired.
-  * The current templates rely on the presence of `/assets/adopted.jpg` and `/assets/logo.png` in the public site.
+	* The current templates rely on the presence of `/assets/adopted.jpg` and `/assets/logo.png` in the public site.
 
 #### Deploy
 
-For initial deployment, import `schema.sql` into the MySQL database.
+For initial deployment, import `schema.sql` into the MySQL database, then compile `config.sql.hbs` with config values
+and import that.
 
 Upload the project and all built files to the web server.
 
