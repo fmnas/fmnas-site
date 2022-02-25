@@ -68,30 +68,19 @@ services:
       - "50025:8025"
   resize-image.fmnas:
     build: gcp/resize-image
-    profiles:
-      - resize-image
   image-size.fmnas:
     build: gcp/image-size
-    profiles:
-      - image-size
   print-pdf.fmnas:
     image: node:lts
     volumes:
       - ./gcp/print-pdf:/gcp/print-pdf
     command: bash -c "cd /gcp/print-pdf && npm install && PORT=80 npm run start"
-    profiles:
-      - print-pdf
   minify-html.fmnas:
     image: node:lts
     volumes:
       - ./gcp/minify-html:/gcp/minify-html
     command: bash -c "cd /gcp/minify-html && npm install && PORT=80 npm run start"
-    profiles:
-      - minify-html
   blackbox:
     build: tests/blackbox
     profiles:
-      - resize-image
-      - image-size
-      - print-pdf
-      - minify-html
+      - tests
