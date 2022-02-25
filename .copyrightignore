@@ -25,6 +25,7 @@ analysis_options.yaml
 # Files that don't support comments
 *.json
 .nvmrc
+secrets/*.txt
 
 # Documentation
 *.md
