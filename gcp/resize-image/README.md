@@ -23,7 +23,7 @@ gcloud artifacts docker images list us-central1-docker.pkg.dev/fmnas-automation/
 
 Cloud Code extension containers are limited to 2 GiB RAM and crash readily if there are many concurrent requests. In
 lieu of local load balancing between containers, you can instead use "Run resize-image on port 50000" or
-`docker run -p 50000:8080 resize-image` to run a single container with unlimited resources.
+`docker run -p 50000:8080 -m 40g resize-image` to run a single container with 40GB memory (adjust as appropriate).
 
 ### With Cloud Code
 
