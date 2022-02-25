@@ -20,16 +20,17 @@ jobs:
     name: Run image_size_regression_test
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@main
-      - name: Start the image-size container
-        run: docker-compose up -d image-size.fmnas
+      - uses: actions/checkout@main
+      - run: docker-compose pull image-size.fmnas
+      - name: Enable Docker layer caching
+        uses: satackey/action-docker-layer-caching@v0.0.11
+        continue-on-error: true
+      - run: docker-compose up -d image-size.fmnas
       - name: Find the ephemeral port
         run: |
           export IMAGE_SIZE_PORT=$(docker-compose ps | perl -lane '/image-size.+0:(\d+)->8080\/tcp/ && print $1')
           echo $IMAGE_SIZE_PORT
-      - name: Setup dart
-        uses: dart-lang/setup-dart@v1
+      - uses: dart-lang/setup-dart@v1
       - name: Install blackbox dependencies
         run: cd tests/blackbox && dart pub get
       - name: Wait for service
