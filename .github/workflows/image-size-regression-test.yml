@@ -48,7 +48,7 @@ jobs:
           cd tests/blackbox
           ENVIRONMENT_KEY="ubuntu-latest" \
           IMAGE_SIZE_ENDPOINT="http://localhost:${{ steps.port.outputs.port }}" \
-          dart test tests/image_size_regression_test.dart
+          dart test test/image_size_regression_test.dart
       - name: Bring down service
         if: always()
         run: docker-compose down
