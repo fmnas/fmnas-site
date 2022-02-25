@@ -20,6 +20,10 @@ jobs:
     name: Run image_size_regression_test
     runs-on: ubuntu-latest
     steps:
+      - name: Cancel previous runs
+        uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          access_token: ${{ github.token }}
       - uses: actions/checkout@main
       - run: docker-compose pull image-size.fmnas
       - name: Enable Docker layer caching
