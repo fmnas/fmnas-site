@@ -24,6 +24,10 @@ const imageDir = '../data/images';
 const parallelColumns = [1, 2, 3];
 
 void main() async {
+  print(Platform.localHostname);
+  print('${Platform.numberOfProcessors} processors');
+  print(Platform.resolvedExecutable);
+  print(Platform.environment);
   final List<ImageResult> results = [];
   await ImageSize.runBenchmark(
     endpoint: Platform.environment['IMAGE_SIZE_ENDPOINT'] ??
