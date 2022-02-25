@@ -63,27 +63,27 @@ void main([List<String>? args]) async {
       }, timeout: Timeout(Duration(minutes: 2)));
     }
 
-    // for (final filter in ResizeImage.filters) {
-    //   test('resize $image with filter $filter', () async {
-    //     await resizeImage.waitForService();
-    //     final golden = File('goldens/resize_image_test/${image}_$filter.jpg');
-    //     if (!update) {
-    //       expect(golden.existsSync(), isTrue);
-    //     }
-    //     final result = await resizeImage
-    //         .request(ResizeImage.generator('$imageDir/$image', 1080, filter));
-    //     final tempFile = File('${image}_$filter.tmp');
-    //     if (update) {
-    //       await golden.openWrite().addStream(result.data.stream);
-    //     } else {
-    //       final Uint8List goldenBytes = await golden.readAsBytes();
-    //       await tempFile.openWrite().addStream(result.data.stream);
-    //       final Uint8List responseBytes = await tempFile.readAsBytes();
-    //       tempFile.delete();
-    //       expect(goldenBytes, equals(responseBytes));
-    //     }
-    //   }, timeout: Timeout(Duration(minutes: 2)));
-    // }
+    for (final filter in ResizeImage.filters) {
+      test('resize $image with filter $filter', () async {
+        await resizeImage.waitForService();
+        final golden = File('goldens/resize_image_test/${image}_$filter.jpg');
+        if (!update) {
+          expect(golden.existsSync(), isTrue);
+        }
+        final result = await resizeImage
+            .request(ResizeImage.generator('$imageDir/$image', 1080, filter));
+        final tempFile = File('${image}_$filter.tmp');
+        if (update) {
+          await golden.openWrite().addStream(result.data.stream);
+        } else {
+          final Uint8List goldenBytes = await golden.readAsBytes();
+          await tempFile.openWrite().addStream(result.data.stream);
+          final Uint8List responseBytes = await tempFile.readAsBytes();
+          tempFile.delete();
+          expect(goldenBytes, equals(responseBytes));
+        }
+      }, timeout: Timeout(Duration(minutes: 2)));
+    }
   }
 
   // TODO [#385]: resize_image_test doesn't return after golden generation.
