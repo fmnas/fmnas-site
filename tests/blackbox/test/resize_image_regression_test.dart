@@ -46,5 +46,5 @@ void main() async {
     print('Filter $filter:');
     ImageResult.printAll(results);
   });
-  // TODO [$62194299903218000b359a3a]: Compare resize image regression test results.
+  // TODO [#394]: Compare resize image regression test results.
 }
