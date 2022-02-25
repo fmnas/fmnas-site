@@ -81,6 +81,8 @@ services:
       - ./gcp/minify-html:/gcp/minify-html
     command: bash -c "cd /gcp/minify-html && npm install && PORT=80 npm run start"
   blackbox:
-    build: tests/blackbox
+    build:
+      context: tests
+      dockerfile: blackbox.Dockerfile
     profiles:
       - tests
