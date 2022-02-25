@@ -26,8 +26,8 @@ services:
         - site_root=public
         - domain=public.fmnas
     ports:
-      - "51080:80"
-      - "51443:443"
+      - "80"
+      - "443"
     depends_on:
       - mysql.fmnas
       - smtp.fmnas
@@ -44,8 +44,8 @@ services:
         - site_root=admin
         - domain=admin.fmnas
     ports:
-      - "52080:80"
-      - "52443:443"
+      - "80"
+      - "443"
     depends_on:
       - mysql.fmnas
       - resize-image.fmnas
@@ -59,13 +59,13 @@ services:
     environment:
       - MYSQL_RANDOM_ROOT_PASSWORD=1
     ports:
-      - "51088:3306"
+      - "3306"
   smtp.fmnas:
     image: mailhog/mailhog
     environment:
       - MH_HOSTNAME="smtp.fmnas"
     ports:
-      - "50025:8025"
+      - "8025"
   resize-image.fmnas:
     build: gcp/resize-image
   image-size.fmnas:
