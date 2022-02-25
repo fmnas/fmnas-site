@@ -20,18 +20,49 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:json_annotation/json_annotation.dart';
 
+part 'service.g.dart';
+
+@JsonSerializable()
 class ParallelResult {
   ParallelResult(this.display, this.failed);
 
   String display;
   bool failed;
+
+  factory ParallelResult.fromJson(Map<String, dynamic> json) =>
+      _$ParallelResultFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ParallelResultToJson(this);
 }
 
+@JsonSerializable()
 class ParallelResults {
+  @JsonKey(fromJson: _mapFromJson, toJson: _mapToJson)
   SplayTreeMap<int, ParallelResult> columns = SplayTreeMap();
   int parallelLimit = 0;
   int? memory;
+
+  ParallelResults();
+
+  factory ParallelResults.fromJson(Map<String, dynamic> json) =>
+      _$ParallelResultsFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ParallelResultsToJson(this);
+
+  static Map<String, ParallelResult> _mapToJson(SplayTreeMap<int, ParallelResult> m) {
+    final output = <String, ParallelResult>{};
+    m.forEach((k, v) => output[k.toString()] = v);
+    return output;
+  }
+
+  static SplayTreeMap<int, ParallelResult> _mapFromJson(String s) {
+    final Map<String, ParallelResult> input = jsonDecode(s);
+    final output = SplayTreeMap<int, ParallelResult>();
+    input.forEach((k, v) => output[int.parse(k)] = v);
+    return output;
+  }
 }
 
 abstract class Service {

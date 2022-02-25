@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import 'dart:convert';
 import 'dart:io';
 
 import '../bin/image_size.dart';
@@ -40,5 +41,6 @@ void main() async {
     results.add(result);
   }).asFuture();
   ImageResult.printAll(results);
+  print(jsonEncode(results));
   // TODO [#393]: Compare image size regression test results.
 }
