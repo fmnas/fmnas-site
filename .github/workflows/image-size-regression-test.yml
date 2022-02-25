@@ -25,7 +25,9 @@ jobs:
       - name: Start the image-size container
         run: docker-compose up -d image-size.fmnas
       - name: Find the ephemeral port
-        run: docker-compose ps | perl -lane '/image-size.+0:(\d+)->8080\/tcp/ && print "::set-output name=port::$1"'
+        run: |
+          export IMAGE_SIZE_PORT=$(docker-compose ps | perl -lane '/image-size.+0:(\d+)->8080\/tcp/ && print $1')
+          echo $IMAGE_SIZE_PORT
       - name: Setup dart
         uses: dart-lang/setup-dart@v1
       - name: Install blackbox dependencies
@@ -33,7 +35,7 @@ jobs:
       - name: Wait for service
         run: wait-for-it
       - name: Run image_size_regression_test
-        run: IMAGE_SIZE_ENDPOINT=localhost:${{outputs.port}} dart test tests/image_size_regression_test.dart
+        run: IMAGE_SIZE_ENDPOINT="http://localhost:$IMAGE_SIZE_PORT" dart test tests/image_size_regression_test.dart
       - name: Bring down service
         if: always()
         run: docker-compose down
