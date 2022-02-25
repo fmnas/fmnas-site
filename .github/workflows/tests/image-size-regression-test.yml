@@ -1,0 +1,39 @@
+# Copyright 2022 Google LLC
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+name: Image size benchmark regression test
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    name: Run image_size_regression_test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+      - name: Start the image-size container
+        run: docker-compose up -d image-size.fmnas
+      - name: Find the ephemeral port
+        run: docker-compose ps | perl -lane '/image-size.+0:(\d+)->8080\/tcp/ && print "::set-output name=port::$1"'
+      - name: Setup dart
+        uses: dart-lang/setup-dart@v1
+      - name: Install blackbox dependencies
+        run: cd tests/blackbox && dart pub get
+      - name: Wait for service
+        run: wait-for-it
+      - name: Run image_size_regression_test
+        run: IMAGE_SIZE_ENDPOINT=localhost:${{outputs.port}} dart test tests/image_size_regression_test.dart
+      - name: Bring down service
+        if: always()
+        run: docker-compose down

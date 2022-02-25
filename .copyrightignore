@@ -15,13 +15,17 @@
 # Generated files
 go.mod
 go.sum
-composer.lock
+*.lock
+pubspec.yaml
+analysis_options.yaml
 /.idea
 .github/workflows/codeql-analysis.yml
+*.iml
 
 # Files that don't support comments
 *.json
 .nvmrc
+secrets/*.txt
 
 # Documentation
 *.md

@@ -1,0 +1,7 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Blackbox benchmark: image filters (remote)" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
+    <option name="arguments" value="--no-memory -e https://resize-image-test.gcp.forgetmenotshelter.org" />
+    <option name="filePath" value="$PROJECT_DIR$/tests/blackbox/bin/image_filters.dart" />
+    <method v="2" />
+  </configuration>
+</component>

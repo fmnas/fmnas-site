@@ -1,0 +1,90 @@
+# Copyright 2022 Google LLC
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+# Docker Compose config used for tests. Not required for local development or deployment.
+
+version: "3.9"
+services:
+  public.fmnas:
+    build:
+      context: .
+      dockerfile: apache.Dockerfile
+      args:
+        - smtp_port=1025
+        - site_root=public
+        - domain=public.fmnas
+    ports:
+      - "80"
+      - "443"
+    depends_on:
+      - mysql.fmnas
+      - smtp.fmnas
+      - resize-image.fmnas
+      - image-size.fmnas
+      - print-pdf.fmnas
+      - minify-html.fmnas
+  admin.fmnas:
+    build:
+      context: .
+      dockerfile: apache.Dockerfile
+      args:
+        - smtp_port=1025
+        - site_root=admin
+        - domain=admin.fmnas
+    ports:
+      - "80"
+      - "443"
+    depends_on:
+      - mysql.fmnas
+      - resize-image.fmnas
+      - image-size.fmnas
+      - print-pdf.fmnas
+      - minify-html.fmnas
+  mysql.fmnas:
+    build:
+      context: .
+      dockerfile: mysql.Dockerfile
+    environment:
+      - MYSQL_RANDOM_ROOT_PASSWORD=1
+    ports:
+      - "3306"
+  smtp.fmnas:
+    image: mailhog/mailhog
+    environment:
+      - MH_HOSTNAME="smtp.fmnas"
+    ports:
+      - "8025"
+  resize-image.fmnas:
+    build: gcp/resize-image
+    ports:
+      - "8080"
+  image-size.fmnas:
+    build: gcp/image-size
+    ports:
+      - "8080"
+  print-pdf.fmnas:
+    image: node:lts
+    volumes:
+      - ./gcp/print-pdf:/gcp/print-pdf
+    command: bash -c "cd /gcp/print-pdf && npm install && PORT=80 npm run start"
+    ports:
+      - "80"
+  minify-html.fmnas:
+    image: node:lts
+    volumes:
+      - ./gcp/minify-html:/gcp/minify-html
+    command: bash -c "cd /gcp/minify-html && npm install && PORT=80 npm run start"
+    ports:
+      - "80"

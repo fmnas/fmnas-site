@@ -17,22 +17,9 @@ updates:
   - package-ecosystem: composer
     directory: /
     schedule:
-      interval: weekly
-    versioning-strategy: increase
-    allow:
-      - dependency-name: whichbrowser/parser
-    target-branch: test
-    labels: [ ]
-    commit-message:
-      prefix: whichbrowser
-  - package-ecosystem: composer
-    directory: /
-    schedule:
       interval: monthly
     versioning-strategy: increase
     target-branch: test
-    ignore:
-      - dependency-name: whichbrowser/parser
     labels: [ ]
     commit-message:
       prefix: composer

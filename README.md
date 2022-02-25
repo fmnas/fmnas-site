@@ -53,6 +53,8 @@ To get a local server running, you will need:
 * You may want to install the faster Dart version of [Sass](https://sass-lang.com/install):
 	* install the [Dart SDK](https://dart.dev/get-dart) and run `dart pub global activate sass`
 
+The [Dart SDK](https://dart.dev/get-dart) is required to run the blackbox tests locally.
+
 ### Workflow
 
 The repository includes configs for IntelliJ/PHPStorm.
@@ -96,10 +98,10 @@ After checking out the repository, run:
 * `npm install` for Node dependencies
 * Create the config file (change values as appropriate):
 	* ```shell
-    ts-node handleparse.ts secrets/config.php.hbs --db_name=database --db_username=username --db_pass=password \
-    --db_host=localhost --smtp_host=localhost --smtp_auth=false --smtp_port=25 \
-    --image_size_endpoint=https://localhost:50000 --resize_image_endpoint=https://localhost:50001 \
-    --print_pdf_endpoint=https://localhost:50002 --minify_html_endpoint=https://localhost:50003
+	ts-node handleparse.ts secrets/config.php.hbs --db_name=database --db_username=username --db_pass=password \
+	--db_host=localhost --smtp_host=localhost --smtp_auth=false --smtp_port=25 \
+	--image_size_endpoint=https://localhost:50000 --resize_image_endpoint=https://localhost:50001 \
+	--print_pdf_endpoint=https://localhost:50002 --minify_html_endpoint=https://localhost:50003
   ```
 * `composer install` for PHP dependencies
 * `sass public:public` for public site stylesheets
@@ -135,6 +137,10 @@ If the script is terminated abnormally, run it again so the cleanup steps run.
 
 ### Tests
 
+#### Blackbox tests
+
+There are blackbox tests for the GCP services located in tests/blackbox.
+
 #### Repo state tests
 
 The `.github/workflows/check-repo.yml` workflow checks that the repo is in a good state before merging. All of the
@@ -161,6 +167,13 @@ Don't try to change the name of one of the issues this creates. It will get chan
 ### Backups
 
 The `.github/workflows/backups.yml` workflow is used for nightly backups of untracked files on the FMNAS server.
+
+### Updating schema.sql and config.sql.hbs
+
+schema.sql is exported with `mysqldump --no-create-db --no-data [dbname] | grep -v DEFINER > schema.sql`.
+
+config.sql.hbs is made from a config.sql exported
+with `mysqldump --no-create-db --no-create-info --skip-triggers --skip-extended-insert [dbname] > config.sql`.
 
 ## Deployment
 
@@ -285,12 +298,14 @@ The following workflows in `.github/workflows` are used for deployment:
 	* Needs shell access (with `shell_exec`) and the following executables in PATH:
 		* `curl` to request caching uploaded images
 * MySQL or MariaDB
+* Composer
 
 #### Build
 
 On the build machine:
 
 * Install NPM build dependencies: `npm install --only=dev`
+* Install PHP dependencies: `composer build`
 * Build the stylesheets for the public site: `npx sass --style=compressed public:public`
 * Build the scripts for the public site: `npm run build`
 * Build the admin site client: `npx vite build admin/client`
@@ -303,7 +318,7 @@ On the build machine:
 		--image_size_endpoint=https://image-size.gcp.forgetmenotshelter.org \
 		--resize_image_endpoint=https://resize-image.gcp.forgetmenotshelter.org \
 		--print_pdf_endpoint=https://us-central1-fmnas-automation.cloudfunctions.net/print-pdf \
-  	--minify_html_endpoint=https://us-central1-fmnas-automation.cloudfunctions.net/minify-html
+		--minify_html_endpoint=https://us-central1-fmnas-automation.cloudfunctions.net/minify-html
 		```
 	* Alternatively, copy `secrets/config_sample.php` to `secrets/config.php` and update the configuration values
 	  manually.
@@ -312,7 +327,8 @@ On the build machine:
 
 #### Deploy
 
-For initial deployment, import `schema.sql` into the MySQL database.
+For initial deployment, import `schema.sql` into the MySQL database, then compile `config.sql.hbs` with config values
+and import that.
 
 Upload the project and all built files to the web server.
 

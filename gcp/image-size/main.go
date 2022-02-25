@@ -89,6 +89,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	if err := mw.ReadImageBlob(b); err != nil {
 		http.Error(w, "Error reading image", http.StatusBadRequest)
 		log.Printf("Error reading image: %v", err)
+		mw.Destroy()
 		return
 	}
 
@@ -101,4 +102,5 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error writing response", http.StatusInternalServerError)
 		log.Printf("Error writing response: %v", err)
 	}
+	mw.Destroy()
 }

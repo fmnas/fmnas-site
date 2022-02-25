@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Blackbox: image-size (remote)" type="DartTestRunConfigurationType" factoryName="Dart Test">
+    <option name="envs">
+      <entry key="IMAGE_SIZE_ENDPOINT" value="https://image-size-test.gcp.forgetmenotshelter.org" />
+    </option>
+    <option name="filePath" value="$PROJECT_DIR$/tests/blackbox/test/image_size_test.dart" />
+    <method v="2" />
+  </configuration>
+</component>

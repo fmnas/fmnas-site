@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Run GCP services" type="Multirun" separateTabs="false" reuseTabsWithFailures="true" startOneByOne="false" markFailedProcess="true" hideSuccessProcess="true" delayTime="0.2">
+    <runConfiguration name="Run resize-image on port 50000" type="Docker" />
+    <runConfiguration name="Run image-size on port 50001" type="Docker" />
+    <runConfiguration name="Run print-pdf on port 50002" type="npm" />
+    <runConfiguration name="Run minify-html on port 50003" type="npm" />
+    <method v="2" />
+  </configuration>
+</component>

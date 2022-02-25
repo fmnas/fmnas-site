@@ -1,185 +1,257 @@
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
-START TRANSACTION;
-SET time_zone = "+00:00";
+# Copyright 2022 Google LLC
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT = @@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS = @@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION = @@COLLATION_CONNECTION */;
+-- MariaDB dump 10.19  Distrib 10.6.5-MariaDB, for debian-linux-gnu (x86_64)
+--
+-- Host: localhost    Database: fmnas_dev
+-- ------------------------------------------------------
+-- Server version	10.6.5-MariaDB-2
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
+--
+-- Table structure for table `assets`
+--
 
-CREATE TABLE assets
-(
-	id   int(11) NOT NULL,
-	path varchar(2048) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-	data text COLLATE utf8mb4_unicode_ci,
-	type varchar(255) COLLATE utf8mb4_unicode_ci  DEFAULT NULL
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_unicode_ci;
+DROP TABLE IF EXISTS `assets`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `assets` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `path` varchar(2048) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `data` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `width` mediumint(9) DEFAULT NULL,
+  `height` mediumint(9) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `path` (`path`(768))
+) ENGINE=InnoDB AUTO_INCREMENT=4186 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-CREATE TABLE config
-(
-	config_key   varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
-	config_value text COLLATE utf8mb4_unicode_ci
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_unicode_ci COMMENT ='Global configuration values; these are cached by the backend';
+--
+-- Table structure for table `config`
+--
 
--- TODO [#67]: Replace schema.sql with schema.sql.hbs
-INSERT INTO config
-VALUES ('address', '49&nbsp;W&nbsp;Curlew&nbsp;Lake&nbsp;Rd\nRepublic&nbsp;WA&nbsp;99166‑8742'),
-       ('admin_domain', 'admin.fmnas.org'),
-       ('default_email_user', 'adopt'),
-       ('fax', '208-410-8200'),
-       ('longname', 'Forget Me Not Animal Shelter of Ferry County'),
-       ('phone', '(509)&nbsp;775-2308'),
-       ('phone_intl', '+15097752308'),
-       ('public_domain', 'fmnas.org'),
-       ('shortname', 'Forget Me Not Animal Shelter'),
-       ('transport_date', '2021-12-06');
+DROP TABLE IF EXISTS `config`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `config` (
+  `config_key` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `config_value` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`config_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Global configuration values; these are cached by the backend';
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-CREATE TABLE pets
-(
-	id          varchar(15) COLLATE utf8mb4_unicode_ci  NOT NULL,
-	name        varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-	species     tinyint(4)                                       DEFAULT NULL,
-	breed       varchar(1023) COLLATE utf8mb4_unicode_ci         DEFAULT NULL COMMENT 'or other description',
-	dob         date                                             DEFAULT NULL,
-	sex         tinyint(4)                                       DEFAULT NULL,
-	fee         varchar(255) COLLATE utf8mb4_unicode_ci          DEFAULT NULL,
-	photo       int(11)                                          DEFAULT NULL,
-	description int(11)                                          DEFAULT NULL,
-	status      smallint(6)                             NOT NULL DEFAULT '1',
-	plural      tinyint(1)                                       DEFAULT '0',
-	legacy_path varchar(270) COLLATE utf8mb4_unicode_ci GENERATED ALWAYS AS (concat(`id`, `name`)) VIRTUAL,
-	path        varchar(270) COLLATE utf8mb4_unicode_ci GENERATED ALWAYS AS (concat(`id`, replace(`name`, ' ', ''))) VIRTUAL
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_unicode_ci;
+--
+-- Temporary table structure for view `listings`
+--
 
-CREATE TABLE photos
-(
-	pet   varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-	photo int(11)                                 NOT NULL
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_unicode_ci;
+DROP TABLE IF EXISTS `listings`;
+/*!50001 DROP VIEW IF EXISTS `listings`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE TABLE `listings` (
+  `id` tinyint NOT NULL,
+  `name` tinyint NOT NULL,
+  `species` tinyint NOT NULL,
+  `breed` tinyint NOT NULL,
+  `dob` tinyint NOT NULL,
+  `sex` tinyint NOT NULL,
+  `fee` tinyint NOT NULL,
+  `photo` tinyint NOT NULL,
+  `description` tinyint NOT NULL,
+  `status` tinyint NOT NULL,
+  `bonded` tinyint NOT NULL,
+  `friend` tinyint NOT NULL,
+  `adoption_date` tinyint NOT NULL,
+  `order` tinyint NOT NULL,
+  `legacy_path` tinyint NOT NULL,
+  `path` tinyint NOT NULL,
+  `modified` tinyint NOT NULL,
+  `friend_name` tinyint NOT NULL,
+  `friend_sex` tinyint NOT NULL,
+  `friend_breed` tinyint NOT NULL,
+  `friend_dob` tinyint NOT NULL,
+  `pic_id` tinyint NOT NULL,
+  `pic_data` tinyint NOT NULL,
+  `pic_path` tinyint NOT NULL,
+  `pic_type` tinyint NOT NULL,
+  `pic_width` tinyint NOT NULL,
+  `pic_height` tinyint NOT NULL,
+  `friend_pic_id` tinyint NOT NULL,
+  `friend_pic_data` tinyint NOT NULL,
+  `friend_pic_path` tinyint NOT NULL,
+  `friend_pic_type` tinyint NOT NULL,
+  `friend_pic_width` tinyint NOT NULL,
+  `friend_pic_height` tinyint NOT NULL,
+  `dsc_id` tinyint NOT NULL,
+  `dsc_data` tinyint NOT NULL,
+  `dsc_path` tinyint NOT NULL,
+  `dsc_type` tinyint NOT NULL,
+  `listing_path` tinyint NOT NULL
+) ENGINE=MyISAM */;
+SET character_set_client = @saved_cs_client;
 
-CREATE TABLE sexes
-(
-	id   tinyint(4)                              NOT NULL,
-	name varchar(127) COLLATE utf8mb4_unicode_ci NOT NULL
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_unicode_ci;
+--
+-- Table structure for table `pets`
+--
 
-INSERT INTO sexes
-VALUES (1, 'male'),
-       (2, 'female');
+DROP TABLE IF EXISTS `pets`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `pets` (
+  `id` varchar(15) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `species` tinyint(4) DEFAULT NULL,
+  `breed` varchar(1023) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'or other description',
+  `dob` date DEFAULT NULL,
+  `sex` tinyint(4) DEFAULT NULL,
+  `fee` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `photo` int(11) DEFAULT NULL,
+  `description` int(11) DEFAULT NULL,
+  `status` smallint(6) NOT NULL DEFAULT 1,
+  `bonded` tinyint(2) NOT NULL DEFAULT 0,
+  `friend` varchar(15) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `adoption_date` date DEFAULT NULL,
+  `order` int(11) DEFAULT NULL,
+  `legacy_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `path` varchar(270) GENERATED ALWAYS AS (concat(`id`,replace(`name`,' ',''))) VIRTUAL,
+  `modified` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `path` (`path`),
+  KEY `name` (`name`),
+  KEY `description` (`description`),
+  KEY `photo` (`photo`),
+  KEY `sex` (`sex`),
+  KEY `species` (`species`),
+  KEY `status` (`status`),
+  KEY `pets_pets_id_fk` (`friend`),
+  CONSTRAINT `pets_ibfk_1` FOREIGN KEY (`description`) REFERENCES `assets` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `pets_ibfk_2` FOREIGN KEY (`photo`) REFERENCES `assets` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `pets_ibfk_3` FOREIGN KEY (`sex`) REFERENCES `sexes` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `pets_ibfk_4` FOREIGN KEY (`species`) REFERENCES `species` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `pets_ibfk_5` FOREIGN KEY (`status`) REFERENCES `statuses` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `pets_pets_id_fk` FOREIGN KEY (`friend`) REFERENCES `pets` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-CREATE TABLE species
-(
-	id              tinyint(4)                              NOT NULL,
-	name            varchar(127) COLLATE utf8mb4_unicode_ci NOT NULL,
-	plural          varchar(127) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-	young           varchar(127) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-	young_plural    varchar(127) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-	old             varchar(127) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-	old_plural      varchar(127) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-	age_unit_cutoff smallint(6)                             DEFAULT NULL COMMENT 'in months',
-	young_cutoff    smallint(6)                             DEFAULT NULL COMMENT 'in months',
-	old_cutoff      smallint(6)                             DEFAULT NULL COMMENT 'in months'
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_unicode_ci;
+--
+-- Table structure for table `photos`
+--
 
-INSERT INTO species
-VALUES (1, 'cat', 'cats', 'kitten', 'kittens', 'senior cat', 'senior cats', 12, 6, 96),
-       (2, 'dog', 'dogs', 'puppy', 'puppies', 'senior dog', 'senior dogs', 12, 6, 96);
+DROP TABLE IF EXISTS `photos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `photos` (
+  `pet` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `photo` int(11) NOT NULL,
+  `order` int(11) DEFAULT NULL,
+  PRIMARY KEY (`pet`,`photo`),
+  KEY `pet` (`pet`),
+  KEY `photo` (`photo`),
+  CONSTRAINT `photos_ibfk_1` FOREIGN KEY (`photo`) REFERENCES `assets` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `photos_ibfk_2` FOREIGN KEY (`pet`) REFERENCES `pets` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-CREATE TABLE statuses
-(
-	id          smallint(6)                             NOT NULL,
-	name        varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-	display     tinyint(1)                                       DEFAULT NULL,
-	listed      tinyint(1)                              NOT NULL DEFAULT '1',
-	description text COLLATE utf8mb4_unicode_ci
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_unicode_ci;
+--
+-- Table structure for table `sexes`
+--
 
-INSERT INTO statuses
-VALUES (1, 'Adoptable', 0, 1, ''),
-       (2, 'Adopted', 1, 0, ''),
-       (3, 'Adoption Pending', 1, 1,
-        'We either have so many applications we are confident of finding the pet\'s new home from among them, OR the pet has been offered to an applicant who has accepted placement, and we will be delivering the pet on the next Seattle or Spokane trip.\r\n\r\nYou can submit an application for one of these pets if you\'d like to be a \"backup home\" should anything not work out with the prior applicants, but it\'s a longshot.'),
-       (4, 'Applications Closed', 1, 1,
-        'We have received a fairly large number of applications in a fairly short period of time, and need a chance to review them to see if any will be a great match to the particular pet. If the right match is not found in the applications already received, we will REOPEN applications.\r\n\r\nYou may still submit an application for one of these pets, and we will review it right away if the right match is not found first.');
+DROP TABLE IF EXISTS `sexes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `sexes` (
+  `id` tinyint(4) NOT NULL AUTO_INCREMENT,
+  `name` varchar(127) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
+--
+-- Table structure for table `species`
+--
 
-ALTER TABLE assets
-	ADD PRIMARY KEY (id),
-	ADD UNIQUE KEY path (path(768));
+DROP TABLE IF EXISTS `species`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `species` (
+  `id` tinyint(4) NOT NULL AUTO_INCREMENT,
+  `name` varchar(127) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `plural` varchar(127) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `young` varchar(127) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `young_plural` varchar(127) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `old` varchar(127) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `old_plural` varchar(127) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `age_unit_cutoff` smallint(6) DEFAULT NULL COMMENT 'in months',
+  `young_cutoff` smallint(6) DEFAULT NULL COMMENT 'in months',
+  `old_cutoff` smallint(6) DEFAULT NULL COMMENT 'in months',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-ALTER TABLE config
-	ADD PRIMARY KEY (config_key);
+--
+-- Table structure for table `statuses`
+--
 
-ALTER TABLE pets
-	ADD PRIMARY KEY (id),
-	ADD UNIQUE KEY legacy_path (legacy_path),
-	ADD UNIQUE KEY path (path),
-	ADD KEY name (name),
-	ADD KEY description (description),
-	ADD KEY photo (photo),
-	ADD KEY sex (sex),
-	ADD KEY species (species),
-	ADD KEY status (status);
+DROP TABLE IF EXISTS `statuses`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `statuses` (
+  `id` smallint(6) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `display` tinyint(1) DEFAULT NULL,
+  `listed` tinyint(1) NOT NULL DEFAULT 1,
+  `description` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-ALTER TABLE photos
-	ADD PRIMARY KEY (pet, photo),
-	ADD KEY pet (pet),
-	ADD KEY photo (photo);
+--
+-- Final view structure for view `listings`
+--
 
-ALTER TABLE sexes
-	ADD PRIMARY KEY (id);
+/*!50001 DROP TABLE IF EXISTS `listings`*/;
+/*!50001 DROP VIEW IF EXISTS `listings`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_general_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50001 VIEW `listings` AS select `lpet`.`id` AS `id`,`lpet`.`name` AS `name`,`lpet`.`species` AS `species`,`lpet`.`breed` AS `breed`,`lpet`.`dob` AS `dob`,`lpet`.`sex` AS `sex`,`lpet`.`fee` AS `fee`,`lpet`.`photo` AS `photo`,`lpet`.`description` AS `description`,`lpet`.`status` AS `status`,`lpet`.`bonded` AS `bonded`,`lpet`.`friend` AS `friend`,`lpet`.`adoption_date` AS `adoption_date`,`lpet`.`order` AS `order`,`lpet`.`legacy_path` AS `legacy_path`,`lpet`.`path` AS `path`,`lpet`.`modified` AS `modified`,`rpet`.`name` AS `friend_name`,`rpet`.`sex` AS `friend_sex`,`rpet`.`breed` AS `friend_breed`,`rpet`.`dob` AS `friend_dob`,`lpic`.`id` AS `pic_id`,`lpic`.`data` AS `pic_data`,`lpic`.`path` AS `pic_path`,`lpic`.`type` AS `pic_type`,`lpic`.`width` AS `pic_width`,`lpic`.`height` AS `pic_height`,`rpic`.`id` AS `friend_pic_id`,`rpic`.`data` AS `friend_pic_data`,`rpic`.`path` AS `friend_pic_path`,`rpic`.`type` AS `friend_pic_type`,`rpic`.`width` AS `friend_pic_width`,`rpic`.`height` AS `friend_pic_height`,`dsc`.`id` AS `dsc_id`,`dsc`.`data` AS `dsc_data`,`dsc`.`path` AS `dsc_path`,`dsc`.`type` AS `dsc_type`,if(`lpet`.`bonded` = 1,concat(`lpet`.`id`,replace(`lpet`.`name`,' ',''),`rpet`.`id`,replace(`rpet`.`name`,' ','')),concat(`lpet`.`id`,replace(`lpet`.`name`,' ',''))) AS `listing_path` from ((((`pets` `lpet` left join `pets` `rpet` on(`lpet`.`friend` = `rpet`.`id` and `lpet`.`bonded` = 1)) left join `assets` `dsc` on(`lpet`.`description` = `dsc`.`id`)) left join `assets` `lpic` on(`lpet`.`photo` = `lpic`.`id`)) left join `assets` `rpic` on(`rpet`.`photo` = `rpic`.`id`)) where `lpet`.`bonded` < 2 */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
-ALTER TABLE species
-	ADD PRIMARY KEY (id);
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
-ALTER TABLE statuses
-	ADD PRIMARY KEY (id);
-
-
-ALTER TABLE assets
-	MODIFY id int(11) NOT NULL AUTO_INCREMENT;
-
-ALTER TABLE sexes
-	MODIFY id tinyint(4) NOT NULL AUTO_INCREMENT,
-	AUTO_INCREMENT = 3;
-
-ALTER TABLE species
-	MODIFY id tinyint(4) NOT NULL AUTO_INCREMENT,
-	AUTO_INCREMENT = 3;
-
-ALTER TABLE statuses
-	MODIFY id smallint(6) NOT NULL AUTO_INCREMENT,
-	AUTO_INCREMENT = 6;
-
-
-ALTER TABLE pets
-	ADD CONSTRAINT pets_ibfk_1 FOREIGN KEY (description) REFERENCES assets (id) ON DELETE SET NULL ON UPDATE CASCADE,
-	ADD CONSTRAINT pets_ibfk_2 FOREIGN KEY (photo) REFERENCES assets (id) ON DELETE SET NULL ON UPDATE CASCADE,
-	ADD CONSTRAINT pets_ibfk_3 FOREIGN KEY (sex) REFERENCES sexes (id) ON DELETE SET NULL ON UPDATE CASCADE,
-	ADD CONSTRAINT pets_ibfk_4 FOREIGN KEY (species) REFERENCES species (id) ON DELETE SET NULL ON UPDATE CASCADE,
-	ADD CONSTRAINT pets_ibfk_5 FOREIGN KEY (status) REFERENCES statuses (id) ON UPDATE CASCADE;
-
-ALTER TABLE photos
-	ADD CONSTRAINT photos_ibfk_1 FOREIGN KEY (photo) REFERENCES assets (id) ON DELETE CASCADE ON UPDATE CASCADE,
-	ADD CONSTRAINT photos_ibfk_2 FOREIGN KEY (pet) REFERENCES pets (id) ON DELETE CASCADE ON UPDATE CASCADE;
-COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT = @OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS = @OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION = @OLD_COLLATION_CONNECTION */;
+-- Dump completed on 2022-02-24 22:25:34

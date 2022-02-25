@@ -32,6 +32,8 @@ jobs:
           ref: test
       - name: Create local branch
         run: git checkout -b test_deployment
+      - name: Remove unneeded directories
+        run: rm -rf .github .idea gcp tests
       - name: Set up Node
         uses: actions/setup-node@v2
         with:

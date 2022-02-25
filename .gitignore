@@ -1,5 +1,9 @@
 secrets/*
 !secrets/*.hbs
+!secrets/asm_pass.txt
+!secrets/db_pass.txt
+!secrets/smtp_pass.txt
+!secrets/api_credentials.txt
 
 /log
 
@@ -256,3 +260,6 @@ composer.phar
 
 # Nano
 *.swp
+
+
+.idea/sonarlint

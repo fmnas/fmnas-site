@@ -139,9 +139,16 @@ class FormConfig {
 			<?php
 		};
 
-		$this->emails = function(array $formData): array {
+		$this->emails = function(/*array $formData*/): array {
 			$email = new EmailAddress('webmaster@' . $_SERVER['HTTP_HOST']);
-			$config = new FormEmailConfig($email, [$email], 'Form Data');
+			$config = new FormEmailConfig($email, [$email], 'Form Data', new SMTPConfig(
+					host: 'localhost',
+					security: '',
+					port: 25,
+					auth: false,
+					user: 'root',
+					password: '',
+			));
 			return [$config];
 		};
 		$this->method = HTTPMethod::EITHER;
@@ -199,10 +206,11 @@ class FormConfig {
 			return (is_uploaded_file($metadata["tmp_name"]) || ($metadata["ignore_is_uploaded"] ?? false)) &&
 					!$metadata["error"];
 		};
-		$this->received = function(array $formData): void {
-
+		$this->received = function(/*array $formData*/): void {
+			// no-op by default
 		};
-		$this->updateData = function(array &$data, array &$files): void {
+		$this->updateData = function(/*array &$data, array &$files*/): void {
+			// no-op by default
 		};
 	}
 }

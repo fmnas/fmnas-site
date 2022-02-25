@@ -1,0 +1,24 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="[Component] Apache - admin" type="docker-deploy" factoryName="dockerfile" server-name="Docker">
+    <deployment type="dockerfile">
+      <settings>
+        <option name="buildArgs">
+          <list>
+            <DockerEnvVarImpl>
+              <option name="name" value="site_root" />
+              <option name="value" value="admin" />
+            </DockerEnvVarImpl>
+            <DockerEnvVarImpl>
+              <option name="name" value="domain" />
+              <option name="value" value="admin.fmnas" />
+            </DockerEnvVarImpl>
+          </list>
+        </option>
+        <option name="containerName" value="fmnas_admin" />
+        <option name="publishAllPorts" value="true" />
+        <option name="sourceFilePath" value="apache.Dockerfile" />
+      </settings>
+    </deployment>
+    <method v="2" />
+  </configuration>
+</component>
