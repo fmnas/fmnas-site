@@ -20,16 +20,14 @@ import 'dart:io';
 
 import '../bin/image_size.dart';
 import '../bin/results.dart';
+import '../bin/service.dart';
 
 const imageDir = '../data/images';
 const parallelColumns = [1, 2, 3];
 
 void main() async {
-  print(Platform.localHostname);
-  print('${Platform.numberOfProcessors} processors');
-  print(Platform.resolvedExecutable);
-  print(Platform.environment);
   final List<ImageResult> results = [];
+  final env = Service.environmentKey('IMAGE_SIZE_ENDPOINT');
   await ImageSize.runBenchmark(
     endpoint: Platform.environment['IMAGE_SIZE_ENDPOINT'] ??
         ImageSize.defaultEndpoint,
@@ -41,6 +39,6 @@ void main() async {
     results.add(result);
   }).asFuture();
   ImageResult.printAll(results);
-  print(jsonEncode(results));
+  print(JsonEncoder.withIndent('\t').convert({env: results}));
   // TODO [#393]: Compare image size regression test results.
 }

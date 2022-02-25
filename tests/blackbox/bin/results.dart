@@ -34,7 +34,7 @@ class ImageResult {
   String toString() {
     var str = '$name ($size, $dimensions)\n';
     parallel.columns.forEach((int count, ParallelResult result) {
-      str += '  $count requests: ${result.display}\n';
+      str += '  $count request${count == 1 ? '' : 's'}: $result\n';
     });
     str += 'Max concurrency: ${parallel.parallelLimit}\n\n';
     return str;
@@ -55,8 +55,7 @@ class ImageResult {
             result.name,
             result.size,
             result.dimensions,
-            ...result.parallel.columns.values
-                .map((parallelResult) => parallelResult.display),
+            ...result.parallel.columns.values,
             result.parallel.parallelLimit.toString()
           ])
     ]));

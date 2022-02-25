@@ -26,10 +26,41 @@ part 'service.g.dart';
 
 @JsonSerializable()
 class ParallelResult {
-  ParallelResult(this.display, this.failed);
+  ParallelResult(this.succeeded, this.failed, this.max, this.total, [this.ram]);
 
-  String display;
-  bool failed;
+  int succeeded;
+  int failed;
+  int max;
+  int total;
+  int? ram;
+
+  @override
+  String toString() {
+    String display = '';
+    if (succeeded != 1 || failed != 0) {
+      display += '$succeeded/${succeeded + failed}';
+      if (succeeded > 0) {
+        display += ' in ';
+      }
+    }
+    if (succeeded > 0) {
+      display += '$max ms';
+    }
+    if (succeeded > 1) {
+      display += ', avg $avg ms';
+    }
+    if (ram != null) {
+      final mb = ram! ~/ 1024;
+      final displayMemory =
+          mb > 1024 ? (mb / 1024).toStringAsFixed(2) + ' GB' : '$mb MB';
+      display += ' ($displayMemory)';
+    }
+    return display;
+  }
+
+  int get avg {
+    return succeeded == 0 ? 0 : total ~/ succeeded;
+  }
 
   factory ParallelResult.fromJson(Map<String, dynamic> json) =>
       _$ParallelResultFromJson(json);
@@ -51,7 +82,8 @@ class ParallelResults {
 
   Map<String, dynamic> toJson() => _$ParallelResultsToJson(this);
 
-  static Map<String, ParallelResult> _mapToJson(SplayTreeMap<int, ParallelResult> m) {
+  static Map<String, ParallelResult> _mapToJson(
+      SplayTreeMap<int, ParallelResult> m) {
     final output = <String, ParallelResult>{};
     m.forEach((k, v) => output[k.toString()] = v);
     return output;
@@ -204,29 +236,18 @@ abstract class Service {
         throw StateError(
             'Failed $failed + succeeded $succeeded != $parallelism');
       }
-      if (failed > 0) {
-        await waitForService();
-      }
-      var display =
-          '$succeeded/$parallelism in $maxDuration ms, avg ${totalDuration ~/ (succeeded == 0 ? 1 : succeeded)} ms';
-      final memory = await getPeakMemory();
-      if (memory != null) {
-        final mb = memory ~/ 1024;
-        final displayMemory =
-            mb > 1024 ? (mb / 1024).toStringAsFixed(2) + ' GB' : '$mb MB';
-        display += ' ($displayMemory)';
-      }
-      result.columns[parallelism] = ParallelResult(display, failed > 0);
+      result.columns[parallelism] = ParallelResult(
+          succeeded, failed, maxDuration, totalDuration, await getPeakMemory());
     }
 
     // Binary search to estimate max concurrency
     int lower = 1;
     int upper = binarySearchLimit;
     result.columns.forEach((count, parallelResult) {
-      if (count <= upper && parallelResult.failed) {
+      if (count <= upper && parallelResult.failed > 0) {
         upper = count - 1;
       }
-      if (count > lower && !parallelResult.failed) {
+      if (count > lower && parallelResult.failed == 0) {
         lower = count;
       }
     });
@@ -258,5 +279,16 @@ abstract class Service {
     result.parallelLimit = lower;
 
     return result;
+  }
+
+  static String environmentKey(String endpointKey) {
+    if (Platform.environment.containsKey('ENVIRONMENT_KEY')) {
+      return Platform.environment['ENVIRONMENT_KEY']!;
+    }
+    String key = '${Platform.localHostname}_${Platform.numberOfProcessors}CPU';
+    if (Platform.environment.containsKey(endpointKey)) {
+      key += '_${Platform.environment[endpointKey]}';
+    }
+    return key;
   }
 }
