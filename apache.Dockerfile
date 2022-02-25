@@ -12,39 +12,39 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Dockerfile for Docker Compose tests. Not required for local development or deployment.
 
+# Dockerfile for Docker Compose tests. Not required for local development or deployment.
 ARG site_root
 
 FROM node:lts-slim AS node_public
 WORKDIR /fmnas
-ARG db_name
-ARG db_username
-ARG db_host
-ARG smtp_host
-ARG smtp_auth
-ARG smtp_security
-ARG smtp_port
-ARG smtp_username
-ARG asm_db
-ARG asm_host
-ARG asm_user
-ARG asm_pass
-ARG ga_id
-ARG image_size_endpoint
-ARG resize_image_endpoint
-ARG print_pdf_endpoint
-ARG minify_html_endpoint
-RUN --mount=type=secret,id=db_pass export db_pass=$(cat /run/secrets/db_pass)
-RUN --mount=type=secret,id=smtp_pass export smtp_pass=$(cat /run/secrets/smtp_pass)
-RUN --mount=type=secret,id=asm_pass export asm_pass=$(cat /run/secrets/asm_pass)
-RUN --mount=type=secret,id=api_credentials export api_credentials=$(cat /run/secrets/api_credentials)
 
 COPY package.json package-lock.json ./
 RUN npm install
 
 COPY tsconfig.json handleparse.ts ./
 COPY secrets/config.php.hbs ./secrets/
+
+ARG db_name=fmnas
+ARG db_username=fmnas
+ARG db_host=mysql.fmnas
+ARG db_pass=passw0rd
+ARG smtp_host=smtp.fmnas
+ARG smtp_auth=false
+ARG smtp_security=""
+ARG smtp_port=25
+ARG smtp_username=fmnas
+ARG smtp_pass=passw0rd
+ARG asm_db=asm
+ARG asm_host=mysql.fmnas
+ARG asm_user=asmuser
+ARG asm_pass=passw0rd2
+ARG ga_id="TODO"
+ARG image_size_endpoint="http://image-size.fmnas:8080"
+ARG resize_image_endpoint="http://resize-image.fmnas:8080"
+ARG print_pdf_endpoint="http://print-pdf.fmnas"
+ARG minify_html_endpoint="http://minify-html.fmnas"
+ARG api_credentials=""
 RUN npx ts-node handleparse.ts secrets/config.php.hbs \
     --db_name="$db_name" \
     --db_username="$db_username" \
@@ -55,7 +55,7 @@ RUN npx ts-node handleparse.ts secrets/config.php.hbs \
     --smtp_security="$smtp_security" \
     --smtp_port="$smtp_port" \
     --smtp_username="$smtp_username" \
-    --smtp_password="$smtp_password" \
+    --smtp_password="$smtp_pass" \
     --image_size_endpoint="$image_size_endpoint" \
     --resize_image_endpoint="$resize_image_endpoint" \
     --print_pdf_endpoint="$print_pdf_endpoint" \
@@ -76,36 +76,37 @@ COPY admin/ admin/
 RUN npx vite build admin/client
 
 FROM node_${site_root} AS node_final
-RUN rm -rf node_modules package.json package-lock.json tsconfig.json
+RUN rm -rf node_modules package.json package-lock.json tsconfig.json secrets/config.php.hbs handleparse.ts
 
 FROM composer:latest AS composer
 WORKDIR /fmnas
 COPY --from=node_final /fmnas /fmnas
 
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --ignore-platform-reqs
-RUN rm -rf composer.json composer.lock
+RUN composer install --no-dev --ignore-platform-reqs && \
+    rm -rf composer.json composer.lock
 
 FROM php:8.1-apache AS server
 WORKDIR /fmnas
-ARG site_root
-ENV APACHE_DOCUMENT_ROOT /fmnas/$site_root
 EXPOSE 80
 EXPOSE 443
 
-# Enable PHP extensions
 RUN curl -sSLf \
         -o /usr/local/bin/install-php-extensions \
         https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions && \
     chmod +x /usr/local/bin/install-php-extensions && \
-    install-php-extensions fileinfo imagick curl mbstring mysqli gd dom ctype sqlite3
+    install-php-extensions fileinfo imagick curl mbstring mysqli gd dom ctype sqlite3 && \
+    a2enmod rewrite
 
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+ARG site_root
+RUN sed -ri -e "s!/var/www/html!/fmnas/$site_root!g" /etc/apache2/sites-available/*.conf && \
+    sed -ri -e "s!/var/www/!/fmnas/$site_root!g" /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-RUN a2enmod rewrite
+ARG domain
+RUN echo "ServerName $domain" >> /etc/apache2/apache2.conf
 
 COPY --from=composer /fmnas /fmnas
 COPY src/ src/
+RUN rm src/generated.php || exit 0
 
 # TODO [#389]: Reasonable php.ini values

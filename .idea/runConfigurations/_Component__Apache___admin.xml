@@ -5,77 +5,15 @@
         <option name="buildArgs">
           <list>
             <DockerEnvVarImpl>
-              <option name="name" value="db_name" />
-              <option name="value" value="fmnas" />
-            </DockerEnvVarImpl>
-            <DockerEnvVarImpl>
-              <option name="name" value="db_username" />
-              <option name="value" value="fmnas" />
-            </DockerEnvVarImpl>
-            <DockerEnvVarImpl>
-              <option name="name" value="db_host" />
-              <option name="value" value="mysql.fmnas" />
-            </DockerEnvVarImpl>
-            <DockerEnvVarImpl>
-              <option name="name" value="smtp_host" />
-              <option name="value" value="smtp.fmnas" />
-            </DockerEnvVarImpl>
-            <DockerEnvVarImpl>
-              <option name="name" value="smtp_auth" />
-              <option name="value" value="false" />
-            </DockerEnvVarImpl>
-            <DockerEnvVarImpl>
-              <option name="name" value="smtp_security" />
-              <option name="value" value="" />
-            </DockerEnvVarImpl>
-            <DockerEnvVarImpl>
-              <option name="name" value="smtp_port" />
-              <option name="value" value="25" />
-            </DockerEnvVarImpl>
-            <DockerEnvVarImpl>
-              <option name="name" value="smtp_username" />
-              <option name="value" value="" />
-            </DockerEnvVarImpl>
-            <DockerEnvVarImpl>
-              <option name="name" value="asm_db" />
-              <option name="value" value="asm" />
-            </DockerEnvVarImpl>
-            <DockerEnvVarImpl>
-              <option name="name" value="asm_host" />
-              <option name="value" value="mysql" />
-            </DockerEnvVarImpl>
-            <DockerEnvVarImpl>
-              <option name="name" value="asm_user" />
-              <option name="value" value="fmnas" />
-            </DockerEnvVarImpl>
-            <DockerEnvVarImpl>
-              <option name="name" value="ga_id" />
-              <option name="value" value="" />
-            </DockerEnvVarImpl>
-            <DockerEnvVarImpl>
-              <option name="name" value="image_size_endpoint" />
-              <option name="value" value="image-size.fmnas" />
-            </DockerEnvVarImpl>
-            <DockerEnvVarImpl>
-              <option name="name" value="resize_image_endpoint" />
-              <option name="value" value="resize-image.fmnas" />
-            </DockerEnvVarImpl>
-            <DockerEnvVarImpl>
-              <option name="name" value="print_pdf_endpoint" />
-              <option name="value" value="print-pdf.fmnas" />
-            </DockerEnvVarImpl>
-            <DockerEnvVarImpl>
-              <option name="name" value="minify_html_endpoint" />
-              <option name="value" value="minify-html.fmnas" />
-            </DockerEnvVarImpl>
-            <DockerEnvVarImpl>
               <option name="name" value="site_root" />
               <option name="value" value="admin" />
             </DockerEnvVarImpl>
+            <DockerEnvVarImpl>
+              <option name="name" value="domain" />
+              <option name="value" value="admin.fmnas" />
+            </DockerEnvVarImpl>
           </list>
         </option>
-        <option name="buildCliOptions" value="--secret id=asm_pass,src=secrets/asm_pass.txt --secret id=db_pass,src=secrets/db_pass.txt --secret id=smtp_pass,src=secrets/smtp_pass.txt --secret id=api_credentials,src=secrets/api_credentials.txt " />
-        <option name="buildKitEnabled" value="true" />
         <option name="containerName" value="" />
         <option name="publishAllPorts" value="true" />
         <option name="sourceFilePath" value="apache.Dockerfile" />

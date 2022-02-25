@@ -1,0 +1,18 @@
+INSERT INTO `config` VALUES ('address','{{{address}}}');
+INSERT INTO `config` VALUES ('admin_domain','{{{admin_domain}}}');
+INSERT INTO `config` VALUES ('default_email_user','{{{default_email_user}}}');
+INSERT INTO `config` VALUES ('fax','{{{fax}}}');
+INSERT INTO `config` VALUES ('longname','{{{longname}}}');
+INSERT INTO `config` VALUES ('phone','{{{phone}}}');
+INSERT INTO `config` VALUES ('phone_intl','{{{phone_intl}}}');
+INSERT INTO `config` VALUES ('public_domain','{{{public_domain}}}');
+INSERT INTO `config` VALUES ('shortname','{{{shortname}}}');
+INSERT INTO `config` VALUES ('transport_date','{{{transport_date}}}');
+INSERT INTO `sexes` VALUES (default,'male');
+INSERT INTO `sexes` VALUES (default,'female');
+INSERT INTO `species` VALUES (default,'cat','cats','kitten','kittens','senior cat','senior cats',12,6,96);
+INSERT INTO `species` VALUES (default,'dog','dogs','puppy','puppies','senior dog','senior dogs',12,6,96);
+INSERT INTO `statuses` VALUES (default,'Adoptable',0,1,'');
+INSERT INTO `statuses` VALUES (default,'Adopted',1,0,'');
+INSERT INTO `statuses` VALUES (default,'Adoption Pending',1,1,'We either have so many applications we are confident of finding the pet\'s new home from among them, OR the pet has been offered to an applicant who has accepted placement, and we will be delivering the pet on the next Seattle or Spokane trip.\r\n\r\nYou can submit an application for one of these pets if you\'d like to be a \"backup home\" should anything not work out with the prior applicants, but it\'s a longshot.');
+INSERT INTO `statuses` VALUES (default,'Applications Closed',1,1,'We have received a fairly large number of applications in a fairly short period of time, and need a chance to review them to see if any will be a great match to the particular pet. If the right match is not found in the applications already received, we will REOPEN applications.\r\n\r\nYou may still submit an application for one of these pets, and we will review it right away if the right match is not found first.');

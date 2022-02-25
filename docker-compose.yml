@@ -21,67 +21,53 @@ services:
       context: .
       dockerfile: apache.Dockerfile
       args:
-        - db_name=fmnas
-        - db_username=fmnas
-        - db_host=mysql.fmnas
-        - smtp_host=smtp.fmnas
-        - smtp_auth=false
-        - smtp_security=
-        - smtp_port=25
-        - smtp_username=
-        - image_size_endpoint=image-size.fmnas
-        - resize_image_endpoint=resize-image.fmnas
-        - print_pdf_endpoint=print-pdf.fmnas
-        - minify_html_endpoint=minify-html.fmnas
-        - asm_db=asm
-        - asm_host=mysql.fmnas
-        - asm_user=fmnas
-        - ga_id=
+        - smtp_port=1025
         - site_root=public
+        - domain=public.fmnas
     ports:
-      - "50080:80"
-      - "50443:443"
-    secrets:
-      - db_pass
-      - smtp_pass
-      - asm_pass
-      - api_credentials
+      - "51080:80"
+      - "51443:443"
   admin.fmnas:
     build:
       context: .
       dockerfile: apache.Dockerfile
       args:
-        - db_name=fmnas
-        - db_username=fmnas
-        - db_host=mysql.fmnas
-        - smtp_host=smtp.fmnas
-        - smtp_auth=false
-        - smtp_security=
-        - smtp_port=25
-        - smtp_username=
-        - image_size_endpoint=image-size.fmnas
-        - resize_image_endpoint=resize-image.fmnas
-        - print_pdf_endpoint=print-pdf.fmnas
-        - minify_html_endpoint=minify-html.fmnas
-        - asm_db=asm
-        - asm_host=mysql.fmnas
-        - asm_user=fmnas
-        - ga_id=
+        - smtp_port=1025
         - site_root=admin
+        - domain=admin.fmnas
     ports:
-      - "58080:80"
-      - "58443:443"
-    secrets:
-      - db_pass
-      - smtp_pass
-      - asm_pass
-      - api_credentials
-secrets:
-  db_pass:
-    file: secrets/db_pass.txt
-  smtp_pass:
-    file: secrets/smtp_pass.txt
-  asm_pass:
-    file: secrets/asm_pass.txt
-  api_credentials:
-    file: secrets/api_credentials.txt
+      - "52080:80"
+      - "52443:443"
+  mysql.fmnas:
+    build:
+      context: .
+      dockerfile: mysql.Dockerfile
+    environment:
+      - MYSQL_RANDOM_ROOT_PASSWORD=1
+    ports:
+      - "51088:3306"
+  smtp.fmnas:
+    image: mailhog/mailhog
+    environment:
+      - MH_HOSTNAME="smtp.fmnas"
+    ports:
+      - "50025:8025"
+  resize-image.fmnas:
+    build: gcp/resize-image
+  image-size.fmnas:
+    build: gcp/image-size
+  print-pdf.fmnas:
+    image: node:lts
+    volumes:
+      - ./gcp/print-pdf:/gcp/print-pdf
+    command: bash -c "cd /gcp/print-pdf && npm install && PORT=80 npm run start"
+  minify-html.fmnas:
+    image: node:lts
+    volumes:
+      - ./gcp/minify-html:/gcp/minify-html
+    command: bash -c "cd /gcp/minify-html && npm install && PORT=80 npm run start"
+  dart:
+    image: dart
+    volumes:
+      - ./tests:/tests
+    command: bash -c "cd /tests/blackbox && dart pub get && sleep infinity"
