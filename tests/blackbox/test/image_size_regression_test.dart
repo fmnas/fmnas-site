@@ -36,5 +36,5 @@ void main() async {
     results.add(result);
   }).asFuture();
   ImageResult.printAll(results);
-  // TODO: Compare image size regression test results.
+  // TODO [$62194299903218000b359a39]: Compare image size regression test results.
 }
