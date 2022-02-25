@@ -60,7 +60,82 @@ There are benchmarks for this at /tests/blackbox/bin/resize_image.dart and /test
 ### Benchmark results in Docker container (local)
 
 ```
-TODO
+Results for height 64:
+Image       | Filesize | Size      | 1 requests                            | 2 requests                            | 5 requests                            | 10 requests                             | Max concurrency
+------------|----------|-----------|---------------------------------------|---------------------------------------|---------------------------------------|-----------------------------------------|----------------
+puget.heic  | 16.7 MB  | 9248x6936 | 1/1 in 3558 ms, avg 3558 ms (835 MB)  | 2/2 in 3634 ms, avg 3620 ms (1.76 GB) | 5/5 in 4179 ms, avg 4155 ms (4.44 GB) | 10/10 in 5786 ms, avg 5710 ms (8.51 GB) |              10
+pigeons.jpg | 12.1 MB  | 4656x3492 | 1/1 in 511 ms, avg 511 ms (1.02 GB)   | 2/2 in 491 ms, avg 489 ms (1.17 GB)   | 5/5 in 534 ms, avg 525 ms (1.52 GB)   | 10/10 in 697 ms, avg 638 ms (2.53 GB)   |              10
+train.heic  | 16.4 MB  | 9248x6936 | 1/1 in 3611 ms, avg 3611 ms (1.36 GB) | 2/2 in 3644 ms, avg 3622 ms (2.25 GB) | 5/5 in 4170 ms, avg 4100 ms (4.38 GB) | 10/10 in 5841 ms, avg 5745 ms (8.45 GB) |              10
+litter.jpg  | 12.6 MB  | 8384x6035 | 1/1 in 1390 ms, avg 1390 ms (1.58 GB) | 2/2 in 1426 ms, avg 1425 ms (1.73 GB) | 5/5 in 1529 ms, avg 1529 ms (3.48 GB) | 10/10 in 2029 ms, avg 1997 ms (6.45 GB) |              10
+dubai.heic  | 18.6 MB  | 9248x6936 | 1/1 in 3820 ms, avg 3820 ms (1.48 GB) | 2/2 in 3953 ms, avg 3937 ms (2.15 GB) | 5/5 in 4409 ms, avg 4338 ms (4.88 GB) | 10/10 in 6235 ms, avg 6157 ms (9.02 GB) |              10
+george.jpg  | 1.4 MB   | 4322x3289 | 1/1 in 361 ms, avg 361 ms (1.42 GB)   | 2/2 in 349 ms, avg 349 ms (1.38 GB)   | 5/5 in 396 ms, avg 396 ms (1.77 GB)   | 10/10 in 674 ms, avg 673 ms (2.34 GB)   |              10
+callie.jpg  | 352.6 KB | 800x600   | 1/1 in 29 ms, avg 29 ms (742 MB)      | 2/2 in 21 ms, avg 20 ms (737 MB)      | 5/5 in 29 ms, avg 23 ms (727 MB)      | 10/10 in 30 ms, avg 25 ms (734 MB)      |              10
+
+Results for height 192:
+Image       | Filesize | Size      | 1 requests                            | 2 requests                            | 5 requests                            | 10 requests                             | Max concurrency
+------------|----------|-----------|---------------------------------------|---------------------------------------|---------------------------------------|-----------------------------------------|----------------
+puget.heic  | 16.7 MB  | 9248x6936 | 1/1 in 3372 ms, avg 3372 ms (1.51 GB) | 2/2 in 3568 ms, avg 3556 ms (2.38 GB) | 5/5 in 3941 ms, avg 3894 ms (5.08 GB) | 10/10 in 5856 ms, avg 5743 ms (9.31 GB) |              10
+pigeons.jpg | 12.1 MB  | 4656x3492 | 1/1 in 461 ms, avg 461 ms (1.60 GB)   | 2/2 in 481 ms, avg 475 ms (1.52 GB)   | 5/5 in 502 ms, avg 492 ms (2.03 GB)   | 10/10 in 627 ms, avg 557 ms (3.01 GB)   |              10
+train.heic  | 16.4 MB  | 9248x6936 | 1/1 in 3420 ms, avg 3420 ms (1.82 GB) | 2/2 in 3540 ms, avg 3525 ms (2.49 GB) | 5/5 in 4061 ms, avg 3966 ms (4.84 GB) | 10/10 in 5887 ms, avg 5731 ms (9.07 GB) |              10
+litter.jpg  | 12.6 MB  | 8384x6035 | 1/1 in 1587 ms, avg 1587 ms (2.00 GB) | 2/2 in 1510 ms, avg 1508 ms (2.21 GB) | 5/5 in 1738 ms, avg 1585 ms (3.95 GB) | 10/10 in 2067 ms, avg 1976 ms (6.97 GB) |              10
+dubai.heic  | 18.6 MB  | 9248x6936 | 1/1 in 3511 ms, avg 3511 ms (1.93 GB) | 2/2 in 3704 ms, avg 3660 ms (2.61 GB) | 5/5 in 4172 ms, avg 4084 ms (5.32 GB) | 10/10 in 5956 ms, avg 5916 ms (8.99 GB) |              10
+george.jpg  | 1.4 MB   | 4322x3289 | 1/1 in 359 ms, avg 359 ms (1.72 GB)   | 2/2 in 356 ms, avg 354 ms (1.87 GB)   | 5/5 in 381 ms, avg 373 ms (2.06 GB)   | 10/10 in 605 ms, avg 474 ms (2.82 GB)   |              10
+callie.jpg  | 352.6 KB | 800x600   | 1/1 in 22 ms, avg 22 ms (1.05 GB)     | 2/2 in 24 ms, avg 23 ms (1.03 GB)     | 5/5 in 30 ms, avg 24 ms (1002 MB)     | 10/10 in 36 ms, avg 31 ms (1005 MB)     |              10
+
+Results for height 300:
+Image       | Filesize | Size      | 1 requests                            | 2 requests                            | 5 requests                            | 10 requests                             | Max concurrency
+------------|----------|-----------|---------------------------------------|---------------------------------------|---------------------------------------|-----------------------------------------|----------------
+puget.heic  | 16.7 MB  | 9248x6936 | 1/1 in 3204 ms, avg 3204 ms (1.79 GB) | 2/2 in 3297 ms, avg 3291 ms (2.89 GB) | 5/5 in 3830 ms, avg 3798 ms (5.32 GB) | 10/10 in 5834 ms, avg 5728 ms (8.95 GB) |              10
+pigeons.jpg | 12.1 MB  | 4656x3492 | 1/1 in 486 ms, avg 486 ms (1.89 GB)   | 2/2 in 490 ms, avg 486 ms (1.84 GB)   | 5/5 in 511 ms, avg 500 ms (2.32 GB)   | 10/10 in 674 ms, avg 572 ms (3.37 GB)   |              10
+train.heic  | 16.4 MB  | 9248x6936 | 1/1 in 3250 ms, avg 3250 ms (2.15 GB) | 2/2 in 3304 ms, avg 3287 ms (2.88 GB) | 5/5 in 3835 ms, avg 3794 ms (5.33 GB) | 10/10 in 5982 ms, avg 5682 ms (9.38 GB) |              10
+litter.jpg  | 12.6 MB  | 8384x6035 | 1/1 in 1412 ms, avg 1412 ms (2.34 GB) | 2/2 in 1431 ms, avg 1404 ms (2.72 GB) | 5/5 in 1663 ms, avg 1587 ms (4.24 GB) | 10/10 in 2226 ms, avg 2074 ms (7.29 GB) |              10
+dubai.heic  | 18.6 MB  | 9248x6936 | 1/1 in 3388 ms, avg 3388 ms (2.26 GB) | 2/2 in 3636 ms, avg 3535 ms (2.96 GB) | 5/5 in 3985 ms, avg 3931 ms (5.27 GB) | 10/10 in 6002 ms, avg 5925 ms (9.43 GB) |              10
+george.jpg  | 1.4 MB   | 4322x3289 | 1/1 in 370 ms, avg 370 ms (2.08 GB)   | 2/2 in 369 ms, avg 369 ms (2.20 GB)   | 5/5 in 484 ms, avg 400 ms (2.46 GB)   | 10/10 in 631 ms, avg 539 ms (3.06 GB)   |              10
+callie.jpg  | 352.6 KB | 800x600   | 1/1 in 27 ms, avg 27 ms (1.33 GB)     | 2/2 in 28 ms, avg 27 ms (1.33 GB)     | 5/5 in 43 ms, avg 38 ms (1.30 GB)     | 10/10 in 42 ms, avg 32 ms (1.30 GB)     |              10
+
+Results for height 480:
+Image       | Filesize | Size      | 1 requests                            | 2 requests                            | 5 requests                            | 10 requests                             | Max concurrency
+------------|----------|-----------|---------------------------------------|---------------------------------------|---------------------------------------|-----------------------------------------|----------------
+puget.heic  | 16.7 MB  | 9248x6936 | 1/1 in 3337 ms, avg 3337 ms (2.18 GB) | 2/2 in 3276 ms, avg 3263 ms (2.97 GB) | 5/5 in 3765 ms, avg 3663 ms (5.62 GB) | 10/10 in 5855 ms, avg 5746 ms (9.61 GB) |              10
+pigeons.jpg | 12.1 MB  | 4656x3492 | 1/1 in 546 ms, avg 546 ms (2.07 GB)   | 2/2 in 540 ms, avg 539 ms (2.22 GB)   | 5/5 in 562 ms, avg 555 ms (2.63 GB)   | 10/10 in 736 ms, avg 622 ms (3.50 GB)   |              10
+train.heic  | 16.4 MB  | 9248x6936 | 1/1 in 3124 ms, avg 3124 ms (2.36 GB) | 2/2 in 3246 ms, avg 3202 ms (3.06 GB) | 5/5 in 3849 ms, avg 3776 ms (5.50 GB) | 10/10 in 5926 ms, avg 5893 ms (9.61 GB) |              10
+litter.jpg  | 12.6 MB  | 8384x6035 | 1/1 in 1301 ms, avg 1301 ms (2.49 GB) | 2/2 in 1327 ms, avg 1316 ms (2.69 GB) | 5/5 in 1478 ms, avg 1397 ms (4.56 GB) | 10/10 in 1977 ms, avg 1893 ms (7.68 GB) |              10
+dubai.heic  | 18.6 MB  | 9248x6936 | 1/1 in 3186 ms, avg 3186 ms (2.36 GB) | 2/2 in 3319 ms, avg 3316 ms (3.07 GB) | 5/5 in 3906 ms, avg 3867 ms (5.59 GB) | 10/10 in 6330 ms, avg 5946 ms (9.61 GB) |              10
+george.jpg  | 1.4 MB   | 4322x3289 | 1/1 in 408 ms, avg 408 ms (2.05 GB)   | 2/2 in 432 ms, avg 420 ms (2.10 GB)   | 5/5 in 499 ms, avg 443 ms (2.41 GB)   | 10/10 in 637 ms, avg 515 ms (3.17 GB)   |              10
+callie.jpg  | 352.6 KB | 800x600   | 1/1 in 36 ms, avg 36 ms (1.46 GB)     | 2/2 in 37 ms, avg 36 ms (1.38 GB)     | 5/5 in 55 ms, avg 46 ms (1.34 GB)     | 10/10 in 57 ms, avg 50 ms (1.34 GB)     |              10
+
+Results for height 2160:
+Image       | Filesize | Size      | 1 requests                            | 2 requests                            | 5 requests                            | 10 requests                              | Max concurrency
+------------|----------|-----------|---------------------------------------|---------------------------------------|---------------------------------------|------------------------------------------|----------------
+puget.heic  | 16.7 MB  | 9248x6936 | 1/1 in 3656 ms, avg 3656 ms (2.41 GB) | 2/2 in 3766 ms, avg 3764 ms (3.49 GB) | 5/5 in 4315 ms, avg 4203 ms (6.70 GB) | 10/10 in 5887 ms, avg 5633 ms (12.11 GB) |              10
+pigeons.jpg | 12.1 MB  | 4656x3492 | 1/1 in 851 ms, avg 851 ms (2.27 GB)   | 2/2 in 895 ms, avg 882 ms (2.50 GB)   | 5/5 in 941 ms, avg 919 ms (3.44 GB)   | 10/10 in 1051 ms, avg 989 ms (5.35 GB)   |              10
+train.heic  | 16.4 MB  | 9248x6936 | 1/1 in 3631 ms, avg 3631 ms (2.67 GB) | 2/2 in 3731 ms, avg 3700 ms (3.66 GB) | 5/5 in 4194 ms, avg 4176 ms (6.76 GB) | 10/10 in 5730 ms, avg 5686 ms (12.12 GB) |              10
+litter.jpg  | 12.6 MB  | 8384x6035 | 1/1 in 1763 ms, avg 1763 ms (2.61 GB) | 2/2 in 1847 ms, avg 1832 ms (3.20 GB) | 5/5 in 1937 ms, avg 1884 ms (5.78 GB) | 10/10 in 2059 ms, avg 2016 ms (10.14 GB) |              10
+dubai.heic  | 18.6 MB  | 9248x6936 | 1/1 in 3805 ms, avg 3805 ms (2.66 GB) | 2/2 in 3906 ms, avg 3867 ms (3.60 GB) | 5/5 in 4371 ms, avg 4273 ms (6.77 GB) | 10/10 in 6310 ms, avg 5945 ms (12.07 GB) |              10
+george.jpg  | 1.4 MB   | 4322x3289 | 1/1 in 704 ms, avg 704 ms (2.25 GB)   | 2/2 in 718 ms, avg 715 ms (2.49 GB)   | 5/5 in 749 ms, avg 740 ms (3.33 GB)   | 10/10 in 918 ms, avg 829 ms (4.96 GB)    |              10
+callie.jpg  | 352.6 KB | 800x600   | 1/1 in 46 ms, avg 46 ms (1.62 GB)     | 2/2 in 45 ms, avg 45 ms (1.56 GB)     | 5/5 in 77 ms, avg 57 ms (1.51 GB)     | 10/10 in 82 ms, avg 58 ms (1.47 GB)      |              10
+
+Results for height 4320:
+Image       | Filesize | Size      | 1 requests                            | 2 requests                            | 5 requests                            | 10 requests                              | Max concurrency
+------------|----------|-----------|---------------------------------------|---------------------------------------|---------------------------------------|------------------------------------------|----------------
+puget.heic  | 16.7 MB  | 9248x6936 | 1/1 in 4851 ms, avg 4851 ms (2.88 GB) | 2/2 in 4858 ms, avg 4840 ms (4.41 GB) | 5/5 in 5512 ms, avg 5486 ms (8.93 GB) | 10/10 in 7519 ms, avg 7145 ms (16.27 GB) |              10
+pigeons.jpg | 12.1 MB  | 4656x3492 | 1/1 in 1449 ms, avg 1449 ms (2.39 GB) | 2/2 in 1488 ms, avg 1481 ms (2.88 GB) | 5/5 in 1551 ms, avg 1527 ms (4.40 GB) | 10/10 in 1922 ms, avg 1658 ms (7.27 GB)  |              10
+train.heic  | 16.4 MB  | 9248x6936 | 1/1 in 4841 ms, avg 4841 ms (3.26 GB) | 2/2 in 4928 ms, avg 4923 ms (4.60 GB) | 5/5 in 5338 ms, avg 5299 ms (9.05 GB) | 10/10 in 6889 ms, avg 6797 ms (16.57 GB) |              10
+litter.jpg  | 12.6 MB  | 8384x6035 | 1/1 in 2771 ms, avg 2771 ms (3.22 GB) | 2/2 in 2836 ms, avg 2831 ms (4.23 GB) | 5/5 in 3022 ms, avg 3002 ms (8.00 GB) | 10/10 in 3519 ms, avg 3302 ms (14.48 GB) |              10
+dubai.heic  | 18.6 MB  | 9248x6936 | 1/1 in 4862 ms, avg 4862 ms (3.27 GB) | 2/2 in 4995 ms, avg 4989 ms (4.61 GB) | 5/5 in 5477 ms, avg 5452 ms (9.03 GB) | 10/10 in 7482 ms, avg 7272 ms (16.61 GB) |              10
+george.jpg  | 1.4 MB   | 4322x3289 | 1/1 in 1483 ms, avg 1483 ms (2.67 GB) | 2/2 in 1111 ms, avg 1104 ms (2.85 GB) | 5/5 in 1272 ms, avg 1179 ms (4.18 GB) | 10/10 in 1387 ms, avg 1315 ms (6.40 GB)  |              10
+callie.jpg  | 352.6 KB | 800x600   | 1/1 in 60 ms, avg 60 ms (1.58 GB)     | 2/2 in 47 ms, avg 46 ms (1.58 GB)     | 5/5 in 51 ms, avg 47 ms (1.55 GB)     | 10/10 in 75 ms, avg 61 ms (1.55 GB)      |              10
+
+Results for height 100000:
+Image       | Filesize | Size      | 1 requests                            | 2 requests                            | 5 requests                             | 10 requests                      | Max concurrency
+------------|----------|-----------|---------------------------------------|---------------------------------------|----------------------------------------|----------------------------------|----------------
+puget.heic  | 16.7 MB  | 9248x6936 | 1/1 in 7110 ms, avg 7110 ms (3.77 GB) | 2/2 in 7053 ms, avg 7032 ms (5.99 GB) | 5/5 in 8112 ms, avg 7856 ms (12.63 GB) | 0/10 in 0 ms, avg 0 ms (3.10 GB) |               5
+pigeons.jpg | 12.1 MB  | 4656x3492 | 0/1 in 0 ms, avg 0 ms (3.57 GB)       | 0/2 in 0 ms, avg 0 ms (3.57 GB)       | 0/5 in 0 ms, avg 0 ms (3.68 GB)        | 0/10 in 0 ms, avg 0 ms (4.03 GB) |               1
+train.heic  | 16.4 MB  | 9248x6936 | 0/1 in 0 ms, avg 0 ms (4.03 GB)       | 0/2 in 0 ms, avg 0 ms (4.08 GB)       | 0/5 in 0 ms, avg 0 ms (4.34 GB)        | 0/10 in 0 ms, avg 0 ms (4.85 GB) |               1
+litter.jpg  | 12.6 MB  | 8384x6035 | 0/1 in 0 ms, avg 0 ms (4.85 GB)       | 0/2 in 0 ms, avg 0 ms (4.85 GB)       | 0/5 in 0 ms, avg 0 ms (4.85 GB)        | 0/10 in 0 ms, avg 0 ms (5.19 GB) |               1
+dubai.heic  | 18.6 MB  | 9248x6936 | 0/1 in 0 ms, avg 0 ms (5.19 GB)       | 0/2 in 0 ms, avg 0 ms (5.24 GB)       | 0/5 in 0 ms, avg 0 ms (5.52 GB)        | 0/10 in 0 ms, avg 0 ms (6.10 GB) |               1
+george.jpg  | 1.4 MB   | 4322x3289 | 0/1 in 0 ms, avg 0 ms (6.10 GB)       | 0/2 in 0 ms, avg 0 ms (6.10 GB)       | 0/5 in 0 ms, avg 0 ms (6.10 GB)        | 0/10 in 0 ms, avg 0 ms (6.10 GB) |               1
+callie.jpg  | 352.6 KB | 800x600   | 0/1 in 0 ms, avg 0 ms (6.10 GB)       | 0/2 in 0 ms, avg 0 ms (6.10 GB)       | 0/5 in 0 ms, avg 0 ms (6.10 GB)        | 0/10 in 0 ms, avg 0 ms (6.10 GB) |               1
 ```
 
 ### Benchmark results in Cloud Code container with 2 GiB RAM
