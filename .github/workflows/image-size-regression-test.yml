@@ -33,7 +33,10 @@ jobs:
       - uses: dart-lang/setup-dart@v1
       - name: Install blackbox dependencies
         run: cd tests/blackbox && dart pub get
-      - run: wait-for-it "localhost:$IMAGE_SIZE_PORT" -t 300
+      - name: Wait for service
+        run: |
+          sudo apt install -y wait-for-it
+          wait-for-it "localhost:$IMAGE_SIZE_PORT" -t 300
       - name: Run image_size_regression_test
         run: IMAGE_SIZE_ENDPOINT="http://localhost:$IMAGE_SIZE_PORT" dart test tests/image_size_regression_test.dart
       - name: Bring down service
