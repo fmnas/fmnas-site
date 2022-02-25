@@ -68,21 +68,23 @@ services:
       - "8025"
   resize-image.fmnas:
     build: gcp/resize-image
+    ports:
+      - "8080"
   image-size.fmnas:
     build: gcp/image-size
+    ports:
+      - "8080"
   print-pdf.fmnas:
     image: node:lts
     volumes:
       - ./gcp/print-pdf:/gcp/print-pdf
     command: bash -c "cd /gcp/print-pdf && npm install && PORT=80 npm run start"
+    ports:
+      - "80"
   minify-html.fmnas:
     image: node:lts
     volumes:
       - ./gcp/minify-html:/gcp/minify-html
     command: bash -c "cd /gcp/minify-html && npm install && PORT=80 npm run start"
-  blackbox:
-    build:
-      context: tests
-      dockerfile: blackbox.Dockerfile
-    profiles:
-      - tests
+    ports:
+      - "80"
