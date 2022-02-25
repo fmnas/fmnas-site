@@ -164,5 +164,13 @@ george.jpg  | 1.4 MB   | 4322x3289 | 1/1 in 623 ms, avg 623 ms   | 2/2 in 810 ms
 ### Benchmark results in Docker container on GitHub Actions (used for regression tests)
 
 ```
-TODO
+Image       | Filesize | Size      | 1 requests | 2 requests                  | 3 requests                    | Max concurrency
+------------|----------|-----------|------------|-----------------------------|-------------------------------|----------------
+puget.heic  | 16.7 MB  | 9248x6936 | 3589 ms    | 2/2 in 6515 ms, avg 6512 ms | 3/3 in 10045 ms, avg 10043 ms |               3
+train.heic  | 16.4 MB  | 9248x6936 | 3578 ms    | 2/2 in 6522 ms, avg 6520 ms | 3/3 in 9900 ms, avg 9899 ms   |               3
+callie.jpg  | 352.6 KB | 800x600   | 14 ms      | 2/2 in 24 ms, avg 21 ms     | 3/3 in 32 ms, avg 23 ms       |               3
+dubai.heic  | 18.6 MB  | 9248x6936 | 3903 ms    | 2/2 in 7171 ms, avg 7160 ms | 3/3 in 11080 ms, avg 11079 ms |               3
+george.jpg  | 1.4 MB   | 4322x3289 | 130 ms     | 2/2 in 143 ms, avg 137 ms   | 3/3 in 206 ms, avg 202 ms     |               3
+litter.jpg  | 12.6 MB  | 8384x6035 | 543 ms     | 2/2 in 547 ms, avg 546 ms   | 3/3 in 888 ms, avg 870 ms     |               3
+pigeons.jpg | 12.1 MB  | 4656x3492 | 260 ms     | 2/2 in 276 ms, avg 271 ms   | 3/3 in 407 ms, avg 399 ms     |               3
 ```
