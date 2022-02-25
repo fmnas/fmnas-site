@@ -25,6 +25,10 @@ jobs:
     permissions:
       id-token: write
     steps:
+      - name: Cancel previous runs
+        uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          access_token: ${{ github.token }}
       - name: Checkout test
         uses: actions/checkout@main
         with:
@@ -84,6 +88,10 @@ jobs:
     permissions:
       id-token: write
     steps:
+      - name: Cancel previous runs
+        uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          access_token: ${{ github.token }}
       - name: Checkout test
         uses: actions/checkout@main
         with:
@@ -143,6 +151,10 @@ jobs:
     permissions:
       id-token: write
     steps:
+      - name: Cancel previous runs
+        uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          access_token: ${{ github.token }}
       - name: Checkout test
         uses: actions/checkout@main
         with:
@@ -199,6 +211,10 @@ jobs:
     permissions:
       id-token: write
     steps:
+      - name: Cancel previous runs
+        uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          access_token: ${{ github.token }}
       - name: Checkout test
         uses: actions/checkout@main
         with:
@@ -259,6 +275,10 @@ jobs:
       - minify-html
     runs-on: ubuntu-latest
     steps:
+      - name: Cancel previous runs
+        uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          access_token: ${{ github.token }}
       - name: Count failures
         run: |
           failures=0
