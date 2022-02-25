@@ -2,6 +2,7 @@
   <configuration default="false" name="[Component] Apache - public" type="docker-deploy" factoryName="dockerfile" server-name="Docker">
     <deployment type="dockerfile">
       <settings>
+        <option name="imageTag" value="fmnas-public" />
         <option name="buildArgs">
           <list>
             <DockerEnvVarImpl>
@@ -68,12 +69,16 @@
               <option name="name" value="minify_html_endpoint" />
               <option name="value" value="minify-html.fmnas" />
             </DockerEnvVarImpl>
+            <DockerEnvVarImpl>
+              <option name="name" value="site_root" />
+              <option name="value" value="public" />
+            </DockerEnvVarImpl>
           </list>
         </option>
         <option name="buildCliOptions" value="--secret id=asm_pass,src=secrets/asm_pass.txt --secret id=db_pass,src=secrets/db_pass.txt --secret id=smtp_pass,src=secrets/smtp_pass.txt --secret id=api_credentials,src=secrets/api_credentials.txt " />
         <option name="buildKitEnabled" value="true" />
-        <option name="command" value="" />
         <option name="containerName" value="" />
+        <option name="publishAllPorts" value="true" />
         <option name="sourceFilePath" value="apache.Dockerfile" />
       </settings>
     </deployment>

@@ -42,16 +42,18 @@ Google owns the copyright to much of this code because it was written by a Googl
 To get a local server running, you will need:
 
 * Apache (or Litespeed, etc.)
-	* Debian packages: `apache2 libapache2-mod-php`
+  * Debian packages: `apache2 libapache2-mod-php`
 * PHP 8.1 and dependencies noted below
-	* Debian packages: `php php-gd php-mbstring php-mysql php-xml php-imagick php-curl php-sqlite3`
+  * Debian packages: `php php-gd php-mbstring php-mysql php-xml php-imagick php-curl php-sqlite3`
 * cURL on PATH
 * Node
-	* I suggest using NVM and enabling [deep shell integration](https://github.com/nvm-sh/nvm#deeper-shell-integration) to
-	  avoid using the wrong node version.
+  * I suggest using NVM and enabling [deep shell integration](https://github.com/nvm-sh/nvm#deeper-shell-integration) to
+    avoid using the wrong node version.
 * Composer
 * You may want to install the faster Dart version of [Sass](https://sass-lang.com/install):
-	* install the [Dart SDK](https://dart.dev/get-dart) and run `dart pub global activate sass`
+  * install the [Dart SDK](https://dart.dev/get-dart) and run `dart pub global activate sass`
+
+The [Dart SDK](https://dart.dev/get-dart) is required to run the blackbox tests locally.
 
 ### Workflow
 
