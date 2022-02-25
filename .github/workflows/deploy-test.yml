@@ -26,6 +26,10 @@ jobs:
       build-status: ${{ steps.build-success.outcome }}
       deploy-status: ${{ steps.deploy-success.outcome }}
     steps:
+      - name: Cancel previous runs
+        uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          access_token: ${{ github.token }}
       - name: Checkout test
         uses: actions/checkout@main
         with:
@@ -118,6 +122,10 @@ jobs:
     needs: deploy
     runs-on: ubuntu-latest
     steps:
+      - name: Cancel previous runs
+        uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          access_token: ${{ github.token }}
       - name: Checkout test
         uses: actions/checkout@main
         with:
@@ -145,6 +153,10 @@ jobs:
     needs: deploy
     runs-on: ubuntu-latest
     steps:
+      - name: Cancel previous runs
+        uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          access_token: ${{ github.token }}
       - name: Checkout test
         uses: actions/checkout@main
         with:
@@ -172,6 +184,10 @@ jobs:
     needs: deploy
     runs-on: ubuntu-latest
     steps:
+      - name: Cancel previous runs
+        uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          access_token: ${{ github.token }}
       - name: Checkout test
         uses: actions/checkout@main
         with:
@@ -193,6 +209,10 @@ jobs:
     needs: deploy
     runs-on: ubuntu-latest
     steps:
+      - name: Cancel previous runs
+        uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          access_token: ${{ github.token }}
       - name: Checkout test
         uses: actions/checkout@main
         with:
@@ -226,6 +246,10 @@ jobs:
       - invalidate-analytics
     runs-on: ubuntu-latest
     steps:
+      - name: Cancel previous runs
+        uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          access_token: ${{ github.token }}
       - name: Check status
         run: |
           if [[ "${{ needs.deploy.outputs.build-status }}" != "success" ]]; then result=failing; color=critical
