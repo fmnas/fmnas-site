@@ -11,7 +11,7 @@
             </DockerPortBindingImpl>
           </list>
         </option>
-        <option name="commandLineOptions" value="-m 40g" />
+        <option name="commandLineOptions" value="-m 40g --restart=always" />
         <option name="sourceFilePath" value="gcp/resize-image/Dockerfile" />
       </settings>
     </deployment>

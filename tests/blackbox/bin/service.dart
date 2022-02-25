@@ -41,19 +41,17 @@ abstract class Service {
           connectTimeout: 120000,
           receiveTimeout: 120000,
           responseType: type,
-        )),
-        pid = enableMemory ? dockerPid(name) ?? nodePid(endpoint) : null {
+        )) {
     print('Connecting to $name at $endpoint');
   }
 
   final String name;
   final String endpoint;
   final Dio dio;
-  final int? pid;
   final bool enableMemory;
   Process? monitor;
 
-  static int? dockerPid(String name) {
+  int? dockerPid() {
     final command = 'docker top $name | awk \'{ print \$2 }\' | grep -v PID';
     final String output = Process.runSync('bash', ['-c', command]).stdout;
     final pid = output.trim().isEmpty ? null : int.tryParse(output.trim());
@@ -61,7 +59,7 @@ abstract class Service {
     return pid;
   }
 
-  static int? nodePid(String endpoint) {
+  int? nodePid() {
     final port = Uri.parse(endpoint).port;
     final command =
         "netstat -anp | perl -F'[/\\s]' -lane 'print \$F[-2] if /^tcp.+:$port.+LISTEN/'";
@@ -72,6 +70,7 @@ abstract class Service {
   }
 
   Future<void> startMemoryMonitoring() async {
+    var pid = dockerPid() ?? nodePid();
     if (pid == null || !enableMemory) {
       return;
     }
@@ -99,7 +98,7 @@ abstract class Service {
   }
 
   Future<void> waitForService() async {
-    if (pid != null) {
+    if (monitor != null) {
       // Wait for GC
       sleep(Duration(seconds: 3));
     }
