@@ -1,0 +1,6 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Blackbox: resize-image regression test (local)" type="DartTestRunConfigurationType" factoryName="Dart Test">
+    <option name="filePath" value="$PROJECT_DIR$/tests/blackbox/test/resize_image_regression_test.dart" />
+    <method v="2" />
+  </configuration>
+</component>

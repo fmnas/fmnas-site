@@ -61,7 +61,7 @@ class ImageSizeRegressionTestResults {
 void main() async {
   final env = Service.environmentKey('IMAGE_SIZE_ENDPOINT');
 
-  final golden = File('goldens/image_size_regression_test.json');
+  final golden = File(goldenFile);
   final goldenValues = golden.existsSync()
       ? ImageSizeRegressionTestResults.fromJson(
           jsonDecode(golden.readAsStringSync()))

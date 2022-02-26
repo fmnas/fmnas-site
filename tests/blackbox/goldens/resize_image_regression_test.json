@@ -1,0 +1,464 @@
+{
+	"environments": {
+		"panray_24CPU": {
+			"filters": {
+				"lanczos": {
+					"images": {
+						"puget.heic": {
+							"name": "puget.heic",
+							"size": "16.7 MB",
+							"dimensions": "9248x6936",
+							"parallel": {
+								"columns": {
+									"1": {
+										"succeeded": 1,
+										"failed": 0,
+										"max": 4683,
+										"total": 4683,
+										"ram": 1978424
+									},
+									"2": {
+										"succeeded": 2,
+										"failed": 0,
+										"max": 5055,
+										"total": 10005,
+										"ram": 3509948
+									},
+									"3": {
+										"succeeded": 3,
+										"failed": 0,
+										"max": 5488,
+										"total": 15975,
+										"ram": 5135548
+									}
+								},
+								"parallelLimit": 0
+							},
+							"group": 4320
+						},
+						"pigeons.jpg": {
+							"name": "pigeons.jpg",
+							"size": "12.1 MB",
+							"dimensions": "4656x3492",
+							"parallel": {
+								"columns": {
+									"1": {
+										"succeeded": 1,
+										"failed": 0,
+										"max": 1459,
+										"total": 1459,
+										"ram": 1237564
+									},
+									"2": {
+										"succeeded": 2,
+										"failed": 0,
+										"max": 1515,
+										"total": 3018,
+										"ram": 1729584
+									},
+									"3": {
+										"succeeded": 3,
+										"failed": 0,
+										"max": 1619,
+										"total": 4654,
+										"ram": 2365200
+									}
+								},
+								"parallelLimit": 0
+							},
+							"group": 4320
+						},
+						"train.heic": {
+							"name": "train.heic",
+							"size": "16.4 MB",
+							"dimensions": "9248x6936",
+							"parallel": {
+								"columns": {
+									"1": {
+										"succeeded": 1,
+										"failed": 0,
+										"max": 4885,
+										"total": 4885,
+										"ram": 2265412
+									},
+									"2": {
+										"succeeded": 2,
+										"failed": 0,
+										"max": 5162,
+										"total": 10287,
+										"ram": 3817444
+									},
+									"3": {
+										"succeeded": 3,
+										"failed": 0,
+										"max": 5556,
+										"total": 16410,
+										"ram": 5378408
+									}
+								},
+								"parallelLimit": 0
+							},
+							"group": 4320
+						},
+						"litter.jpg": {
+							"name": "litter.jpg",
+							"size": "12.6 MB",
+							"dimensions": "8384x6035",
+							"parallel": {
+								"columns": {
+									"1": {
+										"succeeded": 1,
+										"failed": 0,
+										"max": 2781,
+										"total": 2781,
+										"ram": 2181232
+									},
+									"2": {
+										"succeeded": 2,
+										"failed": 0,
+										"max": 3166,
+										"total": 6311,
+										"ram": 3421264
+									},
+									"3": {
+										"succeeded": 3,
+										"failed": 0,
+										"max": 3272,
+										"total": 9758,
+										"ram": 4816800
+									}
+								},
+								"parallelLimit": 0
+							},
+							"group": 4320
+						},
+						"dubai.heic": {
+							"name": "dubai.heic",
+							"size": "18.6 MB",
+							"dimensions": "9248x6936",
+							"parallel": {
+								"columns": {
+									"1": {
+										"succeeded": 1,
+										"failed": 0,
+										"max": 4855,
+										"total": 4855,
+										"ram": 2381168
+									},
+									"2": {
+										"succeeded": 2,
+										"failed": 0,
+										"max": 5522,
+										"total": 10984,
+										"ram": 3945464
+									},
+									"3": {
+										"succeeded": 3,
+										"failed": 0,
+										"max": 5529,
+										"total": 16374,
+										"ram": 5485060
+									}
+								},
+								"parallelLimit": 0
+							},
+							"group": 4320
+						},
+						"george.jpg": {
+							"name": "george.jpg",
+							"size": "1.4 MB",
+							"dimensions": "4322x3289",
+							"parallel": {
+								"columns": {
+									"1": {
+										"succeeded": 1,
+										"failed": 0,
+										"max": 1490,
+										"total": 1490,
+										"ram": 1451800
+									},
+									"2": {
+										"succeeded": 2,
+										"failed": 0,
+										"max": 1183,
+										"total": 2299,
+										"ram": 1876260
+									},
+									"3": {
+										"succeeded": 3,
+										"failed": 0,
+										"max": 1209,
+										"total": 3534,
+										"ram": 2356212
+									}
+								},
+								"parallelLimit": 0
+							},
+							"group": 4320
+						},
+						"callie.jpg": {
+							"name": "callie.jpg",
+							"size": "352.6 KB",
+							"dimensions": "800x600",
+							"parallel": {
+								"columns": {
+									"1": {
+										"succeeded": 1,
+										"failed": 0,
+										"max": 47,
+										"total": 47,
+										"ram": 884740
+									},
+									"2": {
+										"succeeded": 2,
+										"failed": 0,
+										"max": 46,
+										"total": 92,
+										"ram": 892320
+									},
+									"3": {
+										"succeeded": 3,
+										"failed": 0,
+										"max": 52,
+										"total": 146,
+										"ram": 887688
+									}
+								},
+								"parallelLimit": 0
+							},
+							"group": 4320
+						}
+					}
+				},
+				"hermite": {
+					"images": {
+						"puget.heic": {
+							"name": "puget.heic",
+							"size": "16.7 MB",
+							"dimensions": "9248x6936",
+							"parallel": {
+								"columns": {
+									"1": {
+										"succeeded": 1,
+										"failed": 0,
+										"max": 3857,
+										"total": 3857,
+										"ram": 2549052
+									},
+									"2": {
+										"succeeded": 2,
+										"failed": 0,
+										"max": 4152,
+										"total": 8279,
+										"ram": 4141748
+									},
+									"3": {
+										"succeeded": 3,
+										"failed": 0,
+										"max": 4310,
+										"total": 12850,
+										"ram": 5665360
+									}
+								},
+								"parallelLimit": 0
+							},
+							"group": 4320
+						},
+						"pigeons.jpg": {
+							"name": "pigeons.jpg",
+							"size": "12.1 MB",
+							"dimensions": "4656x3492",
+							"parallel": {
+								"columns": {
+									"1": {
+										"succeeded": 1,
+										"failed": 0,
+										"max": 1104,
+										"total": 1104,
+										"ram": 1773976
+									},
+									"2": {
+										"succeeded": 2,
+										"failed": 0,
+										"max": 1130,
+										"total": 2252,
+										"ram": 2297552
+									},
+									"3": {
+										"succeeded": 3,
+										"failed": 0,
+										"max": 1224,
+										"total": 3620,
+										"ram": 2903800
+									}
+								},
+								"parallelLimit": 0
+							},
+							"group": 4320
+						},
+						"train.heic": {
+							"name": "train.heic",
+							"size": "16.4 MB",
+							"dimensions": "9248x6936",
+							"parallel": {
+								"columns": {
+									"1": {
+										"succeeded": 1,
+										"failed": 0,
+										"max": 3958,
+										"total": 3958,
+										"ram": 2780232
+									},
+									"2": {
+										"succeeded": 2,
+										"failed": 0,
+										"max": 4190,
+										"total": 8325,
+										"ram": 4329228
+									},
+									"3": {
+										"succeeded": 3,
+										"failed": 0,
+										"max": 4492,
+										"total": 13462,
+										"ram": 5918048
+									}
+								},
+								"parallelLimit": 0
+							},
+							"group": 4320
+						},
+						"litter.jpg": {
+							"name": "litter.jpg",
+							"size": "12.6 MB",
+							"dimensions": "8384x6035",
+							"parallel": {
+								"columns": {
+									"1": {
+										"succeeded": 1,
+										"failed": 0,
+										"max": 2317,
+										"total": 2317,
+										"ram": 2644868
+									},
+									"2": {
+										"succeeded": 2,
+										"failed": 0,
+										"max": 2374,
+										"total": 4697,
+										"ram": 3945932
+									},
+									"3": {
+										"succeeded": 3,
+										"failed": 0,
+										"max": 2491,
+										"total": 7296,
+										"ram": 5198680
+									}
+								},
+								"parallelLimit": 0
+							},
+							"group": 4320
+						},
+						"dubai.heic": {
+							"name": "dubai.heic",
+							"size": "18.6 MB",
+							"dimensions": "9248x6936",
+							"parallel": {
+								"columns": {
+									"1": {
+										"succeeded": 1,
+										"failed": 0,
+										"max": 4130,
+										"total": 4130,
+										"ram": 2800344
+									},
+									"2": {
+										"succeeded": 2,
+										"failed": 0,
+										"max": 4334,
+										"total": 8584,
+										"ram": 4351488
+									},
+									"3": {
+										"succeeded": 3,
+										"failed": 0,
+										"max": 4908,
+										"total": 13823,
+										"ram": 5773120
+									}
+								},
+								"parallelLimit": 0
+							},
+							"group": 4320
+						},
+						"george.jpg": {
+							"name": "george.jpg",
+							"size": "1.4 MB",
+							"dimensions": "4322x3289",
+							"parallel": {
+								"columns": {
+									"1": {
+										"succeeded": 1,
+										"failed": 0,
+										"max": 784,
+										"total": 784,
+										"ram": 1863932
+									},
+									"2": {
+										"succeeded": 2,
+										"failed": 0,
+										"max": 828,
+										"total": 1642,
+										"ram": 2339316
+									},
+									"3": {
+										"succeeded": 3,
+										"failed": 0,
+										"max": 854,
+										"total": 2542,
+										"ram": 2779132
+									}
+								},
+								"parallelLimit": 0
+							},
+							"group": 4320
+						},
+						"callie.jpg": {
+							"name": "callie.jpg",
+							"size": "352.6 KB",
+							"dimensions": "800x600",
+							"parallel": {
+								"columns": {
+									"1": {
+										"succeeded": 1,
+										"failed": 0,
+										"max": 33,
+										"total": 33,
+										"ram": 1290660
+									},
+									"2": {
+										"succeeded": 2,
+										"failed": 0,
+										"max": 35,
+										"total": 69,
+										"ram": 1268352
+									},
+									"3": {
+										"succeeded": 3,
+										"failed": 0,
+										"max": 35,
+										"total": 103,
+										"ram": 1229440
+									}
+								},
+								"parallelLimit": 0
+							},
+							"group": 4320
+						}
+					}
+				}
+			}
+		}
+	}
+}
