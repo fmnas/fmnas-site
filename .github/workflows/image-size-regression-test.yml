@@ -78,7 +78,6 @@ jobs:
           IMAGE_SIZE_ENDPOINT="http://localhost:${{ env.PORT }}" \
           dart test test/image_size_regression_test.dart
       - name: Create pull request to update golden values
-        if: steps.changed.outputs.changed == '1'
         uses: peter-evans/create-pull-request@v3
         with:
           committer: "FMNAS Automation <admin+automation@forgetmenotshelter.org>"
