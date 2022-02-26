@@ -73,7 +73,6 @@ class ParallelResults {
   @JsonKey(fromJson: _mapFromJson, toJson: _mapToJson)
   SplayTreeMap<int, ParallelResult> columns = SplayTreeMap();
   int parallelLimit = 0;
-  int? memory;
 
   ParallelResults();
 
@@ -89,10 +88,9 @@ class ParallelResults {
     return output;
   }
 
-  static SplayTreeMap<int, ParallelResult> _mapFromJson(String s) {
-    final Map<String, ParallelResult> input = jsonDecode(s);
+  static SplayTreeMap<int, ParallelResult> _mapFromJson(Map<String, dynamic> input) {
     final output = SplayTreeMap<int, ParallelResult>();
-    input.forEach((k, v) => output[int.parse(k)] = v);
+    input.forEach((k, v) => output[int.parse(k)] = ParallelResult.fromJson(v));
     return output;
   }
 }

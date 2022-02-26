@@ -33,7 +33,8 @@ jobs:
           key: fmnas-{hash}
           restore-keys: |
             fmnas-
-      - run: docker-compose up -d --build image-size.fmnas
+      - run: docker-compose build image-size.fmnas
+      - run: docker-compose run -d --name image-size image-size.fmnas
       - name: Find the ephemeral port
         id: port
         run: docker-compose ps | perl -lane '/image-size.+0:(\d+)->8080\/tcp/ && print "::set-output name=port::$1"'

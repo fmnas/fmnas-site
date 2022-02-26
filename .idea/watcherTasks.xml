@@ -69,7 +69,7 @@
       <option name="fileExtension" value="dart" />
       <option name="immediateSync" value="true" />
       <option name="name" value="Dart build_runner" />
-      <option name="output" value="$FileDir$/*.g.dart" />
+      <option name="output" value="$ModuleFileDir$/**/*.g.dart" />
       <option name="outputFilters">
         <array />
       </option>

@@ -1,0 +1,232 @@
+{
+	"environments": {
+		"panray_24CPU": {
+			"images": {
+				"puget.heic": {
+					"name": "puget.heic",
+					"size": "16.7 MB",
+					"dimensions": "9248x6936",
+					"parallel": {
+						"columns": {
+							"1": {
+								"succeeded": 1,
+								"failed": 0,
+								"max": 2055,
+								"total": 2055,
+								"ram": 1860944
+							},
+							"2": {
+								"succeeded": 2,
+								"failed": 0,
+								"max": 2236,
+								"total": 4472,
+								"ram": 2587356
+							},
+							"3": {
+								"succeeded": 3,
+								"failed": 0,
+								"max": 2378,
+								"total": 7133,
+								"ram": 3284008
+							}
+						},
+						"parallelLimit": 0
+					},
+					"group": null
+				},
+				"pigeons.jpg": {
+					"name": "pigeons.jpg",
+					"size": "12.1 MB",
+					"dimensions": "4656x3492",
+					"parallel": {
+						"columns": {
+							"1": {
+								"succeeded": 1,
+								"failed": 0,
+								"max": 193,
+								"total": 193,
+								"ram": 1248172
+							},
+							"2": {
+								"succeeded": 2,
+								"failed": 0,
+								"max": 210,
+								"total": 420,
+								"ram": 1336536
+							},
+							"3": {
+								"succeeded": 3,
+								"failed": 0,
+								"max": 223,
+								"total": 669,
+								"ram": 1502376
+							}
+						},
+						"parallelLimit": 0
+					},
+					"group": null
+				},
+				"train.heic": {
+					"name": "train.heic",
+					"size": "16.4 MB",
+					"dimensions": "9248x6936",
+					"parallel": {
+						"columns": {
+							"1": {
+								"succeeded": 1,
+								"failed": 0,
+								"max": 2090,
+								"total": 2090,
+								"ram": 1792492
+							},
+							"2": {
+								"succeeded": 2,
+								"failed": 0,
+								"max": 2245,
+								"total": 4490,
+								"ram": 2636416
+							},
+							"3": {
+								"succeeded": 3,
+								"failed": 0,
+								"max": 2406,
+								"total": 7217,
+								"ram": 3381740
+							}
+						},
+						"parallelLimit": 0
+					},
+					"group": null
+				},
+				"litter.jpg": {
+					"name": "litter.jpg",
+					"size": "12.6 MB",
+					"dimensions": "8384x6035",
+					"parallel": {
+						"columns": {
+							"1": {
+								"succeeded": 1,
+								"failed": 0,
+								"max": 410,
+								"total": 410,
+								"ram": 1648040
+							},
+							"2": {
+								"succeeded": 2,
+								"failed": 0,
+								"max": 448,
+								"total": 896,
+								"ram": 2083552
+							},
+							"3": {
+								"succeeded": 3,
+								"failed": 0,
+								"max": 480,
+								"total": 1439,
+								"ram": 2495396
+							}
+						},
+						"parallelLimit": 0
+					},
+					"group": null
+				},
+				"dubai.heic": {
+					"name": "dubai.heic",
+					"size": "18.6 MB",
+					"dimensions": "9248x6936",
+					"parallel": {
+						"columns": {
+							"1": {
+								"succeeded": 1,
+								"failed": 0,
+								"max": 2168,
+								"total": 2168,
+								"ram": 1879708
+							},
+							"2": {
+								"succeeded": 2,
+								"failed": 0,
+								"max": 2317,
+								"total": 4634,
+								"ram": 2742180
+							},
+							"3": {
+								"succeeded": 3,
+								"failed": 0,
+								"max": 2470,
+								"total": 7409,
+								"ram": 3582968
+							}
+						},
+						"parallelLimit": 0
+					},
+					"group": null
+				},
+				"george.jpg": {
+					"name": "george.jpg",
+					"size": "1.4 MB",
+					"dimensions": "4322x3289",
+					"parallel": {
+						"columns": {
+							"1": {
+								"succeeded": 1,
+								"failed": 0,
+								"max": 104,
+								"total": 104,
+								"ram": 1175100
+							},
+							"2": {
+								"succeeded": 2,
+								"failed": 0,
+								"max": 115,
+								"total": 230,
+								"ram": 1171476
+							},
+							"3": {
+								"succeeded": 3,
+								"failed": 0,
+								"max": 129,
+								"total": 387,
+								"ram": 1394064
+							}
+						},
+						"parallelLimit": 0
+					},
+					"group": null
+				},
+				"callie.jpg": {
+					"name": "callie.jpg",
+					"size": "352.6 KB",
+					"dimensions": "800x600",
+					"parallel": {
+						"columns": {
+							"1": {
+								"succeeded": 1,
+								"failed": 0,
+								"max": 11,
+								"total": 11,
+								"ram": 1148012
+							},
+							"2": {
+								"succeeded": 2,
+								"failed": 0,
+								"max": 18,
+								"total": 35,
+								"ram": 1127212
+							},
+							"3": {
+								"succeeded": 3,
+								"failed": 0,
+								"max": 12,
+								"total": 36,
+								"ram": 1108780
+							}
+						},
+						"parallelLimit": 0
+					},
+					"group": null
+				}
+			}
+		}
+	}
+}
