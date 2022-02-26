@@ -60,7 +60,7 @@ jobs:
       - run: docker-compose build image-size.fmnas
       - run: docker-compose run -d --name image-size image-size.fmnas
       - name: Find the ephemeral port
-        run: docker-compose ps | perl -lane '/image-size.+0:(\d+)->8080\/tcp/ && print "PORT=$1"' >> $GITHUB_ENV
+        run: docker-compose ps | perl -lane '/image-size.+0:(\d+)->8080\/tcp/ && print "PORT=$1"' | tee -a $GITHUB_ENV
       - uses: dart-lang/setup-dart@v1
       - name: Build blackbox
         run: |
