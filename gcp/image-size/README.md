@@ -163,14 +163,16 @@ george.jpg  | 1.4 MB   | 4322x3289 | 1/1 in 623 ms, avg 623 ms   | 2/2 in 810 ms
 
 ### Benchmark results in Docker container on GitHub Actions (used for regression tests)
 
+For the latest results, see /tests/blackbox/goldens/image_size_regression_test.json.
+
 ```
-Image       | Filesize | Size      | 1 requests | 2 requests                  | 3 requests                    | Max concurrency
-------------|----------|-----------|------------|-----------------------------|-------------------------------|----------------
-puget.heic  | 16.7 MB  | 9248x6936 | 3589 ms    | 2/2 in 6515 ms, avg 6512 ms | 3/3 in 10045 ms, avg 10043 ms |               3
-train.heic  | 16.4 MB  | 9248x6936 | 3578 ms    | 2/2 in 6522 ms, avg 6520 ms | 3/3 in 9900 ms, avg 9899 ms   |               3
-callie.jpg  | 352.6 KB | 800x600   | 14 ms      | 2/2 in 24 ms, avg 21 ms     | 3/3 in 32 ms, avg 23 ms       |               3
-dubai.heic  | 18.6 MB  | 9248x6936 | 3903 ms    | 2/2 in 7171 ms, avg 7160 ms | 3/3 in 11080 ms, avg 11079 ms |               3
-george.jpg  | 1.4 MB   | 4322x3289 | 130 ms     | 2/2 in 143 ms, avg 137 ms   | 3/3 in 206 ms, avg 202 ms     |               3
-litter.jpg  | 12.6 MB  | 8384x6035 | 543 ms     | 2/2 in 547 ms, avg 546 ms   | 3/3 in 888 ms, avg 870 ms     |               3
-pigeons.jpg | 12.1 MB  | 4656x3492 | 260 ms     | 2/2 in 276 ms, avg 271 ms   | 3/3 in 407 ms, avg 399 ms     |               3
+Image       | Filesize | Size      | 1 requests        | 2 requests                            | 3 requests                              | Max concurrency
+------------|----------|-----------|-------------------|---------------------------------------|-----------------------------------------|----------------
+puget.heic  | 16.7 MB  | 9248x6936 | 4200 ms (1014 MB) | 2/2 in 7813 ms, avg 7811 ms (1.72 GB) | 3/3 in 11796 ms, avg 11794 ms (2.04 GB) |               3
+train.heic  | 16.4 MB  | 9248x6936 | 4210 ms (1.02 GB) | 2/2 in 7772 ms, avg 7771 ms (1.70 GB) | 3/3 in 11827 ms, avg 11809 ms (2.01 GB) |               3
+callie.jpg  | 352.6 KB | 800x600   | 25 ms (357 MB)    | 2/2 in 27 ms, avg 24 ms (356 MB)      | 3/3 in 30 ms, avg 22 ms (328 MB)        |               3
+dubai.heic  | 18.6 MB  | 9248x6936 | 4591 ms (979 MB)  | 2/2 in 8585 ms, avg 8583 ms (1.67 GB) | 3/3 in 13010 ms, avg 12983 ms (2.24 GB) |               3
+george.jpg  | 1.4 MB   | 4322x3289 | 152 ms (480 MB)   | 2/2 in 160 ms, avg 159 ms (580 MB)    | 3/3 in 249 ms, avg 245 ms (582 MB)      |               3
+litter.jpg  | 12.6 MB  | 8384x6035 | 602 ms (745 MB)   | 2/2 in 630 ms, avg 621 ms (1.32 GB)   | 3/3 in 1026 ms, avg 1015 ms (1.80 GB)   |               3
+pigeons.jpg | 12.1 MB  | 4656x3492 | 287 ms (479 MB)   | 2/2 in 311 ms, avg 310 ms (563 MB)    | 3/3 in 451 ms, avg 443 ms (689 MB)      |               3
 ```

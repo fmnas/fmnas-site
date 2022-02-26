@@ -58,7 +58,7 @@ jobs:
           restore-keys: |
             fmnas-
       - run: docker-compose build image-size.fmnas
-      - run: docker-compose run -d --name image-size image-size.fmnas
+      - run: docker-compose run -d --name image-size -p 8080 image-size.fmnas
       - name: Find the ephemeral port
         run: docker-compose ps | perl -lane '/image-size.+0:(\d+)->8080\/tcp/ && print "PORT=$1"' | tee -a $GITHUB_ENV
       - uses: dart-lang/setup-dart@v1
@@ -78,7 +78,6 @@ jobs:
           IMAGE_SIZE_ENDPOINT="http://localhost:${{ env.PORT }}" \
           dart test test/image_size_regression_test.dart
       - name: Create pull request to update golden values
-        if: steps.changed.outputs.changed == '1'
         uses: peter-evans/create-pull-request@v3
         with:
           committer: "FMNAS Automation <admin+automation@forgetmenotshelter.org>"
