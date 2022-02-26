@@ -248,7 +248,7 @@
 								"failed": 0,
 								"max": 6722,
 								"total": 13444,
-								"ram": 1802968
+								"ram": 1502528
 							},
 							"3": {
 								"succeeded": 3,
@@ -376,13 +376,13 @@
 								"failed": 0,
 								"max": 140,
 								"total": 275,
-								"ram": 682152
+								"ram": 575988
 							},
 							"3": {
 								"succeeded": 3,
 								"failed": 0,
 								"max": 238,
-								"total": 709,
+								"total": 606,
 								"ram": 601576
 							}
 						},
