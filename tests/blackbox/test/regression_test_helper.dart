@@ -24,7 +24,7 @@ import '../bin/service.dart';
 const maxFailThreshold = 2.5;
 const avgFailThreshold = 1.2;
 const ramFailThreshold = 2.0;
-// TODO: RAM usage is very inconsistent between regression test runs.
+// TODO [#413]: RAM usage is very inconsistent between regression test runs.
 
 // If (new value)/(old value) goes below this threshold, update the goldens.
 const maxUpdateThreshold = 0.7;
