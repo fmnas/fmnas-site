@@ -394,13 +394,19 @@ TODO
 TODO
 ```
 
-### Benchmark results on Cloud Run with 1 vCPU, 8 GiB RAM, concurrency limit 1
+### Benchmark results on Cloud Run with 2 vCPU, 4 GiB RAM, concurrency limit 1
 
 ```
 TODO
 ```
 
 ### Benchmark results on Cloud Run with 2 vCPU, 8 GiB RAM, concurrency limit 1
+
+```
+TODO
+```
+
+### Benchmark results on Cloud Run with 4 vCPU, 4 GiB RAM, concurrency limit 1
 
 ```
 TODO
