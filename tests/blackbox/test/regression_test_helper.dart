@@ -21,7 +21,7 @@ import '../bin/results.dart';
 import '../bin/service.dart';
 
 // If (new value)/(old value) goes above this threshold, fail the test.
-const maxFailThreshold = 2.0;
+const maxFailThreshold = 2.5;
 const avgFailThreshold = 1.2;
 const ramFailThreshold = 2.0;
 // TODO: RAM usage is very inconsistent between regression test runs.
