@@ -23,12 +23,12 @@ import '../bin/service.dart';
 // If (new value)/(old value) goes above this threshold, fail the test.
 const maxFailThreshold = 2.0;
 const avgFailThreshold = 1.1;
-const ramFailThreshold = 1.3;
+const ramFailThreshold = 1.5;
 
 // If (new value)/(old value) goes below this threshold, update the goldens.
 const maxUpdateThreshold = 0.7;
 const avgUpdateThreshold = 0.9;
-const ramUpdateThreshold = 0.7;
+const ramUpdateThreshold = 0.5;
 
 // Averages of fewer than this many data points won't be compared.
 const avgCompareThreshold = 3;
