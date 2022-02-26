@@ -406,6 +406,18 @@ TODO
 TODO
 ```
 
+### Benchmark results on Cloud Run with 2 vCPU, 8 GiB RAM, concurrency limit 4
+
+```
+TODO
+```
+
+### Benchmark results on Cloud Run with 4 vCPU, 16 GiB RAM, concurrency limit 4
+
+```
+TODO
+```
+
 ### Benchmark results in Docker container on GitHub Actions (used for regression tests), lanczos
 
 ```
