@@ -60,8 +60,7 @@ jobs:
       - run: docker-compose build image-size.fmnas
       - run: docker-compose run -d --name image-size image-size.fmnas
       - name: Find the ephemeral port
-        id: port
-        run: docker-compose ps | perl -lane '/image-size.+0:(\d+)->8080\/tcp/ && print "::set-output name=port::$1"'
+        run: PORT=$(docker-compose ps | perl -lane '/image-size.+0:(\d+)->8080\/tcp/ && print $1')
       - uses: dart-lang/setup-dart@v1
       - name: Build blackbox
         run: |
@@ -71,12 +70,12 @@ jobs:
       - name: Wait for service
         run: |
           sudo apt install -y wait-for-it
-          wait-for-it -h localhost -p ${{ steps.port.outputs.port }} -t 300
+          wait-for-it -h localhost -p ${{ env.PORT }} -t 300
       - name: Run image_size_regression_test
         run: |
           cd tests/blackbox
           ENVIRONMENT_KEY="ubuntu-latest" \
-          IMAGE_SIZE_ENDPOINT="http://localhost:${{ steps.port.outputs.port }}" \
+          IMAGE_SIZE_ENDPOINT="http://localhost:${{ env.PORT }}" \
           dart test test/image_size_regression_test.dart
       - name: Create pull request to update golden values
         if: steps.changed.outputs.changed == '1'
