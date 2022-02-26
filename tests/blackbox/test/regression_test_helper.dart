@@ -23,7 +23,7 @@ import '../bin/service.dart';
 // If (new value)/(old value) goes above this threshold, fail the test.
 const maxFailThreshold = 2.0;
 const avgFailThreshold = 1.1;
-const ramFailThreshold = 1.5;
+const ramFailThreshold = 2.0;
 
 // If (new value)/(old value) goes below this threshold, update the goldens.
 const maxUpdateThreshold = 0.7;
