@@ -388,6 +388,24 @@ callie.jpg  | 352.6 KB | 800x600   | 1/1 in 705 ms, avg 705 ms     | 2/2 in 759 
 TODO
 ```
 
+### Benchmark results on Cloud Run with 1 vCPU, 4 GiB RAM, concurrency limit 1
+
+```
+TODO
+```
+
+### Benchmark results on Cloud Run with 1 vCPU, 8 GiB RAM, concurrency limit 1
+
+```
+TODO
+```
+
+### Benchmark results on Cloud Run with 2 vCPU, 8 GiB RAM, concurrency limit 1
+
+```
+TODO
+```
+
 ### Benchmark results in Docker container on GitHub Actions (used for regression tests), lanczos
 
 ```
