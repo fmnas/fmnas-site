@@ -85,6 +85,7 @@ jobs:
           branch: image-size-benchmark/${{ github.ref_name }}
           delete-branch: true
           commit-message: Update reference values for image_size_regression_test.
+          title: Update reference values for image_size_regression_test
       - name: Bring down service
         if: always()
         run: docker-compose down
