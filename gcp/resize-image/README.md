@@ -312,13 +312,29 @@ TODO
 ### Benchmark results in Docker container on GitHub Actions (used for regression tests), lanczos
 
 ```
-TODO
+Image       | Filesize | Size | 1 requests        | 2 requests                              | 3 requests                              | Max concurrency
+------------|----------|------|-------------------|-----------------------------------------|-----------------------------------------|----------------
+puget.heic  | 16.7 MB  |      | 9375 ms (1.76 GB) | 2/2 in 14015 ms, avg 13987 ms (3.22 GB) | 3/3 in 21844 ms, avg 21463 ms (4.65 GB) |               3
+train.heic  | 16.4 MB  |      | 9662 ms (1.76 GB) | 2/2 in 13886 ms, avg 13595 ms (3.25 GB) | 3/3 in 21581 ms, avg 21233 ms (4.62 GB) |               3
+callie.jpg  | 352.6 KB |      | 77 ms (432 MB)    | 2/2 in 93 ms, avg 88 ms (431 MB)        | 3/3 in 137 ms, avg 115 ms (415 MB)      |               3
+dubai.heic  | 18.6 MB  |      | 9882 ms (1.79 GB) | 2/2 in 14660 ms, avg 14401 ms (3.21 GB) | 3/3 in 22750 ms, avg 22385 ms (4.58 GB) |               3
+george.jpg  | 1.4 MB   |      | 2038 ms (884 MB)  | 2/2 in 2189 ms, avg 2166 ms (1.28 GB)   | 3/3 in 3201 ms, avg 3021 ms (1.69 GB)   |               3
+litter.jpg  | 12.6 MB  |      | 5039 ms (1.57 GB) | 2/2 in 5496 ms, avg 5356 ms (2.85 GB)   | 3/3 in 9747 ms, avg 8928 ms (4.06 GB)   |               3
+pigeons.jpg | 12.1 MB  |      | 2601 ms (891 MB)  | 2/2 in 2748 ms, avg 2733 ms (1.44 GB)   | 3/3 in 4094 ms, avg 4028 ms (2.03 GB)   |               3
 ```
 
 ### Benchmark results in Docker container on GitHub Actions (used for regression tests), hermite
 
 ```
-TODO
+Image       | Filesize | Size | 1 requests        | 2 requests                              | 3 requests                              | Max concurrency
+------------|----------|------|-------------------|-----------------------------------------|-----------------------------------------|----------------
+puget.heic  | 16.7 MB  |      | 7403 ms (1.91 GB) | 2/2 in 11401 ms, avg 11207 ms (3.32 GB) | 3/3 in 17921 ms, avg 17735 ms (4.83 GB) |               3
+train.heic  | 16.4 MB  |      | 7666 ms (1.88 GB) | 2/2 in 11239 ms, avg 11161 ms (3.42 GB) | 3/3 in 18076 ms, avg 17272 ms (4.64 GB) |               3
+callie.jpg  | 352.6 KB |      | 586 ms (770 MB)   | 2/2 in 61 ms, avg 59 ms (422 MB)        | 3/3 in 90 ms, avg 76 ms (394 MB)        |               3
+dubai.heic  | 18.6 MB  |      | 7865 ms (1.89 GB) | 2/2 in 12082 ms, avg 11985 ms (3.40 GB) | 3/3 in 19955 ms, avg 15842 ms (3.40 GB) |               3
+george.jpg  | 1.4 MB   |      | 1502 ms (989 MB)  | 2/2 in 1506 ms, avg 1477 ms (1.37 GB)   | 3/3 in 2307 ms, avg 2080 ms (1.82 GB)   |               3
+litter.jpg  | 12.6 MB  |      | 3437 ms (1.68 GB) | 2/2 in 3703 ms, avg 3627 ms (2.98 GB)   | 3/3 in 6590 ms, avg 6086 ms (4.05 GB)   |               3
+pigeons.jpg | 12.1 MB  |      | 1861 ms (1.09 GB) | 2/2 in 1942 ms, avg 1934 ms (1.65 GB)   | 3/3 in 2904 ms, avg 2758 ms (2.14 GB)   |               3
 ```
 
 ### Filter benchmark results (local)
