@@ -14,6 +14,30 @@
 
 name: Image size benchmark regression test
 on:
+  push:
+    branches-ignore:
+      - main
+    paths:
+      - .github/workflows/image-size-regression-test.yml
+      - gcp/image-size/**
+      - tests/blackbox/bin/results.dart
+      - tests/blackbox/bin/service.dart
+      - tests/blackbox/bin/image_size.dart
+      - tests/blackbox/test/regression_test_helper.dart
+      - tests/blackbox/test/image_size_regression_test.dart
+      - tests/blackbox/goldens/image_size_regression_test.json
+  pull_request:
+    branches-ignore:
+      - main
+    paths:
+      - .github/workflows/image-size-regression-test.yml
+      - gcp/image-size/**
+      - tests/blackbox/bin/results.dart
+      - tests/blackbox/bin/service.dart
+      - tests/blackbox/bin/image_size.dart
+      - tests/blackbox/test/regression_test_helper.dart
+      - tests/blackbox/test/image_size_regression_test.dart
+      - tests/blackbox/goldens/image_size_regression_test.json
   workflow_dispatch:
 jobs:
   test:
@@ -54,6 +78,15 @@ jobs:
           ENVIRONMENT_KEY="ubuntu-latest" \
           IMAGE_SIZE_ENDPOINT="http://localhost:${{ steps.port.outputs.port }}" \
           dart test test/image_size_regression_test.dart
+      - name: Create pull request to update golden values
+        if: steps.changed.outputs.changed == '1'
+        uses: peter-evans/create-pull-request@v3
+        with:
+          committer: "FMNAS Automation <admin+automation@forgetmenotshelter.org>"
+          author: "FMNAS Automation <admin+automation@forgetmenotshelter.org>"
+          branch: image-size-benchmark/${{ github.ref_name }}
+          delete-branch: true
+          commit-message: Update reference values for image_size_regression_test.
       - name: Bring down service
         if: always()
         run: docker-compose down

@@ -103,7 +103,7 @@ void main() async {
     test('Writing new goldens file', () {
       goldenValues.environments[env]!.images = envGoldens;
       golden.writeAsStringSync(
-          JsonEncoder.withIndent('\t').convert(goldenValues));
+          JsonEncoder.withIndent('\t').convert(goldenValues) + '\n');
     });
   }
 }
