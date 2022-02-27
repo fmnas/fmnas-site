@@ -15,6 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:args/args.dart';
 import 'package:dio/dio.dart';
 import 'package:file/local.dart';
@@ -67,17 +70,20 @@ class ResizeImage extends Service {
     'spline',
   ];
 
-  static Future<FormData> data(String file, int height, String? filter) async {
+  static Future<FormData> data(
+      Uint8List bytes, int height, String? filter) async {
     return FormData.fromMap({
       'height': height,
-      'image': await MultipartFile.fromFile(file),
+      'image': MultipartFile.fromBytes(bytes, filename: 'test'),
       'filter': filter ?? '',
     });
   }
 
-  static Future<FormData> Function() generator(String file, int height,
+  static Future<FormData> Function() generator(String path, int height,
       [String? filter]) {
-    return () async => await data(file, height, filter ?? '');
+    final file = File(path);
+    final bytes = file.readAsBytesSync();
+    return () async => await data(bytes, height, filter ?? '');
   }
 
   static Stream<ImageResult> runBenchmark(
