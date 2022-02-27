@@ -88,7 +88,8 @@ class ParallelResults {
     return output;
   }
 
-  static SplayTreeMap<int, ParallelResult> _mapFromJson(Map<String, dynamic> input) {
+  static SplayTreeMap<int, ParallelResult> _mapFromJson(
+      Map<String, dynamic> input) {
     final output = SplayTreeMap<int, ParallelResult>();
     input.forEach((k, v) => output[int.parse(k)] = ParallelResult.fromJson(v));
     return output;
@@ -126,7 +127,9 @@ abstract class Service {
         "netstat -anp | perl -F'[/\\s]' -lane 'print \$F[-2] if /^tcp.+:$port.+LISTEN/'";
     final String output = Process.runSync('bash', ['-c', command]).stdout;
     final pid = output.trim().isEmpty ? null : int.tryParse(output.trim());
-    print(pid == null ? 'Didn\'t find Node $endpoint' : 'Found node pid $pid');
+    print(pid == null
+        ? 'Didn\'t find process listening on port $port'
+        : 'Found listening pid $pid');
     return pid;
   }
 
