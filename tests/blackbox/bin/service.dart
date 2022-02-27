@@ -124,7 +124,7 @@ abstract class Service {
   int? nodePid() {
     final port = Uri.parse(endpoint).port;
     final command =
-        "netstat -anp | perl -F'[/\\s]' -lane 'print \$F[-2] if /^tcp.+:$port.+LISTEN/'";
+        "netstat -anp | perl -F'[/\\s]' -lane 'print \$F[-2] if /^tcp.+:$port[^0-9].*LISTEN/'";
     final String output = Process.runSync('bash', ['-c', command]).stdout;
     final pid = output.trim().isEmpty ? null : int.tryParse(output.trim());
     print(pid == null
