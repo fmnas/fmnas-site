@@ -131,8 +131,11 @@ abstract class Service {
   }
 
   Future<void> startMemoryMonitoring() async {
+    if (!enableMemory) {
+      return;
+    }
     var pid = dockerPid() ?? nodePid();
-    if (pid == null || !enableMemory) {
+    if (pid == null) {
       return;
     }
     final loop = 'while true; do ps -ho rss $pid; sleep 0.1; done';
