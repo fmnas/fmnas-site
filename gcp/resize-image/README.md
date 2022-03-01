@@ -138,12 +138,6 @@ george.jpg  | 1.4 MB   | 4322x3289 | 0/1 in 0 ms, avg 0 ms (6.10 GB)       | 0/2
 callie.jpg  | 352.6 KB | 800x600   | 0/1 in 0 ms, avg 0 ms (6.10 GB)       | 0/2 in 0 ms, avg 0 ms (6.10 GB)       | 0/5 in 0 ms, avg 0 ms (6.10 GB)        | 0/10 in 0 ms, avg 0 ms (6.10 GB) |               1
 ```
 
-### Benchmark results in Cloud Code container with 2 GiB RAM
-
-```
-TODO
-```
-
 ### Cloud Run benchmark results
 
 <!-- @formatter off -->
