@@ -117,39 +117,11 @@ pageHeader();
 			<h3>Donate</h3>
 			<p>We are an IRS-approved 501(c)3 charitable organization. Your donations are fully tax-deductible.
 			<p><strong>Donate via PayPal</strong><br>(one-time or monthly pledge):
-			<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
-				<script>
-					function setid(os0sel) {
-						if (os0sel === 'One-time donation') {
-							document.getElementById('PayPalDonateInputImage').src =
-									'https://www.paypal.com/en_US/i/btn/btn_donateCC_LG.gif';
-							document.getElementById('PayPalDonateButtonId').value = '9649881';
-						} else {
-							document.getElementById('PayPalDonateInputImage').src =
-									'https://www.paypalobjects.com/en_US/i/btn/btn_subscribeCC_LG.gif';
-							if (os0sel === '$10 Monthly Pledge') {
-								document.getElementById('PayPalDonateButtonId').value = '7PHTNETHY3ZXQ';
-							} else if (os0sel === '$25 Monthly Pledge') {
-								document.getElementById('PayPalDonateButtonId').value = 'KZB6B2GFG5TFQ';
-							} else if (os0sel === '$50 Monthly Pledge') {
-								document.getElementById('PayPalDonateButtonId').value = 'XXN48CQT7UEAS';
-							} else if (os0sel === '$100 Monthly Pledge') {
-								document.getElementById('PayPalDonateButtonId').value = 'H8YYWFDK4W3HY';
-							}
-						}
-					}
-				</script>
-				<input name="cmd" value="_s-xclick" type="hidden">
-				<input name="hosted_button_id" id="PayPalDonateButtonId" value="9649881" type="hidden">
-				<select name="os0" onchange="setid(this.value);">
-					<option value="One-time donation" selected="">One-time donation</option>
-					<option value="$10 Monthly Pledge">$10 Monthly Pledge</option>
-					<option value="$25 Monthly Pledge">$25 Monthly Pledge</option>
-					<option value="$50 Monthly Pledge">$50 Monthly Pledge</option>
-					<option value="$100 Monthly Pledge">$100 Monthly Pledge</option>
-				</select><br>
-				<input src="/assets/btn_donateCC_LG.gif" id="PayPalDonateInputImage" name="submit"
-						alt="PayPal - The safer, easier way to pay online!" type="image">
+			<form action="https://www.paypal.com/donate" method="post" class="paypal">
+				<input type="hidden" name="cmd" value="_s-xclick">
+				<input type="hidden" name="hosted_button_id" value="EYQVKDS74KYZ2">
+				<input type="image" src="/assets/btn_donateCC_LG.gif" name="submit"
+						alt="Donate through PayPal">
 			</form>
 			<p><strong>Donate via Network for Good</strong><br>(one-time or monthly pledge):<br>
 				<a href="https://www.networkforgood.org/donation/ExpressDonation.aspx?ORGID2=91-1996344">

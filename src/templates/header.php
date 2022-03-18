@@ -26,9 +26,9 @@ function pageHeader(): void {
 				<button type="submit">Apply Online Now</button>
 			</form>
 			<section class="donate">
-				<form action="https://www.paypal.com/cgi-bin/webscr" method="post" class="paypal">
+				<form action="https://www.paypal.com/donate" method="post" class="paypal">
 					<input type="hidden" name="cmd" value="_s-xclick">
-					<input type="hidden" name="hosted_button_id" value="9649881">
+					<input type="hidden" name="hosted_button_id" value="EYQVKDS74KYZ2">
 					<input type="image" src="/assets/btn_donateCC_LG.gif" name="submit"
 							alt="Donate through PayPal">
 				</form>
