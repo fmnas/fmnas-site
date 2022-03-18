@@ -116,6 +116,7 @@ The IntelliJ config includes file watchers to automatically build files. To do t
 * `tsc -w -p public` for public site scripts
 * `watchify public/application/events.js -o public/application/events.bundle.js` for application bundle
 * `vite build -w --mode development admin/client` for the admin site
+* `cd tests/blackbox && dart run build_runner watch` for the blackbox tests
 
 Prefix these commands with `npx` to use the local version of the CLIs from Node.
 

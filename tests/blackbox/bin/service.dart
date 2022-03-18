@@ -20,18 +20,80 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:json_annotation/json_annotation.dart';
 
+part 'service.g.dart';
+
+@JsonSerializable()
 class ParallelResult {
-  ParallelResult(this.display, this.failed);
+  ParallelResult(this.succeeded, this.failed, this.max, this.total, [this.ram]);
 
-  String display;
-  bool failed;
+  int succeeded;
+  int failed;
+  int max;
+  int total;
+  int? ram;
+
+  @override
+  String toString() {
+    String display = '';
+    if (succeeded != 1 || failed != 0) {
+      display += '$succeeded/${succeeded + failed}';
+      if (succeeded > 0) {
+        display += ' in ';
+      }
+    }
+    if (succeeded > 0) {
+      display += '$max ms';
+    }
+    if (succeeded > 1) {
+      display += ', avg $avg ms';
+    }
+    if (ram != null) {
+      final mb = ram! ~/ 1024;
+      final displayMemory =
+          mb > 1024 ? (mb / 1024).toStringAsFixed(2) + ' GB' : '$mb MB';
+      display += ' ($displayMemory)';
+    }
+    return display;
+  }
+
+  int get avg {
+    return succeeded == 0 ? 0 : total ~/ succeeded;
+  }
+
+  factory ParallelResult.fromJson(Map<String, dynamic> json) =>
+      _$ParallelResultFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ParallelResultToJson(this);
 }
 
+@JsonSerializable()
 class ParallelResults {
+  @JsonKey(fromJson: _mapFromJson, toJson: _mapToJson)
   SplayTreeMap<int, ParallelResult> columns = SplayTreeMap();
   int parallelLimit = 0;
-  int? memory;
+
+  ParallelResults();
+
+  factory ParallelResults.fromJson(Map<String, dynamic> json) =>
+      _$ParallelResultsFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ParallelResultsToJson(this);
+
+  static Map<String, ParallelResult> _mapToJson(
+      SplayTreeMap<int, ParallelResult> m) {
+    final output = <String, ParallelResult>{};
+    m.forEach((k, v) => output[k.toString()] = v);
+    return output;
+  }
+
+  static SplayTreeMap<int, ParallelResult> _mapFromJson(
+      Map<String, dynamic> input) {
+    final output = SplayTreeMap<int, ParallelResult>();
+    input.forEach((k, v) => output[int.parse(k)] = ParallelResult.fromJson(v));
+    return output;
+  }
 }
 
 abstract class Service {
@@ -62,16 +124,21 @@ abstract class Service {
   int? nodePid() {
     final port = Uri.parse(endpoint).port;
     final command =
-        "netstat -anp | perl -F'[/\\s]' -lane 'print \$F[-2] if /^tcp.+:$port.+LISTEN/'";
+        "netstat -anp | perl -F'[/\\s]' -lane 'print \$F[-2] if /^tcp.+:$port[^0-9].*LISTEN/'";
     final String output = Process.runSync('bash', ['-c', command]).stdout;
     final pid = output.trim().isEmpty ? null : int.tryParse(output.trim());
-    print(pid == null ? 'Didn\'t find Node $endpoint' : 'Found node pid $pid');
+    print(pid == null
+        ? 'Didn\'t find process listening on port $port'
+        : 'Found listening pid $pid');
     return pid;
   }
 
   Future<void> startMemoryMonitoring() async {
+    if (!enableMemory) {
+      return;
+    }
     var pid = dockerPid() ?? nodePid();
-    if (pid == null || !enableMemory) {
+    if (pid == null) {
       return;
     }
     final loop = 'while true; do ps -ho rss $pid; sleep 0.1; done';
@@ -173,29 +240,18 @@ abstract class Service {
         throw StateError(
             'Failed $failed + succeeded $succeeded != $parallelism');
       }
-      if (failed > 0) {
-        await waitForService();
-      }
-      var display =
-          '$succeeded/$parallelism in $maxDuration ms, avg ${totalDuration ~/ (succeeded == 0 ? 1 : succeeded)} ms';
-      final memory = await getPeakMemory();
-      if (memory != null) {
-        final mb = memory ~/ 1024;
-        final displayMemory =
-            mb > 1024 ? (mb / 1024).toStringAsFixed(2) + ' GB' : '$mb MB';
-        display += ' ($displayMemory)';
-      }
-      result.columns[parallelism] = ParallelResult(display, failed > 0);
+      result.columns[parallelism] = ParallelResult(
+          succeeded, failed, maxDuration, totalDuration, await getPeakMemory());
     }
 
     // Binary search to estimate max concurrency
     int lower = 1;
     int upper = binarySearchLimit;
     result.columns.forEach((count, parallelResult) {
-      if (count <= upper && parallelResult.failed) {
+      if (count <= upper && parallelResult.failed > 0) {
         upper = count - 1;
       }
-      if (count > lower && !parallelResult.failed) {
+      if (count > lower && parallelResult.failed == 0) {
         lower = count;
       }
     });
@@ -227,5 +283,16 @@ abstract class Service {
     result.parallelLimit = lower;
 
     return result;
+  }
+
+  static String environmentKey(String endpointKey) {
+    if (Platform.environment.containsKey('ENVIRONMENT_KEY')) {
+      return Platform.environment['ENVIRONMENT_KEY']!;
+    }
+    String key = '${Platform.localHostname}_${Platform.numberOfProcessors}CPU';
+    if (Platform.environment.containsKey(endpointKey)) {
+      key += '_${Platform.environment[endpointKey]}';
+    }
+    return key;
   }
 }

@@ -12,36 +12,36 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-name: Image size benchmark regression test
+name: Resize image benchmark regression test
 on:
   push:
     branches-ignore:
       - main
     paths:
-      - .github/workflows/image-size-regression-test.yml
-      - gcp/image-size/**
+      - .github/workflows/resize-image-regression-test.yml
+      - gcp/resize_image/**
       - tests/blackbox/bin/results.dart
       - tests/blackbox/bin/service.dart
-      - tests/blackbox/bin/image_size.dart
+      - tests/blackbox/bin/resize_image.dart
       - tests/blackbox/test/regression_test_helper.dart
-      - tests/blackbox/test/image_size_regression_test.dart
-      - tests/blackbox/goldens/image_size_regression_test.json
+      - tests/blackbox/test/resize_image_regression_test.dart
+      - tests/blackbox/goldens/resize_image_regression_test.json
   pull_request:
     branches-ignore:
       - main
     paths:
-      - .github/workflows/image-size-regression-test.yml
-      - gcp/image-size/**
+      - .github/workflows/resize-image-regression-test.yml
+      - gcp/resize_image/**
       - tests/blackbox/bin/results.dart
       - tests/blackbox/bin/service.dart
-      - tests/blackbox/bin/image_size.dart
+      - tests/blackbox/bin/resize_image.dart
       - tests/blackbox/test/regression_test_helper.dart
-      - tests/blackbox/test/image_size_regression_test.dart
-      - tests/blackbox/goldens/image_size_regression_test.json
+      - tests/blackbox/test/resize_image_regression_test.dart
+      - tests/blackbox/goldens/resize_image_regression_test.json
   workflow_dispatch:
 jobs:
   test:
-    name: Run image_size_regression_test
+    name: Run resize_image_regression_test
     runs-on: ubuntu-latest
     steps:
       - name: Cancel previous runs
@@ -49,7 +49,7 @@ jobs:
         with:
           access_token: ${{ github.token }}
       - uses: actions/checkout@main
-      - run: docker-compose pull image-size.fmnas
+      - run: docker-compose pull resize-image.fmnas
       - name: Enable Docker layer caching
         uses: satackey/action-docker-layer-caching@v0.0.11
         continue-on-error: true
@@ -57,10 +57,10 @@ jobs:
           key: fmnas-{hash}
           restore-keys: |
             fmnas-
-      - run: docker-compose build image-size.fmnas
-      - run: docker-compose run -d --name image-size -p 8080 image-size.fmnas
+      - run: docker-compose build resize-image.fmnas
+      - run: docker-compose run -d --name resize-image -p 8080 resize-image.fmnas
       - name: Find the ephemeral port
-        run: docker-compose ps | perl -lane '/image-size.+0:(\d+)->8080\/tcp/ && print "PORT=$1"' | tee -a $GITHUB_ENV
+        run: docker-compose ps | perl -lane '/resize-image.+0:(\d+)->8080\/tcp/ && print "PORT=$1"' | tee -a $GITHUB_ENV
       - uses: dart-lang/setup-dart@v1
       - name: Build blackbox
         run: |
@@ -71,21 +71,21 @@ jobs:
         run: |
           sudo apt install -y wait-for-it
           wait-for-it -h localhost -p ${{ env.PORT }} -t 300
-      - name: Run image_size_regression_test
+      - name: Run resize_image_regression_test
         run: |
           cd tests/blackbox
           ENVIRONMENT_KEY="ubuntu-latest" \
-          IMAGE_SIZE_ENDPOINT="http://localhost:${{ env.PORT }}" \
-          dart test test/image_size_regression_test.dart
+          RESIZE_IMAGE_ENDPOINT="http://localhost:${{ env.PORT }}" \
+          dart test test/resize_image_regression_test.dart
       - name: Create pull request to update golden values
         uses: peter-evans/create-pull-request@v3
         with:
           committer: "FMNAS Automation <admin+automation@forgetmenotshelter.org>"
           author: "FMNAS Automation <admin+automation@forgetmenotshelter.org>"
-          branch: image-size-benchmark/${{ github.ref_name }}
+          branch: resize-image-benchmark/${{ github.ref_name }}
           delete-branch: true
-          commit-message: Update reference values for image_size_regression_test.
-          title: Update reference values for image_size_regression_test
+          commit-message: Update reference values for resize_image_regression_test.
+          title: Update reference values for resize_image_regression_test
       - name: Bring down service
         if: always()
         run: docker-compose down

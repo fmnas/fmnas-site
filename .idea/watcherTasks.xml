@@ -61,5 +61,25 @@
       <option name="workingDir" value="$ProjectFileDir$" />
       <envs />
     </TaskOptions>
+    <TaskOptions isEnabled="true">
+      <option name="arguments" value="run build_runner build" />
+      <option name="checkSyntaxErrors" value="true" />
+      <option name="description" />
+      <option name="exitCodeBehavior" value="ERROR" />
+      <option name="fileExtension" value="dart" />
+      <option name="immediateSync" value="true" />
+      <option name="name" value="Dart build_runner" />
+      <option name="output" value="$ModuleFileDir$/**/*.g.dart" />
+      <option name="outputFilters">
+        <array />
+      </option>
+      <option name="outputFromStdout" value="false" />
+      <option name="program" value="dart" />
+      <option name="runOnExternalChanges" value="true" />
+      <option name="scopeName" value="Blackbox bin" />
+      <option name="trackOnlyRoot" value="false" />
+      <option name="workingDir" value="$ModuleFileDir$" />
+      <envs />
+    </TaskOptions>
   </component>
 </project>

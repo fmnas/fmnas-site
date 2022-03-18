@@ -15,10 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import 'package:json_annotation/json_annotation.dart';
 import 'package:tabular/tabular.dart';
 
 import 'service.dart';
 
+part 'results.g.dart';
+
+@JsonSerializable()
 class ImageResult {
   String name = '';
   String size = '';
@@ -30,7 +34,7 @@ class ImageResult {
   String toString() {
     var str = '$name ($size, $dimensions)\n';
     parallel.columns.forEach((int count, ParallelResult result) {
-      str += '  $count requests: ${result.display}\n';
+      str += '  $count request${count == 1 ? '' : 's'}: $result\n';
     });
     str += 'Max concurrency: ${parallel.parallelLimit}\n\n';
     return str;
@@ -51,10 +55,16 @@ class ImageResult {
             result.name,
             result.size,
             result.dimensions,
-            ...result.parallel.columns.values
-                .map((parallelResult) => parallelResult.display),
+            ...result.parallel.columns.values,
             result.parallel.parallelLimit.toString()
           ])
     ]));
   }
+
+  ImageResult();
+
+  factory ImageResult.fromJson(Map<String, dynamic> json) =>
+      _$ImageResultFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ImageResultToJson(this);
 }

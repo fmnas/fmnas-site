@@ -60,6 +60,10 @@ jobs:
         if: steps.changed-files.outputs.any_changed == 'true' || github.event.action == 'workflow_dispatch'
         uses: satackey/action-docker-layer-caching@v0.0.11
         continue-on-error: true
+        with:
+          key: fmnas-{hash}
+          restore-keys: |
+            fmnas-
       - name: Build container
         if: steps.changed-files.outputs.any_changed == 'true' || github.event.action == 'workflow_dispatch'
         run: docker build -t ${{ secrets.RESIZE_IMAGE_REPO }}/resize-image:test gcp/resize-image
@@ -123,6 +127,10 @@ jobs:
         if: steps.changed-files.outputs.any_changed == 'true' || github.event.action == 'workflow_dispatch'
         uses: satackey/action-docker-layer-caching@v0.0.11
         continue-on-error: true
+        with:
+          key: fmnas-{hash}
+          restore-keys: |
+            fmnas-
       - name: Build container
         if: steps.changed-files.outputs.any_changed == 'true' || github.event.action == 'workflow_dispatch'
         run: docker build -t ${{ secrets.IMAGE_SIZE_REPO }}/image-size:test gcp/image-size

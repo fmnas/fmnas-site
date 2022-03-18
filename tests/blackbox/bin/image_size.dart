@@ -15,6 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:args/args.dart';
 import 'package:dio/dio.dart';
 import 'package:file/local.dart';
@@ -32,12 +35,15 @@ class ImageSize extends Service {
   static const defaultParallelColumns = [1, 2, 5, 10, 25];
   static const defaultBinarySearchLimit = 50;
 
-  static Future<FormData> data(String file) async {
-    return FormData.fromMap({'image': await MultipartFile.fromFile(file)});
+  static Future<FormData> data(Uint8List bytes) async {
+    return FormData.fromMap(
+        {'image': MultipartFile.fromBytes(bytes, filename: 'test')});
   }
 
-  static Future<FormData> Function() generator(String file) {
-    return () async => await data(file);
+  static Future<FormData> Function() generator(String path) {
+    final file = File(path);
+    final bytes = file.readAsBytesSync();
+    return () async => await data(bytes);
   }
 
   static Stream<ImageResult> runBenchmark(

@@ -2,6 +2,10 @@
 
 These tests make requests against HTTP services.
 
+## Build
+
+Build generated files with `dart run build_runner build`.
+
 ## Tests
 
 Run all tests with `dart test` 
