@@ -1,6 +1,5 @@
 <?php
 $path = trim(strtok($_SERVER["REQUEST_URI"], "?"), "/");
-var_dump($path);
 
 require_once "../src/common.php";
 require_once "$src/pet.php";
