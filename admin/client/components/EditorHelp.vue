@@ -115,6 +115,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           <strong>Requires</strong> the <code>fee</code> parameter.</p>
         <code v-html="partial('senior_info').trim()"/>
       </li>
+      <li>
+        <h4>Single Kitten Info</h4>
+        <code v-html="'{{>single_kitten}}'"/>
+        <code v-html="partial('single_kitten').trim()"/>
+      </li>
+      <li>
+        <h4>Puppy Info</h4>
+        <code v-html="'{{>puppy_info}}'"/>
+        <code v-html="partial('puppy_info').trim()"/>
+      </li>
     </ul>
     </section>
   </article>
