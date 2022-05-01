@@ -24,7 +24,7 @@
 	},
 	"dependencies": {
 		"@google-cloud/functions-framework": "^3.1.0",
-		"busboy": "^1.4.0",
+		"busboy": "^1.6.0",
 		"puppeteer": "^13.6.0"
 	}
 }
