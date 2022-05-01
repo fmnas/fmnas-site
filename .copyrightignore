@@ -35,4 +35,4 @@ secrets/*.txt
 /src/templates
 
 # Third-party code
-dependabot-auto-merge.yml  # Copied verbatim from github docs
+dependabot-auto-merge.yml
