@@ -18,6 +18,8 @@ on:
   push:
     branches:
       - test
+  schedule:
+    - cron: '10 7 4 * *'
 jobs:
   todos:
     name: Sync TODOs

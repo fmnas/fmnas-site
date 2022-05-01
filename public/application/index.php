@@ -596,7 +596,7 @@ echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 					<div class="name" data-foreach="PastName"></div>
 					<div class="species" data-foreach="PastSpecies"></div>
 					<div class="breed" data-foreach="PastBreed"></div>
-					<div class="reason" data-foreach="PastAge"></div>
+					<div class="reason" data-foreach="PastReason"></div>
 					<ul data-remove="true">
 						<!-- Form fields will be injected by the event handler. -->
 						<li class="add">
