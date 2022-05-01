@@ -254,21 +254,21 @@
         },
         {
             "name": "whichbrowser/parser",
-            "version": "v2.1.2",
+            "version": "v2.1.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/WhichBrowser/Parser-PHP.git",
-                "reference": "bcf642a1891032de16a5ab976fd352753dd7f9a0"
+                "reference": "1044880bc792dbce5948fbff22ae731c43c280d9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/WhichBrowser/Parser-PHP/zipball/bcf642a1891032de16a5ab976fd352753dd7f9a0",
-                "reference": "bcf642a1891032de16a5ab976fd352753dd7f9a0",
+                "url": "https://api.github.com/repos/WhichBrowser/Parser-PHP/zipball/1044880bc792dbce5948fbff22ae731c43c280d9",
+                "reference": "1044880bc792dbce5948fbff22ae731c43c280d9",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.4.0",
-                "psr/cache": "^1.0"
+                "psr/cache": "^1.0 || ^2.0 || ^3.0"
             },
             "require-dev": {
                 "cache/array-adapter": "^1.1",
@@ -312,9 +312,9 @@
             ],
             "support": {
                 "issues": "https://github.com/WhichBrowser/Parser-PHP/issues",
-                "source": "https://github.com/WhichBrowser/Parser-PHP/tree/v2.1.2"
+                "source": "https://github.com/WhichBrowser/Parser-PHP/tree/v2.1.7"
             },
-            "time": "2021-05-10T10:18:11+00:00"
+            "time": "2022-04-19T20:14:54+00:00"
         },
         {
             "name": "zordius/lightncandy",
@@ -395,5 +395,5 @@
         "ext-sqlite3": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.3.0"
 }
