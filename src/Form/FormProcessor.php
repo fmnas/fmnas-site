@@ -130,7 +130,6 @@ class FormProcessor {
 		}
 		($this->formConfig->updateData)($data, $_FILES);
 		$this->collectHtml($data);
-		($this->formConfig->received)($data);
 		if ($this->formConfig->returnEarly) {
 			// Move uploaded files to be persistent.
 			foreach ($_FILES as &$file) {
@@ -151,10 +150,12 @@ class FormProcessor {
 				}
 			}
 
-			$data["_form_files"] = $_FILES;
+			$data["_form_files"] ??= $_FILES;
 			$tempfile = tempnam(sys_get_temp_dir(), "PERSIST_");
-			$data["_tmp_file"] = $tempfile;
+			$data["_tmp_file"] ??= $tempfile;
 			file_put_contents($tempfile, serialize($data));
+
+			($this->formConfig->received)($data);
 
 			// Request processing in the background.
 			$pipes = [];
@@ -173,6 +174,7 @@ class FormProcessor {
 					"curl -v -u \"{$this->formConfig->httpCredentials}\" -F '_form_stage=processForm' -F 'data=@$tempfile' $path";
 			proc_close(proc_open("$command &", [], $pipes));
 		} else {
+			($this->formConfig->received)($data);
 			$this->processForm($data);
 		}
 	}
