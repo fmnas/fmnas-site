@@ -33,6 +33,8 @@ if (@$_GET['input']) {
 	require_once '../public/application/index.php';
 }
 
+// TODO: The serialized files don't get deleted after resending failed applications for some reason.
+
 ?>
 
 <!DOCTYPE html>
