@@ -77,4 +77,4 @@ jobs:
         uses: actions/checkout@main
         with:
           fetch-depth: 0
-      - run: grep -q '$DEDUPLICATE = true' public/application/index.php
+      - run: grep -q '$DEDUPLICATE ??= true' public/application/index.php
