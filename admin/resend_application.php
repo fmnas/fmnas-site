@@ -24,6 +24,7 @@ if (@$_GET['input']) {
 	echo '<pre>' . $_GET['input'] . "\n\n";
 	$contents = unserialize(file_get_contents('../public/application/received/' . $_GET['input']));
 	var_dump($contents);
+	/** @noinspection PhpObjectFieldsAreOnlyWrittenInspection */
 	$formConfig = new FormConfig();
 	$formConfig->returnEarly = false;
 	$formConfig->debug = true;
