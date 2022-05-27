@@ -29,8 +29,7 @@ if (@$_GET['input']) {
 	$formConfig->returnEarly = false;
 	$formConfig->debug = true;
 	$DEDUPLICATE = false;
-	$_POST = $contents[0];
-	$_FILES = $contents[1];
+	$_POST = $contents;
 	require_once '../public/application/index.php';
 }
 
