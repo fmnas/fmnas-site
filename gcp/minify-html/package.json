@@ -33,7 +33,7 @@
 		"cssnano-preset-advanced": "^5.3.3",
 		"html-entities": "^2.3.3",
 		"html-minifier": "^4.0.0",
-		"postcss": "^8.4.12",
+		"postcss": "^8.4.13",
 		"postcss-reporter": "^7.0.5",
 		"postcss-variable-compress": "^1.1.0",
 		"puppeteer": "^13.7.0"
