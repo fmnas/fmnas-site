@@ -24,7 +24,6 @@ if (@$_GET['input']) {
 	echo '<pre>' . $_GET['input'] . "\n\n";
 	$contents = unserialize(file_get_contents('../public/application/received/' . $_GET['input']));
 	var_dump($contents);
-	/** @noinspection PhpObjectFieldsAreOnlyWrittenInspection */
 	$formConfig = new FormConfig();
 	$formConfig->returnEarly = false;
 	$formConfig->debug = true;
@@ -32,8 +31,6 @@ if (@$_GET['input']) {
 	$_POST = $contents;
 	require_once '../public/application/index.php';
 }
-
-// TODO [#496]: The serialized files don't get deleted after resending failed applications for some reason.
 
 ?>
 
