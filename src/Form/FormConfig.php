@@ -55,11 +55,6 @@ class FormConfig {
 	public bool $returnEarly = false;
 
 	/**
-	 * Debug mode
-	 */
-	public bool $debug = false;
-
-	/**
 	 * Closure that shall return configs for each copy of the form to email.
 	 * In most cases, the returned iterable should be an array.
 	 * @param array form data ($_POST or $_GET)
