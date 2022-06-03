@@ -78,7 +78,7 @@ $formConfig->received = function(array &$formData) use ($cwd): void {
 	</html>
 	<?php
 	$formData["_received_time"] = microtime(true);
-	file_put_contents("$cwd/received/" . $formData["_received_time"] . ".serialized", serialize($formData));
+	file_put_contents("$cwd/received/" . $formData["_received_time"] . ".serialized", serialize([$formData, $_FILES]));
 };
 
 $formConfig->confirm = function(array $formData) use ($cwd): void {
