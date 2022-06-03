@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-require_once __DIR__ . "/../../src/common.php";
+require_once "../../src/common.php";
 
 use fmnas\Form\AttachmentInfo;
 use fmnas\Form\EmailAddress;
@@ -34,16 +34,13 @@ require_once "$t/header.php";
 require_once "$t/application_response.php";
 require_once "$t/footer.php";
 
-// Useful for debugging, so one can submit the same application multiple times and get all of them.
-$DEDUPLICATE ??= true;
+// Useful for debugging.
+$DEDUPLICATE = true;
 
 ini_set('memory_limit', '2048M');
 setlocale(LC_ALL, 'en_US.UTF-8');
 set_time_limit(3600);
-if (!isset($formConfig)) {
-	$formConfig = new FormConfig();
-	$formConfig->returnEarly = true;
-}
+$formConfig = new FormConfig();
 $formConfig->method = HTTPMethod::POST;
 $db ??= new Database();
 $cwd = __DIR__;
@@ -57,6 +54,7 @@ $smtpConfig = new SMTPConfig(
 		password: Config::$smtp_password
 );
 
+$formConfig->returnEarly = true;
 $formConfig->received = function(array &$formData) use ($cwd): void {
 	?>
 	<!DOCTYPE html>
@@ -78,7 +76,7 @@ $formConfig->received = function(array &$formData) use ($cwd): void {
 	</html>
 	<?php
 	$formData["_received_time"] = microtime(true);
-	file_put_contents("$cwd/received/" . $formData["_received_time"] . ".serialized", serialize([$formData, $_FILES]));
+	file_put_contents("$cwd/received/" . $formData["_received_time"] . ".serialized", serialize($formData));
 };
 
 $formConfig->confirm = function(array $formData) use ($cwd): void {
@@ -126,8 +124,7 @@ $formConfig->handler = function(FormException $e) use ($smtpConfig): void {
 			[]));
 };
 
-$debug = $formConfig->debug;
-$formConfig->emails = function(array $formData) use ($DEDUPLICATE, $smtpConfig, $cwd, $debug): array {
+$formConfig->emails = function(array $formData) use ($DEDUPLICATE, $smtpConfig, $cwd): array {
 	$shelterEmail = new EmailAddress(_G_default_email_user() . '@' . _G_public_domain(), _G_shortname());
 	$applicantEmail = new EmailAddress(trim($formData['AEmail']), trim($formData['AName']));
 	$applicantFakeEmail = new EmailAddress('noreply@' . _G_public_domain(), trim($formData['AName']));
@@ -285,9 +282,6 @@ $formConfig->emails = function(array $formData) use ($DEDUPLICATE, $smtpConfig, 
 		}
 	}
 
-	if ($debug) {
-		return [$dump, $save, $primaryEmail];
-	}
 	return [$save, $primaryEmail, $secondaryEmail];
 };
 $formConfig->fileTransformers["url"] = function(array $metadata): string {
