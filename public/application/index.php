@@ -79,8 +79,8 @@ $formConfig->received = function(array &$formData) use ($cwd): void {
 	file_put_contents("$cwd/received/" . $formData["_received_time"] . ".serialized", serialize($formData));
 };
 
-$formConfig->confirm = function(array $formData) use ($cwd): void {
-	unlink("$cwd/received/" . $formData["_received_time"] . ".serialized");
+$formConfig->confirm = function(array $formData): void {
+	unlink(__DIR__ . "/received/" . $formData["_received_time"] . ".serialized");
 };
 
 $formConfig->handler = function(FormException $e) use ($smtpConfig): void {
