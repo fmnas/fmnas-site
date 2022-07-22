@@ -143,6 +143,12 @@ export default defineComponent({
       }
       for (const listing of this.listings) {
         if (listing.selected) {
+          // We don't load photos here, so have to make sure not to overwrite the existing photos with [].
+          listing.photos = undefined;
+          if (listing.friend) {
+            listing.friend.photos = undefined;
+          }
+
           const originalStatus = listing.status;
           listing.status = targetStatus;
           fetch(`/api/listings/${listing.id}`, {

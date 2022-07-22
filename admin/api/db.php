@@ -48,8 +48,9 @@ class DatabaseWriter extends Database {
 		}
 
 		if (!($insertPet = $this->db->prepare("
-			REPLACE INTO pets (id, name, species, breed, dob, sex, fee, photo, description, status, bonded, friend, adoption_date, `order`)
+			INSERT INTO pets (id, name, species, breed, dob, sex, fee, photo, description, status, bonded, friend, adoption_date, `order`)
 			VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+			ON DUPLICATE KEY UPDATE name=?, species=?, breed=?, dob=?, sex=?, fee=?, photo=?, description=?, status=?, bonded=?, friend=?, adoption_date=?, `order`=?                       
 			"))) {
 			log_err("Failed to prepare insertPet: {$this->db->error}");
 		} else {
@@ -190,16 +191,19 @@ class DatabaseWriter extends Database {
 			}
 		}
 		if (!$error) {
-			if (!$this->insertPet->bind_param("ssissisiiiissi", $id, $name, $species, $breed, $dob, $sex, $fee, $photo,
+			if (!$this->insertPet->bind_param("ssissisiiiissisissisiiiissi", $id, $name, $species, $breed, $dob, $sex, $fee, $photo,
+					$description, $status, $bonded, $friend, $adoption_date, $order, $name, $species, $breed, $dob, $sex, $fee, $photo,
 					$description, $status, $bonded, $friend, $adoption_date, $order)) {
 				$error =
 						"Binding $id,$name,$species,$breed,$dob,$sex,$fee,$photo,$description,$status,$bonded,$friend,$adoption_date,$order to insertPet failed: {$this->db->error}";
 			} else if (!$this->insertPet->execute()) {
 				$error = "Executing insertPet failed: {$this->db->error}";
-			} else if (!$this->deletePhotos->bind_param("s", $id)) {
-				$error = "Failed to bind $id to deletePhotos: {$this->db->error}";
-			} else if (!$this->deletePhotos->execute()) {
-				$error = "Executing deletePhotos failed: {$this->db->error}";
+			} else if (is_array($pet['photos'])) { // Don't delete existing photos if an array isn't provided in the request.
+				if (!$this->deletePhotos->bind_param("s", $id)) {
+					$error = "Failed to bind $id to deletePhotos: {$this->db->error}";
+				} else if (!$this->deletePhotos->execute()) {
+					$error = "Executing deletePhotos failed: {$this->db->error}";
+				}
 			} else if ($pet['friend'] ?? false) {
 				$error = $this->insertPet($pet['friend'], true);
 				if (!$error) {
