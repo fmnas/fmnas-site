@@ -29,7 +29,7 @@
 		"eslint-plugin-vue": "^8.5.0",
 		"filepond": "^4.30.3",
 		"filepond-plugin-file-validate-size": "^2.2.5",
-		"filepond-plugin-file-validate-type": "^1.2.6",
+		"filepond-plugin-file-validate-type": "^1.2.8",
 		"filepond-plugin-image-exif-orientation": "^1.0.11",
 		"filepond-plugin-image-preview": "^4.6.10",
 		"filepond-plugin-image-transform": "^3.8.7",
