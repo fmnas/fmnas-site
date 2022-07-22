@@ -48,10 +48,6 @@ class FormProcessor {
 	 * Otherwise, the rendered HTML is output to the browser.
 	 */
 	public function collectForm(): void {
-		if ($this->formConfig->debug) {
-			echo 'collectForm';
-		}
-
 		// Get the submitted POST or GET data.
 		$receivedData = match ($this->formConfig->method) {
 			HTTPMethod::GET => $_GET,
@@ -110,10 +106,6 @@ class FormProcessor {
 	 * @return string
 	 */
 	private function collectHtml(array &$data): string {
-		if ($this->formConfig->debug) {
-			echo 'collectHtml';
-			var_dump($data);
-		}
 		return $data["_form_html"] ??= ob_get_clean();
 	}
 
@@ -125,11 +117,9 @@ class FormProcessor {
 	 * @throws \PHPMailer\PHPMailer\Exception
 	 */
 	private function receiveData(array &$data) {
-		if ($this->formConfig->debug) {
-			echo 'receiveData';
-		}
 		($this->formConfig->updateData)($data, $_FILES);
 		$this->collectHtml($data);
+		($this->formConfig->received)($data);
 		if ($this->formConfig->returnEarly) {
 			// Move uploaded files to be persistent.
 			foreach ($_FILES as &$file) {
@@ -150,12 +140,10 @@ class FormProcessor {
 				}
 			}
 
-			$data["_form_files"] ??= $_FILES;
+			$data["_form_files"] = $_FILES;
 			$tempfile = tempnam(sys_get_temp_dir(), "PERSIST_");
-			$data["_tmp_file"] ??= $tempfile;
+			$data["_tmp_file"] = $tempfile;
 			file_put_contents($tempfile, serialize($data));
-
-			($this->formConfig->received)($data);
 
 			// Request processing in the background.
 			$pipes = [];
@@ -174,17 +162,12 @@ class FormProcessor {
 					"curl -v -u \"{$this->formConfig->httpCredentials}\" -F '_form_stage=processForm' -F 'data=@$tempfile' $path";
 			proc_close(proc_open("$command &", [], $pipes));
 		} else {
-			($this->formConfig->received)($data);
 			$this->processForm($data);
 		}
 	}
 
 	private function displayForm(array &$data) {
-		if ($this->formConfig->debug) {
-			echo 'displayForm';
-		}
 		$html = $this->collectHtml($data);
-		echo('Collected HTML');
 
 		// Look for a good place to put the injected CSS.
 		$separator = "";
@@ -231,9 +214,6 @@ class FormProcessor {
 	 * @throws DOMException
 	 */
 	private function processForm(array $data): void {
-		if ($this->formConfig->debug) {
-			echo 'processForm';
-		}
 		$html = $this->collectHtml($data);
 		$data["_FORM_DEDUPLICATION_METADATA_"] = date("Ymd") . (@md5_file(__FILE__) ?: "") . md5($html);
 
@@ -253,9 +233,6 @@ class FormProcessor {
 	 * Remove invalid files from $_FILES.
 	 */
 	private function validateFiles(): void {
-		if ($this->formConfig->debug) {
-			echo 'validateFiles';
-		}
 		$removeInputs = [];
 		foreach ($_FILES as $inputName => &$fileArray) {
 			if (!isset($fileArray["size"])) {
@@ -298,9 +275,6 @@ class FormProcessor {
 	 * @return array A sane file metadata array
 	 */
 	#[Pure] private function transformFileArray(array $metadata): array {
-		if ($this->formConfig->debug) {
-			echo 'transformFileArray';
-		}
 		if (!isset($metadata["size"])) {
 			return [];
 		}
@@ -329,9 +303,6 @@ class FormProcessor {
 	 * @noinspection PhpMissingBreakStatementInspection
 	 */
 	private function renderForm(array $data, string $html, FormEmailConfig $emailConfig): RenderedEmail {
-		if ($this->formConfig->debug) {
-			echo 'renderForm';
-		}
 		$files = $this->applyFileConversions($emailConfig);
 		$attachments = $this->collectAttachments($files);
 
@@ -682,9 +653,6 @@ class FormProcessor {
 	 * @return array The updated file metadata array
 	 */
 	private function applyFileConversions(FormEmailConfig $emailConfig): array {
-		if ($this->formConfig->debug) {
-			echo 'applyFileConversions';
-		}
 		if ($emailConfig->globalConversion) {
 			$files = &$_FILES;
 		} else {
@@ -773,9 +741,6 @@ class FormProcessor {
 	 * @return void
 	 */
 	private function updateFile(array &$files, int $index, array $file) {
-		if ($this->formConfig->debug) {
-			echo 'updateFile';
-		}
 		if (!isset($files["size"])) {
 			echo "Warning: got a bogus file array!";
 			var_dump($files);
@@ -826,9 +791,6 @@ class FormProcessor {
 	 * @param array $files Uploaded file metadata (in $_FILES format)
 	 */
 	private function applyDataValues(DOMElement|DOMDocument $root, array $data, array $values, array $files): void {
-		if ($this->formConfig->debug) {
-			echo 'applyDataValues';
-		}
 		foreach (DOMHelpers::collectElements($root, "*", DOMHelpers::has("data-value-config")) as $element) {
 			/** @var $element DOMElement */
 			if (isset($values[$element->getAttribute("data-value-config")])) {
@@ -879,9 +841,6 @@ class FormProcessor {
 	 * @param bool $href Apply to the href attribute instead of the inner HTML.
 	 */
 	function applyFileTransformation(DOMElement $element, ?array $file, bool $href = false): void {
-		if ($this->formConfig->debug) {
-			echo 'applyfileTransformation';
-		}
 		if ($file === null) {
 			echo "Warning: got null file to apply transformation";
 			var_dump($element);
@@ -909,9 +868,6 @@ class FormProcessor {
 	 * @throws \PHPMailer\PHPMailer\Exception
 	 */
 	function sendEmail(FormEmailConfig $emailConfig, RenderedEmail $renderedEmail): void {
-		if ($this->formConfig->debug) {
-			echo 'sendEmail';
-		}
 		$emailConfig->send($renderedEmail);
 	}
 }
