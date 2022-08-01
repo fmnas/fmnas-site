@@ -27,7 +27,7 @@
 		"browserify": "^17.0.0",
 		"eslint": "^8.12.0",
 		"eslint-plugin-vue": "^8.7.1",
-		"filepond": "^4.30.3",
+		"filepond": "^4.30.4",
 		"filepond-plugin-file-validate-size": "^2.2.7",
 		"filepond-plugin-file-validate-type": "^1.2.8",
 		"filepond-plugin-image-exif-orientation": "^1.0.11",
