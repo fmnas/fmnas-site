@@ -23,7 +23,7 @@ import eslintPlugin from 'vite-plugin-eslint'; // TODO [#144]: Get linting to wo
 export default defineConfig({
 	plugins: [
 		vue(),
-		eslintPlugin(),
+		// eslintPlugin(), // TODO: Fix eslint
 	],
 	resolve: {
 		alias: {
