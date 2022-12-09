@@ -37,7 +37,7 @@ const toastOptions = {
 Promise.all([getConfig(), getPartials()]).then(([config, partials]) => {
 	store.commit('setConfig', config);
 	store.commit('setPartials', partials);
-	let app = createApp(App);
+	const app = createApp(App);
 	app.config.errorHandler = (err: any, vm, info) => {
 		console.error(err, vm, info);
 		store.state.toast.error(JSON.stringify({err: err, info: info}));
