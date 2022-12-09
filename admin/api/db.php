@@ -206,22 +206,21 @@ class DatabaseWriter extends Database {
 				}
 			} 
 		}
-		if (!$error && $pet['friend'] ?? false) {
-				$error = $this->insertPet($pet['friend'], true);
-				if (!$error) {
-					// Set bonded and friends.
-					$friend_id = $pet['friend']['id'];
-					$left_bonded = 1;
-					$right_bonded = 2;
-					if (!$this->setPair->bind_param("iss", $left_bonded, $friend_id, $id)) {
-						$error = "Binding 1,$friend_id,$id to setPair failed: {$this->db->error}";
-					} else if (!$this->setPair->execute()) {
-						$error = "Executing setPair on left pet failed: {$this->db->error}";
-					} else if (!$this->setPair->bind_param("iss", $right_bonded, $id, $friend_id)) {
-						$error = "Binding 2,$id,$friend_id to setPair failed: {$this->db->error}";
-					} else if (!$this->setPair->execute()) {
-						$error = "Executing setPair on right pet failed: {$this->db->error}";
-					}
+		if (!$error && ($pet['friend'] ?? false)) { // pet has a friend
+			$error = $this->insertPet($pet['friend'], true);
+			if (!$error) {
+				// Set bonded and friends.
+				$friend_id = $pet['friend']['id'];
+				$left_bonded = 1;
+				$right_bonded = 2;
+				if (!$this->setPair->bind_param("iss", $left_bonded, $friend_id, $id)) {
+					$error = "Binding 1,$friend_id,$id to setPair failed: {$this->db->error}";
+				} else if (!$this->setPair->execute()) {
+					$error = "Executing setPair on left pet failed: {$this->db->error}";
+				} else if (!$this->setPair->bind_param("iss", $right_bonded, $id, $friend_id)) {
+					$error = "Binding 2,$id,$friend_id to setPair failed: {$this->db->error}";
+				} else if (!$this->setPair->execute()) {
+					$error = "Executing setPair on right pet failed: {$this->db->error}";
 				}
 			}
 		}
