@@ -204,7 +204,9 @@ class DatabaseWriter extends Database {
 				} else if (!$this->deletePhotos->execute()) {
 					$error = "Executing deletePhotos failed: {$this->db->error}";
 				}
-			} else if ($pet['friend'] ?? false) {
+			} 
+		}
+		if (!$error && $pet['friend'] ?? false) {
 				$error = $this->insertPet($pet['friend'], true);
 				if (!$error) {
 					// Set bonded and friends.
