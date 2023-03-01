@@ -2,7 +2,7 @@
 	"dependencies": {
 		"core-js": "^3.29.0",
 		"npm": "^9.2.0",
-		"primeicons": "^5.0.0",
+		"primeicons": "^6.0.1",
 		"primevue": "^3.23.0",
 		"ts-md5": "^1.2.11",
 		"tslib": "^2.4.1",
