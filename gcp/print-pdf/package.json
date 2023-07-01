@@ -20,7 +20,7 @@
 		"concurrently": "^8.1.0",
 		"gts": "^3.1.1",
 		"nodemon": "^2.0.22",
-		"typescript": "^5.0.4"
+		"typescript": "^5.1.6"
 	},
 	"dependencies": {
 		"@google-cloud/functions-framework": "^3.2.0",
