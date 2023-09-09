@@ -107,7 +107,7 @@ div.home {
 		}
 
 		section.transports {
-			grid-template-columns: [start] 1fr [seattle] minmax(9.5rem, auto) [spokane] minmax(9.5rem, auto) 1fr [end];
+			grid-template-columns: [start] 1fr [seattle] minmax(9.5rem, auto) 1fr [end];
 			margin-bottom: 1rem;
 
 			> p {
@@ -142,10 +142,6 @@ div.home {
 
 				> p {
 					margin: 0;
-				}
-
-				&.spokane {
-					grid-column: spokane;
 				}
 
 				&.seattle {
