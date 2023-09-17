@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ExternalDependencies">
+    <plugin id="Dart" />
+    <plugin id="JavaScript" />
+    <plugin id="com.dmarcotte.handlebars" />
+    <plugin id="com.google.gct.core" />
+    <plugin id="com.intellij.database" />
+    <plugin id="com.intellij.plugins.watcher" />
+    <plugin id="com.jetbrains.php" />
+    <plugin id="com.jetbrains.sh" />
+    <plugin id="com.khmelyuk.multirun" />
+    <plugin id="de.espend.idea.php.annotation" />
+    <plugin id="mobi.hsz.idea.gitignore" />
+    <plugin id="org.jetbrains.plugins.go" />
+    <plugin id="org.jetbrains.plugins.sass" />
+    <plugin id="org.jetbrains.plugins.vue" />
+  </component>
+</project>
