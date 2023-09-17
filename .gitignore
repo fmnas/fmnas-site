@@ -4,6 +4,8 @@ secrets/*
 !secrets/db_pass.txt
 !secrets/smtp_pass.txt
 !secrets/api_credentials.txt
+*.pem
+config.sql
 
 /log
 
