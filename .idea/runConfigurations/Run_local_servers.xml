@@ -1,0 +1,7 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Run local servers" type="Multirun" separateTabs="false" reuseTabsWithFailures="false" startOneByOne="true" markFailedProcess="true" hideSuccessProcess="false" delayTime="0.0">
+    <runConfiguration name="Run GCP services" type="Multirun" />
+    <runConfiguration name="Run admin site dev server" type="Shell Script" />
+    <method v="2" />
+  </configuration>
+</component>

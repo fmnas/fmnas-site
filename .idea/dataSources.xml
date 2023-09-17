@@ -8,14 +8,14 @@
       <jdbc-url>jdbc:mysql://mysql.forgetmenotshelter.org:3306/fmnas_testing</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="fmnas_dev@localhost" uuid="cf42717f-1340-4e2e-8180-88b8e286106b">
+    <data-source source="LOCAL" name="fmnas_test@localhost" uuid="cf42717f-1340-4e2e-8180-88b8e286106b">
       <driver-ref>mariadb</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.mariadb.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mariadb://localhost:3306/fmnas_dev</jdbc-url>
+      <jdbc-url>jdbc:mariadb://localhost:3306/fmnas_test</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="fmnas@mysql.forgetmenotshelter.org" uuid="9745dddd-d633-44a4-adf7-6aa6ff92a2cb">
+    <data-source source="LOCAL" name="MySQL - fmnas@mysql.forgetmenotshelter.org" uuid="9745dddd-d633-44a4-adf7-6aa6ff92a2cb">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>

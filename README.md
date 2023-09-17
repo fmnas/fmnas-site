@@ -45,11 +45,15 @@ To get a local server running, you will need:
 	* Debian packages: `apache2 libapache2-mod-php`
 * PHP 8.1 and dependencies noted below
 	* Debian packages: `php php-gd php-mbstring php-mysql php-xml php-imagick php-curl php-sqlite3`
+* MySQL or MariaDB
+	* Debian packages: `mariadb-server` then run `mysql_secure_installation`
 * cURL on PATH
+	* Debian packages: `curl`
 * Node
 	* I suggest using NVM and enabling [deep shell integration](https://github.com/nvm-sh/nvm#deeper-shell-integration) to
 	  avoid using the wrong node version.
-* Composer
+* [Composer](https://getcomposer.org/download/s)
+* [Docker and Compose](https://docs.docker.com/compose/install/linux/#install-using-the-repository)
 * You may want to install the faster Dart version of [Sass](https://sass-lang.com/install):
 	* install the [Dart SDK](https://dart.dev/get-dart) and run `dart pub global activate sass`
 
@@ -57,19 +61,7 @@ The [Dart SDK](https://dart.dev/get-dart) is required to run the blackbox tests 
 
 ### Workflow
 
-The repository includes configs for IntelliJ/PHPStorm.
-
-The following plugins are required for full-stack development in IntelliJ IDEA Ultimate:
-
-* [.ignore](https://plugins.jetbrains.com/plugin/7495--ignore)
-* [Apache config (.htaccess)](https://plugins.jetbrains.com/plugin/6834-apache-config--htaccess-)
-* [Cloud Code](https://plugins.jetbrains.com/plugin/8079-cloud-code)
-* [File Watchers](https://plugins.jetbrains.com/plugin/7177-file-watchers)
-* [Go](https://plugins.jetbrains.com/plugin/9568-go)
-* [Handlebars/Mustache](https://plugins.jetbrains.com/plugin/6884-handlebars-mustache)
-* [Multirun](https://plugins.jetbrains.com/plugin/7248-multirun)
-* [PHP](https://plugins.jetbrains.com/plugin/6610-php)
-* [Vue.js](https://plugins.jetbrains.com/plugin/9442-vue-js)
+The repository includes configs for IntelliJ IDEA Ultimate.
 
 The "Run local servers" multirun workflow runs all the GCP services as well as a local Vite server for the admin site.
 
@@ -91,22 +83,133 @@ then `git fetch` and rebase your dev branch onto `origin/test` before another PR
 
 If you revert a PR in main but want to keep the changes in test, revert the revert PR and merge the new PR into test.
 
-### Initial build
+### Initial setup
 
-After checking out the repository, run:
+If developing on a Windows host, please clone the repo in WSL instead of on the Windows filesystem to avoid breaking
+file permissions.
+
+I also strongly recommend running IntelliJ under WSL using JetBrains Gateway rather than running IntelliJ directly on
+the Windows host. I tried the latter setup and found it was difficult to get all run configs, file watchers, etc.
+working correctly and ultimately gave up after trying to get it to use a remote Dart SDK to run the tests. Just run the
+IDE on Linux. It's easier.
+
+#### Apache setup
+
+First, you'll want to create two hostnames in your hosts file - one for the public site and one for the admin site. I
+use `public.fmnas` and `admin.fmnas`.
+
+On the hosts where you'll be running a browser, add to the hosts file
+(/etc/hosts or C:\Windows\System32\drivers\etc\hosts):
+
+```
+::1 public.fmnas
+::1 admin.fmnas
+```
+
+(connecting to it via IPv4 doesn't seem to work right on Windows hosts. I don't care enough to figure out why) 
+
+Whitelist the repo directory in /etc/apache2/apache2.conf (or equivalent listed under "Document Roots"
+at http://localhost):
+
+```apacheconf
+<Directory /path/to/fmnas-site/>
+	Options Indexes FollowSymLinks
+	AllowOverride All
+	Require all granted
+</Directory>
+```
+
+To make everything work smoothly, we have to enable HTTPS on the local server, so generate local certificates for each
+hostname.
+
+Install mkcert (`sudo apt install mkcert && mkcert -install`).
+
+To trust the certs on a Windows host with mkcert under WSL, also install mkcert on Windows and share the CA certs
+between the two installations. You can use Chocolatey if you're into that sort of thing, but I just installed it from
+the binaries at https://github.com/FiloSottile/mkcert/releases
+(run `.\mkcert-*-windows-amd64.exe -install` to install the CA).
+
+Run `mkcert -CAROOT` on each installation to find where the CA certs are kept (or just trust me that they're in
+%LocalAppData%\mkcert and ~/.local/share/mkcert), then copy the generated certs from Windows to WSL (going the other way
+doesn't work, I guess because it copies the certs somewhere else internally on Windows?).
+
+Then create the certificates for each site somewhere on the Linux host:
+
+```shell
+mkcert public.fmnas
+mkcert admin.fmnas
+```
+
+and create the sites in an apache site conf like so:
+
+```
+<VirtualHost *:443>
+    ServerName public.fmnas
+    DocumentRoot /path/to/fmnas-site/public
+    SSLEngine on
+    SSLCertificateFile "/path/to/public.fmnas.pem"
+    SSLCertificateKeyFile "/path/to/public.fmnas-key.pem"
+</VirtualHost>
+<VirtualHost *:443>
+    ServerName admin.fmnas
+    DocumentRoot /path/to/fmnas-site/admin
+    SSLEngine on
+    SSLCertificateFile "/path/to/admin.fmnas.pem"
+    SSLCertificateKeyFile "/path/to/admin.fmnas-key.pem"
+</VirtualHost>
+```
+
+Give www-data group ownership of the stuff so it can write to it:
+```shell
+chgrp -R www-data /path/to/fmnas-site 
+```
+
+Enable the important modules:
+```shell
+sudo a2enmod php8.2
+sudo a2enmod rewrite
+```
+
+Then restart apache (`sudo service apache2 restart`).
+
+#### Database setup
+
+Create a local database, import the schema, and add appropriate constants:
+
+```shell
+mysql -u root -p -e 'CREATE DATABASE fmnas_test;'
+mysql -u root -p fmnas_test < schema.sql
+ts-node handleparse.ts config.sql.hbs --address="address to animal shelter" --admin_domain="admin.fmnas" \
+--default_email_user="mail" --fax="fax number" --longname="formal name of shelter" --phone="phone number" \
+--phone_intl="phone number (international prefixed)" --public_domain="public.fmnas" \
+--shortname="name of animal shelter" --transport_date="2023-09-16"
+mysql -u root -p fmnas_test < config.sql
+```
+
+I usually just use the root user for local development because I'm a naughty boy, but if you want you can make one.
+
+#### Initial build
+
+Run:
 
 * `npm install` for Node dependencies
 * Create the config file (change values as appropriate):
-	* ```shell
-	ts-node handleparse.ts secrets/config.php.hbs --db_name=database --db_username=username --db_pass=password \
-	--db_host=localhost --smtp_host=localhost --smtp_auth=false --smtp_port=25 \
-	--image_size_endpoint=https://localhost:50000 --resize_image_endpoint=https://localhost:50001 \
-	--print_pdf_endpoint=https://localhost:50002 --minify_html_endpoint=https://localhost:50003
+  ```shell
+  ts-node handleparse.ts secrets/config.php.hbs --db_name=database --db_username=username --db_pass=password \
+  --db_host=localhost --smtp_host=localhost --smtp_auth=false --smtp_port=25 \
+  --image_size_endpoint=https://localhost:50000 --resize_image_endpoint=https://localhost:50001 \
+  --print_pdf_endpoint=https://localhost:50002 --minify_html_endpoint=https://localhost:50003
   ```
 * `composer install` for PHP dependencies
 * `sass public:public` for public site stylesheets
 * `npm run build` for public site scripts
 * `vite build --mode development admin/client` for the admin site
+
+#### Final steps and testing
+
+Navigate to https://public.fmnas to generate `generated.php` which is needed by the admin site.
+
+Navigate to https://admin.fmnas (or whatever hostname you used) and insert a fake animal.
 
 ### Watch and build
 
