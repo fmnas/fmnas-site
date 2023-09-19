@@ -117,6 +117,7 @@ jobs:
           remote-user: ${{ secrets.PROD_SFTP_USER }}
           private-ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
           destination-path: ${{ secrets.PROD_SITE_ROOT }}/
+          rsync-options: --archive --links --compress
   invalidate-descriptions:
     name: Invalidate description cache
     needs: deploy
