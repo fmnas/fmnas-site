@@ -461,7 +461,11 @@ The template context is of the type Pet. Some useful properties include:
 
 ## Architecture
 
-**PHP** is used as the backend language to simplify deployment to Dreamhost shared hosting.
+**PHP** is used as the backend language to simplify deployment to Dreamhost shared hosting. This was a mistake.
+
+This was a mistake. Now, a bunch of things are running on GCP anyway since it turns out old-school shared hosting wasn't
+quite powerful enough to do everything we wanted. So it's a horrible mess of PHP code calling GCP functions and vice
+versa. C'est la vie.
 
 [**Vue**](https:/vuejs.org) 3 is used in the admin interface.
 
