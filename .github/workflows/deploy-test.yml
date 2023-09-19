@@ -111,7 +111,7 @@ jobs:
           wait-interval: 10
       - name: SFTP upload
         id: deploy-success
-        uses: SamKirkland/FTP-Deploy-Action@3.0.0
+        uses: SamKirkland/FTP-Deploy-Action@3.1.2
         with:
           ftp-server: sftp://${{ secrets.TEST_SFTP_HOST }}${{ secrets.TEST_SITE_ROOT }}/
           ftp-username: ${{ secrets.TEST_SFTP_USER }}
