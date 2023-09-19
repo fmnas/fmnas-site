@@ -111,12 +111,12 @@ jobs:
           wait-interval: 10
       - name: SFTP upload
         id: deploy-success
-        uses: SamKirkland/FTP-Deploy-Action@3.1.2
+        uses: SamKirkland/web-deploy@v1
         with:
-          ftp-server: sftp://${{ secrets.TEST_SFTP_HOST }}${{ secrets.TEST_SITE_ROOT }}/
-          ftp-username: ${{ secrets.TEST_SFTP_USER }}
-          ftp-password: ${{ secrets.TEST_SFTP_PASS }}
-          git-ftp-args: --insecure
+          target-server: ${{ secrets.TEST_SFTP_HOST }}
+          remote-user: ${{ secrets.TEST_SFTP_USER }}
+          private-ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          destination-path: ${{ secrets.TEST_SITE_ROOT }}/
   invalidate-descriptions:
     name: Invalidate description cache
     needs: deploy
