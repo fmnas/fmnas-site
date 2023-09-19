@@ -30,7 +30,6 @@ require_once "$t/header.php";
 	<script src="/email.js.php"></script>
 	<?php
 	style();
-	style("minheader", true);
 	?>
 	<style>
 		.bold {
@@ -42,16 +41,18 @@ require_once "$t/header.php";
 		body > article {
 			display: inline-block;
 			text-align: justify;
+			margin: 0 5vw;
 		}
-		p, address {
+		body > article p, body > article address {
 			max-width: 9in;
-			margin: 0 5vw 1em 5vw;
+			margin: 0 auto 1em;
 		}
-		address {
+		body > article address {
 			font-style: normal;
 		}
 		h2 {
 			margin: 2rem 0;
+			text-align: center;
 		}
 		p > strong:first-child {
 			color: inherit;
@@ -60,18 +61,11 @@ require_once "$t/header.php";
 </head>
 <body>
 <?php
-//ob_start();
-//pageHeader();
-//echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
+ob_start();
+pageHeader();
+echo str_replace("<header>", "<header data-remove='true'>", ob_get_clean());
 ?>
 <article>
-	<header id="minimal_header">
-		<a href="/">
-			<h1><?=_G_shortname()?></h1>
-			<address><p><?=mb_strcut(str_replace("\n", "<p>", _G_address()), 0, -5)?></address>
-			<span class="tel"><?=_G_phone()?></span>
-		</a>
-	</header>
 	<h2>ADOPTION INFORMATION/FAQ</h2>
 	<section class="bold">
 		<p>Our pets arrive in your home already spayed or neutered, and with all age appropriate vaccinations.
