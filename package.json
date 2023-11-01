@@ -26,7 +26,7 @@
 		"@vue/compiler-sfc": "^3.3.7",
 		"@vue/eslint-config-typescript": "^10.0.0",
 		"browserify": "^17.0.0",
-		"eslint": "^8.50.0",
+		"eslint": "^8.52.0",
 		"eslint-plugin-vue": "^8.7.1",
 		"filepond": "^4.30.4",
 		"filepond-plugin-file-validate-size": "^2.2.8",
