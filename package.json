@@ -19,7 +19,7 @@
 		"@tsconfig/node16": "^16.1.1",
 		"@types/marked": "^5.0.0",
 		"@types/minimist": "^1.2.3",
-		"@types/node": "^20.6.2",
+		"@types/node": "^20.8.10",
 		"@typescript-eslint/eslint-plugin": "^6.2.1",
 		"@typescript-eslint/parser": "^6.9.1",
 		"@vitejs/plugin-vue": "^2.3.4",
