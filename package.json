@@ -40,7 +40,7 @@
 		"sass": "^1.60.0",
 		"ts-node": "^10.9.1",
 		"tsify": "^5.0.4",
-		"typescript": "^5.2.2",
+		"typescript": "^5.3.2",
 		"vite": "^2.8.6",
 		"vite-plugin-eslint": "^1.8.1",
 		"watchify": "^4.0.0"
