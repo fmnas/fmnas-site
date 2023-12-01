@@ -5,7 +5,7 @@
 		}
 	},
 	"require": {
-		"phpmailer/phpmailer": "^6.8",
+		"phpmailer/phpmailer": "^6.9",
 		"masterminds/html5": "^2.8",
 		"erusev/parsedown": "^1.7",
 		"zordius/lightncandy": "dev-master",
