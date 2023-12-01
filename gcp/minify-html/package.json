@@ -15,7 +15,7 @@
 	"devDependencies": {
 		"@types/busboy": "^1.5.3",
 		"@types/cssnano": "^5.1.0",
-		"@types/express": "^4.17.20",
+		"@types/express": "^4.17.21",
 		"@types/html-minifier": "^4.0.4",
 		"@types/node": "^20.10.1",
 		"@types/postcss-reporter": "^7.0.4",
