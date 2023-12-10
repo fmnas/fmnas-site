@@ -1,4 +1,6 @@
-{{>coming_soon}}
+{{>coming_soon}} {{! Remove when done with listing }}
+
+{{>how_to_adopt}}
 
 Introducing {{name}} {{! Write the rest of the listing here }}
 
