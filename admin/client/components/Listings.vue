@@ -209,7 +209,7 @@ td, img {
 }
 
 img {
-  max-width: $row-height * 2 / 3;
+  max-width: calc($row-height * 2 / 3);
 }
 
 td.options a {

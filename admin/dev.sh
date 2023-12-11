@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# shellcheck disable=SC1090
+. ~/.nvm/nvm.sh
 trap -- '' SIGINT SIGTERM
 git update-index --assume-unchanged admin/.htaccess
 sed -i -E 's/^# (.+ # dev.sh add *)$/\1/;s/^([^#].+ # dev.sh remove *)$/# \1/' admin/.htaccess
