@@ -47,7 +47,7 @@ export default defineComponent({
 <style scoped lang="scss">
 div.entry {
   $height: 64px;
-  $image-width: $height * 2 / 3;
+  $image-width: calc($height * 2 / 3);
   $padding: 0.2em;
   height: $height;
   text-align: left;
