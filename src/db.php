@@ -262,7 +262,7 @@ class Database {
 				"path" => $pet["dsc_path"],
 				"type" => $pet["dsc_type"],
 		]);
-		$p->photos = array_map("self::createAsset", $photos);
+		$p->photos = array_map(self::createAsset(...), $photos);
 		$p->status = _G_statuses()[$pet["status"]];
 		$p->breed = $pet["breed"];
 		$p->dob = $pet["dob"];
@@ -357,7 +357,7 @@ class Database {
 			log_err("Executing getAdoptablePets failed");
 			return [];
 		}
-		return array_map("self::createPet", $this->getAdoptablePets->get_result()->fetch_all(MYSQLI_ASSOC));
+		return array_map(self::createPet(...), $this->getAdoptablePets->get_result()->fetch_all(MYSQLI_ASSOC)) ?: [];
 	}
 
 	public function getAdoptablePetsBySpecies(Species $species): array {
@@ -371,7 +371,7 @@ class Database {
 			log_err("Executing getAdoptablePetsBySpecies failed");
 			return [];
 		}
-		return array_map("self::createPet", $this->getAdoptablePetsBySpecies->get_result()->fetch_all(MYSQLI_ASSOC));
+		return array_map(self::createPet(...), $this->getAdoptablePetsBySpecies->get_result()->fetch_all(MYSQLI_ASSOC)) ?: [];
 	}
 
 	public function getAllPets(): array {
@@ -379,7 +379,7 @@ class Database {
 			log_err("Executing getAllPets failed");
 			return [];
 		}
-		return array_map("self::createPet", $this->getAdoptablePets->get_result()->fetch_all(MYSQLI_ASSOC));
+		return array_map(self::createPet(...), $this->getAdoptablePets->get_result()->fetch_all(MYSQLI_ASSOC));
 	}
 
 	public function getAllSpecies(): array {
@@ -387,7 +387,7 @@ class Database {
 			log_err("Executing getAllSpecies failed");
 			return [];
 		}
-		return array_map("self::createSpecies", $this->getAllSpecies->get_result()->fetch_all(MYSQLI_ASSOC));
+		return array_map(self::createSpecies(...), $this->getAllSpecies->get_result()->fetch_all(MYSQLI_ASSOC));
 	}
 
 	public function getAllIds(): ?array {
@@ -395,7 +395,7 @@ class Database {
 			log_err("Executing getAllIds failed");
 			return null;
 		}
-		return array_map("self::extractId", $this->getAllIds->get_result()->fetch_all(MYSQLI_ASSOC));
+		return array_map(self::extractId(...), $this->getAllIds->get_result()->fetch_all(MYSQLI_ASSOC));
 	}
 
 	private static function extractId(array $row): string {

@@ -86,6 +86,10 @@ jobs:
           --api_credentials="${{ secrets.HTTP_CREDENTIALS }}"
       - name: Unignore config.php for upload
         run: echo '!secrets/config.php' | tee -a .gitignore
+      - name: Write service_account.json
+        run: echo '${{ secrets.SERVICE_ACCOUNT_JSON }}' > secrets/service_account.json
+      - name: Unignore service_account.json for upload
+        run: echo '!secrets/service_account.json' | tee -a .gitignore
       - name: Unignore vendor directory for upload
         run: sed -i '/\/vendor\//d' .gitignore
       - name: Unignore compiled files for upload
