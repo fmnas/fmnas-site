@@ -205,6 +205,14 @@ Run:
 * `npm run build` for public site scripts
 * `vite build --mode development admin/client` for the admin site
 
+#### WSL port forwarding
+
+To access a vite dev server, you'll have to forward the port from the Windows host to the VM:
+
+```powershell
+netsh interface portproxy add v4tov4 listenport=50080 connectport=50080 connectaddress=(wsl hostname -I)
+```
+
 #### Final steps and testing
 
 Navigate to https://public.fmnas to generate `generated.php` which is needed by the admin site.

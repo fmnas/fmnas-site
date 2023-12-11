@@ -4,6 +4,7 @@ declare(strict_types = 1);
 @header("Accept-CH: Sec-CH-UA, Sec-CH-UA-Mobile, Sec-CH-UA-Platform, Viewport-Width, Device-Memory, Downlink");
 ini_set("pcre.jit", "0");
 set_include_path(__DIR__);
+putenv("GOOGLE_APPLICATION_CREDENTIALS=" . __DIR__ . '/../secrets/service_account.json');
 include 'common-test.php';
 require_once __DIR__ . "/../vendor/autoload.php";
 

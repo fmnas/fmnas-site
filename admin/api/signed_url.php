@@ -1,5 +1,6 @@
+<?php
 /*
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,36 +16,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {defineConfig} from 'vite';
-import vue from '@vitejs/plugin-vue';
-import * as path from 'path';
-import eslintPlugin from 'vite-plugin-eslint'; // TODO [#144]: Get linting to work in vite.
+require_once 'api.php';
 
-export default defineConfig({
-	plugins: [
-		vue(),
-		// eslintPlugin(), // TODO: Fix eslint
-	],
-	resolve: {
-		alias: {
-			'@': path.resolve(__dirname, '.'),
-		},
-	},
-	publicDir: false,
-	build: {
-		outDir: '../',
-		emptyOutDir: false,
-		target: 'es2020',
-		rollupOptions: {
-			external: [
-					'components/ProgressToastContent.vue',
-			],
-		},
-	},
-	server: {
-		hmr: {
-			host: "localhost",
-			protocol: "ws",
-		},
-	},
-});
+// Get a signed url for uploading images to GCS.
+endpoint(...[
+    'get' => function() use ($db): Result {
+        return new Result(200, 'foo');
+    },
+    'get_value' => $reject,
+    'put' => $reject,
+    'put_value' => $reject,
+    'post' => $reject,
+    'post_value' => $reject,
+    'delete' => $reject,
+    'delete_value' => $reject,
+]);
