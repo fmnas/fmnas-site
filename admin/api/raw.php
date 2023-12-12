@@ -47,7 +47,8 @@ $writer = function(string $key, mixed $body) use ($db): Result {
 					"data" => $asset->data,
 					"type" => $asset->type,
 					"width" => $size[0],
-					"height" => $size[1]
+					"height" => $size[1],
+                    "gcs" => false,
 			];
 			$db->updateAsset($key, $arr);
 		} catch (ImageResizeException $e) {
@@ -97,11 +98,15 @@ endpoint(...[
 				}
 				$key = $info[0];
 				$height = $info[1];
-				$filename = cached_assets() . "/${key}_$height.jpg";
+                $asset = $db->getAssetByKey($key);
+                if ($asset->gcs) {
+                    // TODO: 302 -> 301
+                    return new Result(302, 'https://' . Config::$static_domain . "/cache/${key}_$height.jpg");
+                }
+                $filename = cached_assets() . "/${key}_$height.jpg";
 				if (file_exists($filename)) {
 					returnFile($filename, "image/jpeg");
 				}
-				$asset = $db->getAssetByKey($key);
 				returnFile(root() . "/public" . $asset->cachedImage($height), "image/jpeg");
 			}
 			$asset = startsWith($value, "stored/") ?
@@ -109,6 +114,10 @@ endpoint(...[
 			if ($asset === null) {
 				return new Result(404, error: "Asset $value not found (did you mean stored/$value?)");
 			}
+            if ($asset->gcs) {
+                // TODO: 302 -> 301
+                return new Result(302, 'https://' . Config::$static_domain . '/stored/' . $asset->key);
+            }
 			returnFile($asset->absolutePath(), $asset->getType());
 		},
 		'post' => $reject,

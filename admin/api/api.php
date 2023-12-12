@@ -87,10 +87,15 @@ function endpoint(?callable $get = null, ?callable $post = null, ?callable $put 
 	header("Cache-Control: no-store");
 	ini_set('zlib.output_compression', 1);
 	http_response_code($result->status);
-	if ($result->status >= 300) {
+	if ($result->status >= 400) {
 		log_err(print_r($result, true));
 	}
-	echo json_encode($result);
+	if ($result->status == 301 || $result->status == 302) {
+        header('Location: ' . $result->value, true, $result->status);
+    } else {
+        echo json_encode($result);
+    }
+    exit;
 }
 
 $reject = function($key = null, $value = null): Result {

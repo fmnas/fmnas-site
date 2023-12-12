@@ -94,7 +94,7 @@ export function renderDescription(source: string, context: any): string {
 			// Marked options
 			breaks: true,
 			// TODO [#151]: Sanitize email links in rendered description.
-		});
+		}) as string;
 		store.state.parseError = undefined;
 	} catch (e) {
 		store.state.parseError = e;
@@ -102,12 +102,13 @@ export function renderDescription(source: string, context: any): string {
 	return store.state.lastGoodDescription;
 }
 
-async function createAsset(type: string, path: string = '', data: any = {}): Promise<Asset> {
+async function createAsset(type: string, path: string = '', data: any = {}, gcs: boolean = false): Promise<Asset> {
 	const res = await fetch(`/api/assets`, {
 		method: 'POST', body: JSON.stringify({
 			type: type,
 			data: data,
 			path: path,
+			gcs: gcs,
 		})
 	});
 	checkResponse(res);
@@ -173,7 +174,7 @@ export function getContext(pet: Pet): Record<string, string> {
 	conditionalAdd('order');
 	conditionalAdd('modified');
 	if (pet.status) {
-		context.status = store.state.config.statuses[pet.status].name;
+		context.status = store.state.config.statuses[pet.status]?.name;
 	}
 	if (pet.friend) {
 		context.friend = pet.friend.id;

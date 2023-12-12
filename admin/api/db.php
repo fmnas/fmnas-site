@@ -32,7 +32,7 @@ class DatabaseWriter extends Database {
 		}
 
 		if (!($insertAsset = $this->db->prepare("
-			INSERT INTO assets (id, path, data, type, width, height) VALUES(NULL, ?, ?, ?, ?, ?)
+			INSERT INTO assets (id, path, data, type, width, height, gcs) VALUES(NULL, ?, ?, ?, ?, ?, ?)
 			"))) {
 			log_err("Failed to prepare insertAsset: {$this->db->error}");
 		} else {
@@ -116,9 +116,10 @@ class DatabaseWriter extends Database {
 		$type = $value['type'] ?? null;
 		$width = $value['width'] ?? null;
 		$height = $value['height'] ?? null;
+        $gcs = $value['gcs'] ?? false;
 		if (!$this->db->begin_transaction()) {
 			$error = "Failed to begin transaction";
-		} else if (!$this->insertAsset->bind_param("sssii", $path, $data, $type, $width, $height)) {
+		} else if (!$this->insertAsset->bind_param("sssiii", $path, $data, $type, $width, $height, $gcs)) {
 			$error = "Binding $path,$data,$type,$width,$height to insertAsset failed: {$this->db->error}";
 		} else if (!$this->clearConflictingAssets->bind_param("s", $path)) {
 			$error = "Binding $path to clearConflictingAssets failed: {$this->db->error}";

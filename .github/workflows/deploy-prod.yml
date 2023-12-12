@@ -79,7 +79,9 @@ jobs:
           --print_pdf_endpoint="${{ secrets.PRINT_PDF_PROD_ENDPOINT }}" \
           --minify_html_endpoint="${{ secrets.MINIFY_HTML_TEST_ENDPOINT }}" \
           --ga_id="${{ secrets.PROD_GA_ID }}" \
-          --api_credentials="${{ secrets.HTTP_CREDENTIALS }}"
+          --api_credentials="${{ secrets.HTTP_CREDENTIALS }}" \
+          --static_bucket="${{ secrets.PROD_STATIC_BUCKET }}" \
+          --static_domain="${{ secrets.PROD_STATIC_DOMAIN }}"
       - name: Write service_account.json
         run: echo '${{ secrets.SERVICE_ACCOUNT_JSON }}' > secrets/service_account.json
       - name: Unignore service_account.json for upload
