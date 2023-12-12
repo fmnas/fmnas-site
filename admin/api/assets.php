@@ -18,6 +18,8 @@
 
 require_once 'api.php';
 
+use Google\Cloud\Storage\StorageClient;
+
 // This endpoint is for asset metadata. For raw data, use the raw endpoint.
 endpoint(...[
 		'get' => $reject,
@@ -47,7 +49,26 @@ endpoint(...[
 			if (is_string($key)) {
 				return new Result(500, error: $key);
 			}
-			return new Result(200, $db->getAssetByKey($key));
+            $asset = $db->getAssetByKey($key);
+            if ($asset === null) {
+                return new Result(500, error: "Asset $key not found");
+            }
+            if ($asset->gcs) {
+                $storage = new StorageClient();
+                $bucket = $storage->bucket(Config::$static_bucket);
+                $object = $bucket->object("stored/" . $asset->key);
+                $url = $object->signedUrl(
+                # This URL is valid for 1 week
+                    new \DateTime('1 week'),
+                    [
+                        'method' => 'PUT',
+                        'contentType' => $asset->getType(),
+                        'version' => 'v4',
+                    ]
+                );
+                $asset->signed_url = $url;
+            }
+			return new Result(200, $asset);
 		},
 		'post_value' => $reject,
 		'delete' => $reject,

@@ -12,6 +12,8 @@ class Asset {
 	public ?array $data; // generic data associated with this asset
 	public ?string $type; // MIME type
 	public ?array $size; // intrinsic size of image
+    public ?bool $gcs; // Whether data is stored in GCS
+    public ?string $signed_url; // signed URL for uploading (not stored)
 	private ?string $contents;
 
 	/**
@@ -43,7 +45,7 @@ class Asset {
 	}
 
 	public function getType(): string {
-		$this->type = $this->type ?: mime_content_type($this->absolutePath());
+		$this->type = $this->type ?: mime_content_type($this->absolutePath()) ?: 'image/jpeg';
 		return $this->type;
 	}
 
@@ -78,7 +80,9 @@ class Asset {
 	public function imgTag(?string $alt = "", bool $link = false, bool $relative = false, int $height = 600, bool $expand = true): string {
 		if ($this->path) {
 			$path = $relative ? basename($this->path) : '/' . $this->path;
-		} else {
+		} else if ($this->gcs) {
+            $path = "//" . Config::$static_domain . "/stored/$this->key";
+        } else {
 			$path = "/assets/stored/$this->key";
 		}
 		$tag = '';
@@ -135,18 +139,17 @@ class Asset {
 	 * @return string The path to the image, relative to root/public (e.g. "/assets/cache/1_0.jpg")
 	 */
 	public function cachedImage(int $height): string {
-		if (!file_exists($this->absolutePath())) {
-			log_err("Did not find stored image with key $this->key at {$this->absolutePath()}");
-			return "";
-		}
-
 		$intrinsicHeight = $this->size()[1];
-
 		if ($height === 0 || $height >= $intrinsicHeight) {
-			$height = $intrinsicHeight;
+            return ($this->gcs ? "//" . Config::$static_domain : "/assets") . "/stored/$this->key";
 		}
 
-		$filename = "/assets/cache/" . $this->key . "_" . $height . ".jpg";
+        // TODO: Request caching of new size if not already present in GCS
+		if ($this->gcs) {
+            return "//" . Config::$static_domain . "/cache/{$this->key}_$height.jpg";
+        }
+
+        $filename = "/assets/cache/" . $this->key . "_" . $height . ".jpg";
 		$absoluteTarget = root() . "/public$filename";
 		if (file_exists($absoluteTarget)) {
 			return $filename;
