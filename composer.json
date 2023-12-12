@@ -19,6 +19,7 @@
 		"ext-ctype": "*",
 		"whichbrowser/parser": "^2.1",
 		"ext-sqlite3": "*",
-		"google/cloud-storage": "^1.36"
+		"google/cloud-storage": "^1.36",
+		"ramsey/uuid": "^4.7"
 	}
 }

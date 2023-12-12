@@ -84,6 +84,8 @@ jobs:
           --minify_html_endpoint="${{ secrets.MINIFY_HTML_TEST_ENDPOINT }}" \
           --ga_id="${{ secrets.TEST_GA_ID }}" \
           --api_credentials="${{ secrets.HTTP_CREDENTIALS }}"
+          --static_bucket="${{ secrets.TEST_STATIC_BUCKET }}" \
+          --static_domain="${{ secrets.TEST_STATIC_DOMAIN }}"
       - name: Unignore config.php for upload
         run: echo '!secrets/config.php' | tee -a .gitignore
       - name: Write service_account.json

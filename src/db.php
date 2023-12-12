@@ -160,6 +160,7 @@ class Database {
 		$a->path = $asset["path"];
 		$a->setType($asset["type"]);
 		$a->data = ($asset["data"] ? unserialize($asset["data"]) : []);
+        $a->gcs = $asset["gcs"];
 		if (($asset["width"] ?? false) || ($asset["height"] ?? false)) {
 			$a->size = [$asset["width"] ?? 1, $asset["height"] ?? 1];
 		}
@@ -255,12 +256,14 @@ class Database {
 				"type" => $pet["pic_type"],
 				"width" => $pet["pic_width"],
 				"height" => $pet["pic_height"],
+                "gcs" => $pet["pic_gcs"],
 		]);
 		$p->description = self::createAsset([
 				"id" => $pet["dsc_id"],
 				"data" => $pet["dsc_data"],
 				"path" => $pet["dsc_path"],
 				"type" => $pet["dsc_type"],
+                "gcs" => false,
 		]);
 		$p->photos = array_map(self::createAsset(...), $photos);
 		$p->status = _G_statuses()[$pet["status"]];
@@ -279,6 +282,7 @@ class Database {
 					"pic_type" => $pet["friend_pic_type"],
 					"pic_width" => $pet["friend_pic_width"],
 					"pic_height" => $pet["friend_pic_height"],
+                    "pic_gcs" => $pet["friend_pic_gcs"],
 					"breed" => $pet["friend_breed"],
 					"dob" => $pet["friend_dob"],
 					"bonded" => 2,
