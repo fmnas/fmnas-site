@@ -16,7 +16,7 @@
 	"description": "This repository contains source code for the website of the [Forget Me Not Animal Shelter](https://forgetmenotshelter.org) in Republic, WA.",
 	"version": "1.0.0",
 	"devDependencies": {
-		"@tsconfig/node16": "^16.1.1",
+		"@tsconfig/node-lts": "^18.12.5",
 		"@types/marked": "^5.0.0",
 		"@types/minimist": "^1.2.3",
 		"@types/node": "^20.8.10",
@@ -40,7 +40,7 @@
 		"sass": "^1.60.0",
 		"ts-node": "^10.9.1",
 		"tsify": "^5.0.4",
-		"typescript": "^5.3.2",
+		"typescript": "^5.3.3",
 		"vite": "^2.8.6",
 		"vite-plugin-eslint": "^1.8.1",
 		"watchify": "^4.0.0"

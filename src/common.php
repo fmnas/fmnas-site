@@ -119,7 +119,7 @@ $secrets = secrets();
 /**
  * Dummy definitions for use by IntelliJ
  */
-$root ??= __DIR__ . "..";
+$root ??= "..";
 $src ??= "$root/src";
 $t ??= "$src/templates";
 $secrets ??= "$root/secrets";
