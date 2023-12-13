@@ -1,17 +1,13 @@
-module github.com/fmnas/fmnas-site/functions/image-size
+module github.com/fmnas/fmnas-site/functions/proactive-resize
 
 go 1.19
-
-require (
-	cloud.google.com/go/storage v1.35.1
-	gopkg.in/gographics/imagick.v3 v3.5.0
-)
 
 require (
 	cloud.google.com/go v0.110.8 // indirect
 	cloud.google.com/go/compute v1.23.1 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
 	cloud.google.com/go/iam v1.1.3 // indirect
+	cloud.google.com/go/storage v1.35.1 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/s2a-go v0.1.7 // indirect
