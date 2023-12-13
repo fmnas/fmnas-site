@@ -26,16 +26,25 @@ const successToastOptions = {
 	timeout: 1000,
 };
 
-export const checkResponse = (res: Response, confirmation = null as null | string) => {
+export const checkResponse = (res: Response, confirmation = null as null | string, errorText = '') => {
 	if (!res.ok) {
 		if (res.status === 418) {
 			store.state.toast.error('API request rejected by Apache modsecurity.');
 			throw res;
 		}
 		res.json().then(
-			(json) => store.state.toast.error(typeof (json) === 'string' ? json : json['error'] ?? res.statusText,
-				errorToastOptions),
-			() => store.state.toast.error(res.statusText, errorToastOptions));
+			(json) => {
+				let text = errorText;
+				if (typeof (json) === 'string') {
+					text += `: ${json}`;
+				} else if (json['error']) {
+					text += `: ${json['error']}`;
+				}
+				if (res.statusText) {
+					text += ` (${res.statusText})`;
+				}
+				store.state.toast.error(text, errorToastOptions);
+			});
 		throw res;
 	}
 	if (confirmation !== null) {

@@ -6,6 +6,7 @@ class DatabaseWriter extends Database {
 	private mysqli_stmt $setConfigValue;
 	private mysqli_stmt $insertAsset;
 	private mysqli_stmt $updateAsset;
+	private mysqli_stmt $setSize;
 	private mysqli_stmt $insertPet;
 	private mysqli_stmt $deletePet;
 	private mysqli_stmt $deletePhotos;
@@ -29,6 +30,12 @@ class DatabaseWriter extends Database {
 			log_err("Failed to prepare updateAsset: {$this->db->error}");
 		} else {
 			$this->updateAsset = $updateAsset;
+		}
+
+		if (!($setSize = $this->db->prepare("UPDATE assets SET width=?, height=? WHERE id=? LIMIT 1"))) {
+			log_err("Failed to prepare setSize: {$this->db->error}");
+		} else {
+			$this->setSize = $setSize;
 		}
 
 		if (!($insertAsset = $this->db->prepare("
@@ -271,6 +278,25 @@ class DatabaseWriter extends Database {
 			$error = "Executing updateAsset failed: {$this->db->error}";
 		} else if ($this->updateAsset->affected_rows !== 1) {
 			$error = "updateAsset affected {$this->updateAsset->affected_rows} rows instead of 1";
+		}
+		if ($error) {
+			log_err($error);
+			$this->db->rollback();
+			return $error;
+		}
+		return $this->db->commit() ? null : "Failed to commit";
+	}
+
+	public function setSize(int $key, int $width, int $height): ?string {
+		$error = null;
+		if (!$this->db->begin_transaction()) {
+			$error = "Failed to begin transaction";
+		} else if (!$this->setSize->bind_param("iii", $width, $height, $key)) {
+			$error = "Binding $width,$height,$key to setSize failed: {$this->db->error}";
+		} else if (!$this->setSize->execute()) {
+			$error = "Executing setSize failed: {$this->db->error}";
+		} else if ($this->setSize->affected_rows !== 1) {
+			$error = "setSize affected {$this->setSize->affected_rows} rows instead of 1";
 		}
 		if ($error) {
 			log_err($error);
