@@ -213,6 +213,14 @@ To access a vite dev server, you'll have to forward the port from the Windows ho
 netsh interface portproxy add v4tov4 listenport=50080 connectport=50080 connectaddress=(wsl hostname -I)
 ```
 
+#### GCP setup
+
+To get GCP ready for local development, you'll need:
+
+* The [gcloud CLI](https://cloud.google.com/sdk/docs/install)
+* golang 1.19+ ([instructions](https://tecadmin.net/install-go-on-debian/))
+* ImageMagick 7+ ([instructions](https://www.tecmint.com/install-imagemagick-on-debian-ubuntu/)) 
+
 #### Final steps and testing
 
 Navigate to https://public.fmnas to generate `generated.php` which is needed by the admin site.

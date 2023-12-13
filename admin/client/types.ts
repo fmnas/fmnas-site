@@ -69,6 +69,8 @@ export interface Asset {
 	type?: string;
 	size?: Number[];
 	localPath?: string;
+	gcs?: boolean;
+	signed_url?: string;
 }
 
 export interface Config {

@@ -100,8 +100,10 @@ endpoint(...[
 				$height = $info[1];
                 $asset = $db->getAssetByKey($key);
                 if ($asset->gcs) {
-                    // TODO: 302 -> 301
-                    return new Result(302, 'https://' . Config::$static_domain . "/cache/${key}_$height.jpg");
+                    if ($height >= $asset->size()[1]) {
+                        return new Result(302, 'https://'.Config::$static_domain . "/stored/$key");
+                    }
+                    return new Result(301, 'https://' . Config::$static_domain . "/cache/${key}_$height.jpg");
                 }
                 $filename = cached_assets() . "/${key}_$height.jpg";
 				if (file_exists($filename)) {
@@ -115,15 +117,14 @@ endpoint(...[
 				return new Result(404, error: "Asset $value not found (did you mean stored/$value?)");
 			}
             if ($asset->gcs) {
-                // TODO: 302 -> 301
-                return new Result(302, 'https://' . Config::$static_domain . '/stored/' . $asset->key);
+                return new Result(301, 'https://' . Config::$static_domain . '/stored/' . $asset->key);
             }
 			returnFile($asset->absolutePath(), $asset->getType());
 		},
 		'post' => $reject,
 		'post_value' => $writer,
 		'put' => $reject,
-		'put_value' => $reject,
+		'put_value' => $writer,
 		'delete' => $reject,
 		'delete_value' => $reject,
 ]);

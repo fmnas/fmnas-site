@@ -16,9 +16,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <template>
-  <img :src="localPath ?? (photo ? `/api/raw/cached/${photo.key}_300.jpg` : null)"
+  <img :src="localPath ?? (photo ? `/api/raw/cached/${photo.key}_300.jpg` : undefined)"
       :alt="photo ? 'Edit profile image' : 'Add profile image'"
-      :title="photo ? 'Edit profile image' : 'Add profile image'" @click="$refs.input.click()">
+      :title="photo ? 'Edit profile image' : 'Add profile image'" @click="($refs.input as HTMLInputElement).click()">
   <input type="file" ref="input" @change="consume()" accept="image/*">
 </template>
 

@@ -24,8 +24,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       </li>
     </template>
     <template #footer>
-      <li v-for="photo of pendingPhotos">
-        <img :src="photo.localPath" alt="Pending photo" title="Uploading..." @click="select(photo)">
+      <li v-for="photo of pendingPhotos" class="pending">
+        <img :src="photo.localPath" alt="Pending photo" title="Uploading..." @click="select(photo)" class="pending">
       </li>
       <li class="add">
         <button @click="$refs.input.click()">Add photos</button>
@@ -33,7 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     </template>
   </draggable>
   <input type="file" ref="input" @change="upload()" accept="image/*" multiple>
-  <modal v-if="selectedPhoto" @cancel="selectedPhoto = null" @confirm="remove(selectedPhoto)">
+  <modal v-if="selectedPhoto" @cancel="selectedPhoto = undefined" @confirm="remove(selectedPhoto)">
     Are you sure you want to delete this image?
     <br>
     <img :src="selectedPhoto.localPath ?? `/api/raw/cached/${selectedPhoto.key}_480.jpg`"
@@ -55,7 +55,7 @@ export default defineComponent({
   props: {
     modelValue: {
       type: Array as PropType<Asset[]>,
-      required: false
+      required: false,
     },
     prefix: {
       type: String,
@@ -64,7 +64,7 @@ export default defineComponent({
     reset: {
       type: Number,
       required: false,
-    }
+    },
   },
   data() {
     return {
@@ -82,7 +82,7 @@ export default defineComponent({
     reset() {
       this.pendingPhotos = [];
       this.selectedPhoto = undefined;
-    }
+    },
   },
   emits: ['update:modelValue', 'update:promises'],
   computed: {
@@ -154,13 +154,38 @@ ul {
   flex-wrap: wrap;
   padding: 0;
 
-  li > img {
-    height: 192px;
-    min-width: 256px;
-    cursor: pointer;
+  li {
+    > img {
 
-    &:hover {
-      outline: 2px dashed red;
+      height: 192px;
+      min-width: 256px;
+      cursor: pointer;
+
+      &:hover {
+        outline: 2px dashed red;
+      }
+    }
+
+    &.pending {
+      position: relative;
+
+      > img {
+        opacity: 0.5;
+      }
+
+      &:after {
+        content: 'uploading...';
+        font-weight: bold;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+      }
     }
   }
 }

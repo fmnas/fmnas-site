@@ -18,7 +18,10 @@
 package main
 
 import (
+	"cloud.google.com/go/storage"
+	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"gopkg.in/gographics/imagick.v3/imagick"
 	"log"
@@ -48,39 +51,94 @@ func main() {
 func handler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Got an image-size request, %v", time.Now())
 
-	if err := r.ParseMultipartForm(20 << 20); err != nil {
-		http.Error(w, "Unable to parse request", http.StatusBadRequest)
-		log.Printf("Error parsing request: %v", err)
-		return
-	}
+	var b []byte
 
-	defer func() {
-		if err := r.MultipartForm.RemoveAll(); err != nil {
-			http.Error(w, "Error removing temporary files", http.StatusInternalServerError)
-			log.Printf("Error removing temporary files: %v", err)
+	if r.Method == "POST" {
+		if err := r.ParseMultipartForm(20 << 20); err != nil {
+			http.Error(w, "Unable to parse request", http.StatusBadRequest)
+			log.Printf("Error parsing request: %v", err)
+			return
 		}
-	}()
 
-	f, fh, err := r.FormFile("image")
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Error extracting image from request: %v", err), http.StatusBadRequest)
-		log.Printf("Error extracting image from request: %v", err)
-		return
-	}
+		defer func() {
+			if err := r.MultipartForm.RemoveAll(); err != nil {
+				http.Error(w, "Error removing temporary files", http.StatusInternalServerError)
+				log.Printf("Error removing temporary files: %v", err)
+			}
+		}()
 
-	s := int(fh.Size)
-	log.Printf("Payload is %v bytes", s)
-	b := make([]byte, s)
-	n, err := f.Read(b)
-	if err != nil {
-		http.Error(w, "Error reading image bytes", http.StatusInternalServerError)
-		log.Printf("Error reading image bytes: %v", err)
-		return
-	}
-	if n != s {
-		http.Error(w, fmt.Sprintf("Read %v bytes, expected %v", n, s), http.StatusBadRequest)
-		log.Printf("Read %v bytes, expected %v", n, s)
-		return
+		f, fh, err := r.FormFile("image")
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Error extracting image from request: %v", err), http.StatusBadRequest)
+			log.Printf("Error extracting image from request: %v", err)
+			return
+		}
+
+		s := int(fh.Size)
+		log.Printf("Payload is %v bytes", s)
+		b = make([]byte, s)
+		n, err := f.Read(b)
+		if err != nil {
+			http.Error(w, "Error reading image bytes", http.StatusInternalServerError)
+			log.Printf("Error reading image bytes: %v", err)
+			return
+		}
+		if n != s {
+			http.Error(w, fmt.Sprintf("Read %v bytes, expected %v", n, s), http.StatusBadRequest)
+			log.Printf("Read %v bytes, expected %v", n, s)
+			return
+		}
+	} else {
+		ids := r.URL.Query()["object"]
+		buckets := r.URL.Query()["bucket"]
+		if len(ids) != 1 {
+			http.Error(w, fmt.Sprintf("Expected 1 object, got %v", len(ids)), http.StatusBadRequest)
+			log.Printf("ids: %v", ids)
+			return
+		}
+		if len(buckets) != 1 {
+			http.Error(w, fmt.Sprintf("Expected 1 bucket, got %v", len(ids)), http.StatusBadRequest)
+			log.Printf("buckets: %v", buckets)
+			return
+		}
+		id := ids[0]
+		bucket := buckets[0]
+		log.Printf("Reading image %v from storage", id)
+		storageClient, err := storage.NewClient(context.Background())
+		if err != nil {
+			http.Error(w, "Error initializing storage client", http.StatusInternalServerError)
+			log.Printf("storage.NewClient: %v", err)
+			return
+		}
+		obj := storageClient.Bucket(bucket).Object(id)
+		reader, err := obj.NewReader(context.Background())
+		if errors.Is(err, storage.ErrObjectNotExist) {
+			log.Printf("object does not exist: %v", id)
+			http.Error(w, "Object not found", http.StatusNotFound)
+			return
+		}
+		if err != nil {
+			log.Printf("Error creating reader: %v", err)
+			http.Error(w, "Error creating reader", http.StatusInternalServerError)
+			return
+		}
+		attrs, err := obj.Attrs(context.Background())
+		if err != nil {
+			log.Printf("Error reading attrs: %v", err)
+			http.Error(w, "Error reading object attrs", http.StatusInternalServerError)
+			return
+		}
+		b = make([]byte, attrs.Size)
+		_, err = reader.Read(b)
+		if err != nil {
+			log.Printf("Error reading object: %v", err)
+			http.Error(w, "Error reading object", http.StatusInternalServerError)
+			return
+		}
+		err = reader.Close()
+		if err != nil {
+			log.Printf("error closing reader: %v", err)
+		}
 	}
 
 	imagick.Initialize()
