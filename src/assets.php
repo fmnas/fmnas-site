@@ -144,7 +144,7 @@ class Asset {
             return ($this->gcs ? "//" . Config::$static_domain : "/assets") . "/stored/$this->key";
 		}
 
-        // TODO: Request caching of new size if not already present in GCS
+        // TODO [$65834c726c18230008591ab5]: Request caching of new size if not already present in GCS
 		if ($this->gcs) {
             return "//" . Config::$static_domain . "/cache/{$this->key}_$height.jpg";
         }
