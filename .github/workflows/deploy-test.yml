@@ -123,7 +123,7 @@ jobs:
           remote-user: ${{ secrets.TEST_SFTP_USER }}
           private-ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
           destination-path: ${{ secrets.TEST_SITE_ROOT }}/
-          rsync-options: --archive --links --compress
+          rsync-options: --archive --links --compress -e "ssh -p 22 -i /home/runner/.ssh/web_deploy_key -o StrictHostKeyChecking=no"
   invalidate-descriptions:
     name: Invalidate description cache
     needs: deploy
