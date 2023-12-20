@@ -127,7 +127,6 @@ jobs:
           remote-user: ${{ secrets.TEST_SFTP_USER }}
           private-ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
           destination-path: ${{ secrets.TEST_SITE_ROOT }}/
-          # TODO: Not sure why public key auth isn't working for sftp upload
           rsync-options: --archive --links --compress --rsh "sshpass -p '${{ secrets.TEST_SFTP_PASS }}' ssh -o StrictHostKeyChecking=no"
   invalidate-descriptions:
     name: Invalidate description cache
