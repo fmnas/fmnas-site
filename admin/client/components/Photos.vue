@@ -24,11 +24,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       </li>
     </template>
     <template #footer>
-      <li v-for="photo of pendingPhotos" class="pending">
+      <li v-for="photo of pendingPhotos" class="pending" :data-progress="photo.progress !== undefined ? Math.floor(photo.progress * 100) : ''">
         <img :src="photo.localPath" alt="Pending photo" title="Uploading..." @click="select(photo)" class="pending">
       </li>
       <li class="add">
-        <button @click="$refs.input.click()">Add photos</button>
+        <button @click="($refs.input as HTMLInputElement).click()">Add photos</button>
       </li>
     </template>
   </draggable>
@@ -36,8 +36,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   <modal v-if="selectedPhoto" @cancel="selectedPhoto = undefined" @confirm="remove(selectedPhoto)">
     Are you sure you want to delete this image?
     <br>
-    <img :src="selectedPhoto.localPath ?? `/api/raw/cached/${selectedPhoto.key}_480.jpg`"
-        :alt="selectedPhoto.path ?? 'Pending upload'" :title="selectedPhoto.path ?? 'Pending upload'"
+    <img :src="selectedPhoto.localPath ?? `/api/raw/cached/${'key' in selectedPhoto && selectedPhoto.key}_480.jpg`"
+        :alt="('path' in selectedPhoto && selectedPhoto.path) || 'Pending upload'" :title="('path' in selectedPhoto && selectedPhoto.path) || 'Pending upload'"
         class="modal">
   </modal>
 </template>
@@ -131,12 +131,23 @@ export default defineComponent({
         const localPath = URL.createObjectURL(file);
         this.pendingPhotos.push({
           localPath: localPath,
-          promise: uploadFile(file, this.prefix, 480).then((asset) => this.promote(localPath, asset)),
+          promise: uploadFile(file, this.prefix, 480, (p) => {
+            console.log(p);
+            this.reportProgress(localPath, p);
+          }).then((asset) => this.promote(localPath, asset)),
+          progress: 0,
         });
       }
       input.value = '';
       input.files = null;
     },
+    reportProgress(localPath: string, progress: number): void {
+      const pendingIndex = this.pendingPhotos.findIndex(pending => pending.localPath === localPath);
+      if (pendingIndex === -1) {
+        return; // Don't bother for canceled uploads
+      }
+      this.pendingPhotos[pendingIndex].progress = progress;
+    }
   },
 });
 </script>
@@ -174,7 +185,7 @@ ul {
       }
 
       &:after {
-        content: 'uploading...';
+        content: 'uploading... ' attr(data-progress) '%';
         font-weight: bold;
         display: flex;
         justify-content: center;

@@ -21,6 +21,7 @@ import * as Handlebars from 'handlebars';
 import {marked} from 'marked';
 import {Asset, Config, Pet} from './types';
 import {checkResponse} from './mixins';
+import axios, {AxiosProgressEvent, AxiosResponse} from 'axios';
 
 // TODO [#136]: Get 404 redirect working in vue router.
 export function r404(path: string) {
@@ -111,17 +112,17 @@ async function createAsset(type: string, path: string = '', data: any = {}, gcs:
             gcs: gcs,
         }),
     });
-    checkResponse(res);
+    await checkResponse(res);
     return res.json();
 }
 
 async function updateAsset(asset: Asset): Promise<void> {
     const res = await fetch(`/api/assets/${asset.key}`, {method: 'PUT', body: JSON.stringify(asset)});
-    checkResponse(res);
+    await checkResponse(res);
 }
 
-// TODO [#163]: Make file upload promises observables with progress.
-export async function uploadFile(file: File, pathPrefix: string = '', height: string | number = ''): Promise<Asset> {
+export async function uploadFile(file: File, pathPrefix: string = '', height: string | number = '', onUploadProgress: (progress: number) => void = () => {}, onError: (error: string) => void = (error) => {console.error(error)}): Promise<Asset> {
+    onUploadProgress(0);
     const asset = await createAsset(file.type, pathPrefix + file.name, undefined, true);
     if (asset.type !== file.type || asset.path !== pathPrefix + file.name) {
         asset.type = file.type;
@@ -129,24 +130,45 @@ export async function uploadFile(file: File, pathPrefix: string = '', height: st
         await updateAsset(asset);
     }
     if (asset.signed_url) {
-        await fetch(asset.signed_url, {
+        await axios.request({
             method: 'PUT',
-            body: file,
+            url: asset.signed_url,
+            data: file,
             headers: {
                 'Content-Type': asset.type
+            },
+            onUploadProgress: (p: AxiosProgressEvent) => {
+                const total = p.total || file.size || 1;
+                onUploadProgress(p.loaded / total);
+            },
+        }).then((res: AxiosResponse) => {
+            if (res.status !== 200) {
+                onError(`GCS returned ${res.status}: ${res.data}`);
             }
-        }).then((res) => checkResponse(res, null, 'Error uploading image to GCS'));
-        fetch(`/api/fetch_dimensions?v=${asset.key}`).then((res) => checkResponse(res,null, 'Ignore this one unless it keeps happening'));
+        });
+
+        // Backfill dimensions into server side db
+        fetch(`/api/fetch_dimensions?v=${asset.key}`).then((res) => checkResponse(res,null, 'Error backfilling dimensions (you can ignore this unless it keeps happening)'));
     } else {
         // Fall back to storing the image locally like the bad old days
         const formData = new FormData();
         formData.append('file', file);
-        await fetch(`/api/raw/${asset.key}?height=${height}`, {
+        await axios.request({
             method: 'POST',
-            body: formData,
-        }).then((res) => checkResponse(res, null, 'Error uploading image to host'));
+            url: `/api/raw/${asset.key}?height=${height}`,
+            data: formData,
+            onUploadProgress: (p: AxiosProgressEvent) => {
+                const total = p.total || file.size || 1;
+                onUploadProgress(p.loaded / total);
+            },
+        }).then((res: AxiosResponse) => {
+            if (res.status !== 200) {
+                onError(`host returned ${res.status}: ${res.data}`);
+            }
+        });
     }
     console.log('Returning asset', asset);
+    onUploadProgress(1);
     return asset;
 }
 
