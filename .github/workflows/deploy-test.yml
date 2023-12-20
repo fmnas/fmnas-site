@@ -115,6 +115,10 @@ jobs:
           check-regexp: 'GCP:.*'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           wait-interval: 10
+      - name: Install sshpass
+        run: |
+          sudo apt update
+          sudo apt install sshpass
       - name: SFTP upload
         id: deploy-success
         uses: SamKirkland/web-deploy@v1
@@ -123,7 +127,7 @@ jobs:
           remote-user: ${{ secrets.TEST_SFTP_USER }}
           private-ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
           destination-path: ${{ secrets.TEST_SITE_ROOT }}/
-          rsync-options: --archive --links --compress -e "ssh -p 22 -i /home/runner/.ssh/web_deploy_key -o StrictHostKeyChecking=no"
+          rsync-options: --archive --links --compress --rsh "sshpass -p '${{ secrets.TEST_SFTP_PASS }}' -o StrictHostKeyChecking=no -l ${{ secrets.TEST_SFTP_USER }}"
   invalidate-descriptions:
     name: Invalidate description cache
     needs: deploy
