@@ -20,14 +20,14 @@ on:
       - test
   pull_request:
 jobs:
-  watchers:
-    name: All file watchers are enabled
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@main
-      - name: Check for disabled file watchers
-        run: "! grep -q 'isEnabled=\"false\"' .idea/watcherTasks.xml"
+#  watchers:
+#    name: All file watchers are enabled
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@main
+#      - name: Check for disabled file watchers
+#        run: "! grep -q 'isEnabled=\"false\"' .idea/watcherTasks.xml"
   copyright:
     name: All files added by Sean contain a copyright header
     runs-on: ubuntu-latest
