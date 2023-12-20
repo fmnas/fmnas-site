@@ -361,7 +361,7 @@ func handleProactiveResize(w http.ResponseWriter, r *http.Request) {
 	}(storageClient)
 
 	// Need all heights used in the frontend here.
-	// TODO [$65834c726c18230008591ab2]: proactive-cache only the relevant heights for the specific type of image
+	// TODO [#854]: proactive-cache only the relevant heights for the specific type of image
 	kh := []int{64, 192, 300, 480, 600}
 
 	// behold: an empty set. i hate it
@@ -389,11 +389,11 @@ func handleProactiveResize(w http.ResponseWriter, r *http.Request) {
 	}
 	sort.Sort(sort.Reverse(sort.IntSlice(heights)))
 
-	// TODO [$65834c726c18230008591ab3]: Start by copying the original object to all new locations, so they are available sooner.
+	// TODO [#855]: Start by copying the original object to all new locations, so they are available sooner.
 	// Not sure if this will actually matter in real world scenarios.
 	// See: https://cloud.google.com/storage/docs/copying-renaming-moving-objects#client-libraries
 
-	// TODO [$65834c726c18230008591ab4]: consider cloning the mw for each resize to avoid generation loss
+	// TODO [#856]: consider cloning the mw for each resize to avoid generation loss
 	for _, h := range heights {
 		if err := resizeToHeight(mw, uint(h), filter); err != nil {
 			http.Error(w, fmt.Sprintf("Error resizing image to height %v", h), http.StatusInternalServerError)
