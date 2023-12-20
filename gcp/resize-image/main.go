@@ -286,6 +286,34 @@ func handleProactiveResize(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		id = name[7:]
+
+		// It seems like the trigger keeps firing multiple times after upload for some reason.
+		// To dedupe these requests, check if cached versions already exist.
+		// Checking for size 64 as it is the most likely to exist for any given image after
+		// a proactive-resize request completes.
+		storageClient, err := storage.NewClient(context.Background())
+		if err != nil {
+			log.Printf("failed initialize storageClient: %v", err)
+			http.Error(w, "Failed to check for existing cached version", http.StatusInternalServerError)
+			return
+		}
+		defer func(storageClient *storage.Client) {
+			err := storageClient.Close()
+			if err != nil {
+				log.Printf("error closing storage client: %v", err)
+			}
+		}(storageClient)
+		_, err = storageClient.Bucket(bucket).Object(fmt.Sprintf("cache/%s_64.jpg", id)).Attrs(context.Background())
+		if errors.Is(err, storage.ErrObjectNotExist) {
+			log.Printf("cache/%s_64.jpg does not exist; continuing", id)
+		} else if err != nil {
+			log.Printf("error getting attrs for cache/%s_64.jpg: %v", id, err)
+			http.Error(w, "Failed to check for existing cached version", http.StatusInternalServerError)
+			return
+		} else {
+			log.Printf("found cached version %s_64.jpg; exiting", id)
+			return
+		}
 	} else {
 		ids := r.URL.Query()["object"]
 		buckets := r.URL.Query()["bucket"]
