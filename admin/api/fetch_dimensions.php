@@ -31,8 +31,8 @@ endpoint(...[
 			if (!$ch) {
 				return new Result(500, "couldn't init curl");
 			}
-			curl_setopt($ch, CURLOPT_URL, Config::$image_size_endpoint . '/?' .
-					http_build_query(['bucket' => Config::$static_bucket, 'object' => 'stored/' . $asset->key]));
+			curl_setopt($ch, CURLOPT_URL, Config::$image_size_endpoint . '?' .
+					http_build_query(['bucket' => Config::$static_bucket, 'object' => $asset->key]));
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 			$rt = curl_exec($ch);
 			$info = curl_getinfo($ch);

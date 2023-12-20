@@ -18,10 +18,19 @@
 package main
 
 import (
+	"cloud.google.com/go/storage"
+	"context"
+	"encoding/json"
+	"errors"
 	"fmt"
+	cloudevent "github.com/cloudevents/sdk-go/v2"
+	"github.com/googleapis/google-cloudevents-go/cloud/storagedata"
+	"google.golang.org/protobuf/encoding/protojson"
+	"io"
 	"log"
 	"net/http"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -31,7 +40,9 @@ import (
 
 func main() {
 	log.Print("starting server...")
-	http.HandleFunc("/", handler)
+	http.HandleFunc("/", handleResize)
+	http.HandleFunc("/size", handleImageSize)
+	http.HandleFunc("/proactive_resize", handleProactiveResize)
 
 	// Determine port for HTTP service.
 	port := os.Getenv("PORT")
@@ -39,6 +50,10 @@ func main() {
 		port = "8080"
 		log.Printf("defaulting to port %s", port)
 	}
+
+	// Start imagick
+	imagick.Initialize()
+	defer imagick.Terminate()
 
 	// Start HTTP server.
 	log.Printf("listening on port %s", port)
@@ -51,45 +66,53 @@ func sanitize(s string) string {
 	return strings.Replace(strings.Replace(s, "\n", "", -1), "\r", "", -1)
 }
 
-func handler(w http.ResponseWriter, r *http.Request) {
+func resizeToHeight(mw *imagick.MagickWand, nh uint, filter imagick.FilterType) error {
+	if err := mw.SetImageCompression(imagick.COMPRESSION_JPEG); err != nil {
+		return err
+	}
+	if err := mw.SetImageCompressionQuality(90); err != nil {
+		return err
+	}
+	if err := mw.SetFormat("jpg"); err != nil {
+		return err
+	}
+	ow := mw.GetImageWidth()
+	oh := mw.GetImageHeight()
+	if oh < nh {
+		nh = oh
+	}
+	nw := ow * nh / oh
+	return mw.ResizeImage(nw, nh, filter)
+}
+
+func handleResize(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Got a resize-image request, %v", time.Now())
+	mw := imagick.NewMagickWand()
+	defer mw.Destroy()
 
-	if err := r.ParseMultipartForm(20 << 20); err != nil {
-		http.Error(w, "Unable to parse request", http.StatusBadRequest)
-		log.Printf("Error parsing request: %v", err)
-		return
-	}
-
-	defer func() {
-		if err := r.MultipartForm.RemoveAll(); err != nil {
-			http.Error(w, "Error removing temporary files", http.StatusInternalServerError)
-			log.Printf("Error removing temporary files: %v", err)
+	var h1 string
+	rf := ""
+	if r.Method == "POST" {
+		h1 = r.PostFormValue("height")
+		rf = strings.ToLower(r.PostFormValue("filter"))
+	} else {
+		heights := r.URL.Query()["height"]
+		if len(heights) != 1 {
+			http.Error(w, fmt.Sprintf("Expected 1 target height, got %v", len(heights)), http.StatusBadRequest)
+			log.Printf("len(heights): %v", len(heights))
+			return
 		}
-	}()
-
-	f, fh, err := r.FormFile("image")
-	if err != nil {
-		http.Error(w, "Error extracting image from request", http.StatusBadRequest)
-		log.Printf("Error extracting image from request: %v", err)
-		return
+		h1 = heights[0]
+		filters := r.URL.Query()["filter"]
+		if len(filters) > 1 {
+			http.Error(w, fmt.Sprintf("Expected at most 1 filter, got %v", len(filters)), http.StatusBadRequest)
+			log.Printf("len(filters): %v", len(filters))
+			return
+		}
+		if len(filters) == 1 {
+			rf = filters[0]
+		}
 	}
-
-	s := int(fh.Size)
-	log.Printf("Request image is %v bytes", s)
-	b := make([]byte, s)
-	n, err := f.Read(b)
-	if err != nil {
-		http.Error(w, "Error reading image bytes", http.StatusInternalServerError)
-		log.Printf("Error reading image bytes: %v", err)
-		return
-	}
-	if n != s {
-		http.Error(w, fmt.Sprintf("Read %v bytes, expected %v", n, s), http.StatusBadRequest)
-		log.Printf("Read %v bytes, expected %v", n, s)
-		return
-	}
-
-	h1 := r.PostFormValue("height")
 	h2, err := strconv.Atoi(h1)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error parsing supplied height %v", h1), http.StatusBadRequest)
@@ -98,116 +121,56 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	}
 	nh := uint(h2)
 
-	filter := imagick.FILTER_LANCZOS
-	rf := strings.ToLower(r.PostFormValue("filter"))
-	switch rf {
-	case "":
-		filter = imagick.FILTER_LANCZOS
-	case "point":
-		filter = imagick.FILTER_POINT
-	case "box":
-		filter = imagick.FILTER_BOX
-	case "triangle":
-		filter = imagick.FILTER_TRIANGLE
-	case "hermite":
-		filter = imagick.FILTER_HERMITE
-	case "hanning":
-		filter = imagick.FILTER_HANNING
-	case "hamming":
-		filter = imagick.FILTER_HAMMING
-	case "blackman":
-		filter = imagick.FILTER_BLACKMAN
-	case "gaussian":
-		filter = imagick.FILTER_GAUSSIAN
-	case "quadratic":
-		filter = imagick.FILTER_QUADRATIC
-	case "cubic":
-		filter = imagick.FILTER_CUBIC
-	case "catrom":
-		filter = imagick.FILTER_CATROM
-	case "mitchell":
-		filter = imagick.FILTER_MITCHELL
-	case "jinc":
-		filter = imagick.FILTER_JINC
-	case "sinc":
-		filter = imagick.FILTER_SINC
-	case "sinc_fast":
-		filter = imagick.FILTER_SINC_FAST
-	case "kaiser":
-		filter = imagick.FILTER_KAISER
-	case "welsh":
-		filter = imagick.FILTER_WELSH
-	case "parzen":
-		filter = imagick.FILTER_PARZEN
-	case "bohman":
-		filter = imagick.FILTER_BOHMAN
-	case "bartlett":
-		filter = imagick.FILTER_BARTLETT
-	case "lagrange":
-		filter = imagick.FILTER_LAGRANGE
-	case "lanczos":
-		filter = imagick.FILTER_LANCZOS
-	case "lanczos_sharp":
-		filter = imagick.FILTER_LANCZOS_SHARP
-	case "lanczos2":
-		filter = imagick.FILTER_LANCZOS2
-	case "lanczos2_sharp":
-		filter = imagick.FILTER_LANCZOS2_SHARP
-	case "robidoux":
-		filter = imagick.FILTER_ROBIDOUX
-	case "robidoux_sharp":
-		filter = imagick.FILTER_ROBIDOUX_SHARP
-	case "cosine":
-		filter = imagick.FILTER_COSINE
-	case "spline":
-		filter = imagick.FILTER_SPLINE
-	default:
+	filter, err := parseFilter(rf)
+	if err != nil {
 		http.Error(w, fmt.Sprintf("Unrecognized filter %v", rf), http.StatusBadRequest)
 		log.Printf("Unrecognized filter %v", sanitize(rf))
 		return
 	}
 
-	imagick.Initialize()
-	defer imagick.Terminate()
-	mw := imagick.NewMagickWand()
+	var b []byte
+	if r.Method == "POST" {
+		b, err = readFormFile(r)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Printf("Error handling POST to resize: %v", err)
+			return
+		}
+	} else {
+		ids := r.URL.Query()["object"]
+		buckets := r.URL.Query()["bucket"]
+		if len(ids) != 1 {
+			msg := fmt.Sprintf("Expected 1 object, got %v", len(ids))
+			http.Error(w, msg, http.StatusBadRequest)
+			log.Printf("len(ids): %v", len(ids))
+			return
+		}
+		if len(buckets) != 1 {
+			msg := fmt.Sprintf("Expected 1 bucket, got %v", len(ids))
+			http.Error(w, msg, http.StatusBadRequest)
+			log.Printf("len(buckets): %v", len(buckets))
+			return
+		}
+		id := ids[0]
+		bucket := buckets[0]
+		b, err = readFromBucket(id, bucket)
+		if err != nil {
+			msg := fmt.Sprintf("Error reading %v:stored/%v: %v", bucket, id, err)
+			http.Error(w, msg, http.StatusInternalServerError)
+			log.Printf(msg)
+			return
+		}
+	}
+
 	if err := mw.ReadImageBlob(b); err != nil {
 		http.Error(w, "Error reading image", http.StatusBadRequest)
 		log.Printf("Error reading image: %v", err)
 		return
 	}
 
-	ow := mw.GetImageWidth()
-	oh := mw.GetImageHeight()
-	if oh < nh {
-		nh = oh
-	}
-	nw := ow * nh / oh
-
-	if err := mw.ResizeImage(nw, nh, filter); err != nil {
+	if err := resizeToHeight(mw, nh, filter); err != nil {
 		http.Error(w, "Error resizing image", http.StatusInternalServerError)
 		log.Printf("Error resizing image: %v", err)
-		mw.Destroy()
-		return
-	}
-
-	if err := mw.SetImageCompression(imagick.COMPRESSION_JPEG); err != nil {
-		http.Error(w, "Error setting compression type", http.StatusInternalServerError)
-		log.Printf("Error setting compression type: %v", err)
-		mw.Destroy()
-		return
-	}
-
-	if err := mw.SetImageCompressionQuality(90); err != nil {
-		http.Error(w, "Error setting compression quality", http.StatusInternalServerError)
-		log.Printf("Error setting compression quality: %v", err)
-		mw.Destroy()
-		return
-	}
-
-	if err := mw.SetFormat("jpg"); err != nil {
-		http.Error(w, "Error setting format", http.StatusInternalServerError)
-		log.Printf("Error setting format: %v", err)
-		mw.Destroy()
 		return
 	}
 
@@ -219,5 +182,340 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error writing response", http.StatusInternalServerError)
 		log.Printf("Error writing response: %v", err)
 	}
-	mw.Destroy()
+}
+
+func handleImageSize(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Got an image-size request, %v", time.Now())
+	mw := imagick.NewMagickWand()
+	defer mw.Destroy()
+
+	var b []byte
+	var err error
+	if r.Method == "POST" {
+		b, err = readFormFile(r)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Printf("Error handling POST to size: %v", err)
+			return
+		}
+	} else {
+		ids := r.URL.Query()["object"]
+		buckets := r.URL.Query()["bucket"]
+		if len(ids) != 1 {
+			msg := fmt.Sprintf("Expected 1 object, got %v", len(ids))
+			http.Error(w, msg, http.StatusBadRequest)
+			log.Printf("len(ids): %v", len(ids))
+			return
+		}
+		if len(buckets) != 1 {
+			msg := fmt.Sprintf("Expected 1 bucket, got %v", len(ids))
+			http.Error(w, msg, http.StatusBadRequest)
+			log.Printf("len(buckets): %v", len(buckets))
+			return
+		}
+		id := ids[0]
+		bucket := buckets[0]
+		b, err = readFromBucket(id, bucket)
+		if err != nil {
+			msg := fmt.Sprintf("Error reading %v:stored/%v: %v", bucket, id, err)
+			http.Error(w, msg, http.StatusInternalServerError)
+			log.Printf(msg)
+			return
+		}
+	}
+
+	if err := mw.ReadImageBlob(b); err != nil {
+		http.Error(w, "Error reading image", http.StatusBadRequest)
+		log.Printf("Error reading image: %v", err)
+		return
+	}
+
+	ow := mw.GetImageWidth()
+	oh := mw.GetImageHeight()
+	log.Printf("Image is %vx%v", ow, oh)
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(map[string]uint{"width": ow, "height": oh}); err != nil {
+		http.Error(w, "Error writing response", http.StatusInternalServerError)
+		log.Printf("Error writing response: %v", err)
+	}
+}
+
+func handleProactiveResize(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Got a proactive-resize request, %v", time.Now())
+	mw := imagick.NewMagickWand()
+	defer mw.Destroy()
+
+	rf := ""
+	filters := r.URL.Query()["filter"]
+	if len(filters) > 1 {
+		http.Error(w, fmt.Sprintf("Expected at most 1 filter, got %v", len(filters)), http.StatusBadRequest)
+		log.Printf("len(filters): %v", len(filters))
+		return
+	}
+	if len(filters) == 1 {
+		rf = filters[0]
+	}
+	filter, err := parseFilter(rf)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Unrecognized filter %v", rf), http.StatusBadRequest)
+		log.Printf("Unrecognized filter %v", sanitize(rf))
+		return
+	}
+
+	var id string
+	var bucket string
+	if r.Method == "POST" {
+		ce, err := cloudevent.NewEventFromHTTPRequest(r)
+		if err != nil {
+			log.Printf("cloudevent.NewEventFromHTTPRequest: %v", err)
+			http.Error(w, "Failed to create CloudEvent from request.", http.StatusBadRequest)
+			return
+		}
+		var so storagedata.StorageObjectData
+		err = protojson.Unmarshal(ce.Data(), &so)
+		if err != nil {
+			log.Printf("failed to unmarshal: %v", err)
+			http.Error(w, "Bad Request: expected Cloud Storage event", http.StatusBadRequest)
+			return
+		}
+		bucket = so.GetBucket()
+		name := so.GetName()
+		if !strings.HasPrefix(name, "stored/") {
+			log.Printf("ignoring non-stored/ object %v", name)
+			return
+		}
+		id = name[7:]
+	} else {
+		ids := r.URL.Query()["object"]
+		buckets := r.URL.Query()["bucket"]
+		if len(ids) != 1 {
+			msg := fmt.Sprintf("Expected 1 object, got %v", len(ids))
+			http.Error(w, msg, http.StatusBadRequest)
+			log.Printf("len(ids): %v", len(ids))
+			return
+		}
+		if len(buckets) != 1 {
+			msg := fmt.Sprintf("Expected 1 bucket, got %v", len(ids))
+			http.Error(w, msg, http.StatusBadRequest)
+			log.Printf("len(buckets): %v", len(buckets))
+			return
+		}
+		id = ids[0]
+		bucket = buckets[0]
+	}
+
+	b, err := readFromBucket(id, bucket)
+	if err != nil {
+		msg := fmt.Sprintf("Error reading %v:stored/%v: %v", bucket, id, err)
+		http.Error(w, msg, http.StatusInternalServerError)
+		log.Printf(msg)
+		return
+	}
+
+	if err := mw.ReadImageBlob(b); err != nil {
+		http.Error(w, "Error reading image", http.StatusBadRequest)
+		log.Printf("Error reading image: %v", err)
+		return
+	}
+
+	storageClient, err := storage.NewClient(context.Background())
+	if err != nil {
+		http.Error(w, "Error initializing storage client", http.StatusInternalServerError)
+		log.Printf("storage.NewClient: %v", err)
+		return
+	}
+	defer func(storageClient *storage.Client) {
+		err := storageClient.Close()
+		if err != nil {
+			log.Printf("error closing storage client: %v", err)
+		}
+	}(storageClient)
+
+	// Need all heights used in the frontend here.
+	// TODO: proactive-cache only the relevant heights for the specific type of image
+	kh := []int{64, 192, 300, 480, 600}
+
+	// behold: an empty set. i hate it
+	hs := map[int]struct{}{}
+
+	// Mirror implementation from assets.php for scaled sizes
+	oh := int(mw.GetImageHeight())
+	for _, h := range kh {
+		cs := 1.
+		for nh := h; nh < oh; nh = int(cs * float64(h)) {
+			hs[nh] = struct{}{}
+			if cs < 2 {
+				cs += 0.5
+			} else if cs < 4 {
+				cs += 1
+			} else {
+				cs *= 2
+			}
+		}
+	}
+
+	var heights []int
+	for h := range hs {
+		heights = append(heights, h)
+	}
+	sort.Sort(sort.Reverse(sort.IntSlice(heights)))
+
+	// TODO: Start by copying the original object to all new locations, so they are available sooner.
+	// Not sure if this will actually matter in real world scenarios.
+	// See: https://cloud.google.com/storage/docs/copying-renaming-moving-objects#client-libraries
+
+	// TODO: consider cloning the mw for each resize to avoid generation loss
+	for _, h := range heights {
+		if err := resizeToHeight(mw, uint(h), filter); err != nil {
+			http.Error(w, fmt.Sprintf("Error resizing image to height %v", h), http.StatusInternalServerError)
+			log.Printf("Error resizing image to height %v: %v", h, err)
+			return
+		}
+		out := mw.GetImageBlob()
+		name := fmt.Sprintf("cache/%v_%v.jpg", id, h)
+		log.Printf("%v:%v will be %v bytes", bucket, name, len(out))
+		obj := storageClient.Bucket(bucket).Object(name)
+		writer := obj.NewWriter(context.Background())
+		n, err := writer.Write(out)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Error writing output file %v", name), http.StatusInternalServerError)
+			log.Printf("error writing %v: %v", name, err)
+			return
+		}
+		if n != len(out) {
+			http.Error(w, fmt.Sprintf("Error writing output file %v", name), http.StatusInternalServerError)
+			log.Printf("only wrote %v bytes to %v", n, name)
+			return
+		}
+		if err = writer.Close(); err != nil {
+			http.Error(w, fmt.Sprintf("Error closing writer for %v", name), http.StatusInternalServerError)
+			log.Printf("error closing writer %v: %v", name, err)
+			return
+		}
+	}
+}
+
+func readFormFile(r *http.Request) ([]byte, error) {
+	if err := r.ParseMultipartForm(20 << 20); err != nil {
+		return nil, err
+	}
+	defer func() {
+		if err := r.MultipartForm.RemoveAll(); err != nil {
+			log.Printf("Error removing temporary files: %v", err)
+		}
+	}()
+
+	f, fh, err := r.FormFile("image")
+	if err != nil {
+		return nil, err
+	}
+
+	s := int(fh.Size)
+	log.Printf("Payload is %v bytes", s)
+	b := make([]byte, s)
+	n, err := f.Read(b)
+	if err != nil {
+		return nil, err
+	}
+	if n != s {
+		return nil, errors.New(fmt.Sprintf("Read %v bytes, expected %v", n, s))
+	}
+
+	return b, nil
+}
+
+func readFromBucket(id string, bucket string) ([]byte, error) {
+	log.Printf("Reading image %v from storage", id)
+	storageClient, err := storage.NewClient(context.Background())
+	if err != nil {
+		return nil, err
+	}
+	defer func(storageClient *storage.Client) {
+		err := storageClient.Close()
+		if err != nil {
+			log.Printf("error closing storage client: %v", err)
+		}
+	}(storageClient)
+	name := fmt.Sprintf("stored/%s", id)
+	obj := storageClient.Bucket(bucket).Object(name)
+	reader, err := obj.NewReader(context.Background())
+	if err != nil {
+		return nil, err
+	}
+	defer func(reader *storage.Reader) {
+		err := reader.Close()
+		if err != nil {
+			log.Printf("Error closing reader: %v", err)
+		}
+	}(reader)
+	b, err := io.ReadAll(reader)
+	return b, err
+}
+
+func parseFilter(rf string) (imagick.FilterType, error) {
+	switch rf {
+	case "":
+		return imagick.FILTER_LANCZOS, nil
+	case "point":
+		return imagick.FILTER_POINT, nil
+	case "box":
+		return imagick.FILTER_BOX, nil
+	case "triangle":
+		return imagick.FILTER_TRIANGLE, nil
+	case "hermite":
+		return imagick.FILTER_HERMITE, nil
+	case "hanning":
+		return imagick.FILTER_HANNING, nil
+	case "hamming":
+		return imagick.FILTER_HAMMING, nil
+	case "blackman":
+		return imagick.FILTER_BLACKMAN, nil
+	case "gaussian":
+		return imagick.FILTER_GAUSSIAN, nil
+	case "quadratic":
+		return imagick.FILTER_QUADRATIC, nil
+	case "cubic":
+		return imagick.FILTER_CUBIC, nil
+	case "catrom":
+		return imagick.FILTER_CATROM, nil
+	case "mitchell":
+		return imagick.FILTER_MITCHELL, nil
+	case "jinc":
+		return imagick.FILTER_JINC, nil
+	case "sinc":
+		return imagick.FILTER_SINC, nil
+	case "sinc_fast":
+		return imagick.FILTER_SINC_FAST, nil
+	case "kaiser":
+		return imagick.FILTER_KAISER, nil
+	case "welsh":
+		return imagick.FILTER_WELSH, nil
+	case "parzen":
+		return imagick.FILTER_PARZEN, nil
+	case "bohman":
+		return imagick.FILTER_BOHMAN, nil
+	case "bartlett":
+		return imagick.FILTER_BARTLETT, nil
+	case "lagrange":
+		return imagick.FILTER_LAGRANGE, nil
+	case "lanczos":
+		return imagick.FILTER_LANCZOS, nil
+	case "lanczos_sharp":
+		return imagick.FILTER_LANCZOS_SHARP, nil
+	case "lanczos2":
+		return imagick.FILTER_LANCZOS2, nil
+	case "lanczos2_sharp":
+		return imagick.FILTER_LANCZOS2_SHARP, nil
+	case "robidoux":
+		return imagick.FILTER_ROBIDOUX, nil
+	case "robidoux_sharp":
+		return imagick.FILTER_ROBIDOUX_SHARP, nil
+	case "cosine":
+		return imagick.FILTER_COSINE, nil
+	case "spline":
+		return imagick.FILTER_SPLINE, nil
+	default:
+		return imagick.FILTER_LANCZOS, errors.New(fmt.Sprintf("Unrecognized filter %v", sanitize(rf)))
+	}
 }

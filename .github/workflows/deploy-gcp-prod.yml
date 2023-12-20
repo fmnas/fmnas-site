@@ -73,6 +73,7 @@ jobs:
         with:
           service: resize-image
           image: ${{ secrets.RESIZE_IMAGE_REPO }}/resize-image:prod
+          region: ${{ secrets.PROD_GCP_REGION }}
       - name: Clean up old versions
         if: steps.changed-files.outputs.any_changed == 'true' || github.event.action == 'workflow_dispatch'
         run: |

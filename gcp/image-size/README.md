@@ -1,5 +1,9 @@
 # image-size
 
+Deprecated; use resize-image instead
+
+TODO: remove image-size container
+
 This Cloud Run container gets the size of an image, to reduce load on DreamHost and improve compatibility with newer 
 image formats such as HEIC and WebP.
 
