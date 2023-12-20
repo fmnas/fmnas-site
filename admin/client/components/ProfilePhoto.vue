@@ -141,7 +141,7 @@ export default defineComponent({
 
 <style scoped lang="scss">
 input {
-  display: none;
+  display: none !important;
 }
 
 /* Make a missing profile image seem like a link */
