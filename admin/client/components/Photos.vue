@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       </li>
     </template>
     <template #footer>
-      <li v-for="photo of pendingPhotos" class="pending" :data-progress="photo.progress !== undefined ? Math.floor(photo.progress * 100) : ''">
+      <li v-for="photo of pendingPhotos" class="pending" :data-progress="photo.progress !== undefined ? Math.floor(photo.progress * 100) : ''" :data-error="photo.error ?? ''">
         <img :src="photo.localPath" alt="Pending photo" title="Uploading..." @click="select(photo)" class="pending">
       </li>
       <li class="add">
@@ -134,6 +134,9 @@ export default defineComponent({
           promise: uploadFile(file, this.prefix, 480, (p) => {
             console.log(p);
             this.reportProgress(localPath, p);
+          }, (err) => {
+            console.error(err);
+            this.reportError(localPath, err);
           }).then((asset) => this.promote(localPath, asset)),
           progress: 0,
         });
@@ -147,6 +150,13 @@ export default defineComponent({
         return; // Don't bother for canceled uploads
       }
       this.pendingPhotos[pendingIndex].progress = progress;
+    },
+    reportError(localPath: string, error: string): void {
+      const pendingIndex = this.pendingPhotos.findIndex(pending => pending.localPath === localPath);
+      if (pendingIndex === -1) {
+        return; // Don't bother for canceled uploads
+      }
+      this.pendingPhotos[pendingIndex].error = error;
     }
   },
 });
@@ -196,6 +206,11 @@ ul {
         top: 0;
         left: 0;
         pointer-events: none;
+      }
+
+      &[data-error]:not([data-error=""]):after {
+        content: attr(data-error);
+        color: red;
       }
     }
   }
