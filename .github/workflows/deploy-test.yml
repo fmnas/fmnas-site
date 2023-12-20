@@ -127,7 +127,7 @@ jobs:
           remote-user: ${{ secrets.TEST_SFTP_USER }}
           private-ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
           destination-path: ${{ secrets.TEST_SITE_ROOT }}/
-          rsync-options: --archive --links --compress --rsh "sshpass -p '${{ secrets.TEST_SFTP_PASS }}' -o StrictHostKeyChecking=no -l ${{ secrets.TEST_SFTP_USER }}"
+          rsync-options: --archive --links --compress --rsh "sshpass -p '${{ secrets.TEST_SFTP_PASS }}' ssh -o StrictHostKeyChecking=no"
   invalidate-descriptions:
     name: Invalidate description cache
     needs: deploy
