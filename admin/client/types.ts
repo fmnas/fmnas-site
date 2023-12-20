@@ -93,6 +93,7 @@ export interface PendingPhoto {
 	localPath: string;
 	promise: Promise<any>;
 	progress?: number;
+	error?: string;
 }
 
 export interface ImportablePet {
