@@ -224,8 +224,8 @@ class Pet implements JsonSerializable {
 
 	public function collapsedAge(): string {
 		return preg_replace(
-				['/^([^&]+) & \1$/', '/^([0-9]+) (month|year) old & ([0-9]+) \2 old$/', '/^([0-9]+) (month|year)s? old & ([0-9]+) \2s? old$/'],
-				['\1', '\1 & \3 \2 old', '\1 & \3 \2s old'],
+				['/^([^&]+) & \1$/', '/^([0-9]+) (month|year)s? old & ([0-9]+) \2s? old$/'],
+				['\1', '\1 & \3 \2s old'],
 				$this->age());
 	}
 
