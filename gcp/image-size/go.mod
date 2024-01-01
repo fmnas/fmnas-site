@@ -3,7 +3,7 @@ module github.com/fmnas/fmnas-site/functions/image-size
 go 1.19
 
 require (
-	cloud.google.com/go/storage v1.35.1
+	cloud.google.com/go/storage v1.36.0
 	gopkg.in/gographics/imagick.v3 v3.5.0
 )
 
