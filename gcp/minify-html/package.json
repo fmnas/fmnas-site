@@ -30,7 +30,7 @@
 		"@google-cloud/functions-framework": "^3.3.0",
 		"busboy": "^1.6.0",
 		"cssnano": "^6.0.3",
-		"cssnano-preset-advanced": "^6.0.2",
+		"cssnano-preset-advanced": "^6.0.3",
 		"html-entities": "^2.4.0",
 		"html-minifier": "^4.0.0",
 		"postcss": "^8.4.32",
