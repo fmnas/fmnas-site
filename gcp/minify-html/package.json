@@ -34,7 +34,7 @@
 		"html-entities": "^2.4.0",
 		"html-minifier": "^4.0.0",
 		"postcss": "^8.4.32",
-		"postcss-reporter": "^7.0.5",
+		"postcss-reporter": "^7.1.0",
 		"postcss-variable-compress": "^3.0.0",
 		"puppeteer": "^21.6.1"
 	}
