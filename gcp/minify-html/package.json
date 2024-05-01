@@ -27,7 +27,7 @@
 	},
 	"dependencies": {
 		"@fullhuman/postcss-purgecss": "^6.0.0",
-		"@google-cloud/functions-framework": "^3.3.0",
+		"@google-cloud/functions-framework": "^3.4.0",
 		"busboy": "^1.6.0",
 		"cssnano": "^6.1.2",
 		"cssnano-preset-advanced": "^6.1.2",
