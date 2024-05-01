@@ -24,7 +24,7 @@
 		"@typescript-eslint/eslint-plugin": "^6.20.0",
 		"@typescript-eslint/parser": "^7.1.0",
 		"@vitejs/plugin-vue": "^2.3.4",
-		"@vue/compiler-sfc": "^3.4.21",
+		"@vue/compiler-sfc": "^3.4.26",
 		"@vue/eslint-config-typescript": "^10.0.0",
 		"browserify": "^17.0.0",
 		"eslint": "^8.52.0",
