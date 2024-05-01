@@ -66,8 +66,8 @@ github.com/googleapis/enterprise-certificate-proxy v0.3.2 h1:Vie5ybvEvT75RniqhfF
 github.com/googleapis/enterprise-certificate-proxy v0.3.2/go.mod h1:VLSiSSBs/ksPL8kq3OBOQ6WRI2QnaFynd1DCjZ62+V0=
 github.com/googleapis/gax-go/v2 v2.12.3 h1:5/zPPDvw8Q1SuXjrqrZslrqT7dL/uJT2CQii/cLCKqA=
 github.com/googleapis/gax-go/v2 v2.12.3/go.mod h1:AKloxT6GtNbaLm8QTNSidHUVsHYcBHwWRvkNFJUQcS4=
-github.com/googleapis/google-cloudevents-go v0.7.1 h1:24gGQequHfFQJsYBoOj+GxRdH0dsOX4F1pu3CrgCxQI=
-github.com/googleapis/google-cloudevents-go v0.7.1/go.mod h1:Ct829rt+b53u3Wutm/euBv/hJPzJ+KKiN9gzTIlbdwk=
+github.com/googleapis/google-cloudevents-go v0.8.0 h1:auoTgq7paIAZebFHsz6CG+4DJ+3/EsDkY8n4F9Y4br4=
+github.com/googleapis/google-cloudevents-go v0.8.0/go.mod h1:i3tW3hUdnqgtFrKk8nPr1SjzYJS4vVF6hKc6y3hbV8E=
 github.com/json-iterator/go v1.1.10 h1:Kz6Cvnvv2wGdaG/V8yMvfkmNiXq9Ya2KUv4rouJJr68=
 github.com/json-iterator/go v1.1.10/go.mod h1:KdQUCv79m/52Kvf8AW2vK1V8akMuk1QjK/uOdHXbAo4=
 github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421 h1:ZqeYNhU3OHLH3mGKHDcjJRFFRrJa6eAM5H+CtDdOsPc=
