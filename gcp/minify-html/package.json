@@ -36,6 +36,6 @@
 		"postcss": "^8.4.38",
 		"postcss-reporter": "^7.1.0",
 		"postcss-variable-compress": "^3.0.0",
-		"puppeteer": "^22.7.1"
+		"puppeteer": "^22.10.0"
 	}
 }
