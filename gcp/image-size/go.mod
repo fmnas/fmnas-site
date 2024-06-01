@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	cloud.google.com/go/storage v1.40.0
-	gopkg.in/gographics/imagick.v3 v3.5.3
+	gopkg.in/gographics/imagick.v3 v3.6.0
 )
 
 require (
