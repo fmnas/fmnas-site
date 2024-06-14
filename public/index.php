@@ -62,6 +62,11 @@ pageHeader();
 				If you can add a little to your donation to help us cover our volunteer driver's expenses, that would be great!
 			<section class="seattle">
 				<h3>Next Seattle area transport</h3>
+				<?php if (date("Y-m-d") <= '2024-06-29'): ?>
+				<p>
+					<time datetime="2024-06-29">Jun 29, 2024</time>
+					(N Tacoma)
+				<?php endif; ?>
 				<p>
 					<time datetime="<?=date("Y-m-d", $transportDate)?>"><?=$transportDate <= strtotime('today') ? 'TBD' :
 								date("M j, Y", $transportDate)?></time>
