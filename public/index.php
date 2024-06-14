@@ -62,6 +62,11 @@ pageHeader();
 				If you can add a little to your donation to help us cover our volunteer driver's expenses, that would be great!
 			<section class="seattle">
 				<h3>Next Seattle area transport</h3>
+				<?php if (date("Y-m-d") <= '2024-06-29'): ?>
+				<p>
+					<time datetime="2024-06-29">Jun 29, 2024</time>
+					(N Tacoma)
+				<?php endif; ?>
 				<p>
 					<time datetime="<?=date("Y-m-d", $transportDate)?>"><?=$transportDate <= strtotime('today') ? 'TBD' :
 								date("M j, Y", $transportDate)?></time>
@@ -82,8 +87,6 @@ pageHeader();
 			<p>Our Stop the Cycle program has both spay/neuter vouchers to help lower income residents in Ferry County with
 				the cost, and a litter rehoming service! With the litter rehoming service, we also provide spay/neuter vouchers
 				for the parent cats or dogs, regardless of family income.
-			<p>For 2022, we also have some limited funding for spay/neuter assistance available to residents of Stevens and Okanogan
-				counties (while funds last)!
 			<p>Request voucher assistance before it's too late, OR request a spot in our Stop the Cycle litter program, by
 				emailing <a data-email="info"></a> or leaving us a message at <a
 						href="tel:<?=_G_phone_intl()?>"><?=_G_phone()?></a>.
