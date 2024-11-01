@@ -15,7 +15,7 @@
 	"devDependencies": {
 		"@types/busboy": "^1.5.4",
 		"@types/express": "^5.0.0",
-		"@types/node": "^22.7.4",
+		"@types/node": "^22.8.6",
 		"@types/puppeteer": "^7.0.4",
 		"concurrently": "^9.0.1",
 		"gts": "^5.3.1",
