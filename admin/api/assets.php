@@ -58,8 +58,8 @@ endpoint(...[
                 $bucket = $storage->bucket(Config::$static_bucket);
                 $object = $bucket->object("stored/" . $asset->key);
                 $url = $object->signedUrl(
-                # This URL is valid for 1 week
-                    new \DateTime('1 week'),
+                # This URL is valid for 1 day
+                    new \DateTime('24 hours'),
                     [
                         'method' => 'PUT',
                         'contentType' => $asset->getType(),
