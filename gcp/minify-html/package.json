@@ -20,7 +20,7 @@
 		"@types/node": "^22.10.1",
 		"@types/postcss-reporter": "^7.0.5",
 		"@types/puppeteer": "^7.0.4",
-		"concurrently": "^9.1.0",
+		"concurrently": "^9.1.2",
 		"gts": "^6.0.2",
 		"nodemon": "^3.1.7",
 		"typescript": "^5.7.2"
