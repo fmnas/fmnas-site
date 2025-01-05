@@ -3,6 +3,7 @@ require_once "pet.php";
 require_once "db.php";
 require_once "common.php";
 require_once "css.php";
+require_once "form.php";
 
 /**
  * Generate a static configuration file, generated.php, using data from the database.
@@ -48,6 +49,15 @@ function generate() {
 		$status->listed = $item["listed"];
 		$status->name = htmlspecialchars($item["name"]);
 		$values["statuses"][$status->key] = $status;
+	}
+
+	$values["forms"] = [];
+	foreach ($db->query("SELECT * FROM forms") as $item) {
+		$form = new Form();
+		$form->id = $item["id"];
+		$form->title = $item["title"];
+		$form->fillout_id = $item["fillout_id"];
+		$values["forms"][$form->id] = $form;
 	}
 
 	ob_start();
