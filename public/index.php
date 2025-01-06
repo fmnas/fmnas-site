@@ -66,7 +66,7 @@ pageHeader();
 				<p>
 					<time datetime="2024-06-29">Jun 29, 2024</time>
 					(N Tacoma)
-				<?php endif; ?>
+					<?php endif; ?>
 				<p>
 					<time datetime="<?=date("Y-m-d", $transportDate)?>"><?=$transportDate <= strtotime('today') ? 'TBD' :
 								date("M j, Y", $transportDate)?></time>
@@ -76,12 +76,12 @@ pageHeader();
 	</article>
 	<aside class="left">
 		<h2>Programs</h2>
-		<section>
-			<h3>Owner Surrenders</h3>
-			<p>Need to rehome a pet? Please email us at <a data-email="info"></a> or leave us a message at <a
-					href="tel:<?=_G_phone_intl()?>"><?=_G_phone()?></a>. We will get in touch to get all the information about
-			your pet, and to see how we can best help.
-		</section>
+		<form action="/owner-surrender" method="POST">
+			<h3><a href="/owner-surrender">Owner Surrenders</a></h3>
+			<p><strong>Need to rehome a pet?</strong> Have an unwanted litter of puppies or kittens (8 weeks or younger)? Fill out the request
+				for assistance here:<br>
+				<button type="submit">Owner Surrender Application</button>
+		</form>
 		<section>
 			<h3>Stop the Cycle<br>Spay/Neuter Vouchers</h3>
 			<p>Our Stop the Cycle program has both spay/neuter vouchers to help lower income residents in Ferry County with

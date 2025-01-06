@@ -81,6 +81,13 @@ function src(): string {
 }
 
 /**
+ * @return string The absolute path to the public directory
+ */
+#[Pure] function public_dir(): string {
+	return root() . "/public";
+}
+
+/**
  * @return string The relative path to the assets directory (from the file where execution started, i.e. the current
  *     page)
  */
@@ -115,6 +122,7 @@ $t = t();
 $src = src();
 $root = root();
 $secrets = secrets();
+$public = public_dir();
 
 /**
  * Dummy definitions for use by IntelliJ
@@ -123,6 +131,7 @@ $root ??= "..";
 $src ??= "$root/src";
 $t ??= "$src/templates";
 $secrets ??= "$root/secrets";
+$public ??= "$src/public";
 
 require_once "$secrets/config.php";
 

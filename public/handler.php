@@ -3,9 +3,10 @@ $path = trim(strtok($_SERVER["REQUEST_URI"], "?"), "/");
 
 require_once "../src/common.php";
 require_once "$src/pet.php";
+require_once "$src/form.php";
 
 // Probable assets
-if (endsWith($path, ".jpeg") || $path[-4] === ".") {
+if ($path[-4] === "." || endsWith($path, ".jpeg")) {
 	require_once "asset.php";
 }
 
@@ -21,6 +22,15 @@ foreach (_G_species() as $species) {
 		// Try displaying an individual pet
 		$expectListing = true;
 		require_once "listing.php";
+	}
+}
+
+// URLs for known forms
+foreach (_G_forms() as $form) {
+	/* @var $form Form */
+	if (strtolower($path) === strtolower($form->id)) {
+		require_once "$public/form.php";
+		exit();
 	}
 }
 

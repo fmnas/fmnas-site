@@ -1,0 +1,27 @@
+@mixin button-link {
+	font: inherit;
+	padding: 0.4rem;
+	margin-top: 0.4rem;
+	color: var(--accent-color);
+	background-color: var(--background-color-2);
+	border-radius: var(--border-radius);
+	border: 1px solid var(--accent-color);
+	box-shadow: -1px 1px 3px var(--shadow-color), 1px 1px 3px var(--shadow-color);
+	cursor: pointer;
+	&:hover {
+		text-decoration: underline;
+	}
+	&:active {
+		box-shadow: -1px 1px 3px var(--shadow-color) inset, 1px 1px 3px var(--shadow-color) inset;
+	}
+}
+
+@mixin hidden-link {
+	&:not(:active) {
+		color: inherit;
+		&:hover {
+			color: var(--accent-color);
+			text-decoration: none;
+		}
+	}
+}
