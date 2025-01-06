@@ -180,6 +180,7 @@ jobs:
           files: |
             src/db.php
             src/generator.php
+            schema.sql
       - name: Delete generated.php
         uses: appleboy/ssh-action@master
         with:
