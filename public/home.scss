@@ -180,10 +180,10 @@ div.home {
 			}
 		}
 
-		section, form {
+		> section, > form {
 			padding: 0.2rem 0 0.4rem;
 
-			&:not(:last-of-type) {
+			&:not(:last-child) {
 				border-bottom: 1px solid var(--border-color);
 			}
 
