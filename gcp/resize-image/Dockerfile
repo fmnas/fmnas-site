@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-FROM golang:1.23-bookworm as builder
+FROM golang:1.19-bullseye as builder
 WORKDIR /app
 
 RUN apt update && \
@@ -21,7 +21,7 @@ RUN apt update && \
     wget https://www.imagemagick.org/download/ImageMagick.tar.gz && \
     git clone https://github.com/strukturag/libde265.git && cd libde265 && \
     ./autogen.sh && ./configure --disable-dec265 --disable-sherlock265 && make -j4 && make install && cd .. && \
-    tar xvf ImageMagick.tar.gz && rm ImageMagick.tar.gz && cd ImageMagick* && \
+    tar xvf ImageMagick.tar.gz && cd ImageMagick* && \
     ./configure --without-magick-plus-plus --without-perl --disable-openmp --with-gvc=no --with-heic \
     --disable-docs && make -j$(nproc) && make install && ldconfig /usr/local/lib && cd .. && \
     apt clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp* ImageMagick* libde265 && identify --version
