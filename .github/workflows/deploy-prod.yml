@@ -108,13 +108,14 @@ jobs:
           git config user.name "FMNAS Automation"
           git add .
           git commit -am "Automated changes for deployment"
-      - name: Wait for GCP deployment
-        uses: lewagon/wait-on-check-action@master
-        with:
-          ref: main
-          check-regexp: 'GCP:.*'
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          wait-interval: 10
+# TODO: Fix GCP deployment for resize-image
+#      - name: Wait for GCP deployment
+#        uses: lewagon/wait-on-check-action@master
+#        with:
+#          ref: main
+#          check-regexp: 'GCP:.*'
+#          repo-token: ${{ secrets.GITHUB_TOKEN }}
+#          wait-interval: 10
       - name: Install sshpass
         run: |
           sudo apt update
