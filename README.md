@@ -52,7 +52,7 @@ To get a local server running, you will need:
 * Node
 	* I suggest using NVM and enabling [deep shell integration](https://github.com/nvm-sh/nvm#deeper-shell-integration) to
 	  avoid using the wrong node version.
-* [Composer](https://getcomposer.org/download/s)
+* [Composer](https://getcomposer.org/download/)
 * [Docker and Compose](https://docs.docker.com/compose/install/linux/#install-using-the-repository)
 * You may want to install the faster Dart version of [Sass](https://sass-lang.com/install):
 	* install the [Dart SDK](https://dart.dev/get-dart) and run `dart pub global activate sass`
@@ -140,7 +140,7 @@ mkcert public.fmnas
 mkcert admin.fmnas
 ```
 
-and create the sites in an apache site conf like so:
+and create the sites in an apache site conf (e.g. /etc/apache2/sites-enabled/fmnas.conf) like so:
 
 ```
 <VirtualHost *:443>
@@ -159,6 +159,8 @@ and create the sites in an apache site conf like so:
 </VirtualHost>
 ```
 
+and enable it (e.g. `sudo a2ensite fmnas`).
+
 Give www-data group ownership of the stuff so it can write to it:
 ```shell
 chgrp -R www-data /path/to/fmnas-site 
@@ -168,6 +170,7 @@ Enable the important modules:
 ```shell
 sudo a2enmod php8.2
 sudo a2enmod rewrite
+sudo a2enmod ssl
 ```
 
 Then restart apache (`sudo service apache2 restart`).
@@ -203,7 +206,7 @@ Run:
 * `composer install` for PHP dependencies
 * `sass public:public` for public site stylesheets
 * `npm run build` for public site scripts
-* `vite build --mode development admin/client` for the admin site
+* `npx vite build --mode development admin/client` for the admin site
 
 #### WSL port forwarding
 

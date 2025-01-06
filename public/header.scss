@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+@use 'button-link';
+
 header > nav {
 	// TODO [#211]: Change the intrinsic heights of logo assets to 100px basis.
 	$height: 100px;
@@ -54,12 +56,8 @@ header > nav {
 	}
 	h1, h2 {
 		font: var(--heading-font);
-		a:not(:active) {
-			color: black !important;
-			&:hover {
-				color: var(--accent-color) !important;
-				text-decoration: none !important;
-			}
+		a {
+			@include button-link.hidden-link;
 		}
 	}
 	div.main {
@@ -129,21 +127,7 @@ header > nav {
 			font-size: 120%;
 		}
 		button {
-			font: inherit !important;
-			padding: 0.4rem;
-			margin-top: 0.4rem;
-			color: var(--accent-color);
-			background-color: var(--background-color-2);
-			border-radius: var(--border-radius);
-			border: 1px solid var(--accent-color);
-			box-shadow: -1px 1px 3px var(--shadow-color), 1px 1px 3px var(--shadow-color);
-			cursor: pointer;
-			&:hover {
-				text-decoration: underline;
-			}
-			&:active {
-				box-shadow: -1px 1px 3px var(--shadow-color) inset, 1px 1px 3px var(--shadow-color) inset;
-			}
+			@include button-link.button-link;
 		}
 	}
 	section.donate {
@@ -158,4 +142,11 @@ header > nav {
 			text-decoration: none !important;
 		}
 	}
+}
+
+h2 {
+	font: var(--heading-font);
+	font-size: 20pt;
+	color: var(--accent-color);
+	text-align: center;
 }
