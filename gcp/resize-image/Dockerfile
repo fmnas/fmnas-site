@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-FROM golang:1.19-bullseye as builder
+FROM golang:1.23-bookworm as builder
 WORKDIR /app
 
 RUN apt update && \

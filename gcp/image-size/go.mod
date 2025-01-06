@@ -1,6 +1,6 @@
 module github.com/fmnas/fmnas-site/functions/image-size
 
-go 1.19
+go 1.23
 
 require (
 	cloud.google.com/go/storage v1.43.0
