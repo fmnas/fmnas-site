@@ -3,6 +3,7 @@ require_once "pet.php";
 require_once "db.php";
 require_once "common.php";
 require_once "css.php";
+require_once "form.php";
 
 /**
  * Generate a static configuration file, generated.php, using data from the database.
@@ -50,13 +51,24 @@ function generate() {
 		$values["statuses"][$status->key] = $status;
 	}
 
+	$values["forms"] = [];
+	foreach ($db->query("SELECT * FROM forms") as $item) {
+		$form = new Form();
+		$form->id = $item["id"];
+		$form->title = $item["title"];
+		$form->fillout_id = $item["fillout_id"];
+		$values["forms"][$form->id] = $form;
+	}
+
 	ob_start();
 	?>
 
 	// This is a static configuration file generated from the database.
 	// Instead of changing values in this file, you should simply delete it and allow it to be regenerated.
 
-	require_once __DIR__."/pet.php";$_G=unserialize(base64_decode("<?=base64_encode(serialize($values));?>"));<?php
+	require_once __DIR__."/pet.php";
+	require_once __DIR__."/form.php";
+	$_G=unserialize(base64_decode("<?=base64_encode(serialize($values));?>"));<?php
 	foreach ($values as $key => $value):
 		?> function _G_<?=$key?>(){global $_G;return $_G["<?=$key?>"];}<?php
 	endforeach;

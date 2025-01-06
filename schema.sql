@@ -12,11 +12,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
--- MariaDB dump 10.19  Distrib 10.6.5-MariaDB, for debian-linux-gnu (x86_64)
+/*M!999999\- enable the sandbox mode */
+-- MariaDB dump 10.19-11.4.3-MariaDB, for debian-linux-gnu (x86_64)
 --
--- Host: localhost    Database: fmnas_dev
+-- Host: 127.0.0.1    Database: fmnas_test
 -- ------------------------------------------------------
--- Server version	10.6.5-MariaDB-2
+-- Server version	11.4.3-MariaDB-1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -27,7 +28,7 @@
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+/*M!100616 SET @OLD_NOTE_VERBOSITY=@@NOTE_VERBOSITY, NOTE_VERBOSITY=0 */;
 
 --
 -- Table structure for table `assets`
@@ -38,15 +39,15 @@ DROP TABLE IF EXISTS `assets`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `assets` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `path` varchar(2048) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `data` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `path` varchar(2048) DEFAULT NULL,
+  `data` text DEFAULT NULL,
+  `type` varchar(255) DEFAULT NULL,
   `width` mediumint(9) DEFAULT NULL,
   `height` mediumint(9) DEFAULT NULL,
   `gcs` boolean NOT NULL DEFAULT FALSE,
   PRIMARY KEY (`id`),
   UNIQUE KEY `path` (`path`(768))
-) ENGINE=InnoDB AUTO_INCREMENT=4186 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -57,10 +58,27 @@ DROP TABLE IF EXISTS `config`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `config` (
-  `config_key` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `config_value` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `config_key` varchar(20) NOT NULL,
+  `config_value` text DEFAULT NULL,
   PRIMARY KEY (`config_key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Global configuration values; these are cached by the backend';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `forms`
+--
+
+DROP TABLE IF EXISTS `forms`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `forms` (
+  `id` varchar(127) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `fillout_id` char(12) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `title` (`title`),
+  UNIQUE KEY `fillout_id` (`fillout_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -71,48 +89,47 @@ DROP TABLE IF EXISTS `listings`;
 /*!50001 DROP VIEW IF EXISTS `listings`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-/*!50001 CREATE TABLE `listings` (
-  `id` tinyint NOT NULL,
-  `name` tinyint NOT NULL,
-  `species` tinyint NOT NULL,
-  `breed` tinyint NOT NULL,
-  `dob` tinyint NOT NULL,
-  `sex` tinyint NOT NULL,
-  `fee` tinyint NOT NULL,
-  `photo` tinyint NOT NULL,
-  `description` tinyint NOT NULL,
-  `status` tinyint NOT NULL,
-  `bonded` tinyint NOT NULL,
-  `friend` tinyint NOT NULL,
-  `adoption_date` tinyint NOT NULL,
-  `order` tinyint NOT NULL,
-  `legacy_path` tinyint NOT NULL,
-  `path` tinyint NOT NULL,
-  `modified` tinyint NOT NULL,
-  `friend_name` tinyint NOT NULL,
-  `friend_sex` tinyint NOT NULL,
-  `friend_breed` tinyint NOT NULL,
-  `friend_dob` tinyint NOT NULL,
-  `pic_id` tinyint NOT NULL,
-  `pic_data` tinyint NOT NULL,
-  `pic_path` tinyint NOT NULL,
-  `pic_type` tinyint NOT NULL,
-  `pic_width` tinyint NOT NULL,
-  `pic_height` tinyint NOT NULL,
-  `pic_gcs` tinyint NOT NULL,
-  `friend_pic_id` tinyint NOT NULL,
-  `friend_pic_data` tinyint NOT NULL,
-  `friend_pic_path` tinyint NOT NULL,
-  `friend_pic_type` tinyint NOT NULL,
-  `friend_pic_width` tinyint NOT NULL,
-  `friend_pic_height` tinyint NOT NULL,
-  `friend_pic_gcs` tinyint NOT NULL,
-  `dsc_id` tinyint NOT NULL,
-  `dsc_data` tinyint NOT NULL,
-  `dsc_path` tinyint NOT NULL,
-  `dsc_type` tinyint NOT NULL,
-  `listing_path` tinyint NOT NULL
-) ENGINE=MyISAM */;
+/*!50001 CREATE VIEW `listings` AS SELECT
+ 1 AS `id`,
+  1 AS `name`,
+  1 AS `species`,
+  1 AS `breed`,
+  1 AS `dob`,
+  1 AS `sex`,
+  1 AS `fee`,
+  1 AS `photo`,
+  1 AS `description`,
+  1 AS `status`,
+  1 AS `bonded`,
+  1 AS `friend`,
+  1 AS `adoption_date`,
+  1 AS `order`,
+  1 AS `legacy_path`,
+  1 AS `path`,
+  1 AS `modified`,
+  1 AS `friend_name`,
+  1 AS `friend_sex`,
+  1 AS `friend_breed`,
+  1 AS `friend_dob`,
+  1 AS `pic_id`,
+  1 AS `pic_data`,
+  1 AS `pic_path`,
+  1 AS `pic_type`,
+  1 AS `pic_width`,
+  1 AS `pic_height`,
+  1 AS `pic_gcs`,
+  1 AS `friend_pic_id`,
+  1 AS `friend_pic_data`,
+  1 AS `friend_pic_path`,
+  1 AS `friend_pic_type`,
+  1 AS `friend_pic_width`,
+  1 AS `friend_pic_height`,
+  1 AS `friend_pic_gcs`,
+  1 AS `dsc_id`,
+  1 AS `dsc_data`,
+  1 AS `dsc_path`,
+  1 AS `dsc_type`,
+  1 AS `listing_path` */;
 SET character_set_client = @saved_cs_client;
 
 --
@@ -123,21 +140,21 @@ DROP TABLE IF EXISTS `pets`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `pets` (
-  `id` varchar(15) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` varchar(15) NOT NULL,
+  `name` varchar(255) NOT NULL,
   `species` tinyint(4) DEFAULT NULL,
-  `breed` varchar(1023) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'or other description',
+  `breed` varchar(1023) DEFAULT NULL COMMENT 'or other description',
   `dob` date DEFAULT NULL,
   `sex` tinyint(4) DEFAULT NULL,
-  `fee` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `fee` varchar(255) DEFAULT NULL,
   `photo` int(11) DEFAULT NULL,
   `description` int(11) DEFAULT NULL,
   `status` smallint(6) NOT NULL DEFAULT 1,
   `bonded` tinyint(2) NOT NULL DEFAULT 0,
-  `friend` varchar(15) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `friend` varchar(15) DEFAULT NULL,
   `adoption_date` date DEFAULT NULL,
   `order` int(11) DEFAULT NULL,
-  `legacy_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `legacy_path` varchar(255) DEFAULT NULL,
   `path` varchar(270) GENERATED ALWAYS AS (concat(`id`,replace(`name`,' ',''))) VIRTUAL,
   `modified` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
@@ -166,7 +183,7 @@ DROP TABLE IF EXISTS `photos`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `photos` (
-  `pet` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `pet` varchar(255) NOT NULL,
   `photo` int(11) NOT NULL,
   `order` int(11) DEFAULT NULL,
   PRIMARY KEY (`pet`,`photo`),
@@ -186,9 +203,9 @@ DROP TABLE IF EXISTS `sexes`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `sexes` (
   `id` tinyint(4) NOT NULL AUTO_INCREMENT,
-  `name` varchar(127) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(127) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -200,17 +217,17 @@ DROP TABLE IF EXISTS `species`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `species` (
   `id` tinyint(4) NOT NULL AUTO_INCREMENT,
-  `name` varchar(127) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `plural` varchar(127) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `young` varchar(127) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `young_plural` varchar(127) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `old` varchar(127) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `old_plural` varchar(127) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(127) NOT NULL,
+  `plural` varchar(127) DEFAULT NULL,
+  `young` varchar(127) DEFAULT NULL,
+  `young_plural` varchar(127) DEFAULT NULL,
+  `old` varchar(127) DEFAULT NULL,
+  `old_plural` varchar(127) DEFAULT NULL,
   `age_unit_cutoff` smallint(6) DEFAULT NULL COMMENT 'in months',
   `young_cutoff` smallint(6) DEFAULT NULL COMMENT 'in months',
   `old_cutoff` smallint(6) DEFAULT NULL COMMENT 'in months',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -222,19 +239,18 @@ DROP TABLE IF EXISTS `statuses`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `statuses` (
   `id` smallint(6) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) NOT NULL,
   `display` tinyint(1) DEFAULT NULL,
   `listed` tinyint(1) NOT NULL DEFAULT 1,
-  `description` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` text DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Final view structure for view `listings`
 --
 
-/*!50001 DROP TABLE IF EXISTS `listings`*/;
 /*!50001 DROP VIEW IF EXISTS `listings`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
@@ -243,6 +259,7 @@ CREATE TABLE `statuses` (
 /*!50001 SET character_set_results     = utf8mb4 */;
 /*!50001 SET collation_connection      = utf8mb4_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
 /*!50001 VIEW `listings` AS select `lpet`.`id` AS `id`,`lpet`.`name` AS `name`,`lpet`.`species` AS `species`,`lpet`.`breed` AS `breed`,`lpet`.`dob` AS `dob`,`lpet`.`sex` AS `sex`,`lpet`.`fee` AS `fee`,`lpet`.`photo` AS `photo`,`lpet`.`description` AS `description`,`lpet`.`status` AS `status`,`lpet`.`bonded` AS `bonded`,`lpet`.`friend` AS `friend`,`lpet`.`adoption_date` AS `adoption_date`,`lpet`.`order` AS `order`,`lpet`.`legacy_path` AS `legacy_path`,`lpet`.`path` AS `path`,`lpet`.`modified` AS `modified`,`rpet`.`name` AS `friend_name`,`rpet`.`sex` AS `friend_sex`,`rpet`.`breed` AS `friend_breed`,`rpet`.`dob` AS `friend_dob`,`lpic`.`id` AS `pic_id`,`lpic`.`data` AS `pic_data`,`lpic`.`path` AS `pic_path`,`lpic`.`type` AS `pic_type`,`lpic`.`width` AS `pic_width`,`lpic`.`height` AS `pic_height`,`lpic`.`gcs` AS `pic_gcs`,`rpic`.`id` AS `friend_pic_id`,`rpic`.`data` AS `friend_pic_data`,`rpic`.`path` AS `friend_pic_path`,`rpic`.`type` AS `friend_pic_type`,`rpic`.`width` AS `friend_pic_width`,`rpic`.`height` AS `friend_pic_height`,`rpic`.`gcs` AS `friend_pic_gcs`,`dsc`.`id` AS `dsc_id`,`dsc`.`data` AS `dsc_data`,`dsc`.`path` AS `dsc_path`,`dsc`.`type` AS `dsc_type`,if(`lpet`.`bonded` = 1,concat(`lpet`.`id`,replace(`lpet`.`name`,' ',''),`rpet`.`id`,replace(`rpet`.`name`,' ','')),concat(`lpet`.`id`,replace(`lpet`.`name`,' ',''))) AS `listing_path` from ((((`pets` `lpet` left join `pets` `rpet` on(`lpet`.`friend` = `rpet`.`id` and `lpet`.`bonded` = 1)) left join `assets` `dsc` on(`lpet`.`description` = `dsc`.`id`)) left join `assets` `lpic` on(`lpet`.`photo` = `lpic`.`id`)) left join `assets` `rpic` on(`rpet`.`photo` = `rpic`.`id`)) where `lpet`.`bonded` < 2 */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
@@ -255,6 +272,6 @@ CREATE TABLE `statuses` (
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+/*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2022-02-24 22:25:34
+-- Dump completed on 2025-01-05 12:17:43

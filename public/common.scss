@@ -67,12 +67,11 @@ body {
 	display: flex;
 	flex-direction: column;
 
-	> *:not(header):not(footer) {
-		flex-grow: 1;
-	}
-
-	> header, > footer {
+	> * {
 		flex-grow: 0;
+		&:not(header):not(footer):not(h2) {
+			flex-grow: 1;
+		}
 	}
 }
 
