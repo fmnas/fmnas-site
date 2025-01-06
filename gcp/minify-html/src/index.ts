@@ -24,6 +24,12 @@ import {minify as minifier} from 'html-minifier';
 import * as reporter from 'postcss-reporter';
 import {decode} from 'html-entities';
 
+declare global {
+	interface Window {
+		decodeEntities: (x: string) => Promise<string>;
+	}
+}
+
 const purgecss = require('@fullhuman/postcss-purgecss');
 const variableCompress = require('postcss-variable-compress');
 
@@ -54,7 +60,6 @@ export const minify: HttpFunction = async (req, res) => {
 			await page.waitForNetworkIdle({timeout: 5000, idleTime: 50});
 
 			await page.exposeFunction('decodeEntities', decode);
-			let decodeEntities: (x: string) => Promise<string>;
 
 			// TODO [#334]: Remove undisplayed elements in minifier.
 			// This is too aggressive for the application, since they can still be found in CSS selectors (div.hidden + div).
@@ -86,7 +91,7 @@ export const minify: HttpFunction = async (req, res) => {
 							if (!rule.cssText.startsWith('@import')) {
 								if (rule.cssText.includes('content:')) {
 									// For some reason this gets HTML entities in it
-									styles += await decodeEntities(rule.cssText);
+									styles += await window.decodeEntities(rule.cssText);
 								} else {
 									styles += rule.cssText;
 								}
