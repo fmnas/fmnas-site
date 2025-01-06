@@ -56,6 +56,7 @@ To get a local server running, you will need:
 * [Docker and Compose](https://docs.docker.com/compose/install/linux/#install-using-the-repository)
 * You may want to install the faster Dart version of [Sass](https://sass-lang.com/install):
 	* install the [Dart SDK](https://dart.dev/get-dart) and run `dart pub global activate sass`
+* [Go](https://go.dev/doc/install)
 
 The [Dart SDK](https://dart.dev/get-dart) is required to run the blackbox tests locally.
 
