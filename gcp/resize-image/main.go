@@ -174,7 +174,12 @@ func handleResize(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	out := mw.GetImageBlob()
+	out, err := mw.GetImageBlob()
+	if err != nil {
+		http.Error(w, "Error reading image", http.StatusInternalServerError)
+		log.Printf("Error reading image: %v", err)
+		return
+	}
 	log.Printf("Response image is %v bytes", len(out))
 
 	w.Header().Set("Content-Type", "image/jpeg")
@@ -400,7 +405,12 @@ func handleProactiveResize(w http.ResponseWriter, r *http.Request) {
 			log.Printf("Error resizing image to height %v: %v", h, err)
 			return
 		}
-		out := mw.GetImageBlob()
+		out, err := mw.GetImageBlob()
+		if err != nil {
+			http.Error(w, "Error reading image", http.StatusInternalServerError)
+			log.Printf("error reading iamge: %v", err)
+			return
+		}
 		name := fmt.Sprintf("cache/%v_%v.jpg", id, h)
 		log.Printf("%v:%v will be %v bytes", bucket, name, len(out))
 		obj := storageClient.Bucket(bucket).Object(name)
