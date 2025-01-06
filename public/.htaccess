@@ -13,6 +13,10 @@ RewriteRule ^Cats/(.*)$ /cats/$1 [L,R=301]
 Redirect 301 /Dogs /dogs
 RewriteRule ^Dogs/(.*)$ /dogs/$1 [L,R=301]
 
+# strip empty query strings from URL
+RewriteCond %{THE_REQUEST} \?\s
+RewriteRule ^ %{REQUEST_URI}? [L,R=301]
+
 # redirect to handler.php for non-existing directories
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
