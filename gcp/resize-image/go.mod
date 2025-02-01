@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go/storage v1.50.0
 	github.com/cloudevents/sdk-go/v2 v2.15.2
 	github.com/googleapis/google-cloudevents-go v0.9.0
-	google.golang.org/protobuf v1.36.1
+	google.golang.org/protobuf v1.36.4
 	gopkg.in/gographics/imagick.v3 v3.7.2
 )
 
