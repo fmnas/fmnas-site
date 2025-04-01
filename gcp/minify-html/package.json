@@ -31,7 +31,7 @@
 		"busboy": "^1.6.0",
 		"cssnano": "^7.0.6",
 		"cssnano-preset-advanced": "^7.0.6",
-		"html-entities": "^2.5.2",
+		"html-entities": "^2.6.0",
 		"html-minifier": "^4.0.0",
 		"postcss": "^8.5.3",
 		"postcss-reporter": "^7.1.0",
