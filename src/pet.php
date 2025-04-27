@@ -26,7 +26,7 @@ class Species implements JsonSerializable {
 	 * @param bool $plural Whether the word should be plural
 	 * @return string
 	 */
-	public function nameGivenDob(string $dob = null, bool $plural = false): string {
+	public function nameGivenDob(?string $dob = null, bool $plural = false): string {
 		$age = null;
 		if ($dob != null) {
 			try {
