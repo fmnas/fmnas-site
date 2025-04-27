@@ -5,6 +5,9 @@ RewriteEngine On
 Redirect 301 /Application /application
 RewriteRule ^Application/(.*)$ /application/$1 [L,R=301]
 
+# redirect old /application/received to /~application/received
+RewriteRule ^application/received/(.*)$ /~application/received/$1 [L,R=301]
+
 # redirect old /Cats to /cats
 Redirect 301 /Cats /cats
 RewriteRule ^Cats/(.*)$ /cats/$1 [L,R=301]
