@@ -90,25 +90,26 @@ class Asset {
 			$tag .= "<a href=\"$path\">";
 		}
 		$tag .= '<img';
-		if ($height !== 0 && $height <= $this->size()[1]) {
-			$intrinsicHeight = $this->size()[1];
-			$tag .= ' srcset="';
-			$currentScale = 1;
-			while ($currentScale * $height < $intrinsicHeight) {
-				$tag .= $this->cachedImage($currentScale * $height);
-				$tag .= " {$currentScale}x, ";
-				if (!$expand) {
-					break;
-				} else if ($currentScale < 2) {
-					$currentScale += 0.5;
-				} else if ($currentScale < 4) {
-					$currentScale += 1;
-				} else {
-					$currentScale *= 2;
-				}
-			}
-			$tag .= "$path " . $intrinsicHeight / $height . "x\"";
-		}
+		// TODO: Make this more performant and uncomment!
+//		if ($height !== 0 && $height <= $this->size()[1]) {
+//			$intrinsicHeight = $this->size()[1];
+//			$tag .= ' srcset="';
+//			$currentScale = 1;
+//			while ($currentScale * $height < $intrinsicHeight) {
+//				$tag .= $this->cachedImage($currentScale * $height);
+//				$tag .= " {$currentScale}x, ";
+//				if (!$expand) {
+//					break;
+//				} else if ($currentScale < 2) {
+//					$currentScale += 0.5;
+//				} else if ($currentScale < 4) {
+//					$currentScale += 1;
+//				} else {
+//					$currentScale *= 2;
+//				}
+//			}
+//			$tag .= "$path " . $intrinsicHeight / $height . "x\"";
+//		}
 		$tag .= ' src="' . $path . '"';
 		if ($alt) {
 			$tag .= ' alt="' . htmlspecialchars($alt) . '"';
