@@ -169,7 +169,7 @@ jobs:
       - name: Count failures
         run: |
           failures=0
-          total=4
+          total=2
           if [[ "${{ needs.resize-image.result }}" != "success" ]]; then ((failures++)); fi
           if [[ "${{ needs.image-size.result }}" != "success" ]]; then ((failures++)); fi
           if [[ "$failures" = "$total" ]]; then echo "color=critical" | tee -a $GITHUB_ENV
