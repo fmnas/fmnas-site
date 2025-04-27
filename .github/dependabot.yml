@@ -32,24 +32,6 @@ updates:
     labels: [ ]
     commit-message:
       prefix: npm
-  - package-ecosystem: npm
-    directory: /gcp/minify-html
-    schedule:
-      interval: monthly
-    versioning-strategy: increase
-    target-branch: test
-    labels: [ ]
-    commit-message:
-      prefix: minify-html
-  - package-ecosystem: npm
-    directory: /gcp/print-pdf
-    schedule:
-      interval: monthly
-    versioning-strategy: increase
-    target-branch: test
-    labels: [ ]
-    commit-message:
-      prefix: print-pdf
   - package-ecosystem: gomod
     directory: /gcp/image-size
     schedule:

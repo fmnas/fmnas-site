@@ -39,14 +39,14 @@ jobs:
       - name: Remove unneeded directories
         run: rm -rf .github .idea gcp tests
       - name: Set up Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
       - name: Install dev dependencies
         run: npm install
       - name: Cache PHP dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: /tmp/composer-cache
           key: ${{ runner.os }}-${{ hashFiles('composer.lock') }}
@@ -68,20 +68,12 @@ jobs:
           --db_username="${{ secrets.DB_USERNAME }}" \
           --db_pass="${{ secrets.DB_PASS }}" \
           --db_host="${{ secrets.DB_HOST }}" \
-          --smtp_host="${{ secrets.SMTP_HOST }}" \
-          --smtp_auth="${{ secrets.SMTP_AUTH }}" \
-          --smtp_security="${{ secrets.SMTP_SECURITY }}" \
-          --smtp_port="${{ secrets.SMTP_PORT }}" \
-          --smtp_username="${{ secrets.SMTP_USERNAME }}" \
-          --smtp_password="${{ secrets.SMTP_PASSWORD }}" \
           --image_size_endpoint="${{ secrets.IMAGE_SIZE_TEST_ENDPOINT }}" \
           --resize_image_endpoint="${{ secrets.RESIZE_IMAGE_TEST_ENDPOINT }}" \
           --asm_db="${{ secrets.ASM_WEB_DB }}" \
           --asm_host="${{ secrets.ASM_WEB_HOST }}" \
           --asm_user="${{ secrets.ASM_WEB_USER }}" \
           --asm_pass="${{ secrets.ASM_WEB_PASS }}" \
-          --print_pdf_endpoint="${{ secrets.PRINT_PDF_TEST_ENDPOINT }}" \
-          --minify_html_endpoint="${{ secrets.MINIFY_HTML_TEST_ENDPOINT }}" \
           --ga_id="${{ secrets.TEST_GA_ID }}" \
           --api_credentials="${{ secrets.HTTP_CREDENTIALS }}" \
           --static_bucket="${{ secrets.TEST_STATIC_BUCKET }}" \

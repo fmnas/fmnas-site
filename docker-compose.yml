@@ -22,7 +22,6 @@ services:
       context: .
       dockerfile: apache.Dockerfile
       args:
-        - smtp_port=1025
         - site_root=public
         - domain=public.fmnas
     ports:
@@ -30,17 +29,13 @@ services:
       - "443"
     depends_on:
       - mysql.fmnas
-      - smtp.fmnas
       - resize-image.fmnas
       - image-size.fmnas
-      - print-pdf.fmnas
-      - minify-html.fmnas
   admin.fmnas:
     build:
       context: .
       dockerfile: apache.Dockerfile
       args:
-        - smtp_port=1025
         - site_root=admin
         - domain=admin.fmnas
     ports:
@@ -50,8 +45,6 @@ services:
       - mysql.fmnas
       - resize-image.fmnas
       - image-size.fmnas
-      - print-pdf.fmnas
-      - minify-html.fmnas
   mysql.fmnas:
     build:
       context: .
@@ -60,12 +53,6 @@ services:
       - MYSQL_RANDOM_ROOT_PASSWORD=1
     ports:
       - "3306"
-  smtp.fmnas:
-    image: mailhog/mailhog
-    environment:
-      - MH_HOSTNAME="smtp.fmnas"
-    ports:
-      - "8025"
   resize-image.fmnas:
     build: gcp/resize-image
     ports:
@@ -74,17 +61,3 @@ services:
     build: gcp/image-size
     ports:
       - "8080"
-  print-pdf.fmnas:
-    image: node:lts
-    volumes:
-      - ./gcp/print-pdf:/gcp/print-pdf
-    command: bash -c "cd /gcp/print-pdf && npm install && PORT=80 npm run start"
-    ports:
-      - "80"
-  minify-html.fmnas:
-    image: node:lts
-    volumes:
-      - ./gcp/minify-html:/gcp/minify-html
-    command: bash -c "cd /gcp/minify-html && npm install && PORT=80 npm run start"
-    ports:
-      - "80"

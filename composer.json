@@ -1,12 +1,5 @@
 {
-	"autoload": {
-		"psr-4": {
-			"fmnas\\Form\\": "src/Form/"
-		}
-	},
 	"require": {
-		"phpmailer/phpmailer": "^6.9",
-		"masterminds/html5": "^2.8",
 		"erusev/parsedown": "^1.7",
 		"zordius/lightncandy": "dev-master",
 		"ext-fileinfo": "*",
@@ -19,7 +12,7 @@
 		"ext-ctype": "*",
 		"whichbrowser/parser": "^2.1",
 		"ext-sqlite3": "*",
-		"google/cloud-storage": "^1.36",
+		"google/cloud-storage": "^1.47",
 		"ramsey/uuid": "^4.7"
 	}
 }
