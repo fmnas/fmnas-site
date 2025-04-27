@@ -145,6 +145,7 @@ jobs:
             xargs -I % gcloud artifacts docker images delete ${{ secrets.IMAGE_SIZE_REPO }}/image-size@%
       - name: Get deployment URL
         if: steps.changed-files.outputs.any_changed == 'true' || github.event.action == 'workflow_dispatch'
+        run: echo ${{ steps.deploy.outputs.url }}
   badge:
     name: Update status badge
     if: ${{ always() }}
