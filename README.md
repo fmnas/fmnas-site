@@ -199,7 +199,7 @@ Run:
 * Create the config file (change values as appropriate):
   ```shell
   ts-node handleparse.ts secrets/config.php.hbs --db_name=database --db_username=username --db_pass=password \
-  --db_host=localhost --smtp_host=localhost --smtp_auth=false --smtp_port=25 \
+  --db_host=localhost \
   --image_size_endpoint=https://localhost:50000 --resize_image_endpoint=https://localhost:50001
   ```
 * `composer install` for PHP dependencies
@@ -351,16 +351,6 @@ The following workflows in `.github/workflows` are used for deployment:
 
 ##### Org secrets
 
-* `SMTP_HOST`: The SMTP host to use when sending email (`smtp.gmail.com`)
-* `SMTP_AUTH`: Whether `SMTP_HOST` requires auth (`true`)
-* `SMTP_SECURITY`: Security type for `SMTP_HOST` (`tls`)
-* `SMTP_PORT`: The port for `SMTP_HOST` (`587`)
-* `SMTP_USERNAME`: The username for `SMTP_HOST`
-	* FMNAS: Use the apps account
-* `SMTP_PASSWORD`: The password for `SMTP_HOST`
-* `TODO_ACTIONS_MONGO_URL`: The [MongoDB](https://cloud.mongodb.com/v2/) connector URL for
-  todo-actions (`mongodb+srv://...`)
-	* FMNAS: Google log in with the apps account, use the FMNASGitHubTodos database
 * `ASM_HOST`: The SSH hostname for the ASM server
 * `ASM_SSH_KEY`: A private key to get into `ASM_HOST`
 * `ASM_KNOWN_HOSTS`: Known hosts entry for `ASM_HOST`
@@ -426,8 +416,7 @@ On the build machine:
 	* Run, for instance:
 	  ```shell
 		npx ts-node handleparse.ts secrets/config.php.hbs --db_name=database --db_username=username --db_pass=password \
-		--db_host=localhost --smtp_host=smtp.gmail.com --smtp_auth=true --smtp_security=tls --smtp_port=587 \
-		--smtp_username=me@gmail.com --smtp_password=password \
+		--db_host=localhost \
 		--image_size_endpoint=https://image-size.gcp.forgetmenotshelter.org \
 		--resize_image_endpoint=https://resize-image.gcp.forgetmenotshelter.org
 		```

@@ -1,7 +1,5 @@
 {
 	"require": {
-		"phpmailer/phpmailer": "^6.9",
-		"masterminds/html5": "^2.9",
 		"erusev/parsedown": "^1.7",
 		"zordius/lightncandy": "dev-master",
 		"ext-fileinfo": "*",

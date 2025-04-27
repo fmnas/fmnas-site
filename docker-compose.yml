@@ -22,7 +22,6 @@ services:
       context: .
       dockerfile: apache.Dockerfile
       args:
-        - smtp_port=1025
         - site_root=public
         - domain=public.fmnas
     ports:
@@ -30,7 +29,6 @@ services:
       - "443"
     depends_on:
       - mysql.fmnas
-      - smtp.fmnas
       - resize-image.fmnas
       - image-size.fmnas
   admin.fmnas:
@@ -38,7 +36,6 @@ services:
       context: .
       dockerfile: apache.Dockerfile
       args:
-        - smtp_port=1025
         - site_root=admin
         - domain=admin.fmnas
     ports:
@@ -56,12 +53,6 @@ services:
       - MYSQL_RANDOM_ROOT_PASSWORD=1
     ports:
       - "3306"
-  smtp.fmnas:
-    image: mailhog/mailhog
-    environment:
-      - MH_HOSTNAME="smtp.fmnas"
-    ports:
-      - "8025"
   resize-image.fmnas:
     build: gcp/resize-image
     ports:
