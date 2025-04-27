@@ -12,7 +12,6 @@
 [![release progress](https://img.shields.io/github/milestones/progress/fmnas/fmnas-site/3?color=5021da)](https://github.com/fmnas/fmnas-site/milestone/3)
 [![handoff progress](https://img.shields.io/github/milestones/progress/fmnas/fmnas-site/7?color=5021da)](https://github.com/fmnas/fmnas-site/milestone/7)
 [![other issues](https://img.shields.io/github/milestones/issues-open/fmnas/fmnas-site/6?color=5021da&label=other)](https://github.com/fmnas/fmnas-site/milestone/6)
-[![failed applications](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/TortoiseWrath/e38e961e5c08b2bdf4d78c800d851203/raw/applications.json)](https://github.com/fmnas/fmnas-site/actions/workflows/check-applications.yml)
 
 This repository contains source code for the website of the
 [Forget Me Not Animal Shelter](https://forgetmenotshelter.org)
@@ -201,8 +200,7 @@ Run:
   ```shell
   ts-node handleparse.ts secrets/config.php.hbs --db_name=database --db_username=username --db_pass=password \
   --db_host=localhost --smtp_host=localhost --smtp_auth=false --smtp_port=25 \
-  --image_size_endpoint=https://localhost:50000 --resize_image_endpoint=https://localhost:50001 \
-  --print_pdf_endpoint=https://localhost:50002 --minify_html_endpoint=https://localhost:50003
+  --image_size_endpoint=https://localhost:50000 --resize_image_endpoint=https://localhost:50001
   ```
 * `composer install` for PHP dependencies
 * `sass public:public` for public site stylesheets
@@ -237,7 +235,6 @@ The IntelliJ config includes file watchers to automatically build files. To do t
 
 * `sass -w public:public` for public site stylesheets
 * `tsc -w -p public` for public site scripts
-* `watchify public/application/events.js -o public/application/events.bundle.js` for application bundle
 * `vite build -w --mode development admin/client` for the admin site
 * `cd tests/blackbox && dart run build_runner watch` for the blackbox tests
 
@@ -343,14 +340,6 @@ The following workflows in `.github/workflows` are used for deployment:
   to `image-size-test` (`https://image-size-test.gcp.forgetmenotshelter.org`)
 * `IMAGE_SIZE_PROD_ENDPOINT`: The HTTPS endpoint mapped
   to `image-size` (`https://image-size.gcp.forgetmenotshelter.org`)
-* `PRINT_PDF_PROD_ENDPOINT`: The HTTPS endpoint
-  for `print-pdf` (`https://us-central1-fmnas-automation.cloudfunctions.net/print-pdf`)
-* `PRINT_PDF_TEST_ENDPOINT`: The HTTPS endpoint
-  for `print-pdf-test` (`https://us-central1-fmnas-automation.cloudfunctions.net/print-pdf-test`)
-* `MINIFY_HTML_PROD_ENDPOINT`: The HTTPS endpoint
-  for `minify-html` (`https://us-central1-fmnas-automation.cloudfunctions.net/minify-html`)
-* `MINIFY_HTML_TEST_ENDPOINT`: The HTTPS endpoint
-  for `minify-html-test` (`https://us-central1-fmnas-automation.cloudfunctions.net/minify-html-test`)
 * `ASM_WEB_DB`: The MySQL database with replicated ASM tables (see #314) for the import backend (`asm_web`)
 * `ASM_WEB_HOST`: The MySQL host for `ASM_WEB_DB` (`fmnas.forgetmenotshelter.org`)
 * `ASM_WEB_USER`: The MySQL user for `ASM_WEB_DB` (`fmnas_asm`)
@@ -440,9 +429,7 @@ On the build machine:
 		--db_host=localhost --smtp_host=smtp.gmail.com --smtp_auth=true --smtp_security=tls --smtp_port=587 \
 		--smtp_username=me@gmail.com --smtp_password=password \
 		--image_size_endpoint=https://image-size.gcp.forgetmenotshelter.org \
-		--resize_image_endpoint=https://resize-image.gcp.forgetmenotshelter.org \
-		--print_pdf_endpoint=https://us-central1-fmnas-automation.cloudfunctions.net/print-pdf \
-		--minify_html_endpoint=https://us-central1-fmnas-automation.cloudfunctions.net/minify-html
+		--resize_image_endpoint=https://resize-image.gcp.forgetmenotshelter.org
 		```
 	* Alternatively, copy `secrets/config_sample.php` to `secrets/config.php` and update the configuration values
 	  manually.

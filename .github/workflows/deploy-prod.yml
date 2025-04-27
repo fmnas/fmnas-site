@@ -76,8 +76,6 @@ jobs:
           --asm_host="${{ secrets.ASM_WEB_HOST }}" \
           --asm_user="${{ secrets.ASM_WEB_USER }}" \
           --asm_pass="${{ secrets.ASM_WEB_PASS }}" \
-          --print_pdf_endpoint="${{ secrets.PRINT_PDF_PROD_ENDPOINT }}" \
-          --minify_html_endpoint="${{ secrets.MINIFY_HTML_TEST_ENDPOINT }}" \
           --ga_id="${{ secrets.PROD_GA_ID }}" \
           --api_credentials="${{ secrets.HTTP_CREDENTIALS }}" \
           --static_bucket="${{ secrets.PROD_STATIC_BUCKET }}" \

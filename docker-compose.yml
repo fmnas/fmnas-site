@@ -33,8 +33,6 @@ services:
       - smtp.fmnas
       - resize-image.fmnas
       - image-size.fmnas
-      - print-pdf.fmnas
-      - minify-html.fmnas
   admin.fmnas:
     build:
       context: .
@@ -50,8 +48,6 @@ services:
       - mysql.fmnas
       - resize-image.fmnas
       - image-size.fmnas
-      - print-pdf.fmnas
-      - minify-html.fmnas
   mysql.fmnas:
     build:
       context: .
@@ -74,17 +70,3 @@ services:
     build: gcp/image-size
     ports:
       - "8080"
-  print-pdf.fmnas:
-    image: node:lts
-    volumes:
-      - ./gcp/print-pdf:/gcp/print-pdf
-    command: bash -c "cd /gcp/print-pdf && npm install && PORT=80 npm run start"
-    ports:
-      - "80"
-  minify-html.fmnas:
-    image: node:lts
-    volumes:
-      - ./gcp/minify-html:/gcp/minify-html
-    command: bash -c "cd /gcp/minify-html && npm install && PORT=80 npm run start"
-    ports:
-      - "80"

@@ -42,8 +42,6 @@ ARG asm_pass=passw0rd2
 ARG ga_id="TODO"
 ARG image_size_endpoint="http://image-size.fmnas:8080"
 ARG resize_image_endpoint="http://resize-image.fmnas:8080"
-ARG print_pdf_endpoint="http://print-pdf.fmnas"
-ARG minify_html_endpoint="http://minify-html.fmnas"
 ARG api_credentials=""
 RUN npx ts-node handleparse.ts secrets/config.php.hbs \
     --db_name="$db_name" \
@@ -58,8 +56,6 @@ RUN npx ts-node handleparse.ts secrets/config.php.hbs \
     --smtp_password="$smtp_pass" \
     --image_size_endpoint="$image_size_endpoint" \
     --resize_image_endpoint="$resize_image_endpoint" \
-    --print_pdf_endpoint="$print_pdf_endpoint" \
-    --minify_html_endpoint="$minify_html_endpoint" \
     --asm_db="$asm_db" \
     --asm_host="$asm_host" \
     --asm_user="$asm_user" \

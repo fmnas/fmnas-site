@@ -1,9 +1,4 @@
 {
-	"autoload": {
-		"psr-4": {
-			"fmnas\\Form\\": "src/Form/"
-		}
-	},
 	"require": {
 		"phpmailer/phpmailer": "^6.9",
 		"masterminds/html5": "^2.9",

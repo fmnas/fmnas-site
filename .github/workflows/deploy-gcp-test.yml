@@ -154,134 +154,12 @@ jobs:
       - name: Get deployment URL
         if: steps.changed-files.outputs.any_changed == 'true' || github.event.action == 'workflow_dispatch'
         run: echo ${{ steps.deploy.outputs.url }}
-  print-pdf:
-    name: 'GCP: Deploy print-pdf-test'
-    runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-    steps:
-      - name: Cancel previous runs
-        uses: styfle/cancel-workflow-action@0.9.1
-        with:
-          access_token: ${{ github.token }}
-      - name: Checkout test
-        uses: actions/checkout@main
-        with:
-          ref: test
-          fetch-depth: 0
-      - name: Test changed files
-        id: changed-files
-        uses: tj-actions/changed-files@v15
-        with:
-          files: |
-            gcp/print-pdf/**
-            .github/workflows/deploy-gcp-test.yml
-          since_last_remote_commit: "true"
-      - name: Set up Node
-        if: steps.changed-files.outputs.any_changed == 'true' || github.event.action == 'workflow_dispatch'
-        uses: actions/setup-node@v2
-        with:
-          node-version-file: 'gcp/print-pdf/.nvmrc'
-          cache: 'npm'
-          cache-dependency-path: gcp/print-pdf/package-lock.json
-      - name: Install build dependences
-        if: steps.changed-files.outputs.any_changed == 'true' || github.event.action == 'workflow_dispatch'
-        working-directory: gcp/print-pdf
-        run: npm install --only=dev
-      - name: Compile function
-        if: steps.changed-files.outputs.any_changed == 'true' || github.event.action == 'workflow_dispatch'
-        working-directory: gcp/print-pdf
-        run: npm run compile
-      - name: Authenticate to Google Cloud
-        if: steps.changed-files.outputs.any_changed == 'true' || github.event.action == 'workflow_dispatch'
-        uses: google-github-actions/auth@v0
-        with:
-          workload_identity_provider: ${{ secrets.GCP_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
-      - name: Deploy to Cloud Functions
-        if: steps.changed-files.outputs.any_changed == 'true' || github.event.action == 'workflow_dispatch'
-        id: deploy
-        uses: google-github-actions/deploy-cloud-functions@v0
-        with:
-          name: print-pdf-test
-          source_dir: gcp/print-pdf
-          runtime: nodejs16
-          entry_point: printPdf
-          memory_mb: 2048
-          region: ${{ secrets.GCP_REGION }}
-          https_trigger_security_level: secure_always
-          timeout: 60
-          min_instances: 0
-          max_instances: 100
-          project_id: ${{ secrets.GCP_PROJECT }}
-  minify-html:
-    name: 'GCP: Deploy minify-html-test'
-    runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-    steps:
-      - name: Cancel previous runs
-        uses: styfle/cancel-workflow-action@0.9.1
-        with:
-          access_token: ${{ github.token }}
-      - name: Checkout test
-        uses: actions/checkout@main
-        with:
-          ref: test
-          fetch-depth: 0
-      - name: Test changed files
-        id: changed-files
-        uses: tj-actions/changed-files@v15
-        with:
-          files: |
-            gcp/minify-html/**
-            .github/workflows/deploy-gcp-test.yml
-          since_last_remote_commit: "true"
-      - name: Set up Node
-        if: steps.changed-files.outputs.any_changed == 'true' || github.event.action == 'workflow_dispatch'
-        uses: actions/setup-node@v2
-        with:
-          node-version-file: 'gcp/minify-html/.nvmrc'
-          cache: 'npm'
-          cache-dependency-path: gcp/minify-html/package-lock.json
-      - name: Install build dependences
-        if: steps.changed-files.outputs.any_changed == 'true' || github.event.action == 'workflow_dispatch'
-        working-directory: gcp/minify-html
-        run: npm install --only=dev
-      - name: Compile function
-        if: steps.changed-files.outputs.any_changed == 'true' || github.event.action == 'workflow_dispatch'
-        working-directory: gcp/minify-html
-        run: npm run compile
-      - name: Authenticate to Google Cloud
-        if: steps.changed-files.outputs.any_changed == 'true' || github.event.action == 'workflow_dispatch'
-        uses: google-github-actions/auth@v0
-        with:
-          workload_identity_provider: ${{ secrets.GCP_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
-      - name: Deploy to Cloud Functions
-        if: steps.changed-files.outputs.any_changed == 'true' || github.event.action == 'workflow_dispatch'
-        id: deploy
-        uses: google-github-actions/deploy-cloud-functions@v0
-        with:
-          name: minify-html-test
-          source_dir: gcp/minify-html
-          runtime: nodejs16
-          entry_point: minify
-          memory_mb: 2048
-          region: ${{ secrets.GCP_REGION }}
-          https_trigger_security_level: secure_always
-          timeout: 60
-          min_instances: 0
-          max_instances: 100
-          project_id: ${{ secrets.GCP_PROJECT }}
   badge:
     name: Update status badge
     if: ${{ always() }}
     needs:
       - resize-image
       - image-size
-      - print-pdf
-      - minify-html
     runs-on: ubuntu-latest
     steps:
       - name: Cancel previous runs
@@ -294,8 +172,6 @@ jobs:
           total=4
           if [[ "${{ needs.resize-image.result }}" != "success" ]]; then ((failures++)); fi
           if [[ "${{ needs.image-size.result }}" != "success" ]]; then ((failures++)); fi
-          if [[ "${{ needs.print-pdf.result }}" != "success" ]]; then ((failures++)); fi
-          if [[ "${{ needs.minify-html.result }}" != "success" ]]; then ((failures++)); fi
           if [[ "$failures" = "$total" ]]; then echo "color=critical" | tee -a $GITHUB_ENV
           elif [[ "$failures" = 0 ]]; then echo "color=090" | tee -a $GITHUB_ENV
           else echo "color=important" | tee -a $GITHUB_ENV; fi
