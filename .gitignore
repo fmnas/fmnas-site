@@ -265,3 +265,6 @@ composer.phar
 
 
 .idea/sonarlint
+
+# WSL shenanigans
+*:Zone.Identifier
