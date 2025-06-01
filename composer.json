@@ -13,6 +13,6 @@
 		"whichbrowser/parser": "^2.1",
 		"ext-sqlite3": "*",
 		"google/cloud-storage": "^1.48",
-		"ramsey/uuid": "^4.7"
+		"ramsey/uuid": "^4.8"
 	}
 }
