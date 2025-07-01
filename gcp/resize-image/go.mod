@@ -7,7 +7,7 @@ toolchain go1.24.1
 require (
 	cloud.google.com/go/storage v1.55.0
 	github.com/cloudevents/sdk-go/v2 v2.16.0
-	github.com/googleapis/google-cloudevents-go v0.9.0
+	github.com/googleapis/google-cloudevents-go v0.10.0
 	google.golang.org/protobuf v1.36.6
 	gopkg.in/gographics/imagick.v3 v3.7.2
 )
@@ -60,8 +60,8 @@ require (
 	golang.org/x/text v0.25.0 // indirect
 	golang.org/x/time v0.11.0 // indirect
 	google.golang.org/api v0.235.0 // indirect
-	google.golang.org/genproto v0.0.0-20250505200425-f936aa4a68b2 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20250512202823-5a2f75b736a9 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250512202823-5a2f75b736a9 // indirect
+	google.golang.org/genproto v0.0.0-20250603155806-513f23925822 // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20250528174236-200df99c418a // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250603155806-513f23925822 // indirect
 	google.golang.org/grpc v1.72.1 // indirect
 )
