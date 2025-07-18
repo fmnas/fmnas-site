@@ -157,13 +157,7 @@ class Asset {
 		$absoluteTarget = root() . "/public$filename";
 		if (file_exists($absoluteTarget)) {
 			return $filename;
-		}
-
-		try {
-			resize($this->absolutePath(), $absoluteTarget, $height);
-			return $filename;
-		} catch (Exception $e) {
-			log_err(print_r($e, true));
+		} else {
 			return "/assets/stored/$this->key";
 		}
 	}
