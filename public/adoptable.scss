@@ -300,15 +300,15 @@ table.listings {
 			display: inline-block;
 			width: 100%;
 			height: min(300px, calc((max(100vw, var(--global-min-width)) - 4px - #{$gap} - 4 * var(--side-padding)) * 3 / 4));
+		}
 
-			>* {
-				display: inline-block;
-				min-width: 0;
-				min-height: 0;
-				width: 100%;
-				height: 100%;
-				object-fit: contain;
-			}
+		img {
+			display: inline-block;
+			min-width: 0;
+			min-height: 0;
+			width: 100%;
+			height: 100%;
+			object-fit: contain;
 		}
 
 		ul {
