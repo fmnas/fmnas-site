@@ -12,7 +12,7 @@
 		"ext-ctype": "*",
 		"whichbrowser/parser": "^2.1",
 		"ext-sqlite3": "*",
-		"google/cloud-storage": "^1.47",
-		"ramsey/uuid": "^4.7"
+		"google/cloud-storage": "^1.48",
+		"ramsey/uuid": "^4.9"
 	}
 }
