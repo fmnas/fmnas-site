@@ -1,3 +1,14 @@
+# Rendered templates
+*
+!*/
+!*.*
+!.*
+*.html
+*.rendered
+!404.html
+robots.txt
+
+# old things
 Application/
 blog/
 

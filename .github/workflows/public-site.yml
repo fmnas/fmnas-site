@@ -1,0 +1,78 @@
+# Copyright 2025 Google LLC
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+name: Deploy public site
+
+on:
+  workflow_call:
+    inputs:
+      ref:
+        required: true
+        type: string
+      bucket:
+        required: true
+        type: string
+    secrets: inherit
+
+jobs:
+  deploy:
+    name: Build & deploy static pages
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+        with:
+          ref: ${{ inputs.ref }}
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+      - name: Setup Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0
+        with:
+          project_id: ${{ secrets.GCP_PROJECT }}
+      - name: Install dev dependencies
+        run: npm install
+      - name: Download template context
+        run: gcloud storage cp gs://${{ inputs.bucket }}/config.json .
+      - name: Render static pages
+        run: |
+          npx hbs --data ./config.json \
+            --helper ./helpers.js \
+            --partial './public/partials/*.hbs' \
+            --output ./public/ \
+            --extension 'rendered' \
+            './public/*.hbs'
+      - name: Rename rendered files
+        run: rename -f 's/\.rendered$//' public/*.rendered
+      - name: Compile public site stylesheets
+        run: npx sass --style=compressed public:public
+      - name: Compile public site scripts
+        run: npm run build
+      - name: Delete files not needed to deploy
+        run: rm -f public/.* public/*.scss public/*.ts public/*.hbs
+      - name: Deploy to GCS bucket
+        run: |
+          gcloud storage rsync ./public gs://${{ inputs.bucket }}/ --recursive \
+          --exclude=".*\.(ts|hbs|gitignore|php|scss)$"
