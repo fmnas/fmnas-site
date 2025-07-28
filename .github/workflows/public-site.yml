@@ -24,6 +24,13 @@ on:
       bucket:
         required: true
         type: string
+      database:
+        required: true
+        type: string
+      service_suffix:
+        required: false
+        type: string
+        default: ''
     secrets: inherit
 
 jobs:
@@ -54,25 +61,24 @@ jobs:
           project_id: ${{ secrets.GCP_PROJECT }}
       - name: Install dev dependencies
         run: npm install
-      - name: Download template context
-        run: gcloud storage cp gs://${{ inputs.bucket }}/config.json .
-      - name: Render static pages
-        run: |
-          npx hbs --data ./config.json \
-            --helper ./helpers.js \
-            --partial './public/partials/*.hbs' \
-            --output ./public/ \
-            --extension 'rendered' \
-            './public/*.hbs'
-      - name: Rename rendered files
-        run: rename -f 's/\.rendered$//' public/*.rendered
       - name: Compile public site stylesheets
         run: npx sass --style=compressed public:public
       - name: Compile public site scripts
         run: npm run build
-      - name: Delete files not needed to deploy
-        run: rm -f public/.* public/*.scss public/*.ts public/*.hbs
-      - name: Deploy to GCS bucket
+      - name: Upload to GCS bucket
         run: |
           gcloud storage rsync ./public gs://${{ inputs.bucket }}/ --recursive \
-          --exclude=".*\.(ts|hbs|gitignore|php|scss)$"
+          --exclude=".*\.(ts|gitignore|php|scss)$"
+      - name: Deploy render-everything
+        run: |
+          gcloud run deploy render-everything${{ inputs.service_suffix }} \
+            --source functions \
+            --function render-everything
+            --base-image nodejs22 \
+            --region $GCP_REGION \
+            --allow-unauthenticated
+      - name: Generate static pages
+        run: |
+          curl -H "Content-Type: application/json" --request POST \
+            --data '{"bucket": "${{ inputs.bucket }}", "database": "${{ inputs.database }}"}' \
+            $(gcloud run services describe render-everything${{ inputs.service_suffix }} --format 'value(status.url)' --region $GCP_REGION)

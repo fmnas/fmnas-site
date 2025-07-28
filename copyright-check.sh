@@ -27,8 +27,11 @@ while read -r file; do
 		continue
 	fi
 
-	# Skip JSON files without comment support
+	# Skip files without comment support
 	if [[ "$file" == *".json" ]]; then
+		continue
+	fi
+	if [[ "$file" == *".nvmrc" ]]; then
 		continue
 	fi
 

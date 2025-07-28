@@ -63,5 +63,8 @@
 		"url": "https://github.com/fmnas/fmnas-site/issues"
 	},
 	"homepage": "https://forgetmenotshelter.org",
-	"private": true
+	"private": true,
+	"workspaces": [
+		"functions"
+	]
 }

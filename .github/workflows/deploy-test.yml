@@ -29,7 +29,9 @@ jobs:
     uses: ./.github/workflows/public-site.yml
     with:
       ref: 'test'
-      bucket: ${{ secrets.TEST_STATIC_BUCKET }}
+      bucket: $TEST_BUCKET
+      database: $TEST_DATABASE
+      service_suffix: '-test'
   deploy-admin:
     name: Deploy test admin site
     runs-on: ubuntu-latest

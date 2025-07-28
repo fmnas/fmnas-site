@@ -37,11 +37,10 @@ Google owns the copyright to much of this code because it was written by a Googl
 The public site is generated from the files in `public/`. When the repo is updated, this is done using the
 `public-site` workflow.
 
-First, a **[Handlebars](https://handlebarsjs.com)** input object is read from the Firebase object `config/config` and
+First, a **[Handlebars](https://handlebarsjs.com)** input object is read from the `config.json` found in the GCS bucket and
 used to compile *.hbs files to HTML. (See `config_sample.json` for the schema.)
 
-Generally, template `public/foo.hbs` will be compiled to a file `/foo` and uploaded to Cloud Storage to be served as
-text/html.
+Generally, template `public/foo.hbs` will be compiled to a file `/foo` and uploaded to GCS.
 
 Templates in `public/templates` are used for dynamic content:
 
@@ -51,12 +50,13 @@ Templates in `public/templates` are used for dynamic content:
 * `blog.hbs` and `blog_post.hbs` for objects from the Firestore `blog` collection (example: blog_sample.json)
 * `form.hbs` for objects from the Firestore `forms` collection (example: form_sample.json)
 
-Template rendering occurs within the GitHub Action public-site when the repository is updated, and
-in Cloud Run Functions found in `/functions` that are invoked when relevant data is updated from the admin site.
+Template rendering occurs within the Cloud Run function `ssg`, which generates file groups requested from a PubSub
+queue. This queue is written by the GitHub Action public-site when the repository is updated, and by the other functions
+in `/functions/template_rendering.ts` in response to GCS and Firestore updates.
 
-Typescript and SCSS files are compiled to .js and .css before static site deployment.
+Typescript and SCSS files are compiled to .js and .css within the GitHub Action `public-site`.
 
-[**Vue**](https:/vuejs.org) 3 is used in the admin interface. The admin site is still deployed to DreamHost for now.
+[**Vue**](https://vuejs.org) 3 is used in the admin interface. The admin site is still deployed to DreamHost for now.
 
 <!-- The admin interface WYSIWYG editor is [Toast UI Editor](https://ui.toast.com/tui-editor/).-->
 
@@ -315,23 +315,49 @@ with `mysqldump --no-create-db --no-create-info --skip-triggers --skip-extended-
 
 ### Manual deployment
 
-Example:
+Install Node dependencies:
 
 ```shell
+nvm use
 npm install
-gcloud storage cp gs://fmnas-test/config.json .
-mkdir -p output
-npx hbs --data ./config.json \
-  --helper ./helpers.js \
-  --partial './public/partials/*.hbs' \
-  --output ./output/ \
-  --extension 'rendered' \
-  './public/*.hbs'
-rename -f 's/\.rendered$//' public/*.rendered
-npx sass --style=compressed public:output
+```
+
+Compile stylesheets:
+
+```shell
+npx sass --style=compressed public:public
+```
+
+Compile scripts:
+
+```shell
 npm run build
-gcloud storage rsync /public gs://fmnas_test/ --recursive \
-  --exclude=".*\.(ts|hbs|gitignore|php|scss)$"
+```
+
+Upload the generated files to the GCS bucket
+
+```shell
+gcloud storage rsync ./public gs://fmnas_test/ --recursive \
+  --exclude=".*\.(ts|gitignore|php|scss)$"
+```
+
+Deploy the `render-everything` Cloud Function:
+
+```shell
+gcloud run deploy render-everything-test \
+  --source functions \
+  --function render-everything \
+  --base-image nodejs22 \
+  --region us-west1 \
+  --allow-unauthenticated
+```
+
+Call `render-everything` to render the HTML files:
+
+```shell
+curl -H "Content-Type: application/json" --request POST \
+  --data '{"bucket": "fmnas_test", "database": "fmnas-test"}' \
+  $(gcloud run services describe render-everything-test --format 'value(status.url)' --region us-west1)
 ```
 
 ### Automatic deployment
@@ -352,6 +378,7 @@ The following [repository variables](https://github.com/fmnas/fmnas-site/setting
 * `PROD_DATABASE`: The Firestore database ID for the prod site (`gcloud firestore databases list`)
 * `TEST_BUCKET`: The GCP bucket name for the test site (`gcloud compute backend-buckets list`)
 * `PROD_BUCKET`: The GCP bucket name for the prod site (`gcloud compute backend-buckets list`)
+* `GCP_REGION`: The GCP region for Cloud Run (i.e. `us-west1`)
 
 #### Secrets
 

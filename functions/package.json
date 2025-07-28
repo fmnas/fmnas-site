@@ -1,0 +1,28 @@
+{
+  "name": "fmnas-functions",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "/dist"
+  ],
+  "scripts": {
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "Forget Me Not Animal Shelter",
+  "license": "GPL-3.0-or-later",
+  "type": "module",
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@google-cloud/firestore": "^7.11.3",
+    "@google-cloud/functions-framework": "^4.0.0",
+    "@google-cloud/logging-winston": "^6.0.1",
+    "@google-cloud/storage": "^7.16.0",
+    "handlebars": "^4.7.8",
+    "winston": "^3.17.0"
+  }
+}
