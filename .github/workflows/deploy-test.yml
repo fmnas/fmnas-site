@@ -12,24 +12,31 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Deploy test branch to fmnas.org on push
 name: Deploy test site
+
 on:
   push:
     branches:
       - test
+
+concurrency:
+  group: deploy-test
+  cancel-in-progress: true
+
 jobs:
-  deploy:
-    name: Deploy test website
+  deploy-public:
+    name: Deploy test public site
+    uses: ./.github/workflows/public-site.yml
+    with:
+      ref: 'test'
+      bucket: ${{ secrets.TEST_STATIC_BUCKET }}
+  deploy-admin:
+    name: Deploy test admin site
     runs-on: ubuntu-latest
     outputs:
       build-status: ${{ steps.build-success.outcome }}
       deploy-status: ${{ steps.deploy-success.outcome }}
     steps:
-      - name: Cancel previous runs
-        uses: styfle/cancel-workflow-action@0.9.1
-        with:
-          access_token: ${{ github.token }}
       - name: Checkout test
         uses: actions/checkout@main
         with:
@@ -37,7 +44,7 @@ jobs:
       - name: Create local branch
         run: git checkout -b test_deployment
       - name: Remove unneeded directories
-        run: rm -rf .github .idea gcp tests
+        run: rm -rf .github .idea gcp tests public
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
@@ -54,10 +61,6 @@ jobs:
         uses: php-actions/composer@v6
         with:
           args: --ignore-platform-reqs
-      - name: Compile public site stylesheets
-        run: npx sass --style=compressed public:public
-      - name: Compile public site scripts
-        run: npm run build
       - name: Build admin client
         run: npx vite build admin/client
       - name: Set config values
@@ -108,165 +111,9 @@ jobs:
         id: deploy-success
         uses: SamKirkland/web-deploy@v1
         with:
+          source-path: "./"
           target-server: ${{ secrets.TEST_SFTP_HOST }}
           remote-user: ${{ secrets.TEST_SFTP_USER }}
           private-ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
           destination-path: ${{ secrets.TEST_SITE_ROOT }}/
           rsync-options: --archive --links --compress --rsh "sshpass -p '${{ secrets.TEST_SFTP_PASS }}' ssh -o StrictHostKeyChecking=no"
-  invalidate-descriptions:
-    name: Invalidate description cache
-    needs: deploy
-    runs-on: ubuntu-latest
-    steps:
-      - name: Cancel previous runs
-        uses: styfle/cancel-workflow-action@0.9.1
-        with:
-          access_token: ${{ github.token }}
-      - name: Checkout test
-        uses: actions/checkout@main
-        with:
-          ref: test
-          fetch-depth: 0
-      - name: Test changed files
-        id: changed-files
-        uses: tj-actions/changed-files@v15
-        with:
-          files: |
-            src/assets.php
-            src/parser.php
-            src/pet.php
-            composer.json
-      - name: Delete cached descriptions
-        if: steps.changed-files.outputs.any_changed == 'true'
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.TEST_SFTP_HOST }}
-          username: ${{ secrets.TEST_SFTP_USER }}
-          password: ${{ secrets.TEST_SFTP_PASS }}
-          script: rm ${{ secrets.TEST_SITE_ROOT }}/public/assets/cache/*.html || echo "Error $?"
-  invalidate-config:
-    name: Invalidate configuration cache
-    needs: deploy
-    runs-on: ubuntu-latest
-    steps:
-      - name: Cancel previous runs
-        uses: styfle/cancel-workflow-action@0.9.1
-        with:
-          access_token: ${{ github.token }}
-      - name: Checkout test
-        uses: actions/checkout@main
-        with:
-          ref: test
-          fetch-depth: 0
-      - name: Test changed files
-        id: changed-files
-        uses: tj-actions/changed-files@v15
-        with:
-          files: |
-            src/db.php
-            src/generator.php
-            schema.sql
-      - name: Delete generated.php
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.TEST_SFTP_HOST }}
-          username: ${{ secrets.TEST_SFTP_USER }}
-          password: ${{ secrets.TEST_SFTP_PASS }}
-          script: rm ${{ secrets.TEST_SITE_ROOT }}/src/generated.php || echo "Error $?"
-      - name: Request config regeneration
-        if: steps.changed-files.outputs.any_changed == 'true'
-        run: curl -f -u ${{ secrets.HTTP_CREDENTIALS }} https://${{ secrets.TEST_ADMIN_DOMAIN }}/api/regenerate
-  invalidate-images:
-    name: Invalidate image cache
-    needs: deploy
-    runs-on: ubuntu-latest
-    steps:
-      - name: Cancel previous runs
-        uses: styfle/cancel-workflow-action@0.9.1
-        with:
-          access_token: ${{ github.token }}
-      - name: Checkout test
-        uses: actions/checkout@main
-        with:
-          ref: test
-          fetch-depth: 0
-      - name: Test changed files
-        id: changed-files
-        uses: tj-actions/changed-files@v15
-        with:
-          files: |
-            src/resize.php
-            gcp/resize-image/**
-            gcp/image-size/**
-      - name: Request image regeneration
-        if: steps.changed-files.outputs.any_changed == 'true'
-        run: curl -f -u ${{ secrets.HTTP_CREDENTIALS }} https://${{ secrets.TEST_ADMIN_DOMAIN }}/api/regen_images
-  invalidate-analytics:
-    name: Invalidate local analytics
-    needs: deploy
-    runs-on: ubuntu-latest
-    steps:
-      - name: Cancel previous runs
-        uses: styfle/cancel-workflow-action@0.9.1
-        with:
-          access_token: ${{ github.token }}
-      - name: Checkout test
-        uses: actions/checkout@main
-        with:
-          ref: test
-          fetch-depth: 0
-      - name: Test changed files
-        id: changed-files
-        uses: tj-actions/changed-files@v15
-        with:
-          files: src/analytics.php
-      - name: Rename analytics file
-        if: steps.changed-files.outputs.any_changed == 'true'
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.TEST_SFTP_HOST }}
-          username: ${{ secrets.TEST_SFTP_USER }}
-          password: ${{ secrets.TEST_SFTP_PASS }}
-          script: |
-            cd ${{ secrets.TEST_SITE_ROOT }}/secrets
-            if [ ! -f analytics.db ]; then exit 0; fi
-            mv $(readlink -f analytics.db) analytics_$(date +%s).db
-            rm analytics.db
-  badge:
-    name: Update status badge
-    if: ${{ always() }}
-    needs:
-      - deploy
-      - invalidate-descriptions
-      - invalidate-config
-      - invalidate-images
-      - invalidate-analytics
-    runs-on: ubuntu-latest
-    steps:
-      - name: Cancel previous runs
-        uses: styfle/cancel-workflow-action@0.9.1
-        with:
-          access_token: ${{ github.token }}
-      - name: Check status
-        run: |
-          if [[ "${{ needs.deploy.outputs.build-status }}" != "success" ]]; then result=failing; color=critical
-          elif [[ "${{ needs.deploy.outputs.deploy-status }}" != "success" ]]; then result=stale; color=important
-          elif [[ "${{ needs.invalidate-descriptions.result }}" != "success" ]]; then result=descriptions; color=critical
-          elif [[ "${{ needs.invalidate-config.result }}" != "success" ]]; then result=config; color=critical
-          elif [[ "${{ needs.invalidate-images.result }}" != "success" ]]; then result=images; color=important
-          elif [[ "${{ needs.invalidate-analytics.result }}" != "success" ]]; then result=analytics; color=important
-          else result=ok; color=090
-          fi
-          echo "color=$color" | tee -a $GITHUB_ENV
-          echo "result=$result" | tee -a $GITHUB_ENV
-      - name: Update badge
-        uses: schneegans/dynamic-badges-action@v1.1.0
-        with:
-          auth: ${{ secrets.TORTOISEWRATH_GIST_TOKEN }}
-          gistID: e38e961e5c08b2bdf4d78c800d851203
-          filename: deploy-test.json
-          label: test
-          message: ${{ env.result }}
-          namedLogo: php
-          logoColor: ccc
-          color: ${{ env.color }}

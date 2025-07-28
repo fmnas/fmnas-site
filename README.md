@@ -1,9 +1,5 @@
 # fmnas-site
 
-[![GCP (prod)](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/TortoiseWrath/e38e961e5c08b2bdf4d78c800d851203/raw/gcp-prod.json)](https://github.com/fmnas/fmnas-site/actions/workflows/deploy-gcp-prod.yml)
-[![deploy (prod)](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/TortoiseWrath/e38e961e5c08b2bdf4d78c800d851203/raw/deploy-prod.json)](https://github.com/fmnas/fmnas-site/actions/workflows/deploy-prod.yml)
-[![GCP (test)](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/TortoiseWrath/e38e961e5c08b2bdf4d78c800d851203/raw/gcp-test.json)](https://github.com/fmnas/fmnas-site/actions/workflows/deploy-gcp-test.yml)
-[![deploy (test)](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/TortoiseWrath/e38e961e5c08b2bdf4d78c800d851203/raw/deploy-test.json)](https://github.com/fmnas/fmnas-site/actions/workflows/deploy-test.yml)
 [![public site status](https://img.shields.io/website?down_color=critical&label=public&up_color=090&url=https%3A%2F%2Fforgetmenotshelter.org)](https://forgetmenotshelter.org)
 [![admin status](https://img.shields.io/website?down_color=inactive&down_message=%233&label=admin&up_color=090&up_message=up&url=https%3A%2F%2Fadmin.forgetmenotshelter.org)](https://admin.forgetmenotshelter.org)
 [![ASM status](https://img.shields.io/website?down_color=critical&label=asm3&up_color=090&url=http%3A%2F%2Fasm.forgetmenotshelter.org)](http://asm.forgetmenotshelter.org)
@@ -33,6 +29,36 @@ see <https://www.gnu.org/licenses/>.
 
 Many files in this repository contain a Google license header. **This is not an officially supported Google product.**
 Google owns the copyright to much of this code because it was written by a Google employee.
+
+## Architecture
+
+### Public site
+
+The public site is generated from the files in `public/`. When the repo is updated, this is done using the
+`public-site` workflow.
+
+First, a **[Handlebars](https://handlebarsjs.com)** input object is read from the Firebase object `config/config` and
+used to compile *.hbs files to HTML. (See `config_sample.json` for the schema.)
+
+Generally, template `public/foo.hbs` will be compiled to a file `/foo` and uploaded to Cloud Storage to be served as
+text/html.
+
+Templates in `public/templates` are used for dynamic content:
+
+* `listings.hbs` and `listing.hbs` for objects from the Firestore `listings` collection (example: listing_sample.json).
+  The Markdown `description` of each listing is first rendered in-place by passing first through Handlebars (with
+  additional partials from `admin/templates`) and then through marked.
+* `blog.hbs` and `blog_post.hbs` for objects from the Firestore `blog` collection (example: blog_sample.json)
+* `form.hbs` for objects from the Firestore `forms` collection (example: form_sample.json)
+
+Template rendering occurs within the GitHub Action public-site when the repository is updated, and
+in Cloud Run Functions found in `/functions` that are invoked when relevant data is updated from the admin site.
+
+Typescript and SCSS files are compiled to .js and .css before static site deployment.
+
+[**Vue**](https:/vuejs.org) 3 is used in the admin interface. The admin site is still deployed to DreamHost for now.
+
+<!-- The admin interface WYSIWYG editor is [Toast UI Editor](https://ui.toast.com/tui-editor/).-->
 
 ## Development
 
@@ -100,7 +126,7 @@ On the hosts where you'll be running a browser, add to the hosts file
 ::1 admin.fmnas
 ```
 
-(connecting to it via IPv4 doesn't seem to work right on Windows hosts. I don't care enough to figure out why) 
+(connecting to it via IPv4 doesn't seem to work right on Windows hosts. I don't care enough to figure out why)
 
 Whitelist the repo directory in /etc/apache2/apache2.conf (or equivalent listed under "Document Roots"
 at http://localhost):
@@ -156,11 +182,13 @@ and create the sites in an apache site conf (e.g. /etc/apache2/sites-enabled/fmn
 and enable it (e.g. `sudo a2ensite fmnas`).
 
 Give www-data group ownership of the stuff so it can write to it:
+
 ```shell
 chgrp -R www-data /path/to/fmnas-site 
 ```
 
 Enable the important modules:
+
 ```shell
 sudo a2enmod php8.2
 sudo a2enmod rewrite
@@ -215,7 +243,7 @@ To get GCP ready for local development, you'll need:
 
 * The [gcloud CLI](https://cloud.google.com/sdk/docs/install)
 * golang 1.19+ ([instructions](https://tecadmin.net/install-go-on-debian/))
-* ImageMagick 7+ ([instructions](https://www.tecmint.com/install-imagemagick-on-debian-ubuntu/)) 
+* ImageMagick 7+ ([instructions](https://www.tecmint.com/install-imagemagick-on-debian-ubuntu/))
 
 #### Final steps and testing
 
@@ -272,13 +300,6 @@ following checks must pass before merging a PR into `main`:
 	* Checks that `admin/.htaccess` doesn't contain any uncommented `dev.sh add` lines or commented `dev.sh remove` lines.
 * The uploaded branch has origin/main and origin/test as ancestors.
 
-### TODOs
-
-The `.github/workflows/todo-issues.yml` workflow creates issues from TODOs added in `tests`, and closes issues for
-removed TODOs.
-
-Don't try to change the name of one of the issues this creates. It will get changed back on the next push.
-
 ### Backups
 
 The `.github/workflows/backups.yml` workflow is used for nightly backups of untracked files on the FMNAS server.
@@ -292,6 +313,27 @@ with `mysqldump --no-create-db --no-create-info --skip-triggers --skip-extended-
 
 ## Deployment
 
+### Manual deployment
+
+Example:
+
+```shell
+npm install
+gcloud storage cp gs://fmnas-test/config.json .
+mkdir -p output
+npx hbs --data ./config.json \
+  --helper ./helpers.js \
+  --partial './public/partials/*.hbs' \
+  --output ./output/ \
+  --extension 'rendered' \
+  './public/*.hbs'
+rename -f 's/\.rendered$//' public/*.rendered
+npx sass --style=compressed public:output
+npm run build
+gcloud storage rsync /public gs://fmnas_test/ --recursive \
+  --exclude=".*\.(ts|hbs|gitignore|php|scss)$"
+```
+
 ### Automatic deployment
 
 GitHub Actions are used to automatically deploy the `main` branch to the prod site and the `test` branch to the test
@@ -302,7 +344,20 @@ The following workflows in `.github/workflows` are used for deployment:
 * `deploy-gcp-{prod,test}.yml` - Deploys Google Cloud Platform services from gcp/.
 * `deploy-{prod,test}.yml` - Builds and deploys the website to Dreamhost, then invalidates server caches as necessary.
 
+#### Variables
+
+The following [repository variables](https://github.com/fmnas/fmnas-site/settings/variables/actions) are required:
+
+* `TEST_DATABASE`: The Firestore database ID for the test site (`gcloud firestore databases list`)
+* `PROD_DATABASE`: The Firestore database ID for the prod site (`gcloud firestore databases list`)
+* `TEST_BUCKET`: The GCP bucket name for the test site (`gcloud compute backend-buckets list`)
+* `PROD_BUCKET`: The GCP bucket name for the prod site (`gcloud compute backend-buckets list`)
+
 #### Secrets
+
+The following [repository secrets](https://github.com/fmnas/fmnas-site/settings/secrets/actions) are required:
+
+(most of these aren't sensitive but were there before they added variables)
 
 * `TEST_SFTP_HOST`: The SFTP host for deploying the test site (`fmnas.org`)
 * `TEST_SFTP_USER`: The SSH user for `TEST_SFTP_HOST`
@@ -338,10 +393,12 @@ The following workflows in `.github/workflows` are used for deployment:
 * `ASM_WEB_HOST`: The MySQL host for `ASM_WEB_DB` (`fmnas.forgetmenotshelter.org`)
 * `ASM_WEB_USER`: The MySQL user for `ASM_WEB_DB` (`fmnas_asm`)
 * `ASM_WEB_PASS`: The MySQL password for `ASM_WEB_USER`
-* `TORTOISEWRATH_GIST_TOKEN`: A PAT to update gists created by @TortoiseWrath (used for badges)
-* `PERSISTENCE_TOKEN`: A token for @aaimio/set-peristent-value (used for badges)
 * `PROD_GA_ID`: The Google Analytics ID for the prod site (`G-3YRWV82YZX`)
 * `TEST_GA_ID`: The Google Analytics ID for the test site (`G-E73F6XEPY7`)
+* `TEST_STATIC_BUCKET`: The GCP bucket name for the test site (`gcloud compute backend-buckets list`)
+* `PROD_STATIC_BUCKET`: The GCP bucket name for the prod site (`gcloud compute backend-buckets list`)
+* `TORTOISEWRATH_GIST_TOKEN`: A PAT to update gists created by @TortoiseWrath (used for badges)
+* `PERSISTENCE_TOKEN`: A token for @aaimio/set-persistent-value (used for badges)
 
 ##### Org secrets
 
@@ -360,11 +417,12 @@ The following workflows in `.github/workflows` are used for deployment:
 * `ASSETS_BUCKET`: The assets bucket name (`fmnas-assets`)
 * `DATA_BUCKET`: The data bucket name (`fmnas-data`)
 	* This should have a lifecycle rule to delete old backups
-* `BLOG_DB`: The blog database name on `DB_HOST`
 * `GCP_IDENTITY_PROVDER`: The GCP identity provider
-  for [Workload Identity Federation](https://github.com/google-github-actions/auth#setup) (`projects/602944024639/locations/global/workloadIdentityPools/github-actions/providers/github-actions-provider`)
+  for [Workload Identity Federation](https://github.com/google-github-actions/auth#setup) (
+  `projects/602944024639/locations/global/workloadIdentityPools/github-actions/providers/github-actions-provider`)
 * `GCP_SERVICE_ACCOUNT`: The GCP service account
-  for [Workload Identity Federation](https://github.com/google-github-actions/auth#setup) (`github-actions@fmnas-automation.iam.gserviceaccount.com`)
+  for [Workload Identity Federation](https://github.com/google-github-actions/auth#setup) (
+  `github-actions@fmnas-automation.iam.gserviceaccount.com`)
 * `GCP_PROJECT`: The GCP project name (`fmnas-automation`)
 * `GCP_REGION`: The GCP project region (`us-central1`)
 
@@ -416,6 +474,7 @@ On the build machine:
 		```
 	* Alternatively, copy `secrets/config_sample.php` to `secrets/config.php` and update the configuration values
 	  manually.
+* Copy `secrets/config_sample.json` to `secrets/config.json` and update the configuration values.
 * Update the public web templates in the `src/templates` and `src/errors` directories as desired.
 	* The current templates rely on the presence of `/assets/adopted.jpg` and `/assets/logo.png` in the public site.
 
@@ -448,34 +507,3 @@ The template context is of the type Pet. Some useful properties include:
 	* name: string ("cat")
 	* plural: string ("cats")
 * fee: string ("$40")
-
-## Architecture
-
-**PHP** is used as the backend language to simplify deployment to Dreamhost shared hosting. This was a mistake.
-
-This was a mistake. Now, a bunch of things are running on GCP anyway since it turns out old-school shared hosting wasn't
-quite powerful enough to do everything we wanted. So it's a horrible mess of PHP code calling GCP functions and vice
-versa. C'est la vie.
-
-[**Vue**](https:/vuejs.org) 3 is used in the admin interface.
-
-The public site is vanilla PHP, TypeScript compiled to vanilla JS, and SCSS.
-
-On the server side, listings are first compiled with [lightncandy](https://github.com/zordius/lightncandy), then parsed
-with [Parsedown](https://parsedown.org/). Any PHP code embedded in listings will **not** be executed on the server. The
-resulting HTML is cached; the cached assets are automatically deleted when listings are updated through the admin
-interface, but must be manually deleted if changes are made to the asset or corresponding database records outside the
-admin interface.
-
-<!-- The admin interface WYSIWYG editor is [Toast UI Editor](https://ui.toast.com/tui-editor/).-->
-
-The layout templates in `src/templates` are written in vanilla PHP/HTML.
-
-The public site targets ES2019 and Chrome 79/Safari 11.1/Firefox 75.  
-The admin site targets ES2020 and Chrome 80/Firefox 74.
-
-### Server-side dependencies
-
-`src/generated.php` is automatically generated by `src/generator.php` when it is needed.
-`src/generated.php` should be deleted when changes are made to the database outside the admin interface
-or `src/generator.php` is updated.

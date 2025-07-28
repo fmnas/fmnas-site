@@ -27,6 +27,11 @@ while read -r file; do
 		continue
 	fi
 
+	# Skip JSON files without comment support
+	if [[ "$file" == *".json" ]]; then
+		continue
+	fi
+
 	if [[ $(git log --format=format:%aE "$file" | tail -1) =~ ^(sean@forgetmenotshelter.org)?$ ]]; then
 		if head -3 "$file" | grep -qE 'Copyright 20[0-9]{2} Google LLC'; then
 			echo "License header found in $file"

@@ -1,0 +1,25 @@
+{{!
+Copyright 2025 Google LLC
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+}}
+<footer>
+  <p><a href="/application">Send in an application</a> to become a pre-approved adopter; we can schedule an
+    appointment for you to meet all the pets that interest you at the shelter, or send the pet of your dreams
+    out to you on one of our regular transports!
+  <p>For more information, call&nbsp;<a href="tel:{{phone_intl}}">{{phone}}</a>,
+    fax {{fax}},
+    or email <a data-email="info"></a>.
+  <p>&copy; 2004&ndash;{{currentYear}} {{longname}}, {{#each address}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}
+</footer>

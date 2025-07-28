@@ -3,8 +3,12 @@ secrets/*
 !secrets/asm_pass.txt
 !secrets/db_pass.txt
 !secrets/api_credentials.txt
+!secrets/config_sample.json
 *.pem
 config.sql
+config.json
+
+output/*
 
 /log
 
