@@ -7,6 +7,9 @@
 *.rendered
 !404.html
 robots.txt
+*/*
+!templates/*
+!partials/*
 
 # old things
 Application/

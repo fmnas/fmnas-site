@@ -1,4 +1,0 @@
-[ZoneTransfer]
-ZoneId=3
-ReferrerUrl=https://account.venmo.com/
-HostUrl=https://account.venmo.com/api/qrcode?output=svg&type=bizprofile&payload=3516530838996419512&v=2
