@@ -79,10 +79,17 @@ export interface BaseConfig {
 	prod_domain?: string;
 }
 
+export interface ListingContext extends Listing {
+	pets: Array<Pet & {speciesConfig?: Species}>;
+	statusConfig: Status;
+	renderedDescription?: string;
+	id: string;
+}
+
 export interface TemplateContext extends BaseConfig {
 	form?: Form;
-	listing?: Listing;
-	listings?: Listing[];
+	listing?: ListingContext;
+	listings?: ListingContext[];
 }
 
 export interface Form {

@@ -9,9 +9,13 @@ import {logger} from './logging.js';
 import type {BaseConfig} from './fmnas.d.ts';
 
 
-export function basename(filename: string): string {
-	const file = filename.split('/').pop() ?? '';
-	return file.substring(0, file.lastIndexOf('.'));
+export function basename(path: string): string {
+	const filename = path.split('/').pop() ?? '';
+	let end = filename.lastIndexOf('.');
+	if (end <= 0) {
+		end = filename.length;
+	}
+	return filename.substring(0, end);
 }
 
 export async function readFile(file: File): Promise<string> {

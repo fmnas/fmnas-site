@@ -8,8 +8,8 @@
 !404.html
 robots.txt
 */*
-!templates/*
-!partials/*
+!templates/*.hbs
+!partials/*.hbs
 
 # old things
 Application/
