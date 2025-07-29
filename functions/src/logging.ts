@@ -7,9 +7,11 @@
 import {LoggingWinston} from '@google-cloud/logging-winston';
 import winston from 'winston';
 
-const loggingWinston = new LoggingWinston();
+const loggingWinston = new LoggingWinston({
+	level: 'debug',
+});
 export const logger = winston.createLogger({
-	level: 'info',
+	level: 'debug',
 	transports: [
 		new winston.transports.Console(),
 		loggingWinston,

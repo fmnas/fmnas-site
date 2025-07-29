@@ -5,6 +5,8 @@
  */
 
 import {http} from '@google-cloud/functions-framework';
-import {renderEverything} from './template_rendering.js';
+import {renderEverything} from './templates.js';
+import {migrateListings} from './migration.js';
 
 http('render-everything', renderEverything);
+http('migrate-listings', migrateListings);
