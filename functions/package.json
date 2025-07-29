@@ -15,6 +15,7 @@
   "license": "GPL-3.0-or-later",
   "type": "module",
   "devDependencies": {
+    "@types/mysql": "^2.15.27",
     "typescript": "^5.8.3"
   },
   "dependencies": {
@@ -23,6 +24,8 @@
     "@google-cloud/logging-winston": "^6.0.1",
     "@google-cloud/storage": "^7.16.0",
     "handlebars": "^4.7.8",
+    "mysql2": "^3.14.2",
+    "sharp": "^0.34.3",
     "winston": "^3.17.0"
   }
 }

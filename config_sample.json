@@ -52,11 +52,9 @@
 			"description": "We have received a fairly large number of applications in a fairly short period of time, and need a chance to review them to see if any will be a great match to the particular pet. If the right match is not found in the applications already received, we will REOPEN applications.\n\nYou may still submit an application for one of these pets, and we will review it right away if the right match is not found first."
 		},
 		"Medical Hold": {
-			"name": "Medical Hold",
 			"description": "This pet has some more complicated medical issues to solve before they will be released for adoption. See the pet description for more information; we will accept applications for Medical Hold pets at any time, but may not make a decision about the pet's placement until we have additional information about their medical condition and\nexpected date of recovery."
 		},
 		"Stray Hold": {
-			"name": "Stray Hold",
 			"description": "This pet was brought in as a stray and is on a temporary hold to give their family time to find them."
 		}
 	},
