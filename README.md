@@ -334,7 +334,12 @@ Compile scripts:
 npm run build
 ```
 
-Upload the generated files to the GCS bucket
+Copy admin partials to the main partials dir:
+```shell
+cp -l admin/templates/* public/partials/
+```
+
+Upload the generated files to the GCS bucket:
 
 ```shell
 gcloud storage rsync ./public gs://fmnas_test/ --recursive \
