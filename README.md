@@ -37,18 +37,18 @@ Google owns the copyright to much of this code because it was written by a Googl
 The public site is generated from the files in `public/`. When the repo is updated, this is done using the
 `public-site` workflow.
 
-First, a **[Handlebars](https://handlebarsjs.com)** input object is read from the `config.json` found in the GCS bucket and
-used to compile *.hbs files to HTML. (See `config_sample.json` for the schema.)
+First, a **[Handlebars](https://handlebarsjs.com)** input object is read from the `config.json` found in the GCS bucket
+and used to compile *.hbs files to HTML. (See `config_sample.json` for the schema.)
 
 Generally, template `public/foo.hbs` will be compiled to a file `/foo` and uploaded to GCS.
 
 Templates in `public/templates` are used for dynamic content:
 
-* `listings.hbs` and `listing.hbs` for objects from the Firestore `listings` collection (example: listing_sample.json).
+* `listings.hbs` and `listing.hbs` for objects from the Firestore `listings` collection.
   The Markdown `description` of each listing is first rendered in-place by passing first through Handlebars (with
-  additional partials from `admin/templates`) and then through marked.
-* `blog.hbs` and `blog_post.hbs` for objects from the Firestore `blog` collection (example: blog_sample.json)
-* `form.hbs` for objects from the Firestore `forms` collection (example: form_sample.json)
+  additional partials from `admin/templates`) and then through [marked](https://github.com/markedjs/marked).
+* `blog.hbs` and `blog_post.hbs` for objects from the Firestore `blog` collection.
+* `form.hbs` for objects from the Firestore `forms` collection.
 
 Template rendering occurs within the Cloud Run function `ssg`, which generates file groups requested from a PubSub
 queue. This queue is written by the GitHub Action public-site when the repository is updated, and by the other functions
@@ -335,6 +335,7 @@ npm run build
 ```
 
 Copy admin partials to the main partials dir:
+
 ```shell
 cp -l admin/templates/* public/partials/
 ```

@@ -34,4 +34,7 @@ export async function loadConfig(bucket: string): Promise<BaseConfig> {
 export async function writeFile(bucket: string, path: string, data: SaveData, type: string): Promise<void> {
 	logger.debug(`Writing gs://${bucket}/${path}`);
 	await storage.bucket(bucket).file(path).save(data, {contentType: type});
+	if (type.startsWith('text/')) {
+		await storage.bucket(bucket).file(path).setMetadata({cacheControl: 'no-store'});
+	}
 }
