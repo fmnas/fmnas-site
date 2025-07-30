@@ -14,52 +14,53 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 }}
+<!DOCTYPE html>
 <html lang="en-US">
-<title>{{listingTitle}}</title>
+<title>{{listing.title}}</title>
 <meta charset="utf-8">
-<meta name="robots" content="{{#unless listing.statusConfig.listed}}no{{/unless}}index">
+<meta name="robots" content="{{#unless statusConfig.listed}}no{{/unless}}index">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="canonical" href="https://{{public_domain}}/{{listing.path}}">
 <link rel="stylesheet" href="/common.css">
 <link rel="stylesheet" href="/listing.css">
 <script src="/email.js"></script>
 {{>header}}
-{{#each listing.pets}}{{#if @first}}
+{{#with listing}}
+{{#each pets}}{{#if @first}}
 <a class="return" href="/{{speciesConfig.plural}}" title="{{speciesConfig.plural}}">
   Return to the {{pluralWithYoung speciesConfig}} page
 </a>
 {{/if}}{{/each}}
 <article class="listing">
-  <h2>{{listingName}}</h2>
+  <h2>{{listingHeading}}</h2>
   <p class="subtitle">
     <span>{{collapsedAge}} old</span>
     &nbsp;&middot;&nbsp;
-    <span>{{listing.status}}</span>
-    {{#if listing.statusConfig.listed}}
-      {{#unless listing.statusConfig.show_status}}
-        &nbsp;&middot;&nbsp;
-        <span>{{listing.fee}}</span>
-      {{/unless}}
+    <span>{{status}}</span>
+    {{#if statusConfig.show_fee}}
+      &nbsp;&middot;&nbsp;
+      <span>{{fee}}</span>
     {{/if}}
   <aside class="images">
-    {{#each listing.photos}}
+    {{#each photos}}
       {{>photo link='true' height='480'}}
     {{/each}}
   </aside>
   <section id="description">
-    {{{listing.renderedDescription}}}
-    {{#unless listing.statusConfig.show_status}}
+    {{{renderedDescription}}}
+    {{#if statusConfig.show_fee}}
       <form action="/application" method="GET" id="bottom_form">
-        If you would like to know more about, or think you might like to adopt, {{listingName}},
+        If you would like to know more about, or think you might like to adopt, {{name}},
         <button>Apply Online Now</button>
         or email us at: <a
-          data-email="adopt+{{listing.id}}">Adopt {{listingName}}!</a>
+          data-email="adopt+{{id}}">Adopt {{name}}!</a>
         <!-- TODO: Make this work again -->
-        <input type="hidden" name="pet" value="{{listing.id}}" id="hidden_id">
+        <input type="hidden" name="pet" value="{{id}}" id="hidden_id">
       </form>
-    {{/unless}}
+    {{/if}}
   </section>
 </article>
+{{/with}}
 {{>footer}}
 <script src="/add_hidden.js"></script>
 </html>

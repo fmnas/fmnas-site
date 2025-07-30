@@ -49,9 +49,10 @@ export interface Species {
 }
 
 export interface Status {
-	show_status?: boolean;
-	listed?: boolean;
+	show_fee?: boolean;
+	inactive?: boolean;
 	description?: string;
+	hidden?: boolean;
 }
 
 export interface Link {
@@ -79,17 +80,33 @@ export interface BaseConfig {
 	prod_domain?: string;
 }
 
+export interface PetContext extends Pet {
+	speciesConfig?: Species;
+	age: string;
+}
+
 export interface ListingContext extends Listing {
-	pets: Array<Pet & {speciesConfig?: Species}>;
+	pets: PetContext[];
 	statusConfig: Status;
 	renderedDescription?: string;
 	id: string;
+	title: string;
+	collapsedAge: string;
+	bonded: boolean;
+	name: string;
+	listingHeading: string;
 }
 
 export interface TemplateContext extends BaseConfig {
 	form?: Form;
 	listing?: ListingContext;
-	listings?: ListingContext[];
+}
+
+export interface ListingsContext extends BaseConfig {
+	listings: ListingContext[];
+	pageTitle: string;
+	heading: string;
+	path: string;
 }
 
 export interface Form {

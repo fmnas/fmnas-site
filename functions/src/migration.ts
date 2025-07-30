@@ -95,7 +95,7 @@ async function listingsInMysql(source: mysql.Connection, limit?: number,
 async function importPhoto(id: number, gcs: boolean | null, path: string | null, type: string | null,
 	displayHeight: number,
 	bucket: string): Promise<Photo> {
-	const targetPath = (gcs || !path) ? `assets/stored/${id}` : path;
+	const targetPath = path || `assets/stored/${id}`;
 	const targetType = type ?? 'image/jpeg';
 	logger.info(`Importing photo ${id} to ${targetPath}`);
 	const photo: Photo = {
@@ -204,6 +204,7 @@ Introducing {{name}} {{! Write the rest of the listing here }}
 }
 
 async function convertListing(listing: JoinedListing, source: mysql.Connection, bucket: string): Promise<Listing> {
+	const description = await getDescription(listing);
 	const converted: Listing = {
 		fee: listing.fee ?? '',
 		pets: [{
@@ -217,13 +218,13 @@ async function convertListing(listing: JoinedListing, source: mysql.Connection, 
 				await importPhoto(listing.pic_id, listing.pic_gcs, listing.pic_path, listing.friend_pic_type, 300, bucket) :
 				undefined,
 		}],
-		status: listing.status,
+		status: description.includes('>coming_soon') ? 'Coming Soon' : listing.status,
 		adoptionDate: listing.adoption_date?.toISOString().substring(0, 10) ?? undefined,
 		modifiedDate: listing.modified?.toISOString().substring(0, 10) ?? undefined,
 		order: listing.order ?? undefined,
 		path: listing.path ?? `${listing.species}s/${listing.id}${listing.name}`,
 		photos: await getPhotos(listing, source, bucket),
-		description: await getDescription(listing),
+		description,
 	};
 	if (listing.friend_id) {
 		converted.pets.push({
