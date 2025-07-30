@@ -1,3 +1,17 @@
+# Rendered templates
+*
+!*/
+!*.*
+!.*
+*.html
+*.rendered
+!404.html
+robots.txt
+*/*
+!templates/*.hbs
+!partials/*.hbs
+
+# old things
 Application/
 blog/
 

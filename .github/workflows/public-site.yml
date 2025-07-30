@@ -1,0 +1,84 @@
+# Copyright 2025 Google LLC
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+name: Deploy public site
+
+on:
+  workflow_call:
+    inputs:
+      ref:
+        required: true
+        type: string
+      bucket:
+        required: true
+        type: string
+      database:
+        required: true
+        type: string
+      service_suffix:
+        required: false
+        type: string
+        default: ''
+    secrets: inherit
+
+jobs:
+  deploy:
+    name: Build & deploy static pages
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+        with:
+          ref: ${{ inputs.ref }}
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+      - name: Setup Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0
+        with:
+          project_id: ${{ secrets.GCP_PROJECT }}
+      - name: Install dev dependencies
+        run: npm install
+      - name: Compile public site stylesheets
+        run: npx sass --style=compressed public:public
+      - name: Compile public site scripts
+        run: npm run build
+      - name: Upload to GCS bucket
+        run: |
+          gcloud storage rsync ./public gs://${{ inputs.bucket }}/ --recursive \
+          --exclude=".*\.(ts|gitignore|php|scss)$"
+      - name: Deploy render-everything
+        run: |
+          gcloud run deploy render-everything${{ inputs.service_suffix }} \
+            --source functions \
+            --function render-everything
+            --base-image nodejs22 \
+            --region $GCP_REGION \
+            --allow-unauthenticated
+      - name: Generate static pages
+        run: |
+          curl -H "Content-Type: application/json" --request POST \
+            --data '{"bucket": "${{ inputs.bucket }}", "database": "${{ inputs.database }}"}' \
+            $(gcloud run services describe render-everything${{ inputs.service_suffix }} --format 'value(status.url)' --region $GCP_REGION)

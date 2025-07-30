@@ -21,7 +21,7 @@ function pageHeader(): void {
 				</ul>
 				<a class="printonly url" href="/">https://<?=_G_public_domain()?></a>
 			</div>
-			<form class="adopt" action="/application" method="GET">
+			<form class="adopt" action="/application" method="POST">
 				<h2><a href="/application">Adopt a Pet</a></h2>
 				<button type="submit">Apply Online Now</button>
 			</form>
