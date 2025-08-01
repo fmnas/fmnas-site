@@ -25,14 +25,13 @@ analysis_options.yaml
 # Files that don't support comments
 *.json
 .nvmrc
-secrets/*.txt
+*.txt
 
 # Documentation
 *.md
 
 # Impractical in template files
 /admin/templates
-/src/templates
 
 # Third-party code
 dependabot-auto-merge.yml

@@ -366,6 +366,33 @@ curl -H "Content-Type: application/json" --request POST \
   $(gcloud run services describe render-everything-test --format 'value(status.url)' --region us-west1)
 ```
 
+Build the config for the admin site:
+```
+npx ts-node handleparse.ts admin/src/lib/config.json.hbs \
+  --bucket="fmnas_test" \
+  --database="fmnas-test" \
+  --asm_db_host="asm.forgetmenotshelter.org" \
+  --asm_db="asm" \
+  --asm_db_user="asm" \
+  --asm_db_pass="..."
+```
+
+Deploy the admin site:
+
+```
+gcloud beta run deploy fmnas-admin-test \
+  --source admin \
+  --region us-west1 \
+  --no-allow-unauthenticated --iap \
+  --automatic-updates --base-image nodejs22 \
+  --set-env-vars "bucket=fmnas_test" \
+  --set-env-vars "database=fmnas-test" \
+  --set-env-vars "asm_db_host=asm.forgetmenotshelter.org" \
+  --set-env-vars "asm_db=asm" \
+  --set-env-vars "asm_db_user=asm" \
+  --set-env-vars "asm_db_pass=..."
+```
+
 ### Automatic deployment
 
 GitHub Actions are used to automatically deploy the `main` branch to the prod site and the `test` branch to the test
@@ -385,52 +412,16 @@ The following [repository variables](https://github.com/fmnas/fmnas-site/setting
 * `TEST_BUCKET`: The GCP bucket name for the test site (`gcloud compute backend-buckets list`)
 * `PROD_BUCKET`: The GCP bucket name for the prod site (`gcloud compute backend-buckets list`)
 * `GCP_REGION`: The GCP region for Cloud Run (i.e. `us-west1`)
+* `GCP_PROJECT`: The GCP project name (`fmnas-automation`)
 
 #### Secrets
 
 The following [repository secrets](https://github.com/fmnas/fmnas-site/settings/secrets/actions) are required:
 
-(most of these aren't sensitive but were there before they added variables)
-
-* `TEST_SFTP_HOST`: The SFTP host for deploying the test site (`fmnas.org`)
-* `TEST_SFTP_USER`: The SSH user for `TEST_SFTP_HOST`
-* `TEST_SFTP_PASS`: The SSH password for `TEST_SFTP_USER`
-* `TEST_SITE_ROOT`: The absolute path to the test site root on `TEST_SFTP_HOST` (one level above `public`, with no
-  trailing slash)
-* `PROD_SFTP_HOST`: The SFTP host for deploying the prod site (`forgetmenotshelter.org`)
-* `PROD_SFTP_USER`: The SSH user for `PROD_SFTP_HOST`
-* `PROD_SFTP_PASS`: The SSH password for `PROD_SFTP_USER`
-* `PROD_SITE_ROOT`: The absolute path to the test site root on `TEST_SFTP_HOST` (one level above `public`, with no
-  trailing slash)
-* `TEST_DB_NAME`: The MySQL database for the test site (`fmnas_testing`)
-* `PROD_DB_NAME`: The MySQL database for the prod site (`fmnas`)
-* `DB_USERNAME`: The MySQL user for `TEST_DB_NAME` and `PROD_DB_NAME`
-* `DB_PASS`: The MySQL password for `DB_USERNAME`
-* `DB_HOST`: The MySQL server (`mysql.forgetmenotshelter.org`)
-* `HTTP_CREDENTIALS`: HTTP basic auth credentials for the admin API (`username:password`)
-* `TEST_ADMIN_DOMAIN`: The domain of the test admin site (`admin.fmnas.org`)
-* `PROD_ADMIN_DOMAIN`: The domain of the prod site (`admin.forgetmenotshelter.org`)
-* `RESIZE_IMAGE_REPO`: The Artifact Registry repository
-  for `resize-image` (`us-central1-docker.pkg.dev/fmnas-automation/resize-image-docker`)
-* `RESIZE_IMAGE_TEST_ENDPOINT`: The HTTPS endpoint mapped
-  to `resize-image-test` (`https://resize-image-test.gcp.forgetmenotshelter.org`)
-* `RESIZE_IMAGE_PROD_ENDPOINT`: The HTTPS endpoint mapped
-  to `resize-image` (`https://resize-image.gcp.forgetmenotshelter.org`)
-* `IMAGE_SIZE_REPO`: The Artifact Registry repository
-  for `image-size` (`us-central1-docker.pkg.dev/fmnas-automation/image-size-docker`)
-* `IMAGE_SIZE_TEST_ENDPOINT`: The HTTPS endpoint mapped
-  to `image-size-test` (`https://image-size-test.gcp.forgetmenotshelter.org`)
-* `IMAGE_SIZE_PROD_ENDPOINT`: The HTTPS endpoint mapped
-  to `image-size` (`https://image-size.gcp.forgetmenotshelter.org`)
 * `ASM_WEB_DB`: The MySQL database with replicated ASM tables (see #314) for the import backend (`asm_web`)
 * `ASM_WEB_HOST`: The MySQL host for `ASM_WEB_DB` (`fmnas.forgetmenotshelter.org`)
 * `ASM_WEB_USER`: The MySQL user for `ASM_WEB_DB` (`fmnas_asm`)
 * `ASM_WEB_PASS`: The MySQL password for `ASM_WEB_USER`
-* `PROD_GA_ID`: The Google Analytics ID for the prod site (`G-3YRWV82YZX`)
-* `TEST_GA_ID`: The Google Analytics ID for the test site (`G-E73F6XEPY7`)
-* `TEST_STATIC_BUCKET`: The GCP bucket name for the test site (`gcloud compute backend-buckets list`)
-* `PROD_STATIC_BUCKET`: The GCP bucket name for the prod site (`gcloud compute backend-buckets list`)
-* `TORTOISEWRATH_GIST_TOKEN`: A PAT to update gists created by @TortoiseWrath (used for badges)
 * `PERSISTENCE_TOKEN`: A token for @aaimio/set-persistent-value (used for badges)
 
 ##### Org secrets
@@ -442,24 +433,12 @@ The following [repository secrets](https://github.com/fmnas/fmnas-site/settings/
 * `ASM_DB_USER`: The MySQL user for ASM on `ASM_HOST`
 * `ASM_DB_PASS`: The MySQL password for `ASM_DB_USER`
 * `ASM_DB`: The MySQL database for ASM on `ASM_HOST`
-* `S3_PROVIDER`: The S3 provider for backups (`Scaleway`)
-* `S3_ACCESS_KEY`: The access key for `S3_PROVIDER`
-* `S3_SECRET_KEY`: The secret key for `S3_PROVIDER`
-* `S3_REGION`: The bucket region for `S3_PROVIDER` (`fr-par`)
-* `S3_ENDPOINT`: The endpoint for `S3_BUCKET` (`s3.fr-par.scw.cloud`)
-* `ASSETS_BUCKET`: The assets bucket name (`fmnas-assets`)
-* `DATA_BUCKET`: The data bucket name (`fmnas-data`)
-	* This should have a lifecycle rule to delete old backups
 * `GCP_IDENTITY_PROVDER`: The GCP identity provider
   for [Workload Identity Federation](https://github.com/google-github-actions/auth#setup) (
   `projects/602944024639/locations/global/workloadIdentityPools/github-actions/providers/github-actions-provider`)
 * `GCP_SERVICE_ACCOUNT`: The GCP service account
   for [Workload Identity Federation](https://github.com/google-github-actions/auth#setup) (
   `github-actions@fmnas-automation.iam.gserviceaccount.com`)
-* `GCP_PROJECT`: The GCP project name (`fmnas-automation`)
-* `GCP_REGION`: The GCP project region (`us-central1`)
-
-##### Repo secrets
 
 ### Manual deployment
 

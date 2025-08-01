@@ -20,14 +20,6 @@ on:
       - test
   pull_request:
 jobs:
-#  watchers:
-#    name: All file watchers are enabled
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Checkout
-#        uses: actions/checkout@main
-#      - name: Check for disabled file watchers
-#        run: "! grep -q 'isEnabled=\"false\"' .idea/watcherTasks.xml"
   copyright:
     name: All files added by Sean contain a copyright header
     runs-on: ubuntu-latest
@@ -38,13 +30,3 @@ jobs:
           fetch-depth: 0
       - name: Check for copyright headers
         run: ./copyright-check.sh
-  devsh:
-    name: Changes from admin/dev.sh are not committed
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@main
-      - name: Check for commented "dev.sh remove" lines
-        run: "! grep -qE '^#.*# dev.sh remove$' admin/.htaccess"
-      - name: Check for uncommented "dev.sh add" lines
-        run: "! grep -qE '^[^#].*# dev.sh add' admin/.htaccess"
