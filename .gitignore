@@ -271,3 +271,5 @@ composer.phar
 
 # WSL shenanigans
 *:Zone.Identifier
+
+admin_old/
