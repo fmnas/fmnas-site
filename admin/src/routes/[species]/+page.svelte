@@ -16,12 +16,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import type {BaseConfig} from 'fmnas-functions/src/fmnas.d.ts';
 	import Listings from '$lib/listings.svelte';
+	import { config } from '$lib/config';
 
-	const {slug, config}: {slug: string; config: BaseConfig} = $props();
+	import type { PageProps } from './$types';
 
-	const species = Object.keys(config.species).find(s => config.species[s].plural === slug) ?? slug;
+	let { params }: PageProps = $props();
+
+	const species = Object.keys(config.species).find(s => config.species[s].plural === params.species) ?? params.species;
 </script>
 
-<Listings {species}/>
+<h1>Adoptable {params.species}</h1>
+<a href="/new?species={species}" class="add">Add</a>
+<Listings {species} />

@@ -1,0 +1,23 @@
+[
+	{
+		"origin": [
+			"https://forgetmenotshelter.org",
+			"https://admin.forgetmenotshelter.org",
+			"https://fmnas.org",
+			"https://admin.fmnas.org",
+			"https://static.fmnas.org",
+			"https://admin.forgetmenotshelter.org",
+			"https://localhost:*",
+			"https://127.0.0.1:*",
+			"http://localhost:*",
+			"http://127.0.0.1:*"
+		],
+		"method": [
+			"*"
+		],
+		"responseHeader": [
+			"Content-Type"
+		],
+		"maxAgeSeconds": 3600
+	}
+]

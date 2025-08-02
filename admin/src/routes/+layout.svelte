@@ -16,25 +16,56 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import favicon from '$lib/assets/favicon.svg';
-	import {SvelteToast, SvelteToastOptions} from '@zerodevx/svelte-toast';
-	import {Dropdown, DropdownItem, Navbar, NavHamburger, NavLi, NavUl} from 'flowbite-svelte';
+	import {SvelteToast, type SvelteToastOptions} from '@zerodevx/svelte-toast';
 
-	let { children } = $props();
+	let {children} = $props();
 
 	const options: SvelteToastOptions = {
 		pausable: true,
 	};
 </script>
 
-<svelte:head>
-	<link rel="icon" href={favicon} />
-</svelte:head>
-
-<Navbar>
-	<NavHamburger />
-</Navbar>
+<nav>
+	<a href="/">Home</a> |
+	<a href="/cats">Cats</a> |
+	<a href="/dogs">Dogs</a>
+</nav>
 
 {@render children?.()}
 
 <SvelteToast {options}/>
+
+<style lang="scss">
+	:global(body) {
+		text-align: center;
+		font-size: 12pt;
+		font-family: Arial, sans-serif;
+	}
+
+	nav {
+		// TODO [#135]: Redesign the admin site nav.
+		padding: 30px;
+
+		a {
+			font-weight: bold;
+			color: #2c3e50;
+		}
+	}
+
+	:global(h1) {
+		font: var(--heading-font);
+		margin: 0.5rem;
+		color: var(--accent-color);
+		font-size: 22pt;
+	}
+
+	:global(h1+a.add) {
+		border: 1px solid green;
+		padding: 0.3em 0.6em;
+		margin: 0.4em;
+		color: green;
+		font-size: 120%;
+		border-radius: 0.2em;
+		display: inline-block;
+	}
+</style>

@@ -16,18 +16,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import type {Listing} from 'fmnas-functions/src/fmnas';
-	import {config} from '$lib/config';
+	import type { Listing } from 'fmnas-functions/src/fmnas';
+	import { config } from '$lib/config';
+	import { toast } from '@zerodevx/svelte-toast';
+	import { smallestSize } from '$lib/photos';
 
-	let {species = $bindable(), adopted = $bindable()}: {
+	let { species = $bindable(), adopted = $bindable() }: {
 		species?: string,
 		adopted?: boolean,
 	} = $props();
 
-	const selected = $state(new Set<Listing>());
 	let bulkUpdateStatus = $state('');
 
-	async function getListings(): Promise<Listing[]> {
+	interface SelectableListing extends Listing {
+		selected?: boolean;
+	}
+
+	let listings: SelectableListing[] = $state([]);
+	let selectedCount = $state(0);
+
+	async function getListings(): Promise<void> {
 		const params = new URLSearchParams();
 		if (species) {
 			params.append('species', species);
@@ -36,13 +44,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			params.append('adopted', 'true');
 		}
 		const res = await fetch('/api/listings?' + params.toString());
-		return res.json();
+		listings = await res.json();
 	}
 
 	let currentlyUpdating = $state(false);
+
 	async function updateSelected(): Promise<void> {
 		currentlyUpdating = true;
+		toast.push('idk');
+		currentlyUpdating = false;
+	}
 
+	function toggle(listing: SelectableListing): void {
+		listing.selected = !listing.selected;
+		selectedCount += listing.selected ? 1 : -1;
 	}
 </script>
 
@@ -50,24 +65,114 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<div class="loading">
 		<img src="/loading.png" alt="Loading...">
 	</div>
-{:then listings}
+{:then _}
 	<div class="bulk">
-		{selected.size} listing{selected.size === 1 ? '' : 's'} selected:
+		{selectedCount} listing{selectedCount === 1 ? '' : 's'} selected:
 		<label for="status_selector">Set status to </label>
-		<select id="status_selector" disabled={!selected.size} bind:value={bulkUpdateStatus}>
+		<select id="status_selector" disabled={!selectedCount} bind:value={bulkUpdateStatus}>
 			<option value=""></option>
 			{#each Object.keys(config.statuses) as status}
 				<option value={status}>{status}</option>
 			{/each}
 		</select>
-		<button on:click={updateSelected} disabled={!bulkUpdateStatus || !selected.size || currentlyUpdating}>Save</button>
+		<button onclick={updateSelected} disabled={!bulkUpdateStatus || !selectedCount || currentlyUpdating}>Save</button>
 	</div>
-	{#each listings as listing}
-		{listing.path}
-	{/each}
+	<table>
+		<thead>
+		<tr>
+			<th class="checkbox"></th>
+			<th class="photo">Photo</th>
+			<th class="id">ID</th>
+			<th class="name">Name</th>
+			<th class="species">Species</th>
+			<th class="breed">Breed</th>
+			<th class="dob">DOB</th>
+			<th class="sex">Sex</th>
+			<th class="fee">Fee</th>
+			<th class="status">Status</th>
+			<th class="options">Options</th>
+		</tr>
+		</thead>
+		<tbody>
+		<!-- TODO [#34]: Make listing metadata editable from table view -->
+		{#each listings as listing, listingIndex (listing.path)}
+			{#each listing.pets as pet, petIndex (pet.id)}
+				<tr class={listingIndex % 2 ? 'odd' : 'even'} onclick={() => toggle(listing)}>
+					{#if !petIndex}
+						<td class="checkbox" rowspan={listing.pets.length}>
+							<input type="checkbox" bind:checked={listing.selected}>
+						</td>
+					{/if}
+					<td class="photo">
+						{#if pet.photo}
+							<img alt="" src="//{config.public_domain}/{smallestSize(pet.photo)}" height="64">
+						{/if}
+					</td>
+					<td class="id">{pet.id}</td>
+					<td class="name">{pet.name}</td>
+					<td class="species">{pet.species}</td>
+					<td class="breed">{pet.breed}</td>
+					<td class="dob">{pet.dob}</td> <!-- TODO [#36]: Display DOB as M/D/Y -->
+					<td class="sex">{pet.sex}</td>
+					{#if listing.pets.length === 1}
+						<td class="fee">{listing.fee}</td>
+					{:else if !petIndex}
+						<td class="fee" rowspan={listing.pets.length}>BONDED PAIR {listing.fee}</td>
+					{/if}
+					{#if !petIndex}
+						<td class="status" rowspan={listing.pets.length}>{listing.status}</td>
+						<td class="options" rowspan={listing.pets.length} onclick={(e) => e.stopPropagation()}>
+							<a href="/{listing.path}">Edit</a>
+							<a href="//{config.public_domain}/{listing.path}">View</a>
+						</td>
+					{/if}
+				</tr>
+			{/each}
+		{/each}
+		</tbody>
+	</table>
+	{#if !listings.length}
+		Didn't find any {adopted ? 'adopted' : 'adoptable'} pets
+		{#if species}with species === '{species}'...{/if}
+	{/if}
 {/await}
 
-
 <style lang="scss">
+	$row-height: 64px;
 
+	table {
+		width: 100%;
+		padding: 1em;
+		border-collapse: collapse;
+	}
+
+	tbody tr {
+		height: $row-height;
+	}
+
+	tr.even {
+		background-color: #eee;
+	}
+
+	td, img {
+		max-height: $row-height;
+	}
+
+	img {
+		max-width: calc($row-height * 2 / 3);
+	}
+
+	td.options a {
+		padding: 0.4em;
+	}
+
+	div.loading {
+		img {
+			max-height: max-content;
+		}
+	}
+
+	div.bulk {
+		margin: 0.5em 0;
+	}
 </style>
