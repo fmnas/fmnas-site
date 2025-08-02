@@ -6,13 +6,13 @@
 
 
 import winston from 'winston';
-import {LoggingWinston} from '@google-cloud/logging-winston';
-import {building} from '$app/environment';
+import { LoggingWinston } from '@google-cloud/logging-winston';
+import { building } from '$app/environment';
 
 export const log = building ? console : winston.createLogger({
-		level: 'debug',
-		transports: [
-			new LoggingWinston(),
-		],
-	});
+	level: 'debug',
+	transports: [
+		new LoggingWinston()
+	]
+});
 

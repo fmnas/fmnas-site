@@ -16,9 +16,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import Listings from '$lib/listings.svelte';
+	import { page } from '$app/state';
+	import ListingEditor from '$lib/listing.svelte';
+
+	const species = page.url.searchParams.get('species');
 </script>
 
-<h1>Adoptable pets</h1>
-<a href="/new" class="add">Add</a>
-<Listings/>
+<ListingEditor species={species ?? undefined} />

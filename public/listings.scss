@@ -84,45 +84,45 @@ table.listings {
 					width: 100%;
 					// TODO [#285]: Reduce width of a in bonded pairs to reduce underline width.
 				}
+			}
 
-				ul {
-					position: relative;
+			ul {
+				position: relative;
+				display: inline-block;
+				padding: 0;
+				margin: 0;
+				width: 100%;
+				list-style-type: none;
+				z-index: 1;
+
+				li {
+					width: calc(50% - #{$gap} / 2 - var(--side-padding));
 					display: inline-block;
-					padding: 0;
-					margin: 0;
-					width: 100%;
-					list-style-type: none;
-					z-index: 1;
+					box-sizing: border-box;
 
-					li {
-						width: calc(50% - #{$gap} / 2 - var(--side-padding));
-						display: inline-block;
-						box-sizing: border-box;
-
-						&:first-of-type {
-							margin-right: calc(#{$gap} + 2 * var(--side-padding));
-						}
+					&:first-of-type {
+						margin-right: calc(#{$gap} + 2 * var(--side-padding));
 					}
 				}
+			}
 
-				th.name ul li {
-					&:nth-of-type(2) {
-						&::before {
-							display: block;
-							position: absolute;
-							top: 0;
-							left: calc(50% - #{$gap} / 2);
-							width: $gap;
-							height: $line-height;
-							text-align: center;
-							content: '&';
-						}
+			th.name ul li {
+				&:nth-of-type(2) {
+					&::before {
+						display: block;
+						position: absolute;
+						top: 0;
+						left: calc(50% - #{$gap} / 2);
+						width: $gap;
+						height: $line-height;
+						text-align: center;
+						content: '&';
 					}
 				}
+			}
 
-				td.img ul li {
-					vertical-align: middle;
-				}
+			td.img ul li {
+				vertical-align: middle;
 			}
 
 			order: 1;

@@ -311,6 +311,27 @@ schema.sql is exported with `mysqldump --no-create-db --no-data [dbname] | grep 
 config.sql.hbs is made from a config.sql exported
 with `mysqldump --no-create-db --no-create-info --skip-triggers --skip-extended-insert [dbname] > config.sql`.
 
+## Development
+
+### Admin site dev server
+
+Get a
+
+(Application Default Credentials [don't work right](https://issuetracker.google.com/issues/262700869) for signing URLs used to upload files.)
+
+Make sure you have Application Default Credentials:
+
+```shell
+gcloud auth application-default login --impersonate-service-account dev-site@fmnas-automation.iam.gserviceaccount.com
+```
+
+Then run the dev server with:
+```shell
+bucket=fmnas_test database=fmnas-test asm_db_host=asm.forgetmenotshelter.org asm_db=asm asm_db_user=asm \
+asm_db_pass='...' \
+npm --workspace=admin run dev
+```
+
 ## Deployment
 
 ### Manual deployment
@@ -337,7 +358,7 @@ npm run build
 Copy admin partials to the main partials dir:
 
 ```shell
-cp -l admin/templates/* public/partials/
+cp -l admin/static/templates/* public/partials/
 ```
 
 Upload the generated files to the GCS bucket:

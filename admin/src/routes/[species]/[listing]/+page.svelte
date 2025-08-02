@@ -16,9 +16,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import Listings from '$lib/listings.svelte';
+	import type { PageProps } from './$types';
+	import ListingEditor from '$lib/listing.svelte';
+
+	let { params }: PageProps = $props();
 </script>
 
-<h1>Adoptable pets</h1>
-<a href="/new" class="add">Add</a>
-<Listings/>
+<ListingEditor path="{params.species}/{params.listing}"/>

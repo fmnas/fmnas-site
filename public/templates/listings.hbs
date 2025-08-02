@@ -26,112 +26,114 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 {{>header}}
 <h2>{{heading}}</h2>
 <table class="listings">
-  <thead>
-  <tr>
-    <th>Name</th>
-    <th>Sex</th>
-    <th>Age</th>
-    <th>Adoption fee</th>
-    <th>Image</th>
-    <th>Email inquiry</th>
-  </tr>
-  </thead>
-  <tbody>
-  {{#each listings}}
-    <tr class="{{#with statusConfig}}{{class}}{{#if inactive}} soon{{/if}}{{#unless
-        show_fee}} displayStatus{{/unless}}{{#if description}} explain{{/if}}{{/with}}{{#if bonded}} pair{{/if}}">
-      <th class="name">
-        <a
-          {{#unless statusConfig.inactive}}
-          href="/{{path}}"
-          {{/unless}}
-          {{#unless bonded}}
-          id="{{id}}"
-          {{/unless}}
-            title="{{name}}"
-        >
-          {{#if bonded}}
-            <ul>
-              {{#each pets}}
-              <li id="{{id}}">{{name}}
-              {{/each}}
-            </ul>
-          {{else}}
-            {{name}}
-          {{/if}}
-        </a>
-      </th>
-      <td class="sex">
-        {{#if bonded}}
-        <ul>{{/if}}
-        {{#each pets}}
-          {{#if ../bonded}}
-            <li>{{/if}}{{capitalizeFirstLetter sex}} {{breed}}
-        {{/each}}
-        {{#if bonded}}</ul>{{/if}}
-      </td>
-      <td class="age">
-        {{#if bonded}}
-        <ul>{{/if}}
-        {{#each pets}}
-          {{#if ../bonded}}
-          <li>{{/if}}
-          <time datetime="{{dob}}">{{age}}</time>
-        {{/each}}
-        {{#if bonded}}</ul>{{/if}}
-      </td>
-      <td class="fee">
+	<thead>
+	<tr>
+		<th>Name</th>
+		<th>Sex</th>
+		<th>Age</th>
+		<th>Adoption fee</th>
+		<th>Image</th>
+		<th>Email inquiry</th>
+	</tr>
+	</thead>
+	<tbody>
+	{{#each listings}}
+		<tr class="{{#with statusConfig}}{{class}}{{#if inactive}} soon{{/if}}{{#unless
+			show_fee}} displayStatus{{/unless}}{{#if description}} explain{{/if}}{{/with}}{{#if bonded}} pair{{/if}}">
+			<th class="name">
+				<a
+					{{#unless statusConfig.inactive}}
+					href="/{{path}}"
+					{{/unless}}
+					{{#unless bonded}}
+					id="{{id}}"
+					{{/unless}}
+					title="{{name}}"
+				>
+					{{#if bonded}}
+						<ul>
+							{{#each pets}}
+							<li id="{{id}}">{{name}}
+							{{/each}}
+						</ul>
+					{{else}}
+						{{name}}
+					{{/if}}
+				</a>
+			</th>
+			<td class="sex">
+				{{#if bonded}}
+				<ul>{{/if}}
+				{{#each pets}}
+					{{#if ../bonded}}
+						<li>{{/if}}{{capitalizeFirstLetter sex}} {{breed}}
+				{{/each}}
+				{{#if bonded}}</ul>{{/if}}
+			</td>
+			<td class="age">
+				{{#if bonded}}
+				<ul>{{/if}}
+				{{#each pets}}
+					{{#if ../bonded}}
+					<li>{{/if}}
+					<time datetime="{{dob}}">{{age}}</time>
+				{{/each}}
+				{{#if bonded}}</ul>{{/if}}
+			</td>
+			<td class="fee">
         <span class="fee">
-          {{#if statusConfig.show_fee}}
-            {{#if bonded}}BONDED PAIR {{/if}}{{fee}}
-          {{else}}
-            {{status}}
-            {{#if statusConfig.description}}
-              <aside class="explanation">
-                {{{statusConfig.description}}}
-              </aside>
-            {{/if}}
-          {{/if}}
-        </span>
-      </td>
-      <td class="img">
-        <a
-          {{#unless statusConfig.inactive}}
-          href="/{{path}}"
-          {{/unless}}
-            title="{{name}}"
-        >
-          {{#if bonded}}
-          <ul>{{/if}}
-          {{#each pets}}
-            {{#if ../bonded}}
-              <li>{{/if}}{{#with photo}}{{>photo height='300'}}{{/with}}
-          {{/each}}
-          {{#if bonded}}</ul>{{/if}}
-        </a>
-      </td>
-      <td class="inquiry">
-        <a data-email="adopt+{{id}}">Email to adopt {{name}}!</a>
-      </td>
-    </tr>
-  {{else}}
-  There are currently no {{path}}! Please check back later.
-  {{/each}}
-  </tbody>
+					{{#if statusConfig.show_fee}}
+						{{#if bonded}}BONDED PAIR {{/if}}{{fee}}
+					{{else}}
+						{{status}}
+						{{#if statusConfig.description}}
+							<aside class="explanation">
+								{{{statusConfig.description}}}
+							</aside>
+						{{/if}}
+					{{/if}}
+				</span>
+			</td>
+			<td class="img">
+				<a
+					{{#unless statusConfig.inactive}}
+					href="/{{path}}"
+					{{/unless}}
+					title="{{name}}"
+				>
+					{{#if bonded}}
+					<ul>{{/if}}
+					{{#each pets}}
+						{{#if photo.path}}
+							{{#if ../bonded}}
+								<li>{{/if}}{{#with photo}}{{>photo height='300'}}{{/with}}
+						{{/if}}
+					{{/each}}
+					{{#if bonded}}</ul>{{/if}}
+				</a>
+			</td>
+			<td class="inquiry">
+				<a data-email="adopt+{{id}}">Email to adopt {{name}}!</a>
+			</td>
+		</tr>
+	{{else}}
+		There are currently no {{path}}! Please check back later.
+	{{/each}}
+	</tbody>
 </table>
 <table class="listings last-row">
-  <tbody></tbody>
+	<tbody></tbody>
 </table>
 <script src="/listings.js"></script>
 <section class="explanations">
-  <aside class="info"><strong>Adoption Fees</strong> include Vaccinations and Spay/Neuter!</aside>
-  {{#each statuses}}
-    {{#unless show_fee}}
-      {{#if description}}
-        <aside class="info"><strong>{{@key}}:</strong><br>{{{description}}}</aside>
-      {{/if}}
-    {{/unless}}
-  {{/each}}
+	<aside class="info"><strong>Adoption Fees</strong> include Vaccinations and Spay/Neuter!</aside>
+	{{#each statuses}}
+		{{#unless show_fee}}
+			{{#if description}}
+				<aside class="info"><strong>{{@key}}:</strong><br>{{{description}}}</aside>
+			{{/if}}
+		{{/unless}}
+	{{/each}}
 </section>
 {{>footer}}
 </html>
