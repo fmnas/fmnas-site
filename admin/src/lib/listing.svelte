@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <script lang="ts">
 	import type { Listing, Pet } from 'fmnas-functions/src/fmnas.d.ts';
 	import { toast } from '@zerodevx/svelte-toast';
-	import { pushState } from '$app/navigation';
+	import { pushState, replaceState } from '$app/navigation';
 	import { config } from '$lib/config';
 	import { displayAge, listingPath } from '$lib/templates';
 	import PetImporter from '$lib/pet_importer.svelte';
@@ -27,6 +27,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	import type { FilePondErrorDescription, FilePondFile } from 'filepond';
 	import 'filepond/dist/filepond.css';
 	import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
+	import '$lib/inputs.scss';
+	import { removeImported } from '$lib/import';
 
 	let { path, species }: { path?: string, species?: string } = $props();
 
@@ -68,8 +70,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		return JSON.stringify(listing) !== savedListing;
 	}
 
+	let title = $state(path ? 'Editing listing' : 'New listing');
+
 	async function getListing() {
+		console.debug(`getListing ${path}`);
 		if (!path) {
+			title = 'New listing';
 			listing.description = 'TODO: DEFAULT';
 			savedListing = JSON.stringify(listing);
 			return;
@@ -81,6 +87,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		listing = fetched.listing;
 		isPair = listing.pets.length > 1;
 		savedListing = JSON.stringify(listing);
+		title = 'Editing ' + listing.pets.map(pet => pet.name).join(' & ');
 	}
 
 	let saving = $state(false);
@@ -102,16 +109,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		}
 		listing.path ||= listingPath(listing);
 
-		const existingListingResponse = await fetch(`/api/listing/${listing.path}`);
-		if (existingListingResponse.status !== 404) {
-			toast.push(`Listing ${listing.path} already exists`);
-			listing.path = '';
-			saving = false;
+		const existingQuery = new URLSearchParams({ path: listing.path });
+		const existingRes = await fetch('/api/listing?' + existingQuery.toString());
+		const existingBody = await existingRes.json();
+		if (existingRes.status !== 404 && (!id || existingBody.id !== id)) {
+			toast.push(`Listing ${listing.path} already exists with id ${existingBody.id}!!!`);
+			console.error(existingBody);
 			return;
 		}
 
-		toast.push('idk');
-		// TODO: Save listing
+		try {
+			const res = await fetch(id ? '/api/listing?' + new URLSearchParams({ id }).toString() : '/api/listing', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(listing)
+			});
+			const json = await res.json() as { id: string, listing: Listing };
+			listing = json.listing;
+			id = json.id;
+			savedListing = JSON.stringify(listing);
+			removeImported(listing);
+			replaceState(`/${listing.path}`, {});
+		} catch (e: any) {
+			console.error(e);
+			toast.push(e.message ?? JSON.stringify(e));
+		}
+
 		// TODO: Delete obsolete images
 		saving = false;
 	}
@@ -130,7 +155,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	function clear() {
 		abandonedFriend = undefined;
 		listing = blankListing();
-		savedListing = blankListing();
+		savedListing = JSON.stringify(blankListing());
+		title = 'New listing';
+		id = '';
+		isPair = false;
 		pushState('/new', {});
 	}
 
@@ -158,20 +186,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	let validated = $state(false);
 	let sexInteracted = $state(false);
 
-	function sexClick(e: MouseEvent | KeyboardEvent, pet: Pet, sex: string) {
+	function sexClick(e: MouseEvent | KeyboardEvent, pet: Pet, sex: string, blur: boolean = true) {
 		e.preventDefault();
 		e.stopPropagation();
 		// Allow deselecting a sex rather than just selecting one.
-		// pet.sex = pet.sex === sex ? '' : sex;
+		pet.sex = pet.sex === sex ? '' : sex;
 		sexInteracted = true;
+		const target = e.target as HTMLElement | null;
+		target?.blur();
 	}
 
 	function sexKeyup(e: KeyboardEvent, pet: Pet, sex: string) {
-		return; // TODO: crash here
 		if (e.key !== ' ' && e.key !== 'Enter') {
 			return;
 		}
-		sexClick(e, pet, sex);
+		sexClick(e, pet, sex, false);
 		if (e.key === 'Enter') {
 			document.getElementById('fee')?.focus();
 		}
@@ -182,7 +211,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	});
 
 	const loading = getListing();
+
 </script>
+
+<svelte:head>
+	<title>{title}</title>
+</svelte:head>
+
 {#await loading}
 	loading
 {:then _}
@@ -190,7 +225,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<form onsubmit={save} oninvalid={() => {validated = true;}} class={[validated && 'validated']}>
 			<div class="buttons">
 				<button class="save" disabled={saving || !dirty()}>
-					{#if saving}Saving...{:else}Save{/if}
+					{#if saving}Saving...{:else }Save{/if}
 				</button>
 				<button class="delete" onclick={(e) => {e.preventDefault(); deleteModal = true}}>Delete</button>
 				<button class="new" onclick={(e) => {e.preventDefault(); dirty() ? abandonModal = true : clear()}}>New</button>
@@ -200,11 +235,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					<input type="checkbox" bind:checked={isPair} onchange={handlePairChange}>
 					Bonded pair
 				</label>
-				<label>
-					<input type="checkbox" bind:checked={singlePhoto}>
-					Combined photo
-				</label>
-				<button onclick={swapPair}>Swap</button>
+				{#if isPair}
+					<label>
+						<input type="checkbox" bind:checked={singlePhoto}>
+						Combined photo
+					</label>
+					<button onclick={swapPair}>Swap</button>
+				{/if}
 			</div>
 			<ul>
 				<li class="id">
@@ -212,8 +249,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						<label for="id_{index}">ID</label>
 						{#if pet.name}
 							<input id="id_{index}" bind:value={pet.id} required type="text" autocomplete="off" />
-						{:else}
-							<PetImporter {index} bind:listing={listing} field="id" />
+						{:else }
+							<div class="importer">
+								<PetImporter {index} bind:listing={listing} species={pet.species} field="id" />
+							</div>
 						{/if}
 					{/each}
 				</li>
@@ -222,8 +261,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						<label for="name_{index}">Name</label>
 						{#if pet.id}
 							<input id="name_{index}" bind:value={pet.name} required type="text" autocomplete="off" />
-						{:else}
-							<PetImporter {index} bind:listing={listing} field="name" />
+						{:else }
+							<div class="importer">
+								<PetImporter {index} bind:listing={listing} species={pet.species} field="name" />
+							</div>
 						{/if}
 					{/each}
 				</li>
@@ -257,14 +298,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						<fieldset id="sexes_{index}" class={['sexes', sexInteracted || validated && 'validated']}>
 							{#each ['male', 'female'] as sex}
 								<label>
-									<input bind:group={pet.sex} value="male" required type="radio" autocomplete="off"
+									<input bind:group={pet.sex} value={sex} required type="radio" autocomplete="off"
 										onchange={() => {sexInteracted = true;}} />
-									<button onclick={(e) => sexClick(e, pet, sex)}
+									<abbr role="none" title={ucfirst(sex)} onclick={(e) => sexClick(e, pet, sex)}
 										onkeyup={(e) => sexKeyup(e, pet, sex)}>
-										<abbr title={ucfirst(sex)}>
-											{sex.charAt(0).toUpperCase()}
-										</abbr>
-									</button>
+										{sex.charAt(0).toUpperCase()}
+									</abbr>
 								</label>
 							{/each}
 						</fieldset>
@@ -319,10 +358,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							</li>
 						{/each}
 					{:else}
-					<span>
-						{ucfirst(listing.pets[0].sex)}
-						{listing.pets[0].breed}
-					</span>
+	<span>
+	{ucfirst(listing.pets[0].sex)}
+		{listing.pets[0].breed}
+	</span>
 					{/if}
 				</td>
 				<td class="age">
@@ -356,10 +395,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 										imagePreviewMinHeight={300}
 										imagePreviewHeight={300}
 										stylePanelLayout="compact"
-										styleLoadIndicatorPosition="center bottom"
-										styleProgressIndicatorPosition="center bottom"
-										styleButtonRemoveItemPosition="left bottom"
-										styleButtonProcessItemPosition="right bottom"
 										server={pondAdapter(listing)}
 										files={toPond([pet.photo])}
 										onprocessfile={async (error: FilePondErrorDescription | null, file: FilePondFile) => pet.photo = await fromPond(error, file, 300)}
@@ -376,31 +411,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 {/await}
 
 <style lang="scss">
-	@mixin input {
-		box-sizing: border-box;
-		border: none;
-		box-shadow: inset 0 0 0 1px var(--border-color);
-		border-radius: var(--border-radius);
-		outline: none;
-		&:focus, &:focus-visible {
-			outline: 2px solid var(--focus-color);
-			transition: outline 0s;
-		}
-	}
+	@use './inputs';
 
 	section.metadata {
-		--label-width: 6em;
-		--input-width: 14em;
-		--input-padding-vertical: 0.3em;
-		--input-padding-horizontal: 0.4em;
-		--input-padding: var(--input-padding-vertical) var(--input-padding-horizontal);
-		--input-margin: 0.3em;
-		--border-radius: 0.3em;
-		--border-color: #aaa;
-		--focus-color: var(--visited-color);
-		--error-color: #f00;
-		--input-height: calc(1.2em + 2 * var(--input-padding-vertical));
-
+		@include inputs.input_vars;
 		display: flex;
 		justify-content: space-evenly;
 		align-items: center;
@@ -418,15 +432,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			align-items: center;
 			justify-items: stretch;
 			margin: var(--input-margin);
-
-			@mixin metadata-input {
-				@include input;
-				font-size: inherit;
-				font-family: inherit;
-				padding: var(--input-padding);
-				margin: var(--input-margin);
-				height: var(--input-height);
-			}
 
 			> ul {
 				list-style: none;
@@ -454,8 +459,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							grid-column: 2 / span end;
 						}
 
-						~ *:not(label):not(fieldset.sexes) {
-							@include metadata-input;
+						~ *:not(label):not(fieldset.sexes):not(.importer) {
+							@include inputs.metadata-input;
+						}
+
+						~ .importer {
+							box-sizing: border-box;
+							margin: var(--input-margin);
+							height: var(--input-height);
 						}
 					}
 				}
@@ -465,7 +476,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				width: 5em;
 				height: 1.5em;
 				background-color: inherit;
-				@include metadata-input;
+				@include inputs.metadata-input;
 
 				&.delete:hover {
 					box-shadow: inset 0 0 0 1px var(--error-color);
@@ -488,8 +499,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				input {
 					display: none;
 
-					& + button {
-						@include input;
+					& + abbr {
+						@include inputs.input;
 						--dimension: calc(1em + 2 * var(--input-padding-vertical));
 						width: calc(2 * var(--dimension));
 						height: var(--dimension);
@@ -507,40 +518,40 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			}
 		}
 
-		fieldset.sexes input + button, .metadata button {
+		fieldset.sexes input + abbr, .metadata button {
 			display: inline-block;
 			text-align: center;
 			transition: all 0.2s;
 		}
 
-		fieldset.sexes input:not(:checked):not(:invalid) + button:hover,
-		form:not(.validated) fieldset.sexes input:not(:checked):invalid + button:hover,
+		fieldset.sexes input:not(:checked):not(:invalid) + abbr:hover,
+		fieldset.sexes:not(.validated) input:not(:checked):invalid + abbr:hover,
 		button.save:hover {
 			background-color: var(--focus-color);
 			color: var(--background-color);
 		}
 
-		fieldset.sexes input:checked + button:hover, fieldset.sexes input + button:active, button.save:active {
+		fieldset.sexes input:checked + abbr:hover, fieldset.sexes input + abbr:active, button.save:active {
 			box-shadow: inset 0 0 2px 1px var(--active-color);
 		}
 
-		fieldset.sexes input + button:active, .metadata button:active {
+		fieldset.sexes input + abbr:active, .metadata button:active {
 			background-color: var(--active-color) !important;
 			color: var(--background-color) !important;
 			transition: none;
 		}
 
-		input:focus, select:focus, fieldset.sexes input:checked + button, fieldset.sexes input + button:hover,
+		input:focus, select:focus, fieldset.sexes input:checked + abbr, fieldset.sexes input + abbr:hover,
 		button:hover {
 			box-shadow: inset 0 0 2px 1px var(--focus-color), inset 2px 2px 3px var(--shadow-color);
 		}
 
 		/* user-invalid isn't ready yet */
-		.validated input:invalid, .validated fieldset.sexes input:invalid + button {
+		&.validated input:invalid, fieldset.sexes.validated input:invalid + abbr {
 			color: var(--error-color);
 		}
 
-		.validated input:invalid, .validated select:invalid, .validated fieldset.sexes input:invalid + button,
+		&.validated input:invalid, &.validated select:invalid, fieldset.sexes.validated input:invalid + abbr,
 		button.delete:hover {
 			border: none;
 			box-shadow: inset 0 0 2px 1px var(--error-color);

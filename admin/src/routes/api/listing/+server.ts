@@ -34,3 +34,33 @@ export const GET: RequestHandler = async ({ url }) => {
 		return error(e.status ?? 500, e.message ?? JSON.stringify(e));
 	}
 };
+
+export const POST: RequestHandler = async ({ request, url }) => {
+	try {
+		const id = url.searchParams.get('id');
+		const listing = await request.json();
+		if (!listing) {
+			console.warn(`Got listing POST body: ${listing}`);
+			return error(400, 'Invalid request body');
+		}
+		if (id) {
+			console.log(`Updating listing ${id} (new path will be ${listing.path})`);
+			const docRef = database.collection('listings').doc(id);
+			const doc = await docRef.get();
+			if (!doc.exists) {
+				console.warn(`Listing ${id} not found (new path was to be ${listing.path})`);
+				return error(404, `Listing ${id} not found`);
+			}
+			if (JSON.stringify(doc.data()) !== JSON.stringify(listing)) {
+				await docRef.update(listing);
+			}
+			return json({ id, listing });
+		} else {
+			const doc = await database.collection('listings').add(listing);
+			return json({ id: doc.id, listing });
+		}
+	} catch (e: any) {
+		log.error(e);
+		return error(e.status ?? 500, e.message ?? JSON.stringify(e));
+	}
+};
