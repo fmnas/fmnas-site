@@ -14,6 +14,7 @@ import type { ImportablePet } from '../../../../../admin_old/admin/client/types'
 
 async function getConnection(): Promise<mysql.Connection | undefined> {
 	if (building) {
+		log.debug('Not connecting to ASM inside build');
 		return undefined;
 	}
 	log.info(`Connecting to ASM`);
@@ -34,10 +35,10 @@ async function getConnection(): Promise<mysql.Connection | undefined> {
 	}
 }
 
-const source = await getConnection();
-
 export const GET: RequestHandler = async () => {
+	const source = await getConnection();
 	if (!source) {
+		log.error(`Error connecting to ASM. Source is ${source}`);
 		return error(500, 'Error connecting to ASM');
 	}
 

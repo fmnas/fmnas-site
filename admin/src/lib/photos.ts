@@ -17,7 +17,6 @@ import { toast } from '@zerodevx/svelte-toast';
 import { listingPath } from '$lib/templates';
 import { v4 as uuidv4 } from 'uuid';
 import type { FileMetadata } from '@google-cloud/storage';
-import { config } from '$lib/config';
 
 export function smallestSize(photo: Readonly<Photo>): string {
 	return [...photo.sizes].sort((a, b) => a.scale - b.scale)[0]?.path ?? photo.path;
@@ -29,11 +28,12 @@ registerPlugin(
 	FilePondPluginFileValidateType
 );
 
-export function toPond(photos: Array<Photo | undefined>): Array<FilePondInitialFile | File> {
-	return photos.filter(photo => !!photo).map(photo => photo.file ?? ({
+export function toPond(photos: Array<Photo | undefined>): Array<FilePondInitialFile> {
+	console.debug('toPond', photos);
+	return photos.filter(photo => !!photo).map(photo => ({
 		source: photo.path,
 		options: {
-			type: 'local'
+			type: photo.path?.startsWith('data:') ? 'input' : 'local'
 		}
 	}));
 }
@@ -68,21 +68,20 @@ export async function deletePhoto(photo: Photo): Promise<void> {
 const pondProcess: (listing: Listing) => ProcessServerConfigFunction = (listing) => (fieldName, file, metadata,
 	load, error, progress, abort) => {
 	console.log(`pondProcess`);
-	const path = `${listingPath(listing) || 'assets'}/${file.name || uuidv4()}`;
-	console.log(`path is: ${path}`);
+	const requestedPath = `${listingPath(listing) || 'assets'}/${file.name || uuidv4()}`;
+	console.log(`requestedPath is: ${requestedPath}`);
 	let aborted = false;
 	let request: XMLHttpRequest | undefined = undefined;
-	fetch(`/api/file?${new URLSearchParams({ path }).toString()}`)
+	fetch(`/api/file?${new URLSearchParams({ path: requestedPath }).toString()}`)
 		.then((fetchUrlResponse) => fetchUrlResponse.json().then(
-			({ signedUrl, fileExists, metadata }: { signedUrl: string, fileExists: boolean, metadata: FileMetadata }) => {
-				console.debug({ signedUrl, fileExists, metadata });
+			({ signedUrl, fileExists, metadata, uploadPath }: { signedUrl: string, fileExists: boolean, metadata: FileMetadata, uploadPath: string }) => {
+				console.debug({ signedUrl, fileExists, metadata, uploadPath });
 				if (!fetchUrlResponse.ok) {
 					console.debug('calling error callback');
 					error(fetchUrlResponse.statusText || fetchUrlResponse.status.toString());
 					return;
 				}
-				if (aborted || (fileExists && file.size !== metadata.size &&
-				                !confirm(`Overwrite ${metadata.size}-byte file at ${path} with ${file.size}-byte file?`))) {
+				if (aborted) {
 					console.debug('calling abort callback');
 					abort();
 					return;
@@ -98,7 +97,7 @@ const pondProcess: (listing: Listing) => ProcessServerConfigFunction = (listing)
 					console.debug('onload');
 					if (!request || (request.status >= 200 && request.status < 300)) {
 						console.debug('calling load callback');
-						load(path);
+						load(uploadPath);
 					} else {
 						console.debug('calling error callback');
 						error(request.statusText);

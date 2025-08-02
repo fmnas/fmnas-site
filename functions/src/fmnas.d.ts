@@ -12,7 +12,6 @@ export interface PhotoSize {
 export interface Photo {
 	path: string;
 	sizes: PhotoSize[];
-	file?: File;
 }
 
 export interface Pet {
@@ -114,25 +113,4 @@ export interface Form {
 	fillout_id: string;
 	path: string;
 	title: string;
-}
-
-export interface ImportablePet {
-	id: string;
-	name: string;
-	species?: string;
-	sex?: string;
-	breed?: string;
-	dob?: string;
-	fee?: string;
-	base64?: string;
-	type?: string;
-	friend_id?: string;
-	friend_name?: string;
-	friend_species?: string;
-	friend_sex?: string;
-	friend_breed?: string;
-	friend_dob?: string;
-	friend_base64?: string;
-	friend_type?: string;
-	pending: boolean;
 }
