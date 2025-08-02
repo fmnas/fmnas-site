@@ -130,7 +130,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	{{#each statuses}}
 		{{#unless show_fee}}
 			{{#if description}}
-				<aside class="info"><strong>{{@key}}:</strong><br>{{{description}}}</aside>
+				<aside class="info" data-status="{{@key}}"><strong>{{@key}}:</strong><br>{{{description}}}</aside>
 			{{/if}}
 		{{/unless}}
 	{{/each}}

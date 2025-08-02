@@ -31,8 +31,8 @@ function hashChangeHandler() {
 		.forEach((closeButton) => {
 			const button = closeButton as HTMLDivElement;
 			const aside = closeButton.closest('aside')!;
-			const statusClass: string = [...aside.classList].find((className) => className.startsWith('st_'))!;
-			if (!window.location.hash.endsWith(statusClass)) {
+			const status = aside.getAttribute('data-status');
+			if (window.location.hash !== status) {
 				aside.classList.remove('shown');
 				button.replaceWith();
 			}
@@ -49,16 +49,15 @@ window.addEventListener('load', clearHash);
 function showMobileTooltip(e: Event) {
 	clearHash();
 	const feeText = e.target as HTMLSpanElement;
-	const row = feeText.closest('tr')!;
-	const statusClass: string = [...row.classList].find((className) => className.startsWith('st_'))!;
-	const explanation: HTMLElement = document.querySelector(`section.explanations > aside.${statusClass}`)!;
+	const explanation: HTMLElement = document.querySelector(
+		`section.explanations > aside[data-status="${feeText.innerText.trim()}"]`)!;
 	const closeButton = document.createElement('div');
 	closeButton.classList.add('close');
 	closeButton.innerHTML = '&#xe5c9';
 	explanation.classList.add('shown');
 	explanation.appendChild(closeButton);
 	closeButton.addEventListener('click', hideMobileTooltip);
-	window.location.hash = `#${statusClass}`;
+	window.location.hash = `#${feeText.innerText.trim()}`;
 	e.stopPropagation();
 }
 
@@ -91,8 +90,8 @@ function setupDesktopTooltips() {
 	document.querySelectorAll('tr.explain').forEach((rowEl) => {
 		const listing = rowEl as HTMLTableRowElement;
 		const cell: HTMLTableCellElement = listing.querySelector('td.fee')!;
-		const span: HTMLSpanElement = cell.querySelector('span.fee')!
-		const explanation: HTMLElement = cell.querySelector('aside.explanation')!
+		const span: HTMLSpanElement = cell.querySelector('span.fee')!;
+		const explanation: HTMLElement = cell.querySelector('aside.explanation')!;
 		const show = (e: Event) => {
 			cell.classList.add('active');
 			e.stopPropagation();
@@ -133,7 +132,7 @@ function resizer(useReference: boolean = true) {
 	tbody.querySelectorAll('tr').forEach((listing: HTMLTableRowElement) => {
 		listing.classList.remove('yote');
 	});
-	
+
 	// Scale data to fit the grid columns.
 	const referenceWidth = tbody.querySelector('tr:not(.pair) td.img')?.clientWidth ?? (() => {
 		const fakeRow = document.createElement('tr');
@@ -233,7 +232,10 @@ function resizer(useReference: boolean = true) {
 
 tbody?.querySelectorAll('th.name a[href]').forEach(addEventListeners);
 
-resizer()
+resizer();
 window.addEventListener('load', () => resizer());
 window.addEventListener('resize', () => resizer());
-document.fonts.ready.then(() => {fullyLoaded = true; resizer()});
+document.fonts.ready.then(() => {
+	fullyLoaded = true;
+	resizer();
+});
