@@ -16,7 +16,6 @@
  */
 
 table.listings {
-	/* These need to be CSS variables for use by adoptable.generated.css */
 	--border-color: #ccc;
 	--adoptable-color: var(--background-color-2);
 	--pending-color: #ddd;
@@ -133,6 +132,9 @@ table.listings {
 
 			&.displayStatus {
 				order: 3;
+			}
+
+			&.displayStatus:not(.soon) {
 				background-color: var(--pending-color);
 			}
 
@@ -202,10 +204,6 @@ table.listings {
 				}
 			}
 
-			a:hover {
-				text-decoration: none;
-			}
-
 			// Cells moved to the last-row table.
 			&.yote {
 				display: none;
@@ -251,20 +249,10 @@ table.listings {
 		}
 	}
 
-	// TODO [#327]: Get rid of ugly selectors after target is bumped past Chrome 88/Firefox 84.
-	// Then we can use the &:not(tr.pair a)::after variant below.
-	tr:not(.soon):not(.pair) th.name a::after, tr:not(.soon) th.name a li:nth-of-type(2)::after {
-		content: ' »';
-	}
-
-
 	tr:not(.soon) th.name a {
-		border-bottom: 1pt solid var(--link-color);
-
-		// See above - :not(tr.pair a) isn't supported until Chrome 88/Firefox 84.
-		//&:not(tr.pair a)::after, li:nth-of-type(2)::after {
-		//	content: ' »';
-		//}
+		&:not(tr.pair a)::after, li:nth-of-type(2)::after {
+			content: ' »';
+		}
 
 		@media (min-width: 450px) {
 			&[id]:not([id=''])::after, li[id]:nth-of-type(2):not([id=''])::after {
@@ -272,17 +260,20 @@ table.listings {
 			}
 		}
 
-		&:visited {
-			border-bottom: 1pt solid var(--visited-color);
-		}
+		text-decoration: none;
 
-		&:active {
-			border-bottom: 1pt solid var(--active-color);
-		}
+		border-bottom: 1pt solid transparent;
 
 		&:hover {
-			border-bottom-width: 1.5pt;
-			margin-bottom: -.5pt;
+			border-bottom-color: var(--link-color);
+
+			&:visited {
+				border-bottom-color: var(--visited-color);
+			}
+
+			&:active {
+				border-bottom-color: var(--active-color);
+			}
 		}
 	}
 

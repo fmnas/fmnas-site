@@ -27,7 +27,9 @@ export function displayAge(pet: Pet): string {
 	const species = config.species[pet.species];
 	const months = ageInMonths(pet);
 	if (!months || months < 4) {
-		return 'DOB ' + new Date(pet.dob).toLocaleDateString('en-US');
+		return 'DOB ' + new Date(pet.dob).toLocaleDateString('en-US', {
+			timeZone: 'UTC',
+		});
 	}
 	if (species && months < species.show_months_until) {
 		return `${months} months`;
