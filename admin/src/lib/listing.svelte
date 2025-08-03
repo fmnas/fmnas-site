@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	import { toast } from '@zerodevx/svelte-toast';
 	import { pushState, replaceState } from '$app/navigation';
 	import { config } from '$lib/config';
-	import { displayAge, listingPath } from '$lib/templates';
+	import { displayAge, getStatusConfig, listingName, listingPath } from '$lib/templates';
 	import PetImporter from '$lib/pet_importer.svelte';
 	import FilePond from 'svelte-filepond';
 	import { toPond, fromPond, pondAdapter } from '$lib/photos';
@@ -87,7 +87,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		listing = fetched.listing;
 		isPair = listing.pets.length > 1;
 		savedListing = JSON.stringify(listing);
-		title = 'Editing ' + listing.pets.map(pet => pet.name).join(' & ');
+		title = 'Editing ' + listingName(listing);
 	}
 
 	let saving = $state(false);
@@ -336,14 +336,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			</thead>
 			<tbody>
 			<tr
-				class={[config.statuses[listing.status]?.inactive && 'soon', !config.statuses[listing.status]?.show_fee && 'displayStatus', listing.pets.length > 1 && 'pair']}>
+				class={[getStatusConfig(listing.status).inactive && 'soon', !getStatusConfig(listing.status).show_fee && 'displayStatus', listing.pets.length > 1 && 'pair']}>
 				<th class="name">
-					<a href={config.statuses[listing.status]?.inactive ? undefined : '#'}
+					<a href={getStatusConfig(listing.status).inactive ? undefined : '#'}
 						id={listing.pets.length > 1 ? undefined : listing.pets[0].id}>
 						{#if listing.pets.length > 1}
-							{#each listing.pets as pet}
-								<li id={pet.id || '____'}>{pet.name}</li>
-							{/each}
+							<ul>
+								{#each listing.pets as pet}
+									<li id={pet.id || '____'}>{pet.name}</li>
+								{/each}
+							</ul>
 						{:else}
 							{listing.pets[0].name}
 						{/if}
@@ -351,12 +353,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				</th>
 				<td class="sex">
 					{#if listing.pets.length > 1}
-						{#each listing.pets as pet}
-							<li>
-								{ucfirst(pet.sex)}
-								{pet.breed}
-							</li>
-						{/each}
+						<ul>
+							{#each listing.pets as pet}
+								<li>
+									{ucfirst(pet.sex)}
+									{pet.breed}
+								</li>
+							{/each}
+						</ul>
 					{:else}
 	<span>
 	{ucfirst(listing.pets[0].sex)}
@@ -366,17 +370,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				</td>
 				<td class="age">
 					{#if listing.pets.length > 1}
-						{#each listing.pets as pet}
-							<li>
-								{displayAge(pet)}
-							</li>
-						{/each}
+						<ul>
+							{#each listing.pets as pet}
+								<li>
+									{#if pet.dob}
+										{displayAge(pet)}
+									{/if}
+								</li>
+							{/each}
+						</ul>
 					{:else}
-						<span>{displayAge(listing.pets[0])}</span>
+						<span>{#if listing.pets[0].dob}{displayAge(listing.pets[0])}{/if}</span>
 					{/if}
 				</td>
 				<td class="fee">
-					{#if config.statuses[listing.status]?.show_fee}
+					{#if getStatusConfig(listing.status).show_fee}
 						{#if listing.pets.length > 1}BONDED PAIR{/if}
 						{listing.fee}
 					{:else}
@@ -403,6 +411,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							{/if}
 						{/each}
 					</ul>
+				</td>
+				<td class="inquiry">
+					<a href="mailto:adopt+{listing.pets.map(pet => pet.id).join()}@{config.public_domain}">
+						Email to adopt {listingName(listing, false, true)}!
+					</a>
 				</td>
 			</tr>
 			</tbody>
@@ -590,14 +603,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		width: 100%;
 		height: 300px;
 
-		li:first-of-type:last-of-type {
+		li:only-of-type {
 			margin-right: 0;
 			width: 200px;
 		}
 
 		:global(.filepond--root), :global(.filepond--wrapper), :global(.filepond--item) {
-			width: 200px;
+			width: 100%;
 			height: 300px;
+			margin: 0 auto;
+		}
+
+		:global(.filepond--image-preview) {
+			background: none;
 		}
 	}
 </style>

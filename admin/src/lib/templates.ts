@@ -4,8 +4,25 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import type { Listing, Pet } from 'fmnas-functions/src/fmnas';
+import type { Listing, ListingContext, Pet, PetContext, Status, TemplateContext } from 'fmnas-functions/src/fmnas';
 import { config } from '$lib/config';
+
+export function getStatusConfig(status: string): Status {
+	return config.statuses[status] ?? {};
+}
+
+function joinList(list: string[], ampersand: boolean = false): string {
+	if (list.length === 0) {
+		return '';
+	}
+	if (list.length === 1) {
+		return list[0];
+	}
+	if (list.length === 2) {
+		return list.join(ampersand ? ' & ' : ' and ');
+	}
+	return list.slice(0, -1).join(', ') + (ampersand ? ' & ' : ', and ') + list.at(-1);
+}
 
 export function ageInMonths(pet: Pet): number | undefined {
 	if (!pet.dob) {
@@ -28,17 +45,33 @@ export function displayAge(pet: Pet): string {
 	const months = ageInMonths(pet);
 	if (!months || months < 4) {
 		return 'DOB ' + new Date(pet.dob).toLocaleDateString('en-US', {
-			timeZone: 'UTC',
+			timeZone: 'UTC'
 		});
 	}
 	if (species && months < species.show_months_until) {
-		return `${months} months`;
+		return `${months} months old`;
 	}
 	const years = Math.floor(months / 12);
 	if (years === 1) {
-		return '1 year';
+		return '1 year old';
 	}
-	return `${years} years`;
+	return `${years} years old`;
+}
+
+function collapsedAge(listing: Listing): string {
+	const ages: string[] = listing.pets.map(displayAge).filter(age => age);
+	if (ages.length !== 2) {
+		return joinList(ages);
+	}
+	if (ages[0] === ages[1]) {
+		return ages[0];
+	}
+	if ((ages[0].endsWith(' months old') && ages[1].endsWith(' months old')) ||
+	    (ages[0].endsWith(' year old') && ages[1].endsWith(' years old')) ||
+	    (ages[0].endsWith(' years old') && ages[1].endsWith(' years old'))) {
+		return ages[0].split(' ')[0] + ' & ' + ages[1];
+	}
+	return ages.join(' & ');
 }
 
 export function listingPath(listing: Listing): string {
@@ -49,4 +82,75 @@ export function listingPath(listing: Listing): string {
 		return '';
 	}
 	return speciesPlural + '/' + directory;
+}
+
+export function listingName(listing: Listing, withId: boolean = false, ampersand: boolean = false): string {
+	return joinList(listing.pets.map(pet => withId ? `${pet.name}\xa0${pet.id}` : pet.name), ampersand);
+}
+
+function listingTitle(listing: Listing): string {
+	let title = listingName(listing, false, true);
+
+	if (listing.pets.length > 2) {
+		title += ' - ';
+	} else {
+		title += ', ';
+	}
+
+	const counts = new Map<[string, string], number>();
+	listing.pets.forEach(pet => {
+		const species = config.species[pet.species];
+		const age = ageInMonths(pet);
+		let key: [string, string] = [pet.species, species.plural ?? pet.species + 's'];
+		if (species && age) {
+			if (age < species.young_months) {
+				key = [species.young, species.young_plural];
+			} else if (age >= species.old_months) {
+				key = [species.old, species.old_plural];
+			}
+		}
+		counts.set(key, (counts.get(key) ?? 0) + 1);
+	});
+	let words: string[] = [];
+	counts.forEach((count, [word, plural]) => {
+		words.push(count > 1 ? plural : word);
+	});
+	if (words.length > 2) {
+		const last = words.pop();
+		title += `${words.join(', ')}, and ${last}`;
+	}
+	title += words.join(' and ');
+
+	if (listing.status === 'Adopted') {
+		title += ' adopted from ';
+	} else if (config.statuses[listing.status]?.inactive) {
+		title += ' - ';
+	} else {
+		title += ' for adoption at ';
+	}
+
+	title += config.longname;
+	return title;
+}
+
+function decoratePet(pet: Pet): PetContext {
+	return {
+		...pet,
+		speciesConfig: config.species[pet.species],
+		age: displayAge(pet)
+	};
+}
+
+function decorateListing(listing: Listing): ListingContext {
+	return {
+		...listing,
+		id: listing.pets[0].id,
+		statusConfig: getStatusConfig(listing.status),
+		title: listingTitle(listing),
+		collapsedAge: collapsedAge(listing),
+		bonded: listing.pets.length > 1,
+		pets: listing.pets.map(pet => decoratePet(pet)),
+		name: listingName(listing, false),
+		listingHeading: listingName(listing, true, true)
+	};
 }
