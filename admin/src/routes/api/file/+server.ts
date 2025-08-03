@@ -27,7 +27,6 @@ export const GET: RequestHandler = async ({ url }) => {
 			version: 'v4'
 		});
 		return json({
-			'publicUrl': file.publicUrl(),
 			signedUrl,
 			'fileExists': exists,
 			'metadata': file.metadata,

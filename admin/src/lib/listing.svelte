@@ -23,13 +23,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	import { displayAge, getStatusConfig, listingName, listingPath, partial, renderDescription } from '$lib/templates';
 	import PetImporter from '$lib/pet_importer.svelte';
 	import FilePond from 'svelte-filepond';
-	import { toPond, fromPond, pondAdapter } from '$lib/photos';
+	import { toPond, fromPond, pondAdapter, pendingOperations } from '$lib/photos';
 	import type { FilePondErrorDescription, FilePondFile } from 'filepond';
 	import 'filepond/dist/filepond.css';
 	import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
 	import '$lib/inputs.scss';
 	import { removeImported } from '$lib/import';
 	import Throbber from '$lib/throbber.svelte';
+	import { debounce } from '$lib/debounce';
 
 	let { path, species }: { path?: string, species?: string } = $props();
 	let id = $state('');
@@ -43,6 +44,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	let loading: Promise<any> = $state(getListing());
 	let showHelp = $state(false);
 	$inspect(listing);
+
+	const [getter, setter, debouncing] = debounce(() => listing.description, (p) => listing.description = p);
 
 	async function clear(): Promise<void> {
 		if (dirty() && !confirm('Discard unsaved changes?')) {
@@ -73,7 +76,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			name: '',
 			species: species ?? '',
 			breed: '',
-			sex: ''
+			sex: '',
+			dob: ''
 		};
 	}
 
@@ -90,7 +94,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	}
 
 	function dirty(): boolean {
-		return JSON.stringify(listing) !== savedListing;
+		return pendingOperations.size > 0 || JSON.stringify(listing) !== savedListing;
 	}
 
 	async function getListing() {
@@ -114,6 +118,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 	async function save() {
+		await debouncing();
 		if (listing.pets.some(pet => !pet.id || !pet.name || !pet.species)) {
 			toast.push('Please specify id, name, and species.');
 			return;
@@ -248,7 +253,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<section class={['metadata', isPair && 'pair']}>
 		<form>
 			<div class="buttons">
-				<button class="save" onclick={async (e) => {e.preventDefault(); await save();}} disabled={saving || !dirty()}>
+				<button class="save" onclick={async (e) => {e.preventDefault(); await save();}}
+					disabled={pendingOperations.size || saving || !dirty()}>
 					{#if saving}Saving...{:else }Save{/if}
 				</button>
 				<button class="delete" onclick={async (e) => {e.preventDefault(); await deleteListing();}}>Delete</button>
@@ -428,7 +434,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 										stylePanelLayout="compact"
 										server={pondAdapter(listing)}
 										files={toPond([pet.photo])}
-										onprocessfile={async (error: FilePondErrorDescription | null, file: FilePondFile) => pet.photo = await fromPond(error, file, [300])}
+										onprocessfile={async (error: FilePondErrorDescription | null, file: FilePondFile) => pet.photo = await fromPond(error, file, [300, 64])}
 									/>
 								</li>
 							{/if}
@@ -468,7 +474,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		</div>
 		<div class="editor">
 			<button onclick={() => showHelp = true} class="help">Formatting help</button>
-			<textarea bind:value={listing.description}></textarea>
+			<textarea bind:value={getter, setter}></textarea>
 		</div>
 		<div class="preview">
 			{#await renderDescription(listing)}

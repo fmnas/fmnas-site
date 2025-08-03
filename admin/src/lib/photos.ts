@@ -17,6 +17,8 @@ import { toast } from '@zerodevx/svelte-toast';
 import { listingPath } from '$lib/templates';
 import { v4 as uuidv4 } from 'uuid';
 import type { FileMetadata } from '@google-cloud/storage';
+import { publicUrl } from '$lib/storage';
+import { log } from '$lib/logging';
 
 export function smallestSize(photo: Readonly<Photo>): string {
 	return [...photo.sizes].sort((a, b) => a.scale - b.scale)[0]?.path ?? photo.path;
@@ -41,12 +43,37 @@ export function toPond(photos: Array<Photo | undefined>): Array<FilePondInitialF
 }
 
 async function cacheAdditionalSize(photo: Photo, height: number, scale: number): Promise<void> {
-	throw new Error('idk'); // TODO
+	console.debug(`Adding height ${height}, scale ${scale} to photo with path ${photo.path}`);
+	const res = await fetch('/api/resize', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({
+			path: photo.path,
+			height
+		})
+	});
+	if (!res.ok) {
+		log.error(await res.text());
+		return;
+	}
+	try {
+		const result: { path: string, height: number } = await res.json();
+		if (result.height < height) {
+			scale *= result.height / height;
+			console.debug(`detected reduced scale ${scale}`);
+			if (photo.sizes.some(size => size.scale === scale)) {
+				return;
+			}
+		}
+		photo.sizes.push({ scale, path: result.path });
+		console.debug(photo.sizes);
+	} catch (e) {
+		log.error(e);
+		return;
+	}
 }
 
-async function addIntrinsicScale(photo: Photo, height: number): Promise<void> {
-	throw new Error('idk'); // TODO
-}
+export const pendingOperations = new Set<string>();
 
 export async function fromPond(error: FilePondErrorDescription | null, file: FilePondFile,
 	heights: number[]): Promise<Photo | undefined> {
@@ -58,7 +85,6 @@ export async function fromPond(error: FilePondErrorDescription | null, file: Fil
 	if (!file.serverId) {
 		return undefined;
 	}
-	heights.push(previewHeight);
 	const photo = {
 		path: file.serverId,
 		sizes: []
@@ -66,12 +92,23 @@ export async function fromPond(error: FilePondErrorDescription | null, file: Fil
 	if (!heights.length) {
 		return photo;
 	}
-	const mainHeight = heights[0];
-	heights.push(mainHeight * 2, mainHeight * 4);
-	// Kick off asynchronous backfill of more heights.
-	Promise.all(heights.map((h) => cacheAdditionalSize(photo, h, h / mainHeight)))
-		.then(() => addIntrinsicScale(photo, mainHeight).then());
-	return photo;
+	const operationId = uuidv4();
+	pendingOperations.add(operationId);
+	try {
+		const mainHeight = heights[0];
+		const newHeights = new Set(heights);
+		newHeights.add(previewHeight);
+		newHeights.add(mainHeight * 2);
+		newHeights.add(mainHeight * 4);
+		// TODO: Get this to work asynchronously.
+		// It seems like the photo object gets copied before going into the pets array,
+		// so if we do cacheAdditionalSize.then() the asynchronous update doesn't get propagated to the
+		// listing.
+		await Promise.all(newHeights.values().map((h) => cacheAdditionalSize(photo, h, h / mainHeight)));
+		return photo;
+	} finally {
+		pendingOperations.delete(operationId);
+	}
 }
 
 export async function deletePhoto(photo: Photo): Promise<void> {
@@ -95,13 +132,12 @@ const pondProcess: (listing: Listing) => ProcessServerConfigFunction = (listing)
 	let request: XMLHttpRequest | undefined = undefined;
 	fetch(`/api/file?${new URLSearchParams({ path: requestedPath }).toString()}`)
 		.then((fetchUrlResponse) => fetchUrlResponse.json().then(
-			({ signedUrl, fileExists, metadata, uploadPath }: {
+			({ signedUrl, metadata, uploadPath }: {
 				signedUrl: string,
-				fileExists: boolean,
 				metadata: FileMetadata,
 				uploadPath: string
 			}) => {
-				console.debug({ signedUrl, fileExists, metadata, uploadPath });
+				console.debug({ signedUrl, metadata, uploadPath });
 				if (!fetchUrlResponse.ok) {
 					console.debug('calling error callback');
 					error(fetchUrlResponse.statusText || fetchUrlResponse.status.toString());
@@ -146,31 +182,18 @@ const pondProcess: (listing: Listing) => ProcessServerConfigFunction = (listing)
 const pondLoad: LoadServerConfigFunction = (source, load, error, progress, abort, headers) => {
 	const path: string = source;
 	console.debug(`Loading ${path} from bucket`);
-	fetch(`/api/file?${new URLSearchParams({ path: `${path}.${previewHeight}.jpg` }).toString()}`).then((res) => {
-		if (!res.ok) {
-			return error(res.statusText);
+	fetch(publicUrl(`${path}.${previewHeight}.jpg`)).then((res) => {
+		if (res.ok) {
+			console.debug(`Using cached ${path}.${previewHeight}.jpg`);
+			return res.blob().then(load).catch(error);
 		}
-		res.json().then(({ fileExists, publicUrl }) => {
-			if (fileExists) {
-				console.debug(`Using cached ${path}.${previewHeight}.jpg`);
-				fetch(publicUrl).then((res) => {
-					res.blob().then(load).catch(error);
-				});
-			} else {
-				fetch(`/api/file?${new URLSearchParams({ path }).toString()}`).then((res) => {
-					if (!res.ok) {
-						return error(res.statusText);
-					}
-					res.json().then(({ fileExists, publicUrl }) => {
-						if (!fileExists) {
-							return error('File not found');
-						}
-						console.debug(`Using ${path}`);
-						fetch(publicUrl).then((res) => res.blob().then(load).catch(error));
-					});
-				});
+		console.debug(`Cached file not found; using ${path}`);
+		fetch(publicUrl(path)).then((res) => {
+			if (!res.ok) {
+				return error(res.statusText);
 			}
-		}).catch((e) => error(JSON.stringify(e)));
+			res.blob().then(load).catch(error);
+		});
 	}).catch((e) => error(JSON.stringify(e)));
 };
 
