@@ -19,8 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	import type { Listing, Pet, Photo } from 'fmnas-functions/src/fmnas.d.ts';
 	import { toast } from '@zerodevx/svelte-toast';
 	import { config } from '$lib/config';
-	import { listingPath } from '$lib/templates';
-	import { Md5 } from 'ts-md5';
 	import { getImportable, type ImportablePet } from '$lib/import';
 
 	let { listing = $bindable(), index, field, species }: {
@@ -146,7 +144,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			sex: convertSex(importable.sex),
 			breed: importable.breed ?? '',
 			dob: importable.dob?.substring(0, 10) ?? '',
-			photo: listing.pets[0]?.photo ??
+			photo: listing.pets[index]?.photo ??
 			       (importable.base64 ? { path: `data:${importable.type};base64,${importable.base64}`, sizes: [] } :
 				       undefined)
 		};
@@ -157,7 +155,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			sex: convertSex(importable.friend_sex),
 			breed: importable.friend_breed ?? '',
 			dob: importable.dob?.substring(0, 10) ?? '',
-			photo: listing.pets[1]?.photo ?? (importable.friend_base64 ?
+			photo: listing.pets[index]?.photo ?? (importable.friend_base64 ?
 				{ path: `data:${importable.friend_type};base64,${importable.friend_base64}`, sizes: [] } : undefined)
 		} : undefined;
 		if (index && friend && listing.pets[0].id && listing.pets[0].id !== friend.id) {

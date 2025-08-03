@@ -44,7 +44,6 @@
 		"filepond-plugin-image-preview": "^4.6.12",
 		"mysql2": "^3.14.3",
 		"svelte-filepond": "^0.2.2",
-		"ts-md5": "^2.0.1",
 		"uuid": "^11.1.0",
 		"winston": "^3.17.0"
 	}
