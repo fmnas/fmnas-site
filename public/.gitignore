@@ -7,13 +7,12 @@
 *.rendered
 !404.html
 robots.txt
-*/*
-!templates/*.hbs
-!partials/*.hbs
 
-# old things
+# old things I still have around on my machine
 Application/
 blog/
+assets/
+donate/
 
 # Sass ignores
 .sass-cache/
