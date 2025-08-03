@@ -428,7 +428,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 										stylePanelLayout="compact"
 										server={pondAdapter(listing)}
 										files={toPond([pet.photo])}
-										onprocessfile={async (error: FilePondErrorDescription | null, file: FilePondFile) => pet.photo = await fromPond(error, file, 300)}
+										onprocessfile={async (error: FilePondErrorDescription | null, file: FilePondFile) => pet.photo = await fromPond(error, file, [300])}
 									/>
 								</li>
 							{/if}
@@ -458,11 +458,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				server={pondAdapter(listing)}
 				files={toPond(listing.photos)}
 				onprocessfile={async (error: FilePondErrorDescription | null, file: FilePondFile) => {
-					const converted = await fromPond(error, file, 480);
+					const converted = await fromPond(error, file, [480]);
 					if (converted) listing.photos.push(converted);
 				}}
 				onreorderfiles={async (files: FilePondFile[]) => {
-					listing.photos = (await Promise.all(files.map(f => fromPond(null, f, 480)))).filter(p => !!p)
+					listing.photos = (await Promise.all(files.map(f => fromPond(null, f, [480])))).filter(p => !!p)
 				}}
 			/>
 		</div>
