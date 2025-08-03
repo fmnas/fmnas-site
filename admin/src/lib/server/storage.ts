@@ -5,7 +5,7 @@
  */
 
 import { Storage } from '@google-cloud/storage';
-import type { Bucket } from '@google-cloud/storage';
+import type { Bucket, SaveData } from '@google-cloud/storage';
 import { Firestore } from '@google-cloud/firestore';
 import { building } from '$app/environment';
 import { log } from '$lib/logging';
@@ -30,4 +30,13 @@ export async function getListings(adopted: boolean, species?: string): Promise<L
 	}
 	log.debug(`Got ${results.length} listings`);
 	return results;
+}
+
+export async function writeFile(path: string, data: SaveData, type: string): Promise<void> {
+	log.debug(`Writing gs://${bucket.name}/${path}`);
+	const file = bucket.file(path);
+	await file.save(data, { contentType: type });
+	if (!type.startsWith('image/')) {
+		await file.setMetadata({ cacheControl: 'no-store' });
+	}
 }

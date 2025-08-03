@@ -113,35 +113,15 @@ gcloud storage rsync ./public gs://fmnas_test/ --recursive \
   --exclude=".*\.(ts|gitignore|php|scss)$"
 ```
 
-Deploy the `render-everything` Cloud Function:
+Deploy the `resize-photo` Cloud Function:
 
 ```shell
-gcloud run deploy render-everything-test \
+gcloud run deploy resize-photo-test \
   --source functions \
-  --function render-everything \
+  --function resize-photo \
   --base-image nodejs22 \
   --region us-west1 \
-  --allow-unauthenticated
-```
-
-Call `render-everything` to render the HTML files:
-
-```shell
-curl -H "Content-Type: application/json" --request POST \
-  --data '{"bucket": "fmnas_test", "database": "fmnas-test"}' \
-  $(gcloud run services describe render-everything-test --format 'value(status.url)' --region us-west1)
-```
-
-Build the config for the admin site:
-
-```
-npx ts-node handleparse.ts admin/src/lib/config.json.hbs \
-  --bucket="fmnas_test" \
-  --database="fmnas-test" \
-  --asm_db_host="asm.forgetmenotshelter.org" \
-  --asm_db="asm" \
-  --asm_db_user="fmnas_web" \
-  --asm_db_pass='...'
+  --no-allow-unauthenticated
 ```
 
 Deploy the admin site:
@@ -155,11 +135,14 @@ gcloud beta run deploy fmnas-admin-test \
   --set-env-vars "project=$(gcloud config get-value project)" \
   --set-env-vars "bucket=fmnas_test" \
   --set-env-vars "database=fmnas-test" \
+  --set-env-vars "RESIZE_ENDPOINT=$(gcloud run services describe resize-photo-test --format 'value(status.url)' --region us-west1)" \
   --set-env-vars "asm_db_host=asm.forgetmenotshelter.org" \
   --set-env-vars "asm_db=asm" \
   --set-env-vars "asm_db_user=fmnas_web" \
   --set-env-vars 'asm_db_pass=...'
 ```
+
+GET /api/render on the admin site to generate the static files. 
 
 ### Automatic deployment
 

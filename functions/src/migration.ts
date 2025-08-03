@@ -8,8 +8,8 @@ import {HttpFunction} from '@google-cloud/functions-framework';
 import {logger} from './logging.js';
 import mysql from 'mysql2/promise';
 import type {Listing, Photo} from './fmnas.d.ts';
-import sharp from 'sharp';
 import {storage, writeFile} from './storage.js';
+import sharp from 'sharp';
 
 async function listingsInFirestore(target: Firestore): Promise<Set<string>> {
 	return new Set((await target.collection('listings').get()).docs.map(doc => doc.id));
