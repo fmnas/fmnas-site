@@ -1,12 +1,7 @@
 <div class="video">
 
 {{#if id}}
-{{#editor}} {{!TODO: Show the name of the youtube video in the editor preview}}
-YouTube Video: [{{id}}](https://youtu.be/{{id}})
-{{/editor}}
-{{^editor}}
 <iframe width="853" height="480" src="https://www.youtube-nocookie.com/embed/{{id}}?rel=0" frameborder="0" allowfullscreen></iframe>
-{{/editor}}
 {{else}}
 Video Coming Soon
 {{/if}}
