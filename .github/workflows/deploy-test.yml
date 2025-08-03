@@ -24,98 +24,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy-public:
+  deploy:
     name: Deploy test public site
-    uses: ./.github/workflows/public-site.yml
+    uses: deploy.yml
+    secrets: inherit
     with:
       ref: 'test'
       bucket: $TEST_BUCKET
       database: $TEST_DATABASE
       service_suffix: '-test'
-  deploy-admin:
-    name: Deploy test admin site
-    runs-on: ubuntu-latest
-    outputs:
-      build-status: ${{ steps.build-success.outcome }}
-      deploy-status: ${{ steps.deploy-success.outcome }}
-    steps:
-      - name: Checkout test
-        uses: actions/checkout@main
-        with:
-          ref: test
-      - name: Create local branch
-        run: git checkout -b test_deployment
-      - name: Remove unneeded directories
-        run: rm -rf .github .idea gcp tests public
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
-      - name: Install dev dependencies
-        run: npm install
-      - name: Cache PHP dependencies
-        uses: actions/cache@v4
-        with:
-          path: /tmp/composer-cache
-          key: ${{ runner.os }}-${{ hashFiles('composer.lock') }}
-      - name: Install PHP dependencies
-        uses: php-actions/composer@v6
-        with:
-          args: --ignore-platform-reqs
-      - name: Build admin client
-        run: npx vite build admin/client
-      - name: Set config values
-        id: build-success
-        run: |
-          npx ts-node handleparse.ts secrets/config.php.hbs \
-          --db_name="${{ secrets.TEST_DB_NAME }}" \
-          --db_username="${{ secrets.DB_USERNAME }}" \
-          --db_pass="${{ secrets.DB_PASS }}" \
-          --db_host="${{ secrets.DB_HOST }}" \
-          --image_size_endpoint="${{ secrets.IMAGE_SIZE_TEST_ENDPOINT }}" \
-          --resize_image_endpoint="${{ secrets.RESIZE_IMAGE_TEST_ENDPOINT }}" \
-          --asm_db="${{ secrets.ASM_WEB_DB }}" \
-          --asm_host="${{ secrets.ASM_WEB_HOST }}" \
-          --asm_user="${{ secrets.ASM_WEB_USER }}" \
-          --asm_pass="${{ secrets.ASM_WEB_PASS }}" \
-          --ga_id="${{ secrets.TEST_GA_ID }}" \
-          --api_credentials="${{ secrets.HTTP_CREDENTIALS }}" \
-          --static_bucket="${{ secrets.TEST_STATIC_BUCKET }}" \
-          --static_domain="${{ secrets.TEST_STATIC_DOMAIN }}"
-      - name: Unignore config.php for upload
-        run: echo '!secrets/config.php' | tee -a .gitignore
-      - name: Write service_account.json
-        run: echo '${{ secrets.SERVICE_ACCOUNT_JSON }}' > secrets/service_account.json
-      - name: Unignore service_account.json for upload
-        run: echo '!secrets/service_account.json' | tee -a .gitignore
-      - name: Unignore vendor directory for upload
-        run: sed -i '/\/vendor\//d' .gitignore
-      - name: Unignore compiled files for upload
-        run: |
-          sed -i -E "/\.(css|js|map)$/d" public/.gitignore
-          rm admin/.gitignore
-      - name: Restrict access to test site
-        run: cat public/.htaccess-test | tee -a public/.htaccess
-      - name: Restrict access to admin site
-        run: cat admin/.htaccess-test | tee -a admin/.htaccess
-      - name: Commit changes to local branch
-        run: |
-          git config user.email "admin+automation@forgetmenotshelter.org"
-          git config user.name "FMNAS Automation"
-          git add .
-          git commit -am "Automated changes for deployment"
-      - name: Install sshpass
-        run: |
-          sudo apt update
-          sudo apt install sshpass
-      - name: SFTP upload
-        id: deploy-success
-        uses: SamKirkland/web-deploy@v1
-        with:
-          source-path: "./"
-          target-server: ${{ secrets.TEST_SFTP_HOST }}
-          remote-user: ${{ secrets.TEST_SFTP_USER }}
-          private-ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
-          destination-path: ${{ secrets.TEST_SITE_ROOT }}/
-          rsync-options: --archive --links --compress --rsh "sshpass -p '${{ secrets.TEST_SFTP_PASS }}' ssh -o StrictHostKeyChecking=no"
+

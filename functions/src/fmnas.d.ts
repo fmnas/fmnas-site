@@ -97,18 +97,6 @@ export interface ListingContext extends Listing {
 	listingHeading: string;
 }
 
-export interface TemplateContext extends BaseConfig {
-	form?: Form;
-	listing?: ListingContext;
-}
-
-export interface ListingsContext extends BaseConfig {
-	listings: ListingContext[];
-	pageTitle: string;
-	heading: string;
-	path: string;
-}
-
 export interface Form {
 	fillout_id: string;
 	path: string;

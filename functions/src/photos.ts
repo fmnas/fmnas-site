@@ -5,8 +5,10 @@
  */
 import { logger } from './logging.js';
 import { HttpFunction } from '@google-cloud/functions-framework';
-import { storage, writeFile } from './storage.js';
 import sharp from 'sharp';
+import { Storage } from '@google-cloud/storage';
+
+const storage = new Storage();
 
 export const resizePhoto: HttpFunction = async (req, res) => {
 	logger.debug('resizePhoto', req.body);
@@ -38,14 +40,14 @@ export const resizePhoto: HttpFunction = async (req, res) => {
 		return;
 	}
 
-	let intrinsicHeight = file.metadata.metadata?.height as number|string|undefined;
+	let intrinsicHeight = file.metadata.metadata?.height as number | string | undefined;
 	if (typeof intrinsicHeight === 'string') {
 		intrinsicHeight = parseInt(intrinsicHeight);
 	}
 	logger.debug(`Founr intrinsic height ${intrinsicHeight} in metadata`);
 	if (intrinsicHeight && intrinsicHeight <= height) {
 		logger.debug(`Refusing to upscale ${path} from ${intrinsicHeight} to ${height}`);
-		res.status(200).send(JSON.stringify({path, height: intrinsicHeight}));
+		res.status(200).send(JSON.stringify({ path, height: intrinsicHeight }));
 		return;
 	}
 
@@ -68,6 +70,6 @@ export const resizePhoto: HttpFunction = async (req, res) => {
 	}
 
 	const scaledBytes = await image.resize({ height }).jpeg().toBuffer();
-	await writeFile(bucket, scaledPath, scaledBytes, 'image/jpeg');
+	await storage.bucket(bucket).file(scaledPath).save(scaledBytes, { contentType: 'image/jpeg' });
 	res.status(200).send(JSON.stringify({ path: scaledPath, height: height }));
 };

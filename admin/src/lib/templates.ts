@@ -47,7 +47,7 @@ export function basename(path: string): string {
 }
 
 
-const partialRegistration: Promise<void> = getPartials().then(partials => Object.keys(partials)
+export const partialRegistration: Promise<void> = getPartials().then(partials => Object.keys(partials)
 	.forEach(partialName => Handlebars.registerPartial(partialName, partials[partialName])));
 
 export function getStatusConfig(status: string): Status {
@@ -103,6 +103,7 @@ export function displayAge(pet: Pet): string {
 
 function collapsedAge(listing: Listing): string {
 	const ages: string[] = listing.pets.map(displayAge).filter(age => age);
+	log.debug(`Collapsing: ${ages.join(', ')}`);
 	if (ages.length !== 2) {
 		return joinList(ages);
 	}
@@ -184,7 +185,7 @@ function decoratePet(pet: Pet): PetContext {
 	};
 }
 
-async function decorateListing(listing: Listing): Promise<ListingContext> {
+export async function decorateListing(listing: Listing, renderDescription = true): Promise<ListingContext> {
 	const decorated = {
 		...listing,
 		id: listing.pets[0].id,
@@ -198,6 +199,10 @@ async function decorateListing(listing: Listing): Promise<ListingContext> {
 		renderedDescription: listing.description,
 		path: listing.path || listingPath(listing)
 	};
+	log.debug(decorated.collapsedAge);
+	if (!renderDescription) {
+		return decorated;
+	}
 	try {
 		await partialRegistration;
 		decorated.renderedDescription = Handlebars.compile(decorated.renderedDescription)(decorated);
@@ -220,4 +225,11 @@ export async function partial(partialName: string): Promise<string | undefined> 
 
 export async function renderDescription(listing: Listing): Promise<string> {
 	return (await decorateListing(listing)).renderedDescription;
+}
+
+export function capitalizeFirstLetter<T>(str: T): T {
+	if (typeof str !== 'string') {
+		return str;
+	}
+	return (str.charAt(0).toUpperCase() + str.slice(1)) as T;
 }

@@ -8,6 +8,7 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { database } from '$lib/server/storage';
 import { log } from '$lib/logging';
+import { renderListing, renderListings } from '$lib/server/templates';
 
 export const GET: RequestHandler = async ({ url }) => {
 	const path = url.searchParams.get('path');
@@ -43,6 +44,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
 			console.warn(`Got listing POST body: ${listing}`);
 			return error(400, 'Invalid request body');
 		}
+		const result = { id, listing };
 		if (id) {
 			console.log(`Updating listing ${id} (new path will be ${listing.path})`);
 			const docRef = database.collection('listings').doc(id);
@@ -54,19 +56,20 @@ export const POST: RequestHandler = async ({ request, url }) => {
 			if (JSON.stringify(doc.data()) !== JSON.stringify(listing)) {
 				await docRef.update(listing);
 			}
-			return json({ id, listing });
 		} else {
 			const doc = await database.collection('listings').add(listing);
-			return json({ id: doc.id, listing });
+			result.id = doc.id;
 		}
-		// TODO: Re-render the listing page!
+		await renderListing(listing);
+		await renderListings(listing.species);
+		return json(result);
 	} catch (e: any) {
 		log.error(e);
 		return error(e.status ?? 500, e.message ?? JSON.stringify(e));
 	}
 };
 
-export const DELETE: RequestHandler = async ({request, url}) => {
+export const DELETE: RequestHandler = async ({ url }) => {
 	try {
 		const id = url.searchParams.get('id');
 		if (!id) {
@@ -80,4 +83,4 @@ export const DELETE: RequestHandler = async ({request, url}) => {
 		log.error(e);
 		return error(e.status ?? 500, e.message ?? JSON.stringify(e));
 	}
-}
+};
