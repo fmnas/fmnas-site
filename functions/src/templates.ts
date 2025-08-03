@@ -188,7 +188,6 @@ function decorateListing(config: TemplateContext, listing: Listing): ListingCont
 
 async function renderListing(bucket: string, config: TemplateContext, listing: Listing,
 	template: HandlebarsTemplateDelegate): Promise<void> {
-	// TODO: Defer old listings
 	logger.debug(listing);
 	if (!listing?.path || !listing?.pets?.length) {
 		logger.error('Encountered invalid listing', listing);

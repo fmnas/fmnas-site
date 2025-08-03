@@ -19,7 +19,7 @@ export interface Pet {
 	name: string;
 	species: string;
 	breed: string;
-	dob?: string;
+	dob: string;
 	sex: string;
 	photo?: Photo;
 }
