@@ -100,17 +100,10 @@ Compile scripts:
 npm run build
 ```
 
-Copy admin partials to the main partials dir:
-
-```shell
-cp -l admin/static/templates/* public/partials/
-```
-
 Upload the generated files to the GCS bucket:
 
 ```shell
-gcloud storage rsync ./public gs://fmnas_test/ --recursive \
-  --exclude=".*\.(ts|gitignore|php|scss)$"
+gcloud storage rsync ./public gs://fmnas_test/ --recursive
 ```
 
 Deploy the `resize-photo` Cloud Function:
@@ -121,17 +114,19 @@ gcloud run deploy resize-photo-test \
   --function resize-photo \
   --base-image nodejs22 \
   --region us-west1 \
-  --no-allow-unauthenticated
+  --no-allow-unauthenticated \
+  --timeout 10 --concurrency 3
 ```
 
 Deploy the admin site:
 
-```
+```shell
 gcloud beta run deploy fmnas-admin-test \
   --source admin \
   --region us-west1 \
   --no-allow-unauthenticated --iap \
   --automatic-updates --base-image nodejs22 \
+  --timeout 3600 \
   --set-env-vars "project=$(gcloud config get-value project)" \
   --set-env-vars "bucket=fmnas_test" \
   --set-env-vars "database=fmnas-test" \
@@ -142,7 +137,7 @@ gcloud beta run deploy fmnas-admin-test \
   --set-env-vars 'asm_db_pass=...'
 ```
 
-GET /api/render on the admin site to generate the static files. 
+GET /api/render on the admin site to generate the static files.
 
 ### Automatic deployment
 
@@ -164,29 +159,18 @@ The following [repository variables](https://github.com/fmnas/fmnas-site/setting
 * `PROD_BUCKET`: The GCP bucket name for the prod site (`gcloud compute backend-buckets list`)
 * `GCP_REGION`: The GCP region for Cloud Run (i.e. `us-west1`)
 * `GCP_PROJECT`: The GCP project name (`fmnas-automation`)
-
-#### Secrets
-
-The following [repository secrets](https://github.com/fmnas/fmnas-site/settings/secrets/actions) are required:
-
-* `ASM_WEB_DB`: The MySQL database with replicated ASM tables (see #314) for the import backend (`asm_web`)
-* `ASM_WEB_HOST`: The MySQL host for `ASM_WEB_DB` (`fmnas.forgetmenotshelter.org`)
-* `ASM_WEB_USER`: The MySQL user for `ASM_WEB_DB` (`fmnas_asm`)
-* `ASM_WEB_PASS`: The MySQL password for `ASM_WEB_USER`
-* `PERSISTENCE_TOKEN`: A token for @aaimio/set-persistent-value (used for badges)
-
-##### Org secrets
-
-* `ASM_HOST`: The SSH hostname for the ASM server
-* `ASM_SSH_KEY`: A private key to get into `ASM_HOST`
-* `ASM_KNOWN_HOSTS`: Known hosts entry for `ASM_HOST`
-* `ASM_SSH_USER`: The SSH user for `ASM_HOST`
-* `ASM_DB_USER`: The MySQL user for ASM on `ASM_HOST`
-* `ASM_DB_PASS`: The MySQL password for `ASM_DB_USER`
-* `ASM_DB`: The MySQL database for ASM on `ASM_HOST`
-* `GCP_IDENTITY_PROVDER`: The GCP identity provider
+* `GCP_IDENTITY_PROVIDER`: The GCP identity provider
   for [Workload Identity Federation](https://github.com/google-github-actions/auth#setup) (
   `projects/602944024639/locations/global/workloadIdentityPools/github-actions/providers/github-actions-provider`)
 * `GCP_SERVICE_ACCOUNT`: The GCP service account
   for [Workload Identity Federation](https://github.com/google-github-actions/auth#setup) (
   `github-actions@fmnas-automation.iam.gserviceaccount.com`)
+* `ASM_HOST`: The hostname for the ASM server (`asm.forgetmenotshelter.org`)
+* `ASM_DB`: The MySQL database for ASM on `ASM_HOST` (`asm`)
+* `ASM_DB_USER`: The MySQL user for ASM on `ASM_HOST` (`fmnas_web`)
+
+#### Secrets
+
+The following [repository secrets](https://github.com/fmnas/fmnas-site/settings/secrets/actions) are required:
+
+* `ASM_DB_PASS`: The MySQL password for `ASM_DB_USER`

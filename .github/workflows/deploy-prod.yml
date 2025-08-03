@@ -12,25 +12,25 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-name: Deploy test site
+name: Deploy prod site
 
 on:
   push:
     branches:
-      - test
+      - prod
 
 concurrency:
-  group: deploy-test
+  group: deploy-prod
   cancel-in-progress: true
 
 jobs:
   deploy:
-    name: Deploy test public site
+    name: Deploy prod public site
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
     with:
-      ref: 'test'
-      bucket: $TEST_BUCKET
-      database: $TEST_DATABASE
-      service_suffix: '-test'
+      ref: 'main'
+      bucket: $PROD_BUCKET
+      database: $PROD_DATABASE
+      service_suffix: ''
 
