@@ -6,8 +6,8 @@
 
 import { redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { log } from '$lib/server/logging';
-import { config } from '$lib/server/config';
+import { log } from '$lib/logging';
+import { config } from '$lib/config';
 
 export const GET: RequestHandler = async () => {
 	const target = `//${config.public_domain}/listings.css`;

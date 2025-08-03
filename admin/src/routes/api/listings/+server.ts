@@ -7,7 +7,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getListings } from '$lib/server/storage';
-import { log } from '$lib/server/logging';
+import { log } from '$lib/logging';
 
 
 export const GET: RequestHandler = async ({ url }) => {

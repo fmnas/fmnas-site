@@ -5,7 +5,7 @@
  */
 
 import { json } from '@sveltejs/kit';
-import { config } from '$lib/server/config';
+import { config } from '$lib/config';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async () => json(config);

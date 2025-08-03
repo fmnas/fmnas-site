@@ -28,7 +28,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <nav>
 	<a href="/">Home</a> |
 	<a href="/cats">Cats</a> |
-	<a href="/dogs">Dogs</a>
+	<a href="/dogs">Dogs</a> |
+	<a href="/adopted">Adopted</a>
 </nav>
 
 {@render children?.()}
@@ -62,7 +63,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	:global(h1+a.add) {
 		border: 1px solid green;
 		padding: 0.3em 0.6em;
-		margin: 0.4em;
+		margin: 0.4em auto;
 		color: green;
 		font-size: 120%;
 		border-radius: 0.2em;

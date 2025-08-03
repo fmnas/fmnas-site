@@ -4,8 +4,51 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import type { Listing, ListingContext, Pet, PetContext, Status, TemplateContext } from 'fmnas-functions/src/fmnas';
+import type {
+	Listing, ListingContext, Pet, PetContext, Status, Species
+} from 'fmnas-functions/src/fmnas';
 import { config } from '$lib/config';
+import { browser } from '$app/environment';
+import Handlebars from 'handlebars';
+import { log } from '$lib/logging';
+import { marked } from 'marked';
+
+let partialsCache: Record<string, string> = {};
+let partialsLoaded = false;
+
+export async function getPartials(): Promise<Record<string, string>> {
+	if (partialsLoaded) {
+		return partialsCache;
+	}
+	if (browser) {
+		return await (await fetch('/api/partials')).json();
+	}
+
+	log.debug('Dynamically importing bucket');
+	const { bucket } = await import('$lib/server/storage');
+	log.debug(`Dynamically imported bucket ${bucket.name}`);
+	const [files] = await bucket.getFiles({ prefix: 'partials/' });
+	const partials = {} as Record<string, string>;
+	for (const file of files) {
+		partials[basename(file.name)] = (await file.download()).toString();
+	}
+	partialsLoaded = true;
+	partialsCache = partials;
+	return partials;
+}
+
+export function basename(path: string): string {
+	const filename = path.split('/').pop() ?? '';
+	let end = filename.lastIndexOf('.');
+	if (end <= 0) {
+		end = filename.length;
+	}
+	return filename.substring(0, end);
+}
+
+
+const partialRegistration: Promise<void> = getPartials().then(partials => Object.keys(partials)
+	.forEach(partialName => Handlebars.registerPartial(partialName, partials[partialName])));
 
 export function getStatusConfig(status: string): Status {
 	return config.statuses[status] ?? {};
@@ -41,7 +84,7 @@ export function displayAge(pet: Pet): string {
 	if (!pet.dob) {
 		return '';
 	}
-	const species = config.species[pet.species];
+	const species: Species | undefined = config.species[pet.species];
 	const months = ageInMonths(pet);
 	if (!months || months < 4) {
 		return 'DOB ' + new Date(pet.dob).toLocaleDateString('en-US', {
@@ -99,9 +142,9 @@ function listingTitle(listing: Listing): string {
 
 	const counts = new Map<[string, string], number>();
 	listing.pets.forEach(pet => {
-		const species = config.species[pet.species];
+		const species: Species | undefined = config.species[pet.species];
 		const age = ageInMonths(pet);
-		let key: [string, string] = [pet.species, species.plural ?? pet.species + 's'];
+		let key: [string, string] = [pet.species, species?.plural ?? pet.species + 's'];
 		if (species && age) {
 			if (age < species.young_months) {
 				key = [species.young, species.young_plural];
@@ -141,8 +184,8 @@ function decoratePet(pet: Pet): PetContext {
 	};
 }
 
-function decorateListing(listing: Listing): ListingContext {
-	return {
+async function decorateListing(listing: Listing): Promise<ListingContext> {
+	const decorated = {
 		...listing,
 		id: listing.pets[0].id,
 		statusConfig: getStatusConfig(listing.status),
@@ -151,6 +194,30 @@ function decorateListing(listing: Listing): ListingContext {
 		bonded: listing.pets.length > 1,
 		pets: listing.pets.map(pet => decoratePet(pet)),
 		name: listingName(listing, false),
-		listingHeading: listingName(listing, true, true)
+		listingHeading: listingName(listing, true, true),
+		renderedDescription: listing.description,
+		path: listing.path || listingPath(listing)
 	};
+	try {
+		await partialRegistration;
+		decorated.renderedDescription = Handlebars.compile(decorated.renderedDescription)(decorated);
+		log.info(`Compiled description for listing ${listing.path}`);
+	} catch (e) {
+		log.error(`Error compiling description for listing ${listing.path}`, e);
+	}
+	try {
+		decorated.renderedDescription = await marked.parse(decorated.renderedDescription, { async: true });
+		log.info(`Rendered description for listing ${listing.path}`);
+	} catch (e) {
+		log.error(`Error rendering description for listing ${listing.path}`, e);
+	}
+	return decorated;
+}
+
+export async function partial(partialName: string): Promise<string | undefined> {
+	return (await getPartials())[partialName];
+}
+
+export async function renderDescription(listing: Listing): Promise<string> {
+	return (await decorateListing(listing)).renderedDescription;
 }

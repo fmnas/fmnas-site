@@ -7,7 +7,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getListings } from '$lib/server/storage';
-import { log } from '$lib/server/logging';
+import { log } from '$lib/logging';
 import mysql from 'mysql2/promise';
 import { building } from '$app/environment';
 import type { ImportablePet } from '../../../../../admin_old/admin/client/types';

@@ -4,13 +4,17 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { redirect } from '@sveltejs/kit';
+import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { getPartials } from '$lib/templates';
 import { log } from '$lib/logging';
-import { config } from '$lib/config';
+
 
 export const GET: RequestHandler = async () => {
-	const target = `//${config.public_domain}/common.css`;
-	log.debug(`Redirecting /common.css to ${target}`);
-	return redirect(302, target);
+	try {
+		return json(await getPartials());
+	} catch (e) {
+		log.error(e);
+		return error(500, JSON.stringify(e));
+	}
 };

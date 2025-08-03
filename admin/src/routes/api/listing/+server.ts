@@ -7,7 +7,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { database } from '$lib/server/storage';
-import { log } from '$lib/server/logging';
+import { log } from '$lib/logging';
 
 export const GET: RequestHandler = async ({ url }) => {
 	const path = url.searchParams.get('path');
@@ -59,8 +59,25 @@ export const POST: RequestHandler = async ({ request, url }) => {
 			const doc = await database.collection('listings').add(listing);
 			return json({ id: doc.id, listing });
 		}
+		// TODO: Re-render the listing page!
 	} catch (e: any) {
 		log.error(e);
 		return error(e.status ?? 500, e.message ?? JSON.stringify(e));
 	}
 };
+
+export const DELETE: RequestHandler = async ({request, url}) => {
+	try {
+		const id = url.searchParams.get('id');
+		if (!id) {
+			console.warn(`Got listing DELETE request without an id`);
+			return error(400, 'Invalid request parameters');
+		}
+		console.warn(`Deleting listing ${id}`);
+		await database.collection('listings').doc(id).delete();
+		return json({});
+	} catch (e: any) {
+		log.error(e);
+		return error(e.status ?? 500, e.message ?? JSON.stringify(e));
+	}
+}

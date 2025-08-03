@@ -11,3 +11,5 @@ declare global {
 }
 
 export {};
+
+declare module 'svelte-filepond';
