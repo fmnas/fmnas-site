@@ -8,7 +8,7 @@ import { Storage } from '@google-cloud/storage';
 import type { Bucket } from '@google-cloud/storage';
 import { Firestore } from '@google-cloud/firestore';
 import { building } from '$app/environment';
-import { log } from '$lib/server/logging';
+import { log } from '$lib/logging';
 import type { Listing } from 'fmnas-functions/src/fmnas';
 
 log.debug(`Environment variables in $lib/server/storage: ${JSON.stringify(process.env)}`);
@@ -16,10 +16,14 @@ log.debug(`Environment variables in $lib/server/storage: ${JSON.stringify(proces
 export const bucket = building ? {} as Bucket : new Storage().bucket(process.env.bucket!);
 export const database = building ? {} as Firestore : new Firestore({ databaseId: process.env.database! });
 
-export async function getListings(adopted: boolean, species?: string): Promise<Listing[]> {
+export interface ListingWithId extends Listing {
+	id: string;
+}
+
+export async function getListings(adopted: boolean, species?: string): Promise<ListingWithId[]> {
 	log.debug(`Getting listings for species=${species}, adopted=${adopted}`);
 	let results = (await database.collection('listings').where('status', adopted ? '==' : '!=', 'Adopted')
-		.get()).docs.map(doc => doc.data()) as Listing[];
+		.get()).docs.map(doc => ({ id: doc.id, ...doc.data() })) as ListingWithId[];
 	if (species) {
 		log.debug(`Filtering ${results.length} listings by species ${species}`);
 		results = results.filter(listing => listing.pets.some(pet => pet.species === species));

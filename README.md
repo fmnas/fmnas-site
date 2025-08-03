@@ -394,8 +394,8 @@ npx ts-node handleparse.ts admin/src/lib/config.json.hbs \
   --database="fmnas-test" \
   --asm_db_host="asm.forgetmenotshelter.org" \
   --asm_db="asm" \
-  --asm_db_user="asm" \
-  --asm_db_pass="..."
+  --asm_db_user="fmnas_web" \
+  --asm_db_pass='...'
 ```
 
 Deploy the admin site:
@@ -410,8 +410,8 @@ gcloud beta run deploy fmnas-admin-test \
   --set-env-vars "database=fmnas-test" \
   --set-env-vars "asm_db_host=asm.forgetmenotshelter.org" \
   --set-env-vars "asm_db=asm" \
-  --set-env-vars "asm_db_user=asm" \
-  --set-env-vars "asm_db_pass=..."
+  --set-env-vars "asm_db_user=fmnas_web" \
+  --set-env-vars 'asm_db_pass=...'
 ```
 
 ### Automatic deployment

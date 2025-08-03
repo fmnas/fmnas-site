@@ -18,9 +18,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <script lang="ts">
 	import type { Listing, Pet } from 'fmnas-functions/src/fmnas.d.ts';
 	import { toast } from '@zerodevx/svelte-toast';
-	import { pushState, replaceState } from '$app/navigation';
+	import { beforeNavigate, goto, replaceState } from '$app/navigation';
 	import { config } from '$lib/config';
-	import { displayAge, getStatusConfig, listingName, listingPath } from '$lib/templates';
+	import { displayAge, getStatusConfig, listingName, listingPath, partial, renderDescription } from '$lib/templates';
 	import PetImporter from '$lib/pet_importer.svelte';
 	import FilePond from 'svelte-filepond';
 	import { toPond, fromPond, pondAdapter } from '$lib/photos';
@@ -29,8 +29,39 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
 	import '$lib/inputs.scss';
 	import { removeImported } from '$lib/import';
+	import Throbber from '$lib/throbber.svelte';
 
 	let { path, species }: { path?: string, species?: string } = $props();
+	let id = $state('');
+	let listing = $state(blankListing());
+	let isPair = $state(false);
+	let abandonedFriend: Pet | undefined;
+	let savedListing: string = JSON.stringify(blankListing());
+	let singlePhoto = $state(false);
+	let title = $state(path ? 'Editing listing' : 'New listing');
+	let saving = $state(false);
+	let loading: Promise<any> = $state(getListing());
+	let showHelp = $state(false);
+	$inspect(listing);
+
+	async function clear(): Promise<void> {
+		if (dirty() && !confirm('Discard unsaved changes?')) {
+			return;
+		}
+		path = undefined;
+		id = '';
+		species = undefined;
+		listing = blankListing();
+		isPair = false;
+		abandonedFriend = undefined;
+		savedListing = JSON.stringify(listing);
+		singlePhoto = false;
+		title = 'New listing';
+		saving = false;
+		loading = getListing();
+		showHelp = false;
+		await goto('/new');
+	}
 
 	function ucfirst(s: string): string {
 		return s.charAt(0).toUpperCase() + s.slice(1);
@@ -58,25 +89,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		};
 	}
 
-	let id = $state('');
-	let listing = $state(blankListing());
-	let isPair = $state(false);
-	let abandonedFriend: Pet | undefined;
-	let savedListing: string = JSON.stringify(blankListing());
-	let singlePhoto = $state(false);
-	$inspect(listing);
-
 	function dirty(): boolean {
 		return JSON.stringify(listing) !== savedListing;
 	}
 
-	let title = $state(path ? 'Editing listing' : 'New listing');
-
 	async function getListing() {
 		console.debug(`getListing ${path}`);
 		if (!path) {
+			listing = blankListing();
 			title = 'New listing';
-			listing.description = 'TODO: DEFAULT';
+			listing.description = (await partial('default')) ?? '';
 			savedListing = JSON.stringify(listing);
 			return;
 		}
@@ -90,9 +112,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		title = 'Editing ' + listingName(listing);
 	}
 
-	let saving = $state(false);
 
 	async function save() {
+		if (listing.pets.some(pet => !pet.id || !pet.name || !pet.species)) {
+			toast.push('Please specify id, name, and species.');
+			return;
+		}
+
 		if (listing.pets.length < 1) {
 			toast.push(`Something is very wrong.`);
 			return;
@@ -141,25 +167,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		saving = false;
 	}
 
-	let deleteModal = $state(false);
-
-	function deleteListing() {
-		if (!id) {
+	async function deleteListing() {
+		if (!id && !dirty()) {
 			return clear();
 		}
-		toast.push('idk');
-	}
-
-	let abandonModal = $state(false);
-
-	function clear() {
-		abandonedFriend = undefined;
-		listing = blankListing();
-		savedListing = JSON.stringify(blankListing());
-		title = 'New listing';
-		id = '';
-		isPair = false;
-		pushState('/new', {});
+		if (!confirm(
+			'Delete this listing? If the pet has been adopted, you should change the status to Adopted instead.')) {
+			return;
+		}
+		const res = await fetch(`/api/listing?${new URLSearchParams({ id }).toString()}`, { method: 'DELETE' });
+		if (!res.ok) {
+			toast.push(res.statusText);
+		} else {
+			await goto('/');
+		}
 	}
 
 	function handlePairChange() {
@@ -181,19 +202,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		listing.pets = listing.pets.reverse();
 	}
 
-	// Don't quite remember the point of these. Doing a direct port of an old implementation.
-	// TODO: clean up
-	let validated = $state(false);
-	let sexInteracted = $state(false);
 
 	function sexClick(e: MouseEvent | KeyboardEvent, pet: Pet, sex: string, blur: boolean = true) {
 		e.preventDefault();
 		e.stopPropagation();
 		// Allow deselecting a sex rather than just selecting one.
 		pet.sex = pet.sex === sex ? '' : sex;
-		sexInteracted = true;
 		const target = e.target as HTMLElement | null;
-		target?.blur();
+		if (blur) {
+			target?.blur();
+		}
 	}
 
 	function sexKeyup(e: KeyboardEvent, pet: Pet, sex: string) {
@@ -210,7 +228,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		species = listing.pets[0]?.species ?? species;
 	});
 
-	const loading = getListing();
+	beforeNavigate(({ cancel }) => {
+		console.debug('beforeNavigate');
+		if (dirty() && !confirm('Discard unsaved changes?')) {
+			console.debug('cancel()');
+			cancel();
+		}
+	});
 
 </script>
 
@@ -219,16 +243,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </svelte:head>
 
 {#await loading}
-	loading
+	<Throbber />
 {:then _}
 	<section class={['metadata', isPair && 'pair']}>
-		<form onsubmit={save} oninvalid={() => {validated = true;}} class={[validated && 'validated']}>
+		<form>
 			<div class="buttons">
-				<button class="save" disabled={saving || !dirty()}>
+				<button class="save" onclick={async (e) => {e.preventDefault(); await save();}} disabled={saving || !dirty()}>
 					{#if saving}Saving...{:else }Save{/if}
 				</button>
-				<button class="delete" onclick={(e) => {e.preventDefault(); deleteModal = true}}>Delete</button>
-				<button class="new" onclick={(e) => {e.preventDefault(); dirty() ? abandonModal = true : clear()}}>New</button>
+				<button class="delete" onclick={async (e) => {e.preventDefault(); await deleteListing();}}>Delete</button>
+				<button class="new" onclick={async (e) => {e.preventDefault(); await clear();}}>New</button>
 			</div>
 			<div class="bondage">
 				<label>
@@ -295,11 +319,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<li class="sex">
 					{#each listing.pets as pet, index}
 						<label for="sexes_{index}">Sex</label>
-						<fieldset id="sexes_{index}" class={['sexes', sexInteracted || validated && 'validated']}>
+						<fieldset id="sexes_{index}" class="sexes">
 							{#each ['male', 'female'] as sex}
 								<label>
-									<input bind:group={pet.sex} value={sex} required type="radio" autocomplete="off"
-										onchange={() => {sexInteracted = true;}} />
+									<input bind:group={pet.sex} value={sex} required type="radio" autocomplete="off" />
 									<abbr role="none" title={ucfirst(sex)} onclick={(e) => sexClick(e, pet, sex)}
 										onkeyup={(e) => sexKeyup(e, pet, sex)}>
 										{sex.charAt(0).toUpperCase()}
@@ -421,7 +444,54 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			</tbody>
 		</table>
 	</section>
+
+	<div class="description">
+		<div class="photos">
+			<FilePond
+				acceptedFileTypes={['image/*']}
+				allowMultiple={true}
+				dropOnPage={true}
+				labelIdle="Click or drag/drop to add photos"
+				allowReorder={true}
+				itemInsertLocation="after"
+				imagePreviewMaxHeight={300}
+				server={pondAdapter(listing)}
+				files={toPond(listing.photos)}
+				onprocessfile={async (error: FilePondErrorDescription | null, file: FilePondFile) => {
+					const converted = await fromPond(error, file, 480);
+					if (converted) listing.photos.push(converted);
+				}}
+				onreorderfiles={async (files: FilePondFile[]) => {
+					listing.photos = (await Promise.all(files.map(f => fromPond(null, f, 480)))).filter(p => !!p)
+				}}
+			/>
+		</div>
+		<div class="editor">
+			<button onclick={() => showHelp = true} class="help">Formatting help</button>
+			<textarea bind:value={listing.description}></textarea>
+		</div>
+		<div class="preview">
+			{#await renderDescription(listing)}
+				<Throbber />
+			{:then description}
+				{@html description}
+			{/await}
+		</div>
+	</div>
 {/await}
+
+{#if showHelp}
+	<div class="modal" onclick={() => showHelp = false} role="none">
+		<article onclick={(e) => e.stopPropagation()} role="none">
+			<div class="body">
+				help
+			</div>
+			<div class="buttons">
+				<button onclick={() => showHelp = false}>Close</button>
+			</div>
+		</article>
+	</div>
+{/if}
 
 <style lang="scss">
 	@use './inputs';
@@ -538,7 +608,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		}
 
 		fieldset.sexes input:not(:checked):not(:invalid) + abbr:hover,
-		fieldset.sexes:not(.validated) input:not(:checked):invalid + abbr:hover,
+		fieldset.sexes input:not(:checked):invalid + abbr:hover,
 		button.save:hover {
 			background-color: var(--focus-color);
 			color: var(--background-color);
@@ -559,12 +629,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			box-shadow: inset 0 0 2px 1px var(--focus-color), inset 2px 2px 3px var(--shadow-color);
 		}
 
-		/* user-invalid isn't ready yet */
-		&.validated input:invalid, fieldset.sexes.validated input:invalid + abbr {
-			color: var(--error-color);
-		}
-
-		&.validated input:invalid, &.validated select:invalid, fieldset.sexes.validated input:invalid + abbr,
 		button.delete:hover {
 			border: none;
 			box-shadow: inset 0 0 2px 1px var(--error-color);
@@ -616,6 +680,113 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 		:global(.filepond--image-preview) {
 			background: none;
+		}
+	}
+
+	div.description {
+		display: flex;
+		justify-content: space-between;
+		@media (max-width: 1100px) {
+			flex-wrap: wrap;
+		}
+
+		div.photos {
+			min-width: 30vw;
+			max-width: 480px;
+			@media (max-width: 1100px) {
+				min-width: 100vw;
+				max-width: 100vw;
+			}
+		}
+
+		@media (max-width: 750px) {
+			flex-direction: column;
+		}
+
+		div.editor {
+			flex-grow: 1;
+			margin: 0 0.3rem;
+			display: flex;
+			flex-direction: column;
+
+			button {
+				margin-bottom: 0.3rem;
+			}
+
+			textarea {
+				min-height: 20em;
+				resize: vertical;
+			}
+		}
+	}
+
+	@media (min-width: 750px) and (min-height: 880px) {
+		:global(body) {
+			display: flex;
+			width: 100%;
+			height: 100vh;
+			flex-direction: column;
+			align-items: stretch;
+		}
+
+		div.description {
+			flex: 1;
+			min-height: 200px;
+
+			> * {
+				overflow-y: auto;
+			}
+		}
+
+		div.editor {
+			flex-grow: 1;
+		}
+
+		div.editor > textarea {
+			flex-grow: 1;
+		}
+	}
+
+	div.preview {
+		max-width: 100vw;
+		box-sizing: border-box;
+		@media (min-width: 750px) {
+			max-width: 30vw;
+		}
+		padding: 0.3rem;
+		text-align: left;
+	}
+
+	div.modal {
+		position: fixed;
+		top: 0;
+		left: 0;
+		z-index: 5;
+		width: 100vw;
+		height: 100vh;
+		background-color: #0003;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+
+		> article {
+			background-color: #fffffff6;
+			padding: 1rem;
+			border-radius: 0.5rem;
+			border: 1px solid red;
+			max-width: 95vw;
+			max-height: 95vh;
+
+			> div.buttons {
+				display: flex;
+				justify-content: space-evenly;
+
+				button {
+					font-size: 120%;
+					padding: 0.2em 0.6em;
+					margin: 1rem 0.2em 0;
+				}
+			}
 		}
 	}
 </style>

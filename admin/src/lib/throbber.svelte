@@ -16,17 +16,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import Listings from '$lib/listings.svelte';
-	import { config } from '$lib/config';
 
-	import type { PageProps } from './$types';
-
-	let { params }: PageProps = $props();
-
-	let species = $derived(Object.keys(config.species).find(
-		s => config.species[s].plural === params.species) ?? params.species);
 </script>
 
-<h1>Adoptable {params.species}</h1>
-<a href="/new?species={species}" class="add">Add</a>
-<Listings {species} />
+<div class="loading">
+	<img src="/loading.png" alt="Loading...">
+</div>
+
+<style lang="scss">
+	div.loading {
+		img {
+			max-height: max-content;
+		}
+	}
+</style>

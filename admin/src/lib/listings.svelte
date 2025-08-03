@@ -20,8 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	import { config } from '$lib/config';
 	import { toast } from '@zerodevx/svelte-toast';
 	import { smallestSize } from '$lib/photos';
+	import Throbber from '$lib/throbber.svelte';
 
-	let { species = $bindable(), adopted = $bindable() }: {
+	let { species, adopted }: {
 		species?: string,
 		adopted?: boolean,
 	} = $props();
@@ -29,6 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	let bulkUpdateStatus = $state('');
 
 	interface SelectableListing extends Listing {
+		id: string;
 		selected?: boolean;
 	}
 
@@ -50,9 +52,38 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	let currentlyUpdating = $state(false);
 
 	async function updateSelected(): Promise<void> {
+		if (!bulkUpdateStatus) {
+			throw new Error('wat');
+		}
 		currentlyUpdating = true;
-		toast.push('idk');
+		try {
+			await Promise.all(listings.filter(listing => listing.selected).map(async (listing) => {
+				listing.selected = false;
+				selectedCount--;
+				if (listing.status === bulkUpdateStatus) {
+					return;
+				}
+				listing.status = bulkUpdateStatus;
+				const res = await fetch(`/api/listing/?${new URLSearchParams({ id: listing.id }).toString()}`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify(listing)
+				});
+				if (!res.ok) {
+					toast.push(`Error updating ${listing.path}: ${res.statusText}`);
+					return;
+				}
+				if ((bulkUpdateStatus === 'Adopted') !== adopted) {
+					listings.splice(listings.indexOf(listing), 1);
+				}
+			}));
+		} catch (e) {
+			toast.push(JSON.stringify(e));
+		}
 		currentlyUpdating = false;
+
 	}
 
 	function toggle(listing: SelectableListing): void {
@@ -62,9 +93,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </script>
 
 {#await getListings()}
-	<div class="loading">
-		<img src="/loading.png" alt="Loading...">
-	</div>
+	<Throbber />
 {:then _}
 	<div class="bulk">
 		{selectedCount} listing{selectedCount === 1 ? '' : 's'} selected:
@@ -164,12 +193,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 	td.options a {
 		padding: 0.4em;
-	}
-
-	div.loading {
-		img {
-			max-height: max-content;
-		}
 	}
 
 	div.bulk {

@@ -88,7 +88,7 @@ export interface PetContext extends Pet {
 export interface ListingContext extends Listing {
 	pets: PetContext[];
 	statusConfig: Status;
-	renderedDescription?: string;
+	renderedDescription: string;
 	id: string;
 	title: string;
 	collapsedAge: string;
