@@ -139,7 +139,7 @@ export async function renderForm(formConfig: Form): Promise<RenderResult> {
 		if (!path) {
 			throw new Error(`No path for form: ${JSON.stringify(formConfig)}`);
 		}
-		await writeFile(path, formPage({ ...config, formConfig }), 'text/html');
+		await writeFile(path, formPage({ ...config, form: formConfig }), 'text/html');
 		log.info(`Rendered ${path}`);
 		return { path };
 	} catch (error) {
