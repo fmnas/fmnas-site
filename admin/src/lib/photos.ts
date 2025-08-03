@@ -22,6 +22,8 @@ export function smallestSize(photo: Readonly<Photo>): string {
 	return [...photo.sizes].sort((a, b) => a.scale - b.scale)[0]?.path ?? photo.path;
 }
 
+const previewHeight = 300;
+
 registerPlugin(
 	FilePondPluginImageExifOrientation,
 	FilePondPluginImagePreview,
@@ -38,19 +40,38 @@ export function toPond(photos: Array<Photo | undefined>): Array<FilePondInitialF
 	}));
 }
 
+async function cacheAdditionalSize(photo: Photo, height: number, scale: number): Promise<void> {
+	throw new Error('idk'); // TODO
+}
+
+async function addIntrinsicScale(photo: Photo, height: number): Promise<void> {
+	throw new Error('idk'); // TODO
+}
+
 export async function fromPond(error: FilePondErrorDescription | null, file: FilePondFile,
-	height: number): Promise<Photo | undefined> {
+	heights: number[]): Promise<Photo | undefined> {
 	if (error) {
 		console.error(error);
 		toast.push(error.body);
 		return undefined;
 	}
-	console.debug(file.serverId, height);
-	// TODO: cache additional sizes
-	return {
+	if (!file.serverId) {
+		return undefined;
+	}
+	heights.push(previewHeight);
+	const photo = {
 		path: file.serverId,
 		sizes: []
 	};
+	if (!heights.length) {
+		return photo;
+	}
+	const mainHeight = heights[0];
+	heights.push(mainHeight * 2, mainHeight * 4);
+	// Kick off asynchronous backfill of more heights.
+	Promise.all(heights.map((h) => cacheAdditionalSize(photo, h, h / mainHeight)))
+		.then(() => addIntrinsicScale(photo, mainHeight).then());
+	return photo;
 }
 
 export async function deletePhoto(photo: Photo): Promise<void> {
@@ -74,7 +95,12 @@ const pondProcess: (listing: Listing) => ProcessServerConfigFunction = (listing)
 	let request: XMLHttpRequest | undefined = undefined;
 	fetch(`/api/file?${new URLSearchParams({ path: requestedPath }).toString()}`)
 		.then((fetchUrlResponse) => fetchUrlResponse.json().then(
-			({ signedUrl, fileExists, metadata, uploadPath }: { signedUrl: string, fileExists: boolean, metadata: FileMetadata, uploadPath: string }) => {
+			({ signedUrl, fileExists, metadata, uploadPath }: {
+				signedUrl: string,
+				fileExists: boolean,
+				metadata: FileMetadata,
+				uploadPath: string
+			}) => {
 				console.debug({ signedUrl, fileExists, metadata, uploadPath });
 				if (!fetchUrlResponse.ok) {
 					console.debug('calling error callback');
@@ -120,13 +146,13 @@ const pondProcess: (listing: Listing) => ProcessServerConfigFunction = (listing)
 const pondLoad: LoadServerConfigFunction = (source, load, error, progress, abort, headers) => {
 	const path: string = source;
 	console.debug(`Loading ${path} from bucket`);
-	fetch(`/api/file?${new URLSearchParams({ path: path + '.300.jpg' }).toString()}`).then((res) => {
+	fetch(`/api/file?${new URLSearchParams({ path: `${path}.${previewHeight}.jpg` }).toString()}`).then((res) => {
 		if (!res.ok) {
 			return error(res.statusText);
 		}
 		res.json().then(({ fileExists, publicUrl }) => {
 			if (fileExists) {
-				console.debug(`Using cached ${path}.300.jpg`);
+				console.debug(`Using cached ${path}.${previewHeight}.jpg`);
 				fetch(publicUrl).then((res) => {
 					res.blob().then(load).catch(error);
 				});
