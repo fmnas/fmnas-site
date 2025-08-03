@@ -23,22 +23,37 @@ export const resizePhoto: HttpFunction = async (req, res) => {
 	}
 
 	const scaledPath = `${path}.${height}.jpg`;
-	if (await storage.bucket(bucket).file(`${path}.${height}.jpg`).exists()) {
+	const [alreadyExists] = await storage.bucket(bucket).file(`${path}.${height}.jpg`).exists();
+	if (alreadyExists) {
 		logger.debug('Scaled image already exists');
-		res.status(200).send('true');
+		res.status(200).send(JSON.stringify({ path: scaledPath, height: height }));
 		return;
 	}
 
 	logger.debug('Downloading original image');
 	const file = storage.bucket(bucket).file(path);
-	if (!(await file.exists())) {
+	const [exists] = await file.exists();
+	if (!exists) {
 		res.status(404).send(`File gs://${bucket}/${path} not found\n`);
 		return;
 	}
+
+	let intrinsicHeight = file.metadata.metadata?.height as number|string|undefined;
+	if (typeof intrinsicHeight === 'string') {
+		intrinsicHeight = parseInt(intrinsicHeight);
+	}
+	logger.debug(`Founr intrinsic height ${intrinsicHeight} in metadata`);
+	if (intrinsicHeight && intrinsicHeight <= height) {
+		logger.debug(`Refusing to upscale ${path} from ${intrinsicHeight} to ${height}`);
+		res.status(200).send(JSON.stringify({path, height: intrinsicHeight}));
+		return;
+	}
+
 	const [bytes] = await file.download();
 	const image = sharp(bytes);
-	const intrinsicHeight = (await image.metadata()).height;
+	intrinsicHeight = (await image.metadata()).height;
 	if (file.metadata.metadata?.height !== intrinsicHeight) {
+		logger.debug(`Setting height for ${path} to ${intrinsicHeight}`);
 		try {
 			await file.setMetadata({ metadata: { height: intrinsicHeight } });
 		} catch (e) {
@@ -47,11 +62,12 @@ export const resizePhoto: HttpFunction = async (req, res) => {
 	}
 
 	if (intrinsicHeight <= height) {
-		res.status(200).send('false');
+		logger.debug(`Refusing to upscale ${path} from ${intrinsicHeight} to ${height}`);
+		res.status(200).send(JSON.stringify({ path, height: intrinsicHeight }));
 		return;
 	}
 
-	const scaledBytes = await image.resize({height}).jpeg().toBuffer();
+	const scaledBytes = await image.resize({ height }).jpeg().toBuffer();
 	await writeFile(bucket, scaledPath, scaledBytes, 'image/jpeg');
-	res.status(200).send('true');
+	res.status(200).send(JSON.stringify({ path: scaledPath, height: height }));
 };

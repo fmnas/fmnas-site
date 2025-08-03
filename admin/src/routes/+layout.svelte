@@ -29,7 +29,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<a href="/">Home</a> |
 	<a href="/cats">Cats</a> |
 	<a href="/dogs">Dogs</a> |
-	<a href="/adopted">Adopted</a>
+	<a href="/adopted">Adopted</a> |
+	<a href="/maintenance">Maintenance</a>
 </nav>
 
 {@render children?.()}

@@ -5,8 +5,8 @@
  */
 
 import {http} from '@google-cloud/functions-framework';
-import {resizePhoto} from './photos';
-import {migrateListings} from './migration';
+import {resizePhoto} from './photos.js';
+import {migrateListings} from './migration.js';
 
 http('resize-photo', resizePhoto);
 http('migrate-listings', migrateListings);
