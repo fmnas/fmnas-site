@@ -141,7 +141,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					<td class="name">{pet.name}</td>
 					<td class="species">{pet.species}</td>
 					<td class="breed">{pet.breed}</td>
-					<td class="dob">{new Date(pet.dob).toLocaleDateString('en-US', {timeZone: 'UTC'})}</td>
+					<td class="dob">{new Date(pet.dob).toLocaleDateString('en-US', { timeZone: 'UTC' })}</td>
 					<td class="sex">{pet.sex}</td>
 					{#if listing.pets.length === 1}
 						<td class="fee">{listing.fee}</td>
@@ -189,6 +189,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 	img {
 		max-width: calc($row-height * 2 / 3);
+		object-fit: contain;
 	}
 
 	td.options a {
