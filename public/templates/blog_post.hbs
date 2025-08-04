@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 {{>header}}
 {{#with post}}
 	<article>
-		<h2>{{post.title}}</h2>
+		<h2>{{title}}</h2>
 		{{{rendered}}}
 		<aside class="metadata">
 			Posted {{#if author}}by {{author}},{{/if}}
@@ -36,6 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		</aside>
 	</article>
 	<section class="comments">
+		<h3>Comments</h3>
 		{{>comments}}
 	</section>
 {{/with}}

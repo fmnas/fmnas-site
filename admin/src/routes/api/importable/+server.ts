@@ -82,12 +82,13 @@ export const GET: RequestHandler = async () => {
 		`;
 		const [rows, _] = await source.execute(query);
 		const remotePets = rows as ImportablePet[];
-		log.debug(`Got ${remotePets.length} importable pets`);
+		log.debug(`Got ${remotePets.length} importable pets: ${remotePets.map(pet => pet.id).sort().join(',')}`);
 
 		log.debug('Getting local adoptable listings');
-		const localListings = await getListings(false);
+		const localListings = [...await getListings(false), ...await getListings(true)];
 		const localPets = new Set(localListings.flatMap(l => l.pets.map(p => p.id)));
-		log.debug(`Got ${localListings.length} listings containing ${localPets.size} pets`);
+		log.debug(`Got ${localListings.length} listings containing ${localPets.size} pets: ${[...localPets.values()].sort()
+			.join(',')}`);
 
 		return json(remotePets.filter(p => !localPets.has(p.id) && (!p.friend_id || !localPets.has(p.friend_id))));
 	} catch (e) {

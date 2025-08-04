@@ -9,6 +9,7 @@ import type { RequestHandler } from './$types';
 import { database } from '$lib/server/storage';
 import { log } from '$lib/logging';
 import { renderListing, renderListings } from '$lib/server/templates';
+import type { Listing } from 'fmnas-functions/src/fmnas';
 
 export const GET: RequestHandler = async ({ url }) => {
 	const path = url.searchParams.get('path');
@@ -39,7 +40,7 @@ export const GET: RequestHandler = async ({ url }) => {
 export const POST: RequestHandler = async ({ request, url }) => {
 	try {
 		const id = url.searchParams.get('id');
-		const listing = await request.json();
+		const listing = await request.json() as Listing;
 		if (!listing) {
 			console.warn(`Got listing POST body: ${listing}`);
 			return error(400, 'Invalid request body');
@@ -54,14 +55,16 @@ export const POST: RequestHandler = async ({ request, url }) => {
 				return error(404, `Listing ${id} not found`);
 			}
 			if (JSON.stringify(doc.data()) !== JSON.stringify(listing)) {
-				await docRef.update(listing);
+				await docRef.update({...listing});
 			}
 		} else {
 			const doc = await database.collection('listings').add(listing);
 			result.id = doc.id;
 		}
 		await renderListing(listing);
-		await renderListings(listing.species);
+		for (const species of new Set(listing.pets.map((pet => pet.species))).values()) {
+			await renderListings(species);
+		}
 		return json(result);
 	} catch (e: any) {
 		log.error(e);

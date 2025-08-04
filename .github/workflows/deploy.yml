@@ -65,7 +65,7 @@ jobs:
         run: npm run build
       - name: Upload to GCS bucket
         run: |
-          gcloud storage rsync ./public gs://${{ inputs.bucket }}/ --recursive
+          gcloud storage rsync ./public gs://${{ inputs.bucket }}/ --recursive --cache-control no-cache
       - id: resize
         name: Deploy resize-photo function
         run: |

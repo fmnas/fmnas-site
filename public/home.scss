@@ -23,7 +23,7 @@ header, footer {
 }
 
 div.home {
-	--border-color: #ccc;
+	--border-color: var(--low-contrast-border-color);
 	$padding: 0.4rem;
 	display: grid;
 	grid-template-columns: [start] 1fr [left] minmax(2.5in, 3.5in) [center] minmax(5in, 8.5in) [right] minmax(2.5in, 3.5in) 1fr [end];
@@ -114,8 +114,8 @@ div.home {
 			> p {
 				grid-column: start / end;
 				grid-row: 1;
-				@include center-justify.center-justify;
 				margin: 0.5rem;
+				@include center-justify.center-justify;
 
 				> strong {
 					font: var(--heading-font);

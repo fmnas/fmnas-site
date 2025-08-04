@@ -16,7 +16,7 @@
  */
 
 table.listings {
-	--border-color: #ccc;
+	--border-color: var(--low-contrast-border-color);
 	--adoptable-color: var(--background-color-2);
 	--pending-color: #ddd;
 	--info-color: var(--link-color);
@@ -99,7 +99,7 @@ table.listings {
 					display: inline-block;
 					box-sizing: border-box;
 
-					&:first-of-type&:not(:only-of-type) {
+					&:not(:last-of-type) {
 						margin-right: calc(#{$gap} + 2 * var(--side-padding));
 					}
 				}
@@ -158,7 +158,7 @@ table.listings {
 					position: absolute;
 					color: var(--text-color);
 					font-size: 10pt;
-					background-color: #fffffff6;
+					background-color: var(--background-color);
 					--width: min(calc(100% + 2 * var(--side-padding) + min(1vw, 20%) + #{$gap}), 450px);
 					width: var(--width);
 					left: calc((var(--width) - 100%) / -2);
@@ -196,7 +196,7 @@ table.listings {
 
 					&.active aside.explanation {
 						z-index: 2;
-						opacity: 1;
+						opacity: 0.95;
 						transition: opacity 200ms ease-in;
 						cursor: default;
 						visibility: visible;
@@ -250,18 +250,7 @@ table.listings {
 	}
 
 	tr:not(.soon) th.name a {
-		&:not(tr.pair a)::after, li:nth-of-type(2)::after {
-			content: ' »';
-		}
-
-		@media (min-width: 450px) {
-			&[id]:not([id=''])::after, li[id]:nth-of-type(2):not([id=''])::after {
-				content: ' (id#' attr(id) ') »';
-			}
-		}
-
 		text-decoration: none;
-
 		border-bottom: 1pt solid transparent;
 
 		&:hover {
@@ -273,6 +262,16 @@ table.listings {
 
 			&:active {
 				border-bottom-color: var(--active-color);
+			}
+		}
+
+		&:not(tr.pair a)::after, li:nth-of-type(2)::after {
+			content: ' »';
+		}
+
+		@media (min-width: 450px) {
+			&[id]:not([id=''])::after, li[id]:nth-of-type(2):not([id=''])::after {
+				content: ' (id#' attr(id) ') »';
 			}
 		}
 	}

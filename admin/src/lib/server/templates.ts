@@ -11,6 +11,7 @@ import { basename, decorateListing, decoratePost, partialRegistration, capitaliz
 import type { TemplateDelegate } from 'handlebars';
 import type { Listing, Species, Form, ListingContext, BlogPost } from 'fmnas-functions/src/fmnas';
 import { log } from '$lib/logging';
+import { building } from '$app/environment';
 
 await partialRegistration;
 Handlebars.registerHelper('capitalizeFirstLetter', capitalizeFirstLetter);
@@ -30,14 +31,14 @@ Handlebars.registerHelper('pluralWithYoung', (species?: Species) => {
 	return capitalizeFirstLetter(species.plural) + ' & ' + capitalizeFirstLetter(species.young_plural);
 });
 const getTemplate = async (t: string) => Handlebars.compile(
-	(await bucket.file(`templates/${t}.hbs`).download()).toString());
+	building ? '' : (await bucket.file(`templates/${t}.hbs`).download()).toString());
 const listingPage = await getTemplate('listing');
 const listingsPage = await getTemplate('listings');
 const blogPage = await getTemplate('blog');
 const blogPostPage = await getTemplate('blog_post');
 const formPage = await getTemplate('form');
 
-export const rootTemplates = await (async () => {
+export const rootTemplates = building ? {} : await (async () => {
 	const templates = {} as Record<string, TemplateDelegate>;
 	const [files] = await bucket.getFiles({ matchGlob: '*.hbs' });
 	for (const file of files) {

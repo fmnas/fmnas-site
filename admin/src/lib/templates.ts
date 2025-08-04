@@ -8,7 +8,7 @@ import type {
 	Listing, ListingContext, Pet, PetContext, Status, Species, BlogPost
 } from 'fmnas-functions/src/fmnas';
 import { config } from '$lib/config';
-import { browser } from '$app/environment';
+import { browser, building } from '$app/environment';
 import Handlebars from 'handlebars';
 import { log } from '$lib/logging';
 import { marked } from 'marked';
@@ -17,6 +17,9 @@ let partialsCache: Record<string, string> = {};
 let partialsLoaded = false;
 
 export async function getPartials(): Promise<Record<string, string>> {
+	if (building) {
+		return {};
+	}
 	if (partialsLoaded) {
 		return partialsCache;
 	}
@@ -24,10 +27,10 @@ export async function getPartials(): Promise<Record<string, string>> {
 		return await (await fetch('/api/partials')).json();
 	}
 
-	log.debug('Dynamically importing bucket');
-	const { bucket } = await import('$lib/server/storage');
-	log.debug(`Dynamically imported bucket ${bucket.name}`);
-	const [files] = await bucket.getFiles({ prefix: 'partials/' });
+	log.debug('Dynamically importing GCS');
+	const { Storage } = await import('@google-cloud/storage');
+	const storage = new Storage();
+	const [files] = await storage.bucket(config.bucket).getFiles({ prefix: 'partials/' });
 	const partials = {} as Record<string, string>;
 	for (const file of files) {
 		partials[basename(file.name)] = (await file.download()).toString();

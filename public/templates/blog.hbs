@@ -30,14 +30,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	{{#each posts}}
 		<li>
 			<a href="/blog/{{path}}">
-			{{#each photos}}
-				{{#if @first}}
-					{{>photo height='64'}}
-				{{/if}}
-			{{/each}}
+				{{#each photos}}
+					{{#if @first}}
+						{{>photo height='64'}}
+					{{/if}}
+				{{/each}}
 				<span>{{title}}</span>
+				<time datetime="{{date}}">posted {{localeDate date}}</time>
 			</a>
-			<time datetime="{{date}}">({{localeDate date}})</time>
 		</li>
 	{{/each}}
 </ul>

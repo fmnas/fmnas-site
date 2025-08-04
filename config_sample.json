@@ -71,10 +71,6 @@
 		{
 			"display": "Facebook",
 			"href": "https://www.facebook.com/ForgetMeNotAnimalShelter/"
-		},
-		{
-			"display": "Blog",
-			"href": "/blog"
 		}
 	],
 	"is_test_site": true,

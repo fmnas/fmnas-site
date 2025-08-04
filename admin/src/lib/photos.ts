@@ -13,7 +13,6 @@ import FilePondPluginImageExifOrientation from 'filepond-plugin-image-exif-orien
 import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
 import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type';
 import type { FilePondErrorDescription, FilePondFile, FilePondServerConfigProps } from 'filepond';
-import { toast } from '@zerodevx/svelte-toast';
 import { listingPath } from '$lib/templates';
 import { v4 as uuidv4 } from 'uuid';
 import type { FileMetadata } from '@google-cloud/storage';
@@ -73,17 +72,10 @@ async function cacheAdditionalSize(photo: Photo, height: number, scale: number):
 	}
 }
 
-export const pendingOperations = new Set<string>();
-
 export async function fromPond(error: FilePondErrorDescription | null, file: FilePondFile,
-	heights: number[]): Promise<Photo | undefined> {
-	if (error) {
-		console.error(error);
-		toast.push(error.body);
-		return undefined;
-	}
+	heights: number[]): Promise<Photo> {
 	if (!file.serverId) {
-		return undefined;
+		throw new Error('File given to fromPond without a path');
 	}
 	const photo = {
 		path: file.serverId,
@@ -92,23 +84,13 @@ export async function fromPond(error: FilePondErrorDescription | null, file: Fil
 	if (!heights.length) {
 		return photo;
 	}
-	const operationId = uuidv4();
-	pendingOperations.add(operationId);
-	try {
-		const mainHeight = heights[0];
-		const newHeights = new Set(heights);
-		newHeights.add(previewHeight);
-		newHeights.add(mainHeight * 2);
-		newHeights.add(mainHeight * 4);
-		// TODO: Get this to work asynchronously.
-		// It seems like the photo object gets copied before going into the pets array,
-		// so if we do cacheAdditionalSize.then() the asynchronous update doesn't get propagated to the
-		// listing.
-		await Promise.all(newHeights.values().map((h) => cacheAdditionalSize(photo, h, h / mainHeight)));
-		return photo;
-	} finally {
-		pendingOperations.delete(operationId);
-	}
+	const mainHeight = heights[0];
+	const newHeights = new Set(heights);
+	newHeights.add(previewHeight);
+	newHeights.add(mainHeight * 2);
+	newHeights.add(mainHeight * 4);
+	await Promise.all(newHeights.values().map((h) => cacheAdditionalSize(photo, h, h / mainHeight)));
+	return photo;
 }
 
 export async function deletePhoto(photo: Photo): Promise<void> {
