@@ -71,7 +71,7 @@ gcloud auth application-default login --impersonate-service-account dev-site@fmn
 Then run the dev server with:
 
 ```shell
-project=$(gcloud config get-value project) bucket=fmnas_test database=fmnas-test \
+project=fmnas-automation bucket=fmnas_test database=fmnas-test \
 RESIZE_ENDPOINT=$(gcloud run services describe resize-photo-test --format 'value(status.url)' --region us-west1) \
 asm_db_host=asm.forgetmenotshelter.org asm_db=asm asm_db_user=fmnas_web asm_db_pass=... \
 npm --workspace=admin run dev
@@ -103,7 +103,7 @@ npm run build
 Upload the generated files to the GCS bucket:
 
 ```shell
-gcloud storage rsync ./public gs://fmnas_test/ --recursive
+gcloud storage rsync ./public gs://fmnas_test/ --recursive --cache-control no-cache
 ```
 
 Deploy the `resize-photo` Cloud Function:
@@ -127,7 +127,7 @@ gcloud beta run deploy fmnas-admin-test \
   --no-allow-unauthenticated --iap \
   --automatic-updates --base-image nodejs22 \
   --timeout 3600 \
-  --set-env-vars "project=$(gcloud config get-value project)" \
+  --set-env-vars "project=fmnas-automation" \
   --set-env-vars "bucket=fmnas_test" \
   --set-env-vars "database=fmnas-test" \
   --set-env-vars "RESIZE_ENDPOINT=$(gcloud run services describe resize-photo-test --format 'value(status.url)' --region us-west1)" \
@@ -174,3 +174,42 @@ The following [repository variables](https://github.com/fmnas/fmnas-site/setting
 The following [repository secrets](https://github.com/fmnas/fmnas-site/settings/secrets/actions) are required:
 
 * `ASM_DB_PASS`: The MySQL password for `ASM_DB_USER`
+
+### GCP notes
+
+Worth noting these routing rules on the for forgetmenotshelter.org:
+
+```
+defaultService: projects/fmnas-automation/global/backendBuckets/fmnas-prod
+name: prod-matcher
+routeRules:
+- description: Rewrite old Cats pages
+  matchRules:
+  - pathTemplateMatch: /Cats/{path=**}
+  priority: 1
+  service: projects/fmnas-automation/global/backendBuckets/fmnas-prod
+  routeAction:
+    urlRewrite:
+      pathTemplateRewrite: /cats/{path}
+- description: Rewrite old Dogs pages
+  matchRules:
+  - pathTemplateMatch: /Dogs/{path=**}
+  priority: 2
+  service: projects/fmnas-automation/global/backendBuckets/fmnas-prod
+  routeAction:
+    urlRewrite:
+      pathTemplateRewrite: /dogs/{path}
+- description: Rewrite old Application page
+  matchRules:
+  - pathTemplateMatch: /Application/**
+  priority: 3
+  service: projects/fmnas-automation/global/backendBuckets/fmnas-prod
+  routeAction:
+    urlRewrite:
+      pathTemplateRewrite: /application
+- description: default static bucket
+  matchRules:
+  - pathTemplateMatch: /**
+  priority: 4
+  service: projects/fmnas-automation/global/backendBuckets/fmnas-prod
+```

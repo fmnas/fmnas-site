@@ -14,9 +14,9 @@ import type { BlogPost, Form, Listing } from 'fmnas-functions/src/fmnas';
 
 export const GET: RequestHandler = async () => {
 	return json([
-		// ...(await renderAllListings()),
-		// ...(await renderAllForms()),
-		// ...(await Promise.all(Object.keys(rootTemplates).map(renderRootFile))),
+		...(await renderAllListings()),
+		...(await renderAllForms()),
+		...(await Promise.all(Object.keys(rootTemplates).map(renderRootFile))),
 		...(await renderBlog())
 	]);
 };

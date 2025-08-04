@@ -54,13 +54,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <button>Apply Online Now</button>
         or email us at: <a
           data-email="adopt+{{id}}">Adopt {{name}}!</a>
-        <!-- TODO: Make this work again -->
-        <input type="hidden" name="pet" value="{{id}}" id="hidden_id">
+        <input type="hidden" name="pet" value="{{listingHeading}}" id="hidden_id">
       </form>
     {{/if}}
   </section>
 </article>
 {{/with}}
 {{>footer}}
-<script src="/add_hidden.js"></script>
 </html>

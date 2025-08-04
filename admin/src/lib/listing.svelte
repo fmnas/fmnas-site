@@ -16,14 +16,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <script lang="ts">
-	import type { Listing, Pet } from 'fmnas-functions/src/fmnas.d.ts';
+	import type { Listing, Pet, Photo } from 'fmnas-functions/src/fmnas.d.ts';
 	import { toast } from '@zerodevx/svelte-toast';
 	import { beforeNavigate, goto, replaceState } from '$app/navigation';
 	import { config } from '$lib/config';
 	import { displayAge, getStatusConfig, listingName, listingPath, partial, renderDescription } from '$lib/templates';
 	import PetImporter from '$lib/pet_importer.svelte';
 	import FilePond from 'svelte-filepond';
-	import { toPond, fromPond, pondAdapter, pendingOperations } from '$lib/photos';
+	import { fromPond, pondAdapter, toPond } from '$lib/photos';
+	import { FileOrigin } from 'filepond';
 	import type { FilePondErrorDescription, FilePondFile } from 'filepond';
 	import 'filepond/dist/filepond.css';
 	import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
@@ -41,14 +42,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	let singlePhoto = $state(false);
 	let title = $state(path ? 'Editing listing' : 'New listing');
 	let saving = $state(false);
-	let loading: Promise<any> = $state(getListing());
 	let showHelp = $state(false);
+	let photoIds: string[] = $state([]);
+	let photoMapping: Record<string, Photo> = $state({});
+
 	$inspect(listing);
+	let loading: Promise<any> = $state(getListing());
+
+	let uploadingProfilePhoto = $state(false);
+	let uploading = $derived(uploadingProfilePhoto || photoIds.length !== Object.keys(photoMapping).length);
+	let dirty = $derived.by(() => uploading || JSON.stringify(listing) !== savedListing || (
+	                              photoIds.length !== listing.photos.length ||
+	                              photoIds.some((id, i) => listing.photos[i].path !== photoMapping[id]?.path)
+	));
 
 	const [getter, setter, debouncing] = debounce(() => listing.description, (p) => listing.description = p);
 
 	async function clear(): Promise<void> {
-		if (dirty() && !confirm('Discard unsaved changes?')) {
+		if (dirty && !confirm('Discard unsaved changes?')) {
 			return;
 		}
 		path = undefined;
@@ -63,6 +74,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		saving = false;
 		loading = getListing();
 		showHelp = false;
+		photoIds = [];
+		photoMapping = {};
+		uploadingProfilePhoto = false;
 		await goto('/new');
 	}
 
@@ -93,10 +107,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		};
 	}
 
-	function dirty(): boolean {
-		return pendingOperations.size > 0 || JSON.stringify(listing) !== savedListing;
-	}
-
 	async function getListing() {
 		console.debug(`getListing ${path}`);
 		if (!path) {
@@ -104,6 +114,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			title = 'New listing';
 			listing.description = (await partial('default')) ?? '';
 			savedListing = JSON.stringify(listing);
+			photoIds = [];
+			photoMapping = {};
+			uploadingProfilePhoto = false;
 			return;
 		}
 		const query = new URLSearchParams({ path });
@@ -114,6 +127,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		isPair = listing.pets.length > 1;
 		savedListing = JSON.stringify(listing);
 		title = 'Editing ' + listingName(listing);
+		photoIds = []; // filled by filepond
+		photoMapping = {};
+		uploadingProfilePhoto = false;
 	}
 
 
@@ -130,6 +146,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		}
 
 		saving = true;
+
+		try {
+			listing.photos = photoIds.map((photoId) => {
+				const photo = photoMapping[photoId];
+				if (!photo) {
+					console.warn(photoIds, photoMapping, photoId);
+					toast.push('Photo upload not completed.');
+					throw new Error();
+				}
+				return photo;
+			});
+		} catch (e) {
+			saving = false;
+			toast.push(JSON.stringify(e));
+			return;
+		}
+
 		if (isPair && singlePhoto) {
 			listing.pets[1].photo = undefined;
 		}
@@ -140,13 +173,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		}
 		listing.path ||= listingPath(listing);
 
-		const existingQuery = new URLSearchParams({ path: listing.path });
-		const existingRes = await fetch('/api/listing?' + existingQuery.toString());
-		const existingBody = await existingRes.json();
-		if (existingRes.status !== 404 && (!id || existingBody.id !== id)) {
-			toast.push(`Listing ${listing.path} already exists with id ${existingBody.id}!!!`);
-			console.error(existingBody);
-			return;
+		let suffix: number | undefined = undefined;
+		while (true) {
+			const existingQuery = new URLSearchParams({ path: suffix ? `${listing.path}_${suffix}` : listing.path });
+			const existingRes = await fetch('/api/listing?' + existingQuery.toString());
+			const existingBody = await existingRes.json();
+			if (existingRes.status !== 404 && (!id || existingBody.id !== id)) {
+				// Listing already exists
+				suffix ??= 1;
+				suffix++;
+			} else {
+				break;
+			}
+		}
+		if (suffix) {
+			listing.path += `_${suffix}`;
 		}
 
 		try {
@@ -173,7 +214,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	}
 
 	async function deleteListing() {
-		if (!id && !dirty()) {
+		if (!id && !dirty) {
 			return clear();
 		}
 		if (!confirm(
@@ -229,13 +270,56 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		}
 	}
 
+	function handleUpdatePhotos(files: FilePondFile[]): void {
+		console.debug(`Got ${files.length} files from filepond. Mapping has ${Object.keys(photoMapping).length}`);
+		photoIds = files.map(file => file.id);
+		for (const mappingKey of [...Object.keys(photoMapping)]) {
+			if (!files.some(file => file.id === mappingKey)) {
+				// TODO: Delete the file from the server
+				console.debug(`deleting obsolete mapping for ${mappingKey}`);
+				delete photoMapping[mappingKey];
+			}
+		}
+		// FileOrigin.LOCAL is files that were already on the server, as opposed to FileOrigin.INPUT
+		// "inputs" to FilePond from the *user*
+		files.filter(file => file.origin === FileOrigin.LOCAL).forEach(file => {
+			console.debug(`adding existing mapping for ${file.id}`);
+			const photo = listing.photos.find(photo => photo.path === file.serverId);
+			if (!photo) {
+				console.warn(`Didn't find mapping for ${file.id} => ${file.serverId}`);
+				fromPond(null, file, [480]).then(photo => photoMapping[file.id] = photo);
+				return;
+			}
+			photoMapping[file.id] = photo;
+		});
+	}
+
+	function handleFinishPhotoUpload(error: FilePondErrorDescription | null, file: FilePondFile): void {
+		if (error || !file.serverId) {
+			console.error(error, file);
+			toast.push(error?.body || 'Error uploading file ' + file.id);
+			return;
+		}
+		fromPond(error, file, [480]).then((photo) => {
+			if (!photo && !error) {
+				console.error(error, file, photo);
+				toast.push(`Something went wrong`);
+			}
+			if (error) {
+				return;
+			}
+			photoMapping[file.id] = photo;
+			console.debug($state.snapshot(photoIds), $state.snapshot(photoMapping));
+		});
+	}
+
 	$effect(() => {
 		species = listing.pets[0]?.species ?? species;
 	});
 
 	beforeNavigate(({ cancel }) => {
 		console.debug('beforeNavigate');
-		if (dirty() && !confirm('Discard unsaved changes?')) {
+		if (dirty && !confirm('Discard unsaved changes?')) {
 			console.debug('cancel()');
 			cancel();
 		}
@@ -254,8 +338,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<form>
 			<div class="buttons">
 				<button class="save" onclick={async (e) => {e.preventDefault(); await save();}}
-					disabled={pendingOperations.size || saving || !dirty()}>
-					{#if saving}Saving...{:else }Save{/if}
+					disabled={uploading || saving || !dirty}>
+					{#if saving}Saving...{:else if uploading}Wait...{:else}Save{/if}
 				</button>
 				<button class="delete" onclick={async (e) => {e.preventDefault(); await deleteListing();}}>Delete</button>
 				<button class="new" onclick={async (e) => {e.preventDefault(); await clear();}}>New</button>
@@ -367,7 +451,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<tr
 				class={[getStatusConfig(listing.status).inactive && 'soon', !getStatusConfig(listing.status).show_fee && 'displayStatus', listing.pets.length > 1 && 'pair']}>
 				<th class="name">
-					<a href={getStatusConfig(listing.status).inactive ? undefined : '#'}
+					<a
+						href={getStatusConfig(listing.status).inactive ? undefined : (listing.path ? `//${config.public_domain}/${listing.path}` : '')}
 						id={listing.pets.length > 1 ? undefined : listing.pets[0].id}>
 						{#if listing.pets.length > 1}
 							<ul>
@@ -434,7 +519,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 										stylePanelLayout="compact"
 										server={pondAdapter(listing)}
 										files={toPond([pet.photo])}
-										onprocessfile={async (error: FilePondErrorDescription | null, file: FilePondFile) => pet.photo = await fromPond(error, file, [300, 64])}
+										onprocessfilestart={() => uploadingProfilePhoto = true}
+										onprocessfile={async (error: FilePondErrorDescription | null, file: FilePondFile) => {
+											pet.photo = await fromPond(error, file, [300, 64]);
+											uploadingProfilePhoto = false;
+										}}
 									/>
 								</li>
 							{/if}
@@ -463,13 +552,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				imagePreviewMaxHeight={300}
 				server={pondAdapter(listing)}
 				files={toPond(listing.photos)}
-				onprocessfile={async (error: FilePondErrorDescription | null, file: FilePondFile) => {
-					const converted = await fromPond(error, file, [480]);
-					if (converted) listing.photos.push(converted);
-				}}
-				onreorderfiles={async (files: FilePondFile[]) => {
-					listing.photos = (await Promise.all(files.map(f => fromPond(null, f, [480])))).filter(p => !!p)
-				}}
+				maxParallelUploads="50"
+				onupdatefiles={handleUpdatePhotos}
+				onreorderfiles={handleUpdatePhotos}
+				onprocessfile={handleFinishPhotoUpload}
 			/>
 		</div>
 		<div class="editor">
@@ -607,7 +693,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			}
 		}
 
-		fieldset.sexes input + abbr, .metadata button {
+		fieldset.sexes input + abbr, button {
 			display: inline-block;
 			text-align: center;
 			transition: all 0.2s;
@@ -624,7 +710,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			box-shadow: inset 0 0 2px 1px var(--active-color);
 		}
 
-		fieldset.sexes input + abbr:active, .metadata button:active {
+		fieldset.sexes input + abbr:active, button:active {
 			background-color: var(--active-color) !important;
 			color: var(--background-color) !important;
 			transition: none;
@@ -651,14 +737,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		abbr {
 			text-decoration: none;
 		}
-	}
-
-	.v-enter-active, .v-leave-active {
-		transition: opacity 0.25s ease;
-	}
-
-	.v-enter-from, .v-leave-to {
-		opacity: 0;
 	}
 
 	table.listings tbody {
@@ -756,11 +834,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	div.preview {
 		max-width: 100vw;
 		box-sizing: border-box;
+		padding: 0.3rem;
+		text-align: left;
+
 		@media (min-width: 750px) {
 			max-width: 30vw;
 		}
-		padding: 0.3rem;
-		text-align: left;
 	}
 
 	div.modal {

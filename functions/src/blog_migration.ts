@@ -492,15 +492,15 @@ Cats that want affection can be stubborn… my other cat, Ming Sushi, INSISTS on
 		title: 'Bringing Home Your New Cat',
 		body: `{{>aside i='1' caption='Welcome home'}}One key to making successful shelter cat placements is managing the expectations of their new people. Here is some information, gleaned from various websites and the personal experiences of our adopters and volunteers, which we like to share with each cat adopter before the day they bring their new family member home. Have other ideas to help make the transition easier? Send us a comment below! You can never have too much good advice.
 
-## Welcome home!
+### Welcome home!
 
 Finding the cat of your dreams may have been easy, but fitting a new feline friend into your household usually requires a little patience and time.
 
 To make your cat’s transition as comfortable as possible, we recommend placing her in a quiet, closed-in area such as a bedroom or a small room away from the main foot traffic and other pets, providing food, water, and a litterbox.  Let your new pet get used to that one area for the first few days, sniffing your belongings and finding hiding places.  Make frequent visits to play with, feed, pet, and interact with your new cat.  Then you can begin slowly introducing her to the rest of your house, including the other pets.  We recommend keeping cats indoors at all times for their health and safety, and that of the birds and other outdoor animals, BUT if you decide you want your cat to be an indoor/outdoor cat, do NOT let her go outside for at least two weeks after bringing her home, and then begin with short, supervised visits to the yard, so your cat can get her bearings and recognize her home turf.  Always put a collar with ID information on a cat who goes outside.
 
-### INTRODUCING A NEW CAT TO A RESIDENT CAT
-
 {{>aside i='2' caption='Cat Buddies'}}
+
+### INTRODUCING A NEW CAT TO A RESIDENT CAT
 
 Your resident cat will sense this “intruder” in his home; be sure to spend extra time with your resident cat, to help relieve anxiety and tension. Place your resident cat’s food dish near the door to the room where the new cat is confined.  Gradually move the confined cat’s food closer to the inside of the door.  Feed them at the same time so they are separated by only the closed door.  Some growling and hissing is to be expected – this is NORMAL and does not mean the cats will never tolerate each other!
 
@@ -512,9 +512,9 @@ After several days of this, you may be ready to let both cats roam in your house
 
 Some anxiety in the resident cat can be alleviated by ignoring the new cat in the resident cat’s presence, and referring to the new cat as “resident-cat’s-name’s friend, new-cat’s-name” (example: “This is Sneakers’ friend Pumpkin, Sneakers will love to play with Pumpkin…”). Sounds weird, but it works!
 
-### INTRODUCING A NEW CAT TO A RESIDENT DOG
-
 {{>aside i='3' caption='Cat + Dog'}}
+
+### INTRODUCING A NEW CAT TO A RESIDENT DOG
 
 Be sure the dog is restrained on a firmly held short leash and the cat is free to escape; do not allow the cat to come within the dog’s biting range.  if your dog guards its food, the cat may risk injury if it approaches the dog’s food, and it may be necessary to move the dog’s food or confine the cat.  If the dog acts aggressively toward the cat, use corrective behavior techniques with the dog.  Dogs can usually be trained to ignore, or even play with, cats.
 
@@ -584,9 +584,11 @@ Here’s a good article on cat communication: https://www.wikihow.com/Communicat
 	{
 		path: 'bringing-home-your-new-dog',
 		title: 'Bringing Home Your New Dog',
-		body: `{{>aside i='1' caption='Yay, a new toy!'}}One key to making successful shelter dog placements is managing the expectations of their new people. Here is some information, gleaned from various websites and the personal experiences of our adopters and volunteers, which we like to share with each dog adopter before the day they bring their new family member home. Have other ideas to help make the transition easier? Send us a comment below! You can never have too much good advice.
+		body: `{{>aside i='1' caption='Yay, a new toy!'}}
+		
+One key to making successful shelter dog placements is managing the expectations of their new people. Here is some information, gleaned from various websites and the personal experiences of our adopters and volunteers, which we like to share with each dog adopter before the day they bring their new family member home. Have other ideas to help make the transition easier? Send us a comment below! You can never have too much good advice.
 
-## Welcome home!
+### Welcome home!
 
 Finding the dog of your dreams may have been easy, but fitting a new canine friend into your household usually requires a little patience and time.
 
@@ -598,17 +600,17 @@ When he’s first settling in, your dog may experience shyness, anxiety, restles
 
 Your new dog must learn a whole set of new rules.  Be patient and be consistent. If you want him off the furniture, don’t allow him to sit on the couch “sometimes”.  Don’t allow him to do something one time and forbid it another.  There are numerous resources for training tips and methods, online and at your library. If you have access to obedience classes, they can be a great way to bond with your new dog and teach him what you want him to do – dogs just want to please you!
 
-### INTRODUCING A NEW DOG TO A RESIDENT DOG
-
 {{>aside i='2' caption='Meeting the Big Dog'}}
+
+### INTRODUCING A NEW DOG TO A RESIDENT DOG
 
 Introduce the dogs in a neutral location so that your resident dog is less likely to view the newcomer as a territorial intruder. Each dog should be handled by a separate person. With both dogs on a leash, take them to an area with which neither is familiar, such as a park or a neighbor’s yard.  From the first meeting, you want both dogs to expect “good things” to happen when they’re in each other’s presence. Let them sniff each other, which is normal canine greeting behavior. As they do, talk to them in a happy, friendly tone of voice – never use a threatening tone of voice. Don’t allow them to investigate and sniff each other for a prolonged time, as this may escalate to an aggressive response. After a short time, get both dogs’ attention, and give each dog a treat in return for obeying a simple command, such as “sit” or “stay.” Take the dogs for a walk and let them sniff and investigate each other at intervals. Continue with the “happy talk,” food rewards and simple commands.  Watch carefully for body postures that indicate an aggressive response, including hair standing up on the other dog’s back, teeth-baring, deep growls, a stiff legged gait or a prolonged stare. If you see such postures, interrupt the interaction immediately by calmly and positively getting each dog interested in something else.
 
 Puppies usually pester adult dogs unmercifully. Before the age of four months, puppies may not recognize subtle body postures from adult dogs signaling that they’ve had enough. Well-socialized adult dogs with good temperaments may set limits with puppies with a growl or snarl. These behaviors are normal and should be allowed. Adult dogs that aren’t well-socialized, or that have a history of fighting with other dogs, may attempt to set limits with more aggressive behaviors, such as biting, which could harm the puppy. For this reason, a puppy shouldn’t be left alone with an adult dog until you’re confident the puppy isn’t in any danger. Be sure to give the adult dog some quiet time away from the puppy, and perhaps, some individual attention as described above. (Humane Society of the United States, 2009)
 
-### INTRODUCING A NEW DOG TO A RESIDENT CAT
+{{>aside i='3' caption='Fast Friends'}}
 
-{{>asaide i='3' caption='Fast Friends'}}
+### INTRODUCING A NEW DOG TO A RESIDENT CAT
 
 Be sure the dog is restrained on a firmly held short leash and the cat is free to escape; do not allow the cat to come within the dog’s biting range.  If your dog guards its food, the cat may risk injury if it approaches the dog’s food, and it may be necessary to move the dog’s food or confine the cat.  If the dog acts aggressively toward the cat, use corrective behavior techniques with the dog.  Dogs can usually be trained to ignore, or even play with, cats. When you leave the house, separate the animals in physically, securely separated areas. Give each access to water, a bed or other suitable resting place, and some toys. Be sure the cat has access to a litter box. For the cat’s safety, make sure the cat has escape routes to get away from the dog. For example, a cat door leading to another room in the house and ledges on which he can easily jump. Always provide places where each animal can retreat for safety and privacy, a spot that is his or hers alone. A cat can use the top of the refrigerator; a dog can use a crate. (Fry, 2005)
 

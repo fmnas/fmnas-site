@@ -7,7 +7,7 @@
 import { Storage } from '@google-cloud/storage';
 import type { Bucket, SaveData } from '@google-cloud/storage';
 import { Firestore } from '@google-cloud/firestore';
-import { building } from '$app/environment';
+import { browser, building } from '$app/environment';
 import { log } from '$lib/logging';
 import type { Listing } from 'fmnas-functions/src/fmnas';
 
@@ -37,6 +37,6 @@ export async function writeFile(path: string, data: SaveData, type: string): Pro
 	const file = bucket.file(path);
 	await file.save(data, { contentType: type });
 	if (!type.startsWith('image/')) {
-		await file.setMetadata({ cacheControl: 'no-store' });
+		await file.setMetadata({ cacheControl: 'no-cache' });
 	}
 }

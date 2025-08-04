@@ -31,6 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<section>
 		<h1>Useful links</h1>
 		<ul>
+			<li><a href="https://admin.google.com/u/2/ac/groups/01opuj5n1qqyk8t/members">Editor permissions</a></li>
 			<li><a href="https://console.cloud.google.com/home/dashboard?project={config.project}">Cloud dashboard (project:
 				{config.project})</a></li>
 			<li><a href="https://console.cloud.google.com/logs/query?project={config.project}">Cloud logs</a></li>

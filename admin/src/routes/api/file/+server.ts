@@ -24,7 +24,7 @@ export const GET: RequestHandler = async ({ url }) => {
 		const [signedUrl] = await targetFile.getSignedUrl({
 			expires: Date.now() + 30 * 60 * 1000,  // 30 minutes
 			action: 'write',
-			version: 'v4'
+			version: 'v4',
 		});
 		return json({
 			signedUrl,
