@@ -14,14 +14,4 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 }}
-{{#if link}}<a href="/{{path}}">{{/if~}}
-<img
-	src="/{{path}}"
-	alt="{{alt}}"
-	title="{{alt}}"
-	height="{{height}}"
-	{{#if sizes}}
-	srcset="{{#each sizes}}/{{path}} {{scale}}x{{#unless @last}}, {{/unless}}{{/each}}"
-	{{/if~}}
->
-{{#if link}}</a>{{/if}}
+<aside>{{>figure}}</aside>

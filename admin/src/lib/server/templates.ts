@@ -7,9 +7,9 @@
 import { bucket, getListings, writeFile, database } from '$lib/server/storage';
 import { config } from '$lib/config';
 import Handlebars from 'handlebars';
-import { basename, decorateListing, partialRegistration, capitalizeFirstLetter } from '$lib/templates';
+import { basename, decorateListing, decoratePost, partialRegistration, capitalizeFirstLetter } from '$lib/templates';
 import type { TemplateDelegate } from 'handlebars';
-import type { Listing, Species, Form, ListingContext } from 'fmnas-functions/src/fmnas';
+import type { Listing, Species, Form, ListingContext, BlogPost } from 'fmnas-functions/src/fmnas';
 import { log } from '$lib/logging';
 
 await partialRegistration;
@@ -151,4 +151,37 @@ export async function renderForm(formConfig: Form): Promise<RenderResult> {
 export async function renderAllForms(): Promise<RenderResult[]> {
 	const forms = await getForms();
 	return Promise.all(forms.map(renderForm));
+}
+
+export async function renderBlogPost(post: BlogPost): Promise<RenderResult> {
+	const path = `blog/${post.path}`;
+	try {
+		await writeFile(path, blogPostPage({ ...config, post: await decoratePost(post) }), 'text/html');
+		return { path };
+	} catch (error) {
+		log.error(error);
+		return { path, error };
+	}
+}
+
+async function renderBlogIndex(posts: BlogPost[]): Promise<RenderResult> {
+	try {
+		await writeFile('blog', blogPage({ ...config, posts }), 'text/html');
+		return { path: 'blog' };
+	} catch (error) {
+		log.error(error);
+		return { path: 'blog', error };
+	}
+}
+
+export async function renderBlog(): Promise<RenderResult[]> {
+	try {
+		const posts = (await database.collection('blog').get()).docs.map(doc => doc.data()) as BlogPost[];
+		const results = await Promise.all(posts.map(renderBlogPost));
+		results.push(await renderBlogIndex(posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())));
+		return results;
+	} catch (error) {
+		log.error(error);
+		return [{ path: 'blog', error }];
+	}
 }

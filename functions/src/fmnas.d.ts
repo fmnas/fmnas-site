@@ -102,3 +102,20 @@ export interface Form {
 	path: string;
 	title: string;
 }
+
+export interface Comment {
+	author: string;
+	date: string;
+	body: string;
+	children: Comment[];
+}
+
+export interface BlogPost {
+	path: string;
+	title: string;
+	date: string;
+	body: string;
+	author: string;
+	photos: Photo[];
+	comments: Comment[];
+}

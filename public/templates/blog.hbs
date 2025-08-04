@@ -14,4 +14,32 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 }}
-TODO
+<!DOCTYPE html>
+<html lang="en-US">
+<title>
+	{{longname}} Blog
+</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://{{public_domain}}/blog">
+<link rel="stylesheet" href="/common.css">
+<link rel="stylesheet" href="/blog.css">
+{{>header}}
+<h2>Blog</h2>
+<ul class="index">
+	{{#each posts}}
+		<li>
+			<a href="/blog/{{path}}">
+			{{#each photos}}
+				{{#if @first}}
+					{{>photo height='64'}}
+				{{/if}}
+			{{/each}}
+				<span>{{title}}</span>
+			</a>
+			<time datetime="{{date}}">({{localeDate date}})</time>
+		</li>
+	{{/each}}
+</ul>
+{{>footer}}
+</html>
