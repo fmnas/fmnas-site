@@ -25,6 +25,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<h1>Utilities</h1>
 		<ul>
 			<li><a href="/maintenance/resize">Add image size</a></li>
+			<li><a href="/api/octetbuster" target="_blank">Fix files without Content-Type</a></li>
+			<li><a href="/api/htmbuster" target="_blank">Fix index.htm files</a></li>
+			<li><a href="/api/importable" target="_blank">ASM pet metadata</a></li>
+			<li><a href="/api/render" target="_blank">Regenerate static pages</a></li>
+			<li><a href="/api/listings" target="_blank">Listing metadata</a></li>
 		</ul>
 	</section>
 
