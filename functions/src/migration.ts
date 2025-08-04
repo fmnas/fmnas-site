@@ -146,7 +146,8 @@ async function importPhoto(id: number, gcs: boolean | null, path: string | null,
 		} else {
 			currentScale *= 2;
 		}
-		if (storage.bucket(bucket).file(scaledPath).metadata.size) {
+		const [exists] = await storage.bucket(bucket).file(scaledPath).exists();
+		if (exists) {
 			logger.debug(`Already have gs://${bucket}/${scaledPath}`);
 			continue;
 		}

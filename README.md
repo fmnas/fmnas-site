@@ -177,39 +177,103 @@ The following [repository secrets](https://github.com/fmnas/fmnas-site/settings/
 
 ### GCP notes
 
-Worth noting these routing rules on the for forgetmenotshelter.org:
+Worth noting these routing rules on the [load balancer](https://console.cloud.google.com/net-services/loadbalancing/details/httpAdvanced/fmnas-lb?project=fmnas-automation) for forgetmenotshelter.org:
 
-```
+```yaml
 defaultService: projects/fmnas-automation/global/backendBuckets/fmnas-prod
 name: prod-matcher
 routeRules:
-- description: Rewrite old Cats pages
-  matchRules:
-  - pathTemplateMatch: /Cats/{path=**}
-  priority: 1
-  service: projects/fmnas-automation/global/backendBuckets/fmnas-prod
-  routeAction:
-    urlRewrite:
-      pathTemplateRewrite: /cats/{path}
-- description: Rewrite old Dogs pages
-  matchRules:
-  - pathTemplateMatch: /Dogs/{path=**}
-  priority: 2
-  service: projects/fmnas-automation/global/backendBuckets/fmnas-prod
-  routeAction:
-    urlRewrite:
-      pathTemplateRewrite: /dogs/{path}
-- description: Rewrite old Application page
-  matchRules:
-  - pathTemplateMatch: /Application/**
-  priority: 3
-  service: projects/fmnas-automation/global/backendBuckets/fmnas-prod
-  routeAction:
-    urlRewrite:
-      pathTemplateRewrite: /application
-- description: default static bucket
-  matchRules:
-  - pathTemplateMatch: /**
-  priority: 4
-  service: projects/fmnas-automation/global/backendBuckets/fmnas-prod
+  - description: Redirect old Cats pages
+    matchRules:
+      - prefixMatch: /Cats
+    priority: 3
+    urlRedirect:
+      prefixRedirect: /cats
+  - description: Redirect old Dogs pages
+    matchRules:
+      - prefixMatch: /Dogs
+    priority: 4
+    urlRedirect:
+      prefixRedirect: /dogs
+  - description: Redirect old Application
+    matchRules:
+      - prefixMatch: /Application
+    priority: 5
+    urlRedirect:
+      prefixRedirect: /application
+  - description: Redirect old application subpages
+    matchRules:
+      - pathTemplateMatch: /application/
+    priority: 6
+    urlRedirect:
+      prefixRedirect: /Application
+  - description: Rewrite index.html
+    matchRules:
+      - pathTemplateMatch: /index.html
+    priority: 7
+    service: projects/fmnas-automation/global/backendBuckets/fmnas-prod
+    routeAction:
+      urlRewrite:
+        pathTemplateRewrite: /
+  - description: Rewrite */index.html
+    matchRules:
+      - pathTemplateMatch: /{a=*}/index.html
+    priority: 8
+    service: projects/fmnas-automation/global/backendBuckets/fmnas-prod
+    routeAction:
+      urlRewrite:
+        pathTemplateRewrite: /{a}
+  - description: Rewrite */*/index.html
+    matchRules:
+      - pathTemplateMatch: /{a=*}/{b=*}/index.html
+    priority: 9
+    service: projects/fmnas-automation/global/backendBuckets/fmnas-prod
+    routeAction:
+      urlRewrite:
+        pathTemplateRewrite: /{a}/{b}
+  - description: Rewrite index.php
+    matchRules:
+      - pathTemplateMatch: /index.php
+    priority: 10
+    service: projects/fmnas-automation/global/backendBuckets/fmnas-prod
+    routeAction:
+      urlRewrite:
+        pathTemplateRewrite: /
+  - description: Rewrite */index.php
+    matchRules:
+      - pathTemplateMatch: /{a=*}/index.php
+    priority: 11
+    service: projects/fmnas-automation/global/backendBuckets/fmnas-prod
+    routeAction:
+      urlRewrite:
+        pathTemplateRewrite: /{a}
+  - description: Rewrite */*/index.php
+    matchRules:
+      - pathTemplateMatch: /{a=*}/{b=*}/index.php
+    priority: 12
+    service: projects/fmnas-automation/global/backendBuckets/fmnas-prod
+    routeAction:
+      urlRewrite:
+        pathTemplateRewrite: /{a}/{b}
+  - description: Rewrite trailing slash
+    matchRules:
+      - pathTemplateMatch: /{path=*}/
+    priority: 13
+    service: projects/fmnas-automation/global/backendBuckets/fmnas-prod
+    routeAction:
+      urlRewrite:
+        pathTemplateRewrite: /{path}
+  - description: Rewrite trailing slash on subdirectory
+    matchRules:
+      - pathTemplateMatch: /{a=*}/{b=*}/
+    priority: 14
+    service: projects/fmnas-automation/global/backendBuckets/fmnas-prod
+    routeAction:
+      urlRewrite:
+        pathTemplateRewrite: /{a}/{b}
+  - description: default static bucket
+    matchRules:
+      - pathTemplateMatch: /**
+    priority: 100
+    service: projects/fmnas-automation/global/backendBuckets/fmnas-prod
 ```
