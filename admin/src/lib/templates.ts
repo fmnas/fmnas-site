@@ -5,7 +5,7 @@
  */
 
 import type {
-	Listing, ListingContext, Pet, PetContext, Status, Species
+	Listing, ListingContext, Pet, PetContext, Status, Species, BlogPost
 } from 'fmnas-functions/src/fmnas';
 import { config } from '$lib/config';
 import { browser } from '$app/environment';
@@ -215,6 +215,27 @@ export async function decorateListing(listing: Listing, renderDescription = true
 		log.info(`Rendered description for listing ${listing.path}`);
 	} catch (e) {
 		log.error(`Error rendering description for listing ${listing.path}`, e);
+	}
+	return decorated;
+}
+
+export async function decoratePost(post: BlogPost): Promise<BlogPost & { rendered: string }> {
+	const decorated = {
+		...post,
+		rendered: post.body
+	};
+	try {
+		await partialRegistration;
+		decorated.rendered = Handlebars.compile(decorated.rendered)(decorated);
+		log.info(`Compiled description for post ${post.path}`);
+	} catch (e) {
+		log.error(`Error compiling description for post ${post.path}`, e);
+	}
+	try {
+		decorated.rendered = await marked.parse(decorated.rendered, { async: true });
+		log.info(`Rendered description for post ${post.path}`);
+	} catch (e) {
+		log.error(`Error rendering description for post ${post.path}`, e);
 	}
 	return decorated;
 }

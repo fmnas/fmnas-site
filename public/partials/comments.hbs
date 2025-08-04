@@ -14,30 +14,13 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 }}
-<!DOCTYPE html>
-<html lang="en-US">
-<title>
-	{{post.title}} - {{longname}} Blog
-</title>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="canonical" href="https://{{public_domain}}/blog">
-<link rel="stylesheet" href="/common.css">
-<link rel="stylesheet" href="/blog.css">
-<script src="/email.js"></script>
-{{>header}}
-{{#with post}}
-	<article>
-		<h2>{{post.title}}</h2>
-		{{{rendered}}}
+{{#each comments}}
+	<div role="comment" class="comment">
 		<aside class="metadata">
-			Posted {{#if author}}by {{author}},{{/if}}
-			<time datetime="{{date}}">{{localeDate date}}</time>
+			<span class="author">{{author}}</span>
+			<span class="date"><time datetime="{{date}}">{{localeDate date}}</time></span>
 		</aside>
-	</article>
-	<section class="comments">
-		{{>comments}}
-	</section>
-{{/with}}
-{{>footer}}
-</html>
+		<p>{{body}}</p>
+		{{>comments children}}
+	</div>
+{{/each}}
