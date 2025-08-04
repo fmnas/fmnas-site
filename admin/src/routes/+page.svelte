@@ -17,9 +17,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 <script lang="ts">
 	import Listings from '$lib/listings.svelte';
+	import TransportDate from '$lib/transport_date.svelte';
 </script>
 
-<!-- TODO: Transport date -->
+<TransportDate/>
 
 <h1>Adoptable pets</h1>
 <a href="/new" class="add">Add</a>

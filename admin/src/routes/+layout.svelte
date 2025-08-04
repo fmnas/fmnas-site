@@ -26,9 +26,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </script>
 
 <nav>
-	<a href="/">Home</a> |
-	<a href="/cats">Cats</a> |
-	<a href="/dogs">Dogs</a> |
+	<a href="/">Adoptable</a>
+	(<a href="/cats">Cats</a> |
+	<a href="/dogs">Dogs</a>) |
 	<a href="/adopted">Adopted</a> |
 	<a href="/maintenance">Maintenance</a>
 </nav>

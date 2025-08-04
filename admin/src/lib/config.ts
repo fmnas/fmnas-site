@@ -7,6 +7,7 @@
 import type { BaseConfig } from 'fmnas-functions/src/fmnas.d.ts';
 import { browser, building } from '$app/environment';
 import { log } from '$lib/logging';
+import { toast } from '@zerodevx/svelte-toast';
 
 interface ConfigWithEnvironment extends BaseConfig {
 	bucket: string;
@@ -14,7 +15,7 @@ interface ConfigWithEnvironment extends BaseConfig {
 	project?: string;
 }
 
-export const config: ConfigWithEnvironment = await (async () => {
+export let config: ConfigWithEnvironment = await (async () => {
 	if (building) {
 		log.info('Using dummy config for build');
 		return { bucket: process.env.bucket, database: process.env.database } as ConfigWithEnvironment;
@@ -43,3 +44,32 @@ export const config: ConfigWithEnvironment = await (async () => {
 		bucket, database, project, ...JSON.parse((await storage.bucket(bucket).file('config.json').download()).toString())
 	};
 })();
+
+export async function updateConfig(partialConfig: Partial<ConfigWithEnvironment>): Promise<void> {
+	if (building) {
+		return;
+	}
+	const newConfig: Omit<ConfigWithEnvironment, 'bucket'> & { bucket?: string } = { ...config, ...partialConfig };
+	delete newConfig.bucket;
+	delete newConfig.database;
+	delete newConfig.project;
+
+	if (browser) {
+		const res = await fetch('/api/config',
+			{ method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newConfig) });
+		if (res.ok) {
+			config = { bucket: config.bucket, database: config.database, project: config.project, ...newConfig };
+		} else {
+			toast.push(res.statusText);
+			return;
+		}
+	} else {
+		log.debug('Dynamically importing GCS');
+		const { Storage } = await import('@google-cloud/storage');
+		const storage = new Storage();
+		await storage.bucket(config.bucket).file('config.json').save(JSON.stringify(newConfig));
+	}
+
+	config = { bucket: config.bucket, database: config.database, project: config.project, ...newConfig };
+	return;
+}
