@@ -207,26 +207,32 @@ routeRules:
     priority: 6
     urlRedirect:
       pathRedirect: /application
-  - description: Rewrite index.html
+  - description: Redirect assets/assets
     matchRules:
-      - pathTemplateMatch: /index.html
+      - prefixMatch: /assets/assets/
     priority: 7
+    urlRedirect:
+      prefixRedirect: /assets/
+  - description: Rewrite index.htm
+    matchRules:
+      - pathTemplateMatch: /index.htm
+    priority: 100
     service: projects/fmnas-automation/global/backendBuckets/fmnas-prod
     routeAction:
       urlRewrite:
         pathTemplateRewrite: /
-  - description: Rewrite */index.html
+  - description: Rewrite */index.htm
     matchRules:
-      - pathTemplateMatch: /{a=*}/index.html
-    priority: 8
+      - pathTemplateMatch: /{a=*}/index.htm
+    priority: 101
     service: projects/fmnas-automation/global/backendBuckets/fmnas-prod
     routeAction:
       urlRewrite:
         pathTemplateRewrite: /{a}
-  - description: Rewrite */*/index.html
+  - description: Rewrite */*/index.htm
     matchRules:
-      - pathTemplateMatch: /{a=*}/{b=*}/index.html
-    priority: 9
+      - pathTemplateMatch: /{a=*}/{b=*}/index.htm
+    priority: 102
     service: projects/fmnas-automation/global/backendBuckets/fmnas-prod
     routeAction:
       urlRewrite:
@@ -234,7 +240,7 @@ routeRules:
   - description: Rewrite index.php
     matchRules:
       - pathTemplateMatch: /index.php
-    priority: 10
+    priority: 103
     service: projects/fmnas-automation/global/backendBuckets/fmnas-prod
     routeAction:
       urlRewrite:
@@ -242,7 +248,7 @@ routeRules:
   - description: Rewrite */index.php
     matchRules:
       - pathTemplateMatch: /{a=*}/index.php
-    priority: 11
+    priority: 104
     service: projects/fmnas-automation/global/backendBuckets/fmnas-prod
     routeAction:
       urlRewrite:
@@ -250,7 +256,7 @@ routeRules:
   - description: Rewrite */*/index.php
     matchRules:
       - pathTemplateMatch: /{a=*}/{b=*}/index.php
-    priority: 12
+    priority: 105
     service: projects/fmnas-automation/global/backendBuckets/fmnas-prod
     routeAction:
       urlRewrite:
@@ -258,7 +264,7 @@ routeRules:
   - description: Rewrite trailing slash
     matchRules:
       - pathTemplateMatch: /{path=*}/
-    priority: 13
+    priority: 106
     service: projects/fmnas-automation/global/backendBuckets/fmnas-prod
     routeAction:
       urlRewrite:
@@ -266,7 +272,7 @@ routeRules:
   - description: Rewrite trailing slash on subdirectory
     matchRules:
       - pathTemplateMatch: /{a=*}/{b=*}/
-    priority: 14
+    priority: 107
     service: projects/fmnas-automation/global/backendBuckets/fmnas-prod
     routeAction:
       urlRewrite:
@@ -274,6 +280,6 @@ routeRules:
   - description: default static bucket
     matchRules:
       - pathTemplateMatch: /**
-    priority: 100
+    priority: 200
     service: projects/fmnas-automation/global/backendBuckets/fmnas-prod
 ```
