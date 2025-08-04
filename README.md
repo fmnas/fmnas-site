@@ -200,13 +200,13 @@ routeRules:
       - prefixMatch: /Application
     priority: 5
     urlRedirect:
-      prefixRedirect: /application
+      pathRedirect: /application
   - description: Redirect old application subpages
     matchRules:
-      - pathTemplateMatch: /application/
+      - prefixMatch: /application/
     priority: 6
     urlRedirect:
-      prefixRedirect: /Application
+      pathRedirect: /application
   - description: Rewrite index.html
     matchRules:
       - pathTemplateMatch: /index.html

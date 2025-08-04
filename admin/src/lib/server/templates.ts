@@ -17,6 +17,7 @@ await partialRegistration;
 Handlebars.registerHelper('capitalizeFirstLetter', capitalizeFirstLetter);
 Handlebars.registerHelper('currentYear', () => new Date().toLocaleString('en-US', { year: 'numeric' }));
 Handlebars.registerHelper('localeDate', (isoDateString: string) => new Date(isoDateString).toLocaleDateString('en-US', {
+	timeZone: 'UTC',
 	year: 'numeric',
 	month: 'short',
 	day: 'numeric'
