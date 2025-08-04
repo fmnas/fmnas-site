@@ -92,7 +92,8 @@ article {
 
 	> figure {
 		width: max-content;
-		margin: 0 auto;
+		margin: 1rem auto;
+		max-width: 100%;
 	}
 
 	@media screen and (min-width: 500px) {
@@ -124,13 +125,10 @@ article {
 		padding: 0.3rem;
 	}
 
-	figure {
-		margin: 0 auto;
-	}
-
 	img {
 		border-radius: var(--border-radius);
 		display: block;
+		margin: 0 auto;
 	}
 
 	figcaption {
@@ -138,6 +136,10 @@ article {
 		font-size: 80%;
 		color: var(--aside-on-background-color-3);
 		margin: 0.3rem;
+	}
+
+	> aside:not(.metadata) {
+		margin: 0 auto;
 	}
 
 	> aside.metadata {
