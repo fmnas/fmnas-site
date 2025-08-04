@@ -81,7 +81,7 @@ async function listingsInMysql(source: mysql.Connection, limit?: number,
 			     LEFT JOIN sexes AS friend_sex ON listings.friend_sex = friend_sex.id
 	`;
 	if (adoptableOnly) {
-		query += ` WHERE listings.status = 1`;
+		query += ` WHERE listings.status != 2`;
 	}
 	if (limit) {
 		query += ` LIMIT ${limit}`;
@@ -218,7 +218,7 @@ async function convertListing(listing: JoinedListing, source: mysql.Connection, 
 				await importPhoto(listing.pic_id, listing.pic_gcs, listing.pic_path, listing.friend_pic_type, 300, bucket) :
 				undefined,
 		}],
-		status: description.includes('>coming_soon') ? 'Coming Soon' : listing.status,
+		status: listing.status,
 		adoptionDate: listing.adoption_date?.toISOString().substring(0, 10) ?? undefined,
 		modifiedDate: listing.modified?.toISOString().substring(0, 10) ?? undefined,
 		order: listing.order ?? undefined,
@@ -226,6 +226,9 @@ async function convertListing(listing: JoinedListing, source: mysql.Connection, 
 		photos: await getPhotos(listing, source, bucket),
 		description,
 	};
+	if (converted.status === 'Adoptable' && converted.description.includes('>coming_soon')) {
+		converted.status = 'Coming Soon';
+	}
 	if (listing.friend_id) {
 		converted.pets.push({
 			id: listing.friend_id,
