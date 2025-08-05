@@ -29,10 +29,23 @@
 	--background-color-3: #f0f0f0;
 
 	--border-color: #666;
+	--low-contrast-border-color: #ccc;
+	--aside-color: #666;
+	--aside-on-background-color-3: #4f4f4f;
 	--border-radius: 3px;
 	--text-color: #000;
 	--accent-color: #5021da;
 	--shadow-color: #0003;
+	--link-color: #066;
+	--visited-color: #39f;
+	--active-color: #f60;
+	--important-color: #f00;
+	--heading-font: 600 14pt 'Asap', sans-serif;
+	--body-font: 12pt 'Open Sans', sans-serif;
+	font: var(--body-font);
+
+	--global-min-width: 330px;
+	min-width: var(--global-min-width);
 
 	@media print {
 		--background-color: #fff;
@@ -41,17 +54,6 @@
 		--border-color: #000;
 		--shadow-color: transparent;
 	}
-
-	--link-color: #066;
-	--visited-color: #39f;
-	--active-color: #f60;
-
-	--heading-font: 600 14pt 'Asap', sans-serif;
-	--body-font: 12pt 'Open Sans', sans-serif;
-	font: var(--body-font);
-
-	--global-min-width: 330px;
-	min-width: var(--global-min-width);
 }
 
 body {
@@ -69,6 +71,7 @@ body {
 
 	> * {
 		flex-grow: 0;
+
 		&:not(header):not(footer):not(h2) {
 			flex-grow: 1;
 		}
@@ -96,6 +99,7 @@ a {
 
 	@media print {
 		color: var(--text-color) !important;
+
 		&:not([href^='tel:']):not([href^='mailto:']) {
 			text-decoration: underline;
 		}
@@ -181,6 +185,7 @@ p {
 
 	& > *:first-child {
 		display: contents;
+
 		> * {
 			grid-column: 2;
 		}

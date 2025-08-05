@@ -1,0 +1,194 @@
+/*
+ * Copyright 2025 Google LLC
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+ul.index {
+	max-width: 14in;
+	margin: 0 auto 1rem;
+	padding: 0;
+	list-style-type: none;
+
+	li {
+		display: contents;
+	}
+
+	a {
+		min-height: calc(64px + 1rem);
+		justify-content: space-evenly;
+		text-decoration: none !important;
+		padding: 0.3rem 0.5rem 0.3rem calc(96px + 0.6rem);
+		margin: 0.5rem;
+
+		&:not(:active) {
+			color: var(--text-color);
+		}
+
+		&:visited {
+			color: var(--accent-color);
+		}
+
+		&:hover > span, &:active > span {
+			text-decoration: underline;
+		}
+
+		&:active {
+			box-shadow: -1px 1px 3px var(--shadow-color) inset, 1px 1px 3px var(--shadow-color) inset;
+		}
+	}
+
+	img {
+		position: absolute;
+		left: 0.3rem;
+		width: 96px;
+		height: 64px;
+		object-fit: contain;
+	}
+
+	time {
+		font-size: 75%;
+		font-style: italic;
+		margin-left: 0.5rem;
+		color: var(--aside-color) !important;
+	}
+}
+
+ul.index a, article figure {
+	display: flex;
+	position: relative;
+	flex-direction: column;
+	box-sizing: border-box;
+	box-shadow: -1px 1px 3px var(--shadow-color), 1px 1px 3px var(--shadow-color);
+	background: var(--background-color-3);
+	border-radius: var(--border-radius);
+	border: 1px solid var(--border-color);
+}
+
+article {
+	width: 95vw;
+	max-width: 14in;
+	margin: 0.5rem auto;
+	padding: 0 1rem 0.5rem;
+	border-radius: var(--border-radius);
+	border: 1px solid var(--low-contrast-border-color);
+	background-color: var(--background-color);
+	box-sizing: border-box;
+
+	strong {
+		color: var(--important-color);
+	}
+
+	> figure {
+		width: max-content;
+		margin: 1rem auto;
+		max-width: 100%;
+	}
+
+	@media screen and (min-width: 500px) {
+		> aside:not(.metadata) {
+			&:nth-of-type(even) {
+				float: right;
+				margin-left: 1rem;
+				clear: right;
+			}
+
+			&:nth-of-type(odd) {
+				float: left;
+				margin-right: 1rem;
+				clear: left;
+			}
+
+			> figure {
+				width: min-content;
+
+				img {
+					max-width: 40vw;
+					height: auto;
+				}
+			}
+		}
+	}
+
+	figure:has(figcaption) {
+		padding: 0.3rem;
+	}
+
+	img {
+		border-radius: var(--border-radius);
+		display: block;
+		margin: 0 auto;
+	}
+
+	figcaption {
+		text-align: center;
+		font-size: 80%;
+		color: var(--aside-on-background-color-3);
+		margin: 0.3rem;
+	}
+
+	> aside:not(.metadata) {
+		margin: 0 auto;
+	}
+
+	> aside.metadata {
+		clear: both;
+		font-style: italic;
+		font-size: 85%;
+		text-align: center;
+		border-top: 1px solid var(--low-contrast-border-color);
+		width: max-content;
+		margin: 1rem auto 0;
+		padding: 0.5rem;
+		color: var(--aside-color);
+	}
+}
+
+body:has(article) {
+	background-color: var(--background-color-2);
+}
+
+section.comments {
+	max-width: 8in;
+	width: 95vw;
+	margin: 0.5rem auto;
+
+	aside.metadata {
+		display: flex;
+		width: 100%;
+		justify-content: space-between;
+		gap: 1rem;
+		color: var(--aside-color);
+	}
+
+	span.author {
+		font-weight: bold;
+	}
+}
+
+h3 {
+	color: var(--accent-color);
+	text-align: center;
+}
+
+div.comment div.comment {
+	border-left: 1px solid var(--low-contrast-border-color);
+	padding-left: 1rem;
+}
+
+@media print {
+	body > article {
+		display: contents;
+	}
+}

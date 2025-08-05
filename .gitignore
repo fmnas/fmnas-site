@@ -1,10 +1,11 @@
 secrets/*
-!secrets/*.hbs
-!secrets/asm_pass.txt
-!secrets/db_pass.txt
-!secrets/api_credentials.txt
 *.pem
 config.sql
+config.json
+config_test.json
+config_prod.json
+
+output/*
 
 /log
 
@@ -267,3 +268,5 @@ composer.phar
 
 # WSL shenanigans
 *:Zone.Identifier
+
+admin_old/

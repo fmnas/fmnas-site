@@ -1,27 +1,23 @@
 [
-  {
-    "maxAgeSeconds": 3600,
-    "method": [
-      "GET",
-      "HEAD",
-      "PUT"
-    ],
-    "origin": [
-      "https://admin.forgetmenotshelter.org",
-      "https://admin.fmnas.org",
-      "https://admin.fmnas",
-      "http://admin.fmnas",
-      "https://forgetmenotshelter.org",
-      "http://forgetmenotshelter.org",
-      "https://www.forgetmenotshelter.org",
-      "http://www.forgetmenotshelter.org",
-      "https://public.fmnas",
-      "http://public.fmnas"
-    ],
-    "responseHeader": [
-      "X-Requested-With",
-      "Access-Control-Allow-Origin",
-      "Content-Type"
-    ]
-  }
+	{
+		"origin": [
+			"https://forgetmenotshelter.org",
+			"https://admin.forgetmenotshelter.org",
+			"https://fmnas.org",
+			"https://admin.fmnas.org",
+			"https://static.fmnas.org",
+			"https://admin.forgetmenotshelter.org",
+			"https://localhost:*",
+			"https://127.0.0.1:*",
+			"http://localhost:*",
+			"http://127.0.0.1:*"
+		],
+		"method": [
+			"*"
+		],
+		"responseHeader": [
+			"Content-Type"
+		],
+		"maxAgeSeconds": 3600
+	}
 ]

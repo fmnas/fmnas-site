@@ -1,0 +1,190 @@
+/**
+ * @license
+ * Copyright 2025 Google LLC
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
+import { bucket, getListings, writeFile, database } from '$lib/server/storage';
+import { config } from '$lib/config';
+import Handlebars from 'handlebars';
+import { basename, decorateListing, decoratePost, partialRegistration, capitalizeFirstLetter, listingSort } from '$lib/templates';
+import type { TemplateDelegate } from 'handlebars';
+import type { Listing, Species, Form, ListingContext, BlogPost } from 'fmnas-functions/src/fmnas';
+import { log } from '$lib/logging';
+import { building } from '$app/environment';
+
+await partialRegistration;
+Handlebars.registerHelper('capitalizeFirstLetter', capitalizeFirstLetter);
+Handlebars.registerHelper('currentYear', () => new Date().toLocaleString('en-US', { year: 'numeric' }));
+Handlebars.registerHelper('localeDate', (isoDateString: string) => new Date(isoDateString).toLocaleDateString('en-US', {
+	timeZone: 'UTC',
+	year: 'numeric',
+	month: 'short',
+	day: 'numeric'
+}));
+Handlebars.registerHelper('pluralWithYoung', (species?: Species) => {
+	if (!species?.plural) {
+		return capitalizeFirstLetter(species);
+	}
+	if (!species.young) {
+		return capitalizeFirstLetter(species.plural);
+	}
+	return capitalizeFirstLetter(species.plural) + ' & ' + capitalizeFirstLetter(species.young_plural);
+});
+const getTemplate = async (t: string) => Handlebars.compile(
+	building ? '' : (await bucket.file(`templates/${t}.hbs`).download()).toString());
+const listingPage = await getTemplate('listing');
+const listingsPage = await getTemplate('listings');
+const blogPage = await getTemplate('blog');
+const blogPostPage = await getTemplate('blog_post');
+const formPage = await getTemplate('form');
+
+export const rootTemplates = building ? {} : await (async () => {
+	const templates = {} as Record<string, TemplateDelegate>;
+	const [files] = await bucket.getFiles({ matchGlob: '*.hbs' });
+	for (const file of files) {
+		templates[basename(file.name)] = Handlebars.compile((await file.download()).toString());
+	}
+	return templates;
+})();
+
+export interface RenderResult {
+	path?: string;
+	error?: any;
+}
+
+async function renderDecoratedListing(listing: ListingContext): Promise<RenderResult> {
+	const { path } = listing;
+	try {
+		if (!path) {
+			throw new Error(`No path for listing: ${JSON.stringify(listing)}`);
+		}
+		const rendered = listingPage({ ...config, listing: await decorateListing(listing) });
+		await writeFile(path, rendered, 'text/html');
+		log.info(`Rendered ${path}`);
+		return { path };
+	} catch (error) {
+		log.error(error);
+		return { path, error };
+	}
+}
+
+export async function renderListing(listing: Listing): Promise<RenderResult> {
+	try {
+		return renderDecoratedListing(await decorateListing(listing));
+	} catch (error) {
+		log.error(error);
+		return { path: listing.path, error };
+	}
+}
+
+async function decorateListings(listings: Listing[], renderDescription = true): Promise<ListingContext[]> {
+	return (await Promise.all(listings.map((listing) => decorateListing(listing, renderDescription))))
+		.filter((listing) => !listing.hidden).sort(listingSort);
+}
+
+export async function renderListings(species: string, listings?: ListingContext[]): Promise<RenderResult> {
+	const speciesConfig: Species | undefined = config.species[species];
+	const path = speciesConfig?.plural ?? species;
+	try {
+		listings ??= await decorateListings(await getListings(false, species), false);
+		const rendered = listingsPage(
+			{
+				...config,
+				listings,
+				pageTitle: `${capitalizeFirstLetter(path)} for adoption at ${config.longname}`,
+				heading: `Adoptable ${path}`,
+				path
+			});
+		await writeFile(path, rendered, 'text/html');
+		log.info(`Rendered ${path}`);
+		return { path };
+	} catch (error) {
+		log.error(error);
+		return { path, error };
+	}
+}
+
+export async function renderAllListings(species?: string): Promise<RenderResult[]> {
+	if (!species) {
+		return (await Promise.all(Object.keys(config.species).map(renderAllListings))).flat();
+	}
+	const listings = await decorateListings(await getListings(false, species));
+	const listingResults = await Promise.all(listings.map(renderDecoratedListing));
+	const listingsResult = await renderListings(species);
+	return [...listingResults, listingsResult];
+}
+
+export async function renderRootFile(path: string): Promise<RenderResult> {
+	try {
+		const template = rootTemplates[path];
+		if (!template) {
+			throw new Error(`Template not found for ${path}`);
+		}
+		await bucket.file(path).save(template(config), {
+			contentType: path.includes('.') ? undefined : 'text/html'
+		});
+		log.info(`Rendered ${path}`);
+		return { path };
+	} catch (error) {
+		log.error(error);
+		return { path, error };
+	}
+}
+
+export async function getForms(): Promise<Form[]> {
+	return (await database.collection('forms').get()).docs.map(doc => doc.data()) as Form[];
+}
+
+export async function renderForm(formConfig: Form): Promise<RenderResult> {
+	const path = formConfig.path;
+	try {
+		if (!path) {
+			throw new Error(`No path for form: ${JSON.stringify(formConfig)}`);
+		}
+		await writeFile(path, formPage({ ...config, form: formConfig }), 'text/html');
+		log.info(`Rendered ${path}`);
+		return { path };
+	} catch (error) {
+		log.error(error);
+		return { path, error };
+	}
+}
+
+export async function renderAllForms(): Promise<RenderResult[]> {
+	const forms = await getForms();
+	return Promise.all(forms.map(renderForm));
+}
+
+export async function renderBlogPost(post: BlogPost): Promise<RenderResult> {
+	const path = `blog/${post.path}`;
+	try {
+		await writeFile(path, blogPostPage({ ...config, post: await decoratePost(post) }), 'text/html');
+		return { path };
+	} catch (error) {
+		log.error(error);
+		return { path, error };
+	}
+}
+
+async function renderBlogIndex(posts: BlogPost[]): Promise<RenderResult> {
+	try {
+		await writeFile('blog', blogPage({ ...config, posts }), 'text/html');
+		return { path: 'blog' };
+	} catch (error) {
+		log.error(error);
+		return { path: 'blog', error };
+	}
+}
+
+export async function renderBlog(): Promise<RenderResult[]> {
+	try {
+		const posts = (await database.collection('blog').get()).docs.map(doc => doc.data()) as BlogPost[];
+		const results = await Promise.all(posts.map(renderBlogPost));
+		results.push(await renderBlogIndex(posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())));
+		return results;
+	} catch (error) {
+		log.error(error);
+		return [{ path: 'blog', error }];
+	}
+}

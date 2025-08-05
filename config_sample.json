@@ -1,0 +1,82 @@
+{
+	"longname": "Forget Me Not Animal Shelter of Ferry County",
+	"shortname": "Forget Me Not Animal Shelter",
+	"address": [
+		"49 W Curlew Lake Rd",
+		"Republic WA 99166"
+	],
+	"public_domain": "static.fmnas.org",
+	"admin_domain": "admin.fmnas.org",
+	"default_email_user": "adopt",
+	"fax": "208-410-8200",
+	"phone": "(509) 775-2308",
+	"phone_intl": "+15097752308",
+	"transport_date": "2025-08-09",
+	"transport_location": "Monroe",
+	"ga_id": "G-E73F6XEPY7",
+	"species": {
+		"cat": {
+			"plural": "cats",
+			"young": "kitten",
+			"young_plural": "kittens",
+			"young_months": 6,
+			"old": "senior cat",
+			"old_plural": "senior cats",
+			"old_months": 96,
+			"show_months_until": 12,
+			"display_on_homepage": true
+		},
+		"dog": {
+			"plural": "dogs",
+			"young": "puppy",
+			"young_plural": "puppies",
+			"young_months": 6,
+			"old": "senior dog",
+			"old_plural": "senior dogs",
+			"old_months": 96,
+			"show_months_until": 12,
+			"display_on_homepage": true
+		}
+	},
+	"statuses": {
+		"Coming Soon": {
+			"class": "soon",
+			"priority": 1
+		},
+		"Adoptable": {
+			"show_fee": true,
+			"priority": 0
+		},
+		"Adopted": {
+			"priority": 5
+		},
+		"Adoption Pending": {
+			"priority": 3,
+			"description": "<p>We either have so many applications we are confident of finding the pet's new home from among them, OR the pet has been offered to an applicant who has accepted placement, and we will be delivering the pet on the next Seattle or Spokane trip.<p>You can submit an application for one of these pets if you'd like to be a \"backup home\" should anything not work out with the prior applicants, but it's a longshot."
+		},
+		"Applications Closed": {
+			"priority": 4,
+			"description": "<p>We have received a fairly large number of applications in a fairly short period of time, and need a chance to review them to see if any will be a great match to the particular pet. If the right match is not found in the applications already received, we will REOPEN applications.<p>You may still submit an application for one of these pets, and we will review it right away if the right match is not found first."
+		},
+		"Medical Hold": {
+			"priority": 2,
+			"description": "<p>This pet has some more complicated medical issues to solve before they will be released for adoption. See the pet description for more information; we will accept applications for Medical Hold pets at any time, but may not make a decision about the pet's placement until we have additional information about their medical condition and expected date of recovery."
+		},
+		"Stray Hold": {
+			"priority": 2,
+			"description": "<p>This pet was brought in as a stray and is on a temporary hold to give their family time to find them."
+		}
+	},
+	"social_links": [
+		{
+			"display": "Home",
+			"href": "/"
+		},
+		{
+			"display": "Facebook",
+			"href": "https://www.facebook.com/ForgetMeNotAnimalShelter/"
+		}
+	],
+	"is_test_site": true,
+	"prod_domain": "forgetmenotshelter.org"
+}

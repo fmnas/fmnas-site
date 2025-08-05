@@ -1,5 +1,18 @@
+# Rendered templates
+/*
+!*/
+!*.*
+!.*
+*.html
+*.rendered
+!404.html
+robots.txt
+
+# old things I still have around on my machine
 Application/
 blog/
+assets/
+donate/
 
 # Sass ignores
 .sass-cache/

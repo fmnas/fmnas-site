@@ -1,0 +1,139 @@
+{{!
+Copyright 2025 Google LLC
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+}}
+<!DOCTYPE html>
+<html lang="en-US">
+<title>{{pageTitle}}</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://{{public_domain}}/{{path}}">
+<link rel="stylesheet" href="/common.css">
+<link rel="stylesheet" href="/listings.css">
+<script src="/email.js"></script>
+{{>header}}
+<h2>{{heading}}</h2>
+<table class="listings">
+	<thead>
+	<tr>
+		<th>Name</th>
+		<th>Sex</th>
+		<th>Age</th>
+		<th>Adoption fee</th>
+		<th>Image</th>
+		<th>Email inquiry</th>
+	</tr>
+	</thead>
+	<tbody>
+	{{#each listings}}
+		<tr class="{{#with statusConfig}}{{class}}{{#unless
+			show_fee}} displayStatus{{/unless}}{{#if description}} explain{{/if}}{{/with}}{{#if bonded}} pair{{/if}}">
+			<th class="name">
+				<a
+					{{#if linked}}
+					href="/{{path}}"
+					{{/if}}
+					{{#unless bonded}}
+					id="{{id}}"
+					{{/unless}}
+					title="{{name}}"
+				>
+					{{#if bonded}}
+						<ul>
+							{{#each pets}}
+							<li id="{{id}}">{{name}}
+							{{/each}}
+						</ul>
+					{{else}}
+						{{name}}
+					{{/if}}
+				</a>
+			</th>
+			<td class="sex">
+				{{#if bonded}}
+				<ul>{{/if}}
+				{{#each pets}}
+					{{#if ../bonded}}
+						<li>{{/if}}{{capitalizeFirstLetter sex}} {{breed}}
+				{{/each}}
+				{{#if bonded}}</ul>{{/if}}
+			</td>
+			<td class="age">
+				{{#if bonded}}
+				<ul>{{/if}}
+				{{#each pets}}
+					{{#if ../bonded}}
+					<li>{{/if}}
+					<time datetime="{{dob}}">{{age}}</time>
+				{{/each}}
+				{{#if bonded}}</ul>{{/if}}
+			</td>
+			<td class="fee">
+        <span class="fee">
+					{{#if statusConfig.show_fee}}
+						{{#if bonded}}BONDED PAIR {{/if}}{{fee}}
+					{{else}}
+						{{status}}
+						{{#if statusConfig.description}}
+							<aside class="explanation">
+								{{{statusConfig.description}}}
+							</aside>
+						{{/if}}
+					{{/if}}
+				</span>
+			</td>
+			<td class="img">
+				<a
+					{{#if linked}}
+					href="/{{path}}"
+					{{/if}}
+					title="{{name}}"
+				>
+					{{#if bonded}}
+					<ul>{{/if}}
+					{{#each pets}}
+						{{#if photo.path}}
+							{{#if ../bonded}}
+								<li>{{/if}}{{#with photo}}{{>photo height='300'}}{{/with}}
+						{{/if}}
+					{{/each}}
+					{{#if bonded}}</ul>{{/if}}
+				</a>
+			</td>
+			<td class="inquiry">
+				<a data-email="adopt+{{id}}">Email to adopt {{name}}!</a>
+			</td>
+		</tr>
+	{{else}}
+		There are currently no {{path}}! Please check back later.
+	{{/each}}
+	</tbody>
+</table>
+<table class="listings last-row">
+	<tbody></tbody>
+</table>
+<script src="/listings.js"></script>
+<section class="explanations">
+	<aside class="info"><strong>Adoption Fees</strong> include Vaccinations and Spay/Neuter!</aside>
+	{{#each statuses}}
+		{{#unless show_fee}}
+			{{#if description}}
+				<aside class="info" data-status="{{@key}}"><strong>{{@key}}:</strong><br>{{{description}}}</aside>
+			{{/if}}
+		{{/unless}}
+	{{/each}}
+</section>
+{{>footer}}
+</html>

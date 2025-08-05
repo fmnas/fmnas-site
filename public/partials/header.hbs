@@ -1,0 +1,67 @@
+{{!
+Copyright 2025 Google LLC
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+}}
+<script async src="https://www.googletagmanager.com/gtag/js?id={{{ga_id}}}"></script>
+<script>
+	window.dataLayer = window.dataLayer || [];
+
+	function gtag() {
+		dataLayer.push(arguments);
+	}
+
+	gtag('js', new Date());
+	gtag('config', '{{{ga_id}}}');
+</script>
+{{#if is_test_site}}
+	{{>test_site}}
+{{/if}}
+<header>
+	<nav>
+		<div class="main">
+			<a href="/" class="logo"><img src="/assets/logo.png"
+				srcset="/assets/logo_small.png 1x, /assets/logo_medium.png 2x, /assets/logo_large.png 3x, /assets/logo.png 4x"
+				alt=""></a>
+			<h1><a href="/">{{shortname}}</a></h1>
+			<div class="contact">
+				<address>{{#each address}}<span>{{this}}</span>{{/each}}</address>
+				<a class="tel" href="tel:{{phone_intl}}">{{phone}}</a>
+			</div>
+			<ul class="social">
+				{{#each social_links}}
+				<li><a href="{{href}}">{{display}}</a>
+				{{/each}}
+			</ul>
+			<a class="printonly url" href="/">https://{{public_domain}}</a>
+		</div>
+		<form class="adopt" action="/application" method="GET">
+			<h2><a href="/application">Adopt a Pet</a></h2>
+			<button type="submit">Apply Online Now</button>
+			{{#if listing.statusConfig.show_fee}}
+				<input type="hidden" name="pet" value="{{listing.listingHeading}}" id="hidden_id">
+			{{/if}}
+		</form>
+		<section class="donate">
+			<form action="https://www.paypal.com/donate" method="post" class="paypal">
+				<input type="hidden" name="cmd" value="_s-xclick">
+				<input type="hidden" name="hosted_button_id" value="EYQVKDS74KYZ2">
+				<input type="image" src="/assets/btn_donateCC_LG.gif" name="submit"
+					alt="Donate through PayPal">
+			</form>
+			<a href="https://www.networkforgood.org/donation/ExpressDonation.aspx?ORGID2=91-1996344" class="nfg darken"><img
+				src="/assets/networkforgoodlogo.gif" alt="Donate through Network For Good"></a>
+		</section>
+	</nav>
+</header>
