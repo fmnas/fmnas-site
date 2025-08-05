@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	import { toast } from '@zerodevx/svelte-toast';
 	import { smallestSize } from '$lib/photos';
 	import Throbber from '$lib/throbber.svelte';
+	import { shouldLinkListing } from '$lib/templates';
 
 	let { species, adopted }: {
 		species?: string,
@@ -149,10 +150,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						<td class="fee" rowspan={listing.pets.length}>BONDED PAIR {listing.fee}</td>
 					{/if}
 					{#if !petIndex}
-						<td class="status" rowspan={listing.pets.length}>{listing.status}</td>
+						<td class="status" rowspan={listing.pets.length}>
+							<span>{listing.status}</span>
+							{#if listing.hidden}
+								<span>Hidden</span>
+							{/if}
+							{#if listing.status !== 'Coming Soon' && !shouldLinkListing(listing)}
+								<span>Unlinked</span>
+							{/if}
+							{#if listing.status === 'Coming Soon' && shouldLinkListing(listing)}
+								<span>Linked</span>
+							{/if}
+						</td>
 						<td class="options" rowspan={listing.pets.length} onclick={(e) => e.stopPropagation()}>
-							<a href="/{listing.path}">Edit</a>
-							<a href="//{config.public_domain}/{listing.path}">View</a>
+							<ul class="options">
+								<li><a href="/{listing.path}">Edit</a></li>
+								<li><a href="//{config.public_domain}/{listing.path}"
+									class={[!shouldLinkListing(listing) && 'unlinked']}>View</a></li>
+							</ul>
 						</td>
 					{/if}
 				</tr>
@@ -192,11 +207,45 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		object-fit: contain;
 	}
 
+	ul.options {
+		list-style-type: none;
+		margin: 0;
+		padding: 0;
+		height: 100%;
+		width: 100%;
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+	}
+
 	td.options a {
 		padding: 0.4em;
 	}
 
 	div.bulk {
 		margin: 0.5em 0;
+	}
+
+	a.unlinked {
+		font-size: 75%;
+		font-style: italic;
+		color: inherit;
+	}
+
+	td:first-of-type {
+		padding: 0.5rem;
+	}
+
+	td.status > span {
+		display: block;
+		margin: 0.5rem 0;
+
+		&:not(:first-of-type) {
+			font-weight: bold;
+		}
+	}
+
+	table {
+		max-width: 95vw;
+		margin: 0.5rem auto;
 	}
 </style>

@@ -170,10 +170,10 @@ function listingTitle(listing: Listing): string {
 
 	if (listing.status === 'Adopted') {
 		title += ' adopted from ';
-	} else if (config.statuses[listing.status]?.inactive) {
-		title += ' - ';
-	} else {
+	} else if (config.statuses[listing.status]?.show_fee) {
 		title += ' for adoption at ';
+	} else {
+		title += ' - ';
 	}
 
 	title += config.longname;
@@ -200,7 +200,8 @@ export async function decorateListing(listing: Listing, renderDescription = true
 		name: listingName(listing, false),
 		listingHeading: listingName(listing, true, true),
 		renderedDescription: listing.description,
-		path: listing.path || listingPath(listing)
+		path: listing.path || listingPath(listing),
+		linked: shouldLinkListing(listing)
 	};
 	log.debug(decorated.collapsedAge);
 	if (!renderDescription) {
@@ -256,4 +257,19 @@ export function capitalizeFirstLetter<T>(str: T): T {
 		return str;
 	}
 	return (str.charAt(0).toUpperCase() + str.slice(1)) as T;
+}
+
+export function shouldLinkListing(listing: Listing): boolean {
+	return listing.linked ?? !!listing.photos.length;
+}
+
+// TODO: This breaks the build somehow?
+// const PRIORITY_MAX = Math.max(...Object.values(config.statuses).map(status => status.priority ?? 0)) + 1;
+const PRIORITY_MAX = 999999;
+
+export function listingSort(a: Listing, b: Listing): number {
+	return ((getStatusConfig(a.status).priority ?? PRIORITY_MAX) -
+	        (getStatusConfig(b.status).priority ?? PRIORITY_MAX)) || (
+		       new Date(b.modifiedDate ?? new Date()).getTime() - new Date(a.modifiedDate ?? new Date()).getTime()
+	       ) || a.pets[0].name.localeCompare(b.pets[0].name);
 }

@@ -124,16 +124,6 @@ table.listings {
 				vertical-align: middle;
 			}
 
-			order: 1;
-
-			&.soon {
-				order: 2;
-			}
-
-			&.displayStatus {
-				order: 3;
-			}
-
 			&.displayStatus:not(.soon) {
 				background-color: var(--pending-color);
 			}
@@ -249,7 +239,7 @@ table.listings {
 		}
 	}
 
-	tr:not(.soon) th.name a {
+	tr th.name a[href] {
 		text-decoration: none;
 		border-bottom: 1pt solid transparent;
 

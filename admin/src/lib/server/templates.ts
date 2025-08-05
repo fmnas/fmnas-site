@@ -7,7 +7,7 @@
 import { bucket, getListings, writeFile, database } from '$lib/server/storage';
 import { config } from '$lib/config';
 import Handlebars from 'handlebars';
-import { basename, decorateListing, decoratePost, partialRegistration, capitalizeFirstLetter } from '$lib/templates';
+import { basename, decorateListing, decoratePost, partialRegistration, capitalizeFirstLetter, listingSort } from '$lib/templates';
 import type { TemplateDelegate } from 'handlebars';
 import type { Listing, Species, Form, ListingContext, BlogPost } from 'fmnas-functions/src/fmnas';
 import { log } from '$lib/logging';
@@ -79,7 +79,8 @@ export async function renderListing(listing: Listing): Promise<RenderResult> {
 }
 
 async function decorateListings(listings: Listing[], renderDescription = true): Promise<ListingContext[]> {
-	return Promise.all(listings.map((listing) => decorateListing(listing, renderDescription)));
+	return (await Promise.all(listings.map((listing) => decorateListing(listing, renderDescription))))
+		.filter((listing) => !listing.hidden).sort(listingSort);
 }
 
 export async function renderListings(species: string, listings?: ListingContext[]): Promise<RenderResult> {

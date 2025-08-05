@@ -38,13 +38,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	</thead>
 	<tbody>
 	{{#each listings}}
-		<tr class="{{#with statusConfig}}{{class}}{{#if inactive}} soon{{/if}}{{#unless
+		<tr class="{{#with statusConfig}}{{class}}{{#unless
 			show_fee}} displayStatus{{/unless}}{{#if description}} explain{{/if}}{{/with}}{{#if bonded}} pair{{/if}}">
 			<th class="name">
 				<a
-					{{#unless statusConfig.inactive}}
+					{{#if linked}}
 					href="/{{path}}"
-					{{/unless}}
+					{{/if}}
 					{{#unless bonded}}
 					id="{{id}}"
 					{{/unless}}
@@ -96,9 +96,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			</td>
 			<td class="img">
 				<a
-					{{#unless statusConfig.inactive}}
+					{{#if linked}}
 					href="/{{path}}"
-					{{/unless}}
+					{{/if}}
 					title="{{name}}"
 				>
 					{{#if bonded}}

@@ -34,6 +34,8 @@ export interface Listing {
 	path: string;
 	photos: Photo[];
 	description: string;
+	hidden?: boolean;
+	linked?: boolean;
 }
 
 export interface Species {
@@ -50,9 +52,9 @@ export interface Species {
 
 export interface Status {
 	show_fee?: boolean;
-	inactive?: boolean;
 	description?: string;
-	hidden?: boolean;
+	priority?: number;
+	class?: string;
 }
 
 export interface Link {
