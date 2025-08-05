@@ -1,0 +1,64 @@
+{{!
+Copyright 2025 Google LLC
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+}}
+<!DOCTYPE html>
+<html lang="en-US">
+<title>{{listing.title}}</title>
+<meta charset="utf-8">
+<meta name="robots" content="{{#unless statusConfig.listed}}no{{/unless}}index">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://{{public_domain}}/{{listing.path}}">
+<link rel="stylesheet" href="/common.css">
+<link rel="stylesheet" href="/listing.css">
+<script src="/email.js"></script>
+{{>header}}
+{{#with listing}}
+{{#each pets}}{{#if @first}}
+<a class="return" href="/{{speciesConfig.plural}}" title="{{speciesConfig.plural}}">
+  Return to the {{pluralWithYoung speciesConfig}} page
+</a>
+{{/if}}{{/each}}
+<article class="listing">
+  <h2>{{listingHeading}}</h2>
+  <p class="subtitle">
+    <span>{{collapsedAge}}</span>
+    &nbsp;&middot;&nbsp;
+    <span>{{status}}</span>
+    {{#if statusConfig.show_fee}}
+      &nbsp;&middot;&nbsp;
+      <span>{{fee}}</span>
+    {{/if}}
+  <aside class="images">
+    {{#each photos}}
+      {{>photo link='true' height='480'}}
+    {{/each}}
+  </aside>
+  <section id="description">
+    {{{renderedDescription}}}
+    {{#if statusConfig.show_fee}}
+      <form action="/application" method="GET" id="bottom_form">
+        If you would like to know more about, or think you might like to adopt, {{name}},
+        <button>Apply Online Now</button>
+        or email us at: <a
+          data-email="adopt+{{id}}">Adopt {{name}}!</a>
+        <input type="hidden" name="pet" value="{{listingHeading}}" id="hidden_id">
+      </form>
+    {{/if}}
+  </section>
+</article>
+{{/with}}
+{{>footer}}
+</html>

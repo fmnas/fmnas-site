@@ -1,0 +1,45 @@
+{{!
+Copyright 2025 Google LLC
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+}}
+<!DOCTYPE html>
+<html lang="en-US">
+<title>
+	{{longname}} Blog
+</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://{{public_domain}}/blog">
+<link rel="stylesheet" href="/common.css">
+<link rel="stylesheet" href="/blog.css">
+{{>header}}
+<h2>Blog</h2>
+<ul class="index">
+	{{#each posts}}
+		<li>
+			<a href="/blog/{{path}}">
+				{{#each photos}}
+					{{#if @first}}
+						{{>photo height='64'}}
+					{{/if}}
+				{{/each}}
+				<span>{{title}}</span>
+				<time datetime="{{date}}">posted {{localeDate date}}</time>
+			</a>
+		</li>
+	{{/each}}
+</ul>
+{{>footer}}
+</html>

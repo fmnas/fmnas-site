@@ -21,18 +21,18 @@ analysis_options.yaml
 /.idea
 .github/workflows/codeql-analysis.yml
 *.iml
+/admin/src/app.*
+/admin/.*
+/admin/*.*
+/admin/src/lib/index.ts
+/admin/.svelte-kit/*
+dependabot-auto-merge.yml
 
-# Files that don't support comments
-*.json
+# Non-code files
 .nvmrc
-secrets/*.txt
-
-# Documentation
+*.json
+*.txt
 *.md
 
 # Impractical in template files
 /admin/templates
-/src/templates
-
-# Third-party code
-dependabot-auto-merge.yml
