@@ -51,8 +51,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<li><a href="https://cloud.ramnode.com/44450/openstack/instances/0d6b613b-8944-4e73-9099-47515f267b23#info">ASM
 				server management</a></li>
 			<li><a href="https://clientarea.ramnode.com/fleioaddcredit.php">ASM billing</a></li>
-			<li><!--suppress HttpUrlsUsage -->
-				<a href="http://asm.forgetmenotshelter.org">ASM</a></li>
 		</ul>
 	</section>
 
