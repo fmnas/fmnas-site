@@ -95,7 +95,18 @@ jobs:
           --set-env-vars "asm_db=${{ vars.ASM_DB }}" \
           --set-env-vars "asm_db_user=${{ vars.ASM_DB_USER }}" \
           --set-env-vars 'asm_db_pass=${{ secrets.ASM_DB_PASS }}'
+      - name: Get admin site URL
+        id: get-url
+        run: echo "SERVER_URL=$$(gcloud run services describe fmnas-admin${{ inputs.service_suffix }} --format 'value(status.url)' --region ${{ vars.GCP_REGION }})" >> "$GITHUB_OUTPUT"
+      - name: Get identity token
+        uses: google-github-actions/auth@v2
+        id: get-token
+        with:
+          workload_identity_provider: ${{ vars.GCP_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+          token_format: "id_token"
+          id_token_audience: ${{ steps.get-url.outputs.SERVER_URL }}
+          id_token_include_email: 'true'
       - name: Generate static pages
         run: |
-          SERVER_URL=$(gcloud run services describe fmnas-admin${{ inputs.service_suffix }} --format 'value(status.url)' --region ${{ vars.GCP_REGION }}) curl \
-          -H "Authorization: Bearer $(gcloud auth print-identity-token --audiences=$SERVER_URL --include-email)" $SERVER_URL/api/render
+          curl -H "Authorization: Bearer ${{ steps.get-token.outputs.id_token }}" ${{ steps.get-url.outputs.SERVER_URL }}/api/render
