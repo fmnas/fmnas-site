@@ -35,4 +35,5 @@ dependabot-auto-merge.yml
 *.md
 
 # Impractical in template files
-/admin/templates
+/public/partials
+/public/templates
