@@ -20,7 +20,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	import { toast } from '@zerodevx/svelte-toast';
 	import { beforeNavigate, goto, replaceState } from '$app/navigation';
 	import { config } from '$lib/config';
-	import { displayAge, getStatusConfig, listingName, listingPath, partial, renderDescription } from '$lib/templates';
+	import {
+		displayAge, getStatusConfig, listingName, listingPath, partial, renderDescription,
+		shouldLinkListing
+	} from '$lib/templates';
 	import PetImporter from '$lib/pet_importer.svelte';
 	import FilePond from 'svelte-filepond';
 	import { fromPond, pondAdapter, toPond } from '$lib/photos';
@@ -45,13 +48,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	let showHelp = $state(false);
 	let photoIds: string[] = $state([]);
 	let photoMapping: Record<string, Photo> = $state({});
+	let bump = $state(true);
 
 	$inspect(listing);
 	let loading: Promise<any> = $state(getListing());
 
 	let uploadingProfilePhoto = $state(false);
 	let uploading = $derived(uploadingProfilePhoto || photoIds.length !== Object.keys(photoMapping).length);
-	let dirty = $derived.by(() => uploading || JSON.stringify(listing) !== savedListing || (
+	let dirty = $derived.by(() => bump || uploading || JSON.stringify(listing) !== savedListing || (
 	                              photoIds.length !== listing.photos.length ||
 	                              photoIds.some((id, i) => listing.photos[i].path !== photoMapping[id]?.path)
 	));
@@ -77,6 +81,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		photoIds = [];
 		photoMapping = {};
 		uploadingProfilePhoto = false;
+		bump = true;
 		await goto('/new');
 	}
 
@@ -103,7 +108,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			modifiedDate: new Date().toISOString().substring(0, 10),
 			path: path ?? '',
 			photos: [],
-			description: ''
+			description: '',
+			linked: false,
+			hidden: false
 		};
 	}
 
@@ -117,6 +124,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			photoIds = [];
 			photoMapping = {};
 			uploadingProfilePhoto = false;
+			bump = true;
 			return;
 		}
 		const query = new URLSearchParams({ path });
@@ -125,11 +133,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		id = fetched.id;
 		listing = fetched.listing;
 		isPair = listing.pets.length > 1;
-		savedListing = JSON.stringify(listing);
 		title = 'Editing ' + listingName(listing);
 		photoIds = []; // filled by filepond
 		photoMapping = {};
 		uploadingProfilePhoto = false;
+		bump = !listing.modifiedDate;
+		listing.hidden ??= false;
+		listing.linked = shouldLinkListing(listing);
+		savedListing = JSON.stringify(listing);
 	}
 
 
@@ -190,6 +201,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			listing.path += `_${suffix}`;
 		}
 
+		if (bump || !listing.modifiedDate) {
+			listing.modifiedDate = new Date().toISOString();
+		}
+
 		try {
 			const res = await fetch(id ? '/api/listing?' + new URLSearchParams({ id }).toString() : '/api/listing', {
 				method: 'POST',
@@ -204,12 +219,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			savedListing = JSON.stringify(listing);
 			removeImported(listing);
 			replaceState(`/${listing.path}`, {});
+			bump = false;
 		} catch (e: any) {
 			console.error(e);
 			toast.push(e.message ?? JSON.stringify(e));
 		}
 
-		// TODO: Delete obsolete images
 		saving = false;
 	}
 
@@ -307,6 +322,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			}
 			if (error) {
 				return;
+			}
+			if (!Object.keys(photoMapping).length) {
+				listing.linked = true;
 			}
 			photoMapping[file.id] = photo;
 			console.debug($state.snapshot(photoIds), $state.snapshot(photoMapping));
@@ -435,6 +453,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					</select>
 				</li>
 			</ul>
+			<div class="options">
+				<label>
+					<input type="checkbox" bind:checked={listing.hidden}>
+					Hidden
+				</label>
+				<label>
+					<input type="checkbox" bind:checked={listing.linked}>
+					Linked
+				</label>
+				<label title="Push the listing to the top of the listings page">
+					<input type="checkbox" bind:checked={bump} disabled={!listing.modifiedDate}>
+					Bump
+				</label>
+			</div>
 		</form>
 		<table class="listings">
 			<thead>
@@ -449,10 +481,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			</thead>
 			<tbody>
 			<tr
-				class={[getStatusConfig(listing.status).inactive && 'soon', !getStatusConfig(listing.status).show_fee && 'displayStatus', listing.pets.length > 1 && 'pair']}>
+				class={[getStatusConfig(listing.status).class, !getStatusConfig(listing.status).show_fee && 'displayStatus', listing.pets.length > 1 && 'pair']}>
 				<th class="name">
 					<a
-						href={getStatusConfig(listing.status).inactive ? undefined : (listing.path ? `//${config.public_domain}/${listing.path}` : '')}
+						href={shouldLinkListing(listing) ? (listing.path ? `//${config.public_domain}/${listing.path}` : '') : undefined}
 						id={listing.pets.length > 1 ? undefined : listing.pets[0].id}>
 						{#if listing.pets.length > 1}
 							<ul>
@@ -685,7 +717,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				}
 			}
 
-			> div.buttons, > div.bondage {
+			> div.buttons, > div.bondage, > div.options {
 				display: flex;
 				justify-content: space-evenly;
 				grid-column: 1 / span end;
