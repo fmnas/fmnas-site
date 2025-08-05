@@ -30,7 +30,7 @@ jobs:
     secrets: inherit
     with:
       ref: 'test'
-      bucket: $TEST_BUCKET
-      database: $TEST_DATABASE
+      bucket: ${{ vars.TEST_BUCKET }}
+      database: ${{ vars.TEST_DATABASE }}
       service_suffix: '-test'
 

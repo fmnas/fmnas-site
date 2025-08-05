@@ -46,8 +46,8 @@ jobs:
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: $GCP_IDENTITY_PROVIDER
-          service_account: $GCP_SERVICE_ACCOUNT
+          workload_identity_provider: ${{ vars.GCP_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
@@ -56,7 +56,7 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
         with:
-          project_id: $GCP_PROJECT
+          project_id: ${{ vars.GCP_PROJECT }}
       - name: Install dev dependencies
         run: npm install
       - name: Compile public site stylesheets
@@ -73,7 +73,7 @@ jobs:
           --source functions \
           --function resize-photo \
           --base-image nodejs22 \
-          --region $GCP_REGION \
+          --region ${{ vars.GCP_REGION }} \
           --no-allow-unauthenticated \
           --timeout 10 --concurrency 3
       - name: Install beta components
@@ -83,19 +83,19 @@ jobs:
         run: |
           gcloud beta run deploy fmnas-admin${{ inputs.service_suffix }} \
           --source admin \
-          --region $GCP_REGION \
+          --region ${{ vars.GCP_REGION }} \
           --no-allow-unauthenticated --iap \
           --automatic-updates --base-image nodejs22 \
           --timeout 3600 \
-          --set-env-vars "project=$GDP_PROJECT" \
+          --set-env-vars "project=${{ vars.GCP_PROJECT }}" \
           --set-env-vars "bucket=${{ inputs.bucket }}" \
           --set-env-vars "database=${{ inputs.database }}" \
-          --set-env-vars "RESIZE_ENDPOINT=$(gcloud run services describe resize-photo${{ inputs.service_suffix }} --format 'value(status.url)' --region $GCP_REGION)" \
-          --set-env-vars "asm_db_host=$ASM_HOST" \
-          --set-env-vars "asm_db=$ASM_DB" \
-          --set-env-vars "asm_db_user=$ASM_DB_USER" \
+          --set-env-vars "RESIZE_ENDPOINT=$(gcloud run services describe resize-photo${{ inputs.service_suffix }} --format 'value(status.url)' --region ${{ vars.GCP_REGION }})" \
+          --set-env-vars "asm_db_host=${{ vars.ASM_HOST }}" \
+          --set-env-vars "asm_db=${{ vars.ASM_DB }}" \
+          --set-env-vars "asm_db_user=${{ vars.ASM_DB_USER }}" \
           --set-env-vars 'asm_db_pass=${{ secrets.ASM_DB_PASS }}'
       - name: Generate static pages
         run: |
-          SERVER_URL=$(gcloud run services describe fmnas-admin${{ inputs.service_suffix }} --format 'value(status.url)' --region $GCP_REGION) curl \
+          SERVER_URL=$(gcloud run services describe fmnas-admin${{ inputs.service_suffix }} --format 'value(status.url)' --region ${{ vars.GCP_REGION }}) curl \
           -H "Authorization: Bearer $(gcloud auth print-identity-token --audiences=$SERVER_URL --include-email)" $SERVER_URL/api/render
