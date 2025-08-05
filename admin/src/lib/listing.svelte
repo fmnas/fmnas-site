@@ -105,7 +105,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			fee: '',
 			pets: [blankPet()],
 			status: 'Coming Soon',
-			modifiedDate: new Date().toISOString().substring(0, 10),
 			path: path ?? '',
 			photos: [],
 			description: '',
@@ -203,6 +202,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 		if (bump || !listing.modifiedDate) {
 			listing.modifiedDate = new Date().toISOString();
+			bump = false;
 		}
 
 		try {
@@ -219,7 +219,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			savedListing = JSON.stringify(listing);
 			removeImported(listing);
 			replaceState(`/${listing.path}`, {});
-			bump = false;
 		} catch (e: any) {
 			console.error(e);
 			toast.push(e.message ?? JSON.stringify(e));
