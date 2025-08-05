@@ -57,6 +57,7 @@ jobs:
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ vars.GCP_PROJECT }}
+          install_components: 'beta'
       - name: Install dev dependencies
         run: npm install
       - name: Compile public site stylesheets
@@ -76,8 +77,6 @@ jobs:
           --region ${{ vars.GCP_REGION }} \
           --no-allow-unauthenticated \
           --timeout 10 --concurrency 3
-      - name: Install beta components
-        run: gcloud components install beta --quiet
       - id: deploy
         name: Deploy admin site
         run: |
