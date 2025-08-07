@@ -2,7 +2,7 @@
 
 [![public site status](https://img.shields.io/website?down_color=critical&label=public&up_color=090&url=https%3A%2F%2Fforgetmenotshelter.org)](https://forgetmenotshelter.org)
 [![admin status](https://img.shields.io/website?down_color=inactive&down_message=%233&label=admin&up_color=090&up_message=up&url=https%3A%2F%2Fadmin.forgetmenotshelter.org)](https://admin.forgetmenotshelter.org)
-[![ASM status](https://img.shields.io/website?down_color=critical&label=asm3&up_color=090&url=http%3A%2F%2Fasm.forgetmenotshelter.org)](http://asm.forgetmenotshelter.org) 
+[![ASM status](https://img.shields.io/website?down_color=critical&label=asm3&up_color=090&url=http%3A%2F%2Fasm.forgetmenotshelter.org)](http://asm.forgetmenotshelter.org)
 
 This repository contains source code for the website of the
 [Forget Me Not Animal Shelter](https://forgetmenotshelter.org)
@@ -27,37 +27,45 @@ Google owns the copyright to much of this code because it was written by a Googl
 
 ## Architecture
 
-### Public site
+Listings and blog posts are stored as objects in a Google Cloud Firestore database.
 
-The public site is generated from the files in `public/`. When the repo is updated, this is done using the
-`public-site` workflow.
+The admin site (found in admin/) is a static site generator built on [Svelte](https://svelte.dev) and SvelteKit and
+deployed as a Google Cloud Run service with Identity-Aware Proxy enabled. Users authenticated as members of the
+Web Editors group in Google Workspace can access all endpoints in the Cloud Run service.
 
-First, a **[Handlebars](https://handlebarsjs.com)** input object is read from the `config.json` found in the GCS bucket
-and used to compile *.hbs files to HTML. (See `config_sample.json` for the schema.)
+After updating the database, it regenerates pages as necessary. This is done synchronously through an API request issued
+from the client side to the Cloud Run service while saving listings.
 
-Generally, template `public/foo.hbs` will be compiled to a file `/foo` and uploaded to GCS.
+Images are uploaded directly to the bucket by [FilePond](https://pqina.nl/filepond/). After a photo is uploaded but
+before adding its object to the listing, the admin site will call a Google Cloud Run Function (found in . (This is a
+separate function from the rest of the site to allow it to scale independently while uploading many images, and because
+uploading a sufficiently large image can OOM it.) Saving is disabled while this is happening.
 
-Templates in `public/templates` are used for dynamic content:
+The listings and blog pages are rendered by passing first through the [Handlebars](https://handlebarsjs.com) templates
+found in public/templates, then through [marked](https://github.com/markedjs/marked). The templates found directly in
+public/ (such as index.html.hbs) are rendered directly to files, when needed (e.g. when updating the transport date) and
+by the GitHub Action that deploys all this stuff when updating the repo.
 
-* `listings.hbs` and `listing.hbs` for objects from the Firestore `listings` collection.
-  The Markdown `description` of each listing is first rendered in-place by passing first through Handlebars (with
-  additional partials from `admin/templates`) and then through [marked](https://github.com/markedjs/marked).
-* `blog.hbs` and `blog_post.hbs` for objects from the Firestore `blog` collection.
-* `form.hbs` for objects from the Firestore `forms` collection.
+During deployment, we also compile TypeScript and SCSS found in public/ to JavaScript and CSS that is then served
+directly from the bucket. Everything else in public/ is uploaded without modification.
 
-Template rendering occurs within the Cloud Run function `ssg`, which generates file groups requested from a PubSub
-queue. This queue is written by the GitHub Action public-site when the repository is updated, and by the other functions
-in `/functions/template_rendering.ts` in response to GCS and Firestore updates.
+Traffic is routed to the Cloud Storage bucket and the Cloud Run service by a Global External Application Load Balancer.
+We don't use Cloud CDN for additional caching since we average about 0.1 qps.
 
-Typescript and SCSS files are compiled to .js and .css within the GitHub Action `public-site`.
+To make changes reflect promptly, we set `Cache-Control: no-store` on all non-image objects uploaded to the bucket.
 
-[**Vue**](https://vuejs.org) 3 is used in the admin interface. The admin site is still deployed to DreamHost for now.
+Videos are hosted on YouTube. We just upload them through Creator Studio independently of the rest of this, then include
+them in listing descriptions with the `>youtube` partial.
+
+The admin site can pull listings from Animal Shelter Manager through a server-side MySQL database connection - the API
+for this is in admin/src/routes/api/importable.
 
 ## Development
 
 ### Admin site dev server
 
-Make sure you have Application Default Credentials:
+Get Application Default Credentials that can impersonate a service account with permission to call the resize-photo
+function:
 
 ```shell
 gcloud auth application-default login --impersonate-service-account dev-site@fmnas-automation.iam.gserviceaccount.com
@@ -172,7 +180,9 @@ The following [repository secrets](https://github.com/fmnas/fmnas-site/settings/
 
 ### GCP notes
 
-Worth noting these routing rules on the [load balancer](https://console.cloud.google.com/net-services/loadbalancing/details/httpAdvanced/fmnas-lb?project=fmnas-automation) for forgetmenotshelter.org:
+Worth noting these routing rules on
+the [load balancer](https://console.cloud.google.com/net-services/loadbalancing/details/httpAdvanced/fmnas-lb?project=fmnas-automation)
+for forgetmenotshelter.org:
 
 ```yaml
 defaultService: projects/fmnas-automation/global/backendBuckets/fmnas-prod
