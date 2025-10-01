@@ -39,7 +39,7 @@
 		"@google-cloud/logging-winston": "^6.0.1",
 		"@google-cloud/storage": "^7.16.0",
 		"detect-content-type": "^1.2.0",
-		"filepond": "^4.32.8",
+		"filepond": "^4.32.9",
 		"filepond-plugin-file-validate-type": "^1.2.9",
 		"filepond-plugin-image-exif-orientation": "^1.0.11",
 		"filepond-plugin-image-preview": "^4.6.12",
