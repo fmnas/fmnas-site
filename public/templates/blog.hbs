@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <ul class="index">
 	{{#each posts}}
 		<li>
-			<a href="/blog/{{path}}">
+			<a href="/blog/{{encode path}}">
 				{{#each photos}}
 					{{#if @first}}
 						{{>photo height='64'}}

@@ -62,9 +62,14 @@ h2, .subtitle {
 		padding: 5pt;
 	}
 
-	img, iframe {
-		max-height: 640px;
+	img {
+		max-height: 480px;
 		max-width: 100%;
+		height: auto;
+	}
+
+	iframe {
+		width: 100%;
 		height: auto;
 	}
 

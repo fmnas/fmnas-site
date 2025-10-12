@@ -14,6 +14,8 @@ import { log } from '$lib/logging';
 import { building } from '$app/environment';
 
 await partialRegistration;
+
+// Helpers available only to layout templates
 Handlebars.registerHelper('capitalizeFirstLetter', capitalizeFirstLetter);
 Handlebars.registerHelper('currentYear', () => new Date().toLocaleString('en-US', { year: 'numeric' }));
 Handlebars.registerHelper('localeDate', (isoDateString: string) => new Date(isoDateString).toLocaleDateString('en-US', {
@@ -31,6 +33,7 @@ Handlebars.registerHelper('pluralWithYoung', (species?: Species) => {
 	}
 	return capitalizeFirstLetter(species.plural) + ' & ' + capitalizeFirstLetter(species.young_plural);
 });
+
 const getTemplate = async (t: string) => Handlebars.compile(
 	building ? '' : (await bucket.file(`templates/${t}.hbs`).download()).toString());
 const listingPage = await getTemplate('listing');

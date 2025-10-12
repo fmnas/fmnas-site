@@ -16,6 +16,9 @@ import { marked } from 'marked';
 let partialsCache: Record<string, string> = {};
 let partialsLoaded = false;
 
+// Helpers available to both layout and description templates:
+Handlebars.registerHelper('encode', (path: string) => encodeURIComponent(path));
+
 export async function getPartials(): Promise<Record<string, string>> {
 	if (building) {
 		return {};

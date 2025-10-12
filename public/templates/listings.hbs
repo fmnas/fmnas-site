@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <title>{{pageTitle}}</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="canonical" href="https://{{public_domain}}/{{path}}">
+<link rel="canonical" href="https://{{public_domain}}/{{encode path}}">
 <link rel="stylesheet" href="/common.css">
 <link rel="stylesheet" href="/listings.css">
 <script src="/email.js"></script>
@@ -43,7 +43,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<th class="name">
 				<a
 					{{#if linked}}
-					href="/{{path}}"
+					href="/{{encode path}}"
 					{{/if}}
 					{{#unless bonded}}
 					id="{{id}}"
@@ -97,7 +97,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<td class="img">
 				<a
 					{{#if linked}}
-					href="/{{path}}"
+					href="/{{encode path}}"
 					{{/if}}
 					title="{{name}}"
 				>
