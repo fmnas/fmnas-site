@@ -63,9 +63,9 @@ h2, .subtitle {
 	}
 
 	img {
-		max-height: 480px;
-		max-width: 100%;
-		height: auto;
+		width: 640px;
+		height: 480px;
+		object-fit: scale-down;
 	}
 
 	iframe {
