@@ -42,7 +42,7 @@
 		"sv": "^0.9.6",
 		"ts-node": "^10.9.2",
 		"tsify": "^5.0.4",
-		"typescript": "^5.8.3",
+		"typescript": "^5.9.3",
 		"vite": "^7.1.12",
 		"vite-plugin-eslint": "^1.8.1",
 		"watchify": "^4.0.0"
