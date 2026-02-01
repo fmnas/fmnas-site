@@ -49,6 +49,6 @@
 		"mysql2": "^3.16.2",
 		"svelte-filepond": "^0.2.2",
 		"uuid": "^13.0.0",
-		"winston": "^3.17.0"
+		"winston": "^3.19.0"
 	}
 }
