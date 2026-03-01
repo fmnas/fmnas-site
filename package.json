@@ -36,7 +36,7 @@
 		"filepond-plugin-image-transform": "^3.8.7",
 		"handlebars": "^4.7.8",
 		"hbs-cli": "^1.4.1",
-		"marked": "^17.0.1",
+		"marked": "^17.0.3",
 		"minimist": "^1.2.8",
 		"sass": "^1.97.1",
 		"sv": "^0.12.4",
