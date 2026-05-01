@@ -23,7 +23,7 @@
     "@google-cloud/functions-framework": "^5.0.2",
     "@google-cloud/logging-winston": "^6.0.1",
     "@google-cloud/storage": "^7.19.0",
-    "handlebars": "^4.7.8",
+    "handlebars": "^4.7.9",
     "marked": "^17.0.5",
     "mysql2": "^3.20.0",
     "sharp": "^0.34.5",
