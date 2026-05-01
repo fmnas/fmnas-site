@@ -45,7 +45,7 @@
 		"filepond-plugin-image-preview": "^4.6.12",
 		"google-auth-library": "^10.6.2",
 		"handlebars": "^4.7.9",
-		"marked": "^17.0.5",
+		"marked": "^18.0.3",
 		"mysql2": "^3.20.0",
 		"svelte-filepond": "^0.2.2",
 		"uuid": "^14.0.0",
