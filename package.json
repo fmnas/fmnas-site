@@ -34,7 +34,7 @@
 		"filepond-plugin-image-exif-orientation": "^1.0.11",
 		"filepond-plugin-image-preview": "^4.6.12",
 		"filepond-plugin-image-transform": "^3.8.7",
-		"handlebars": "^4.7.8",
+		"handlebars": "^4.7.9",
 		"hbs-cli": "^1.4.1",
 		"marked": "^17.0.5",
 		"minimist": "^1.2.8",
