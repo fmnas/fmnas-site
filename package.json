@@ -28,7 +28,7 @@
 		"@vue/eslint-config-typescript": "^14.7.0",
 		"eslint": "^10",
 		"eslint-plugin-vue": "^10.8.0",
-		"filepond": "^4.32.11",
+		"filepond": "^4.32.12",
 		"filepond-plugin-file-validate-size": "^2.2.8",
 		"filepond-plugin-file-validate-type": "^1.2.9",
 		"filepond-plugin-image-exif-orientation": "^1.0.11",
